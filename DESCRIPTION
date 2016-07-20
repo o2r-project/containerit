@@ -1,0 +1,26 @@
+Package: containerIt
+Type: Package
+Title: Package R in Docker Containers
+Version: 0.1.0
+Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "danie.nuest@uni-muenster.de"))
+Author: Daniel Nuest [aut, cre]
+Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
+Depends:
+    R (>= 3.0.0)
+Imports:
+    futile.logger
+VignetteBuilder: knitr
+Description: Package R sessions, scripts, workspaces and vignettes together with
+    all dependencies to execute them in Docker containers. This package is supported
+    by the project Opening Reproducible Research (http://o2r.info).
+License: Apache License (== 2.0) + file LICENSE
+URL: https://github.com/o2r/containeRit/
+BugReports: https://github.com/o2r/containeRit/issues
+Encoding: UTF-8
+LazyData: TRUE
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat,
+    covr
+RoxygenNote: 5.0.1

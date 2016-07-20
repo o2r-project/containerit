@@ -1,0 +1,104 @@
+---
+title: "Introduction to package `containeRit`"
+author: "Daniel Nüst"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+This R extension package provides features to bundle an R analysis together with the required runtime environment in so called [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization), more specifically [Docker]().
+The intention of this package is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](http://o2r.info)).
+
+The core functionality is to create a `Dockerfile` from a given R session, script, or workspace directory. This Dockerfile contains all the R packages and their system dependencies required by the R workflow to be packaged. 
+The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Dockerfile generation relies on the [sysrequs](https://github.com/r-hub/sysreqs) package.
+
+Load the package with
+
+```{r}
+library(containerIt)
+```
+
+The package uses [futile.logger]() for logging. Configure the log level with
+
+```{r}
+futile.logger::flog.threshold(futile.logger::INFO)
+```
+
+
+
+## Dockerfile examples
+
+The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp Gallery](http://edzer.github.io/sp/).
+
+```{r, message=FALSE}
+library("rgdal")
+library("maptools")
+
+nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)
+proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
+plot(nc)
+```
+
+### Session
+
+```{r}
+class(sessionInfo())
+containerIt::dockerfile(from = sessionInfo())
+```
+
+### Script
+
+```{r}
+scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
+file <- file(scriptFile)
+writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
+             'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
+             'plot(nc)'), file)
+close(file)
+class(file)
+
+containerIt::dockerfile(from = file)
+```
+
+### Workspace
+
+Go through all `.R` files in the workspace and create Dockerfile
+
+```{r}
+workspace <- getwd()
+class(workspace)
+dir.exists(workspace)
+
+containerIt::dockerfile(from = workspace)
+```
+
+## Packaging examples
+
+### Session
+
+...
+
+### Script
+
+...
+
+### Workspace directory
+
+```{r}
+
+```
+
+
+
+
+## sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
