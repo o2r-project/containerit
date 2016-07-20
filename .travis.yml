@@ -15,47 +15,37 @@ cache: packages
 
 addons:
   apt:
-    # some issues with gdal on Travis: https://github.com/ropensci/RNeXML/issues/61
     packages:
       - libgdal1
       - libgdal1-dev
       - libproj-dev
 
-# based on https://github.com/jeroenooms/curl/blob/master/.travis.yml and
-# https://github.com/IRkernel/IRkernel/blob/master/.travis.yml and
-# https://github.com/jonkeane/mocapGrip/blob/master/.travis.yml
 matrix:
   include:
     - os: linux
       r: release
+      dist: trusty
     - os: linux
       r: devel
+      dist: trusty
 #    - os: linux
 #      r: oldrel
 #      r_build_args: '--no-build-vignettes'
 #      r_check_args: '--ignore-vignettes --no-examples'
     - os: osx
       osx_image: xcode8
-      #before_install:
-      #  - brew install curl
+      before_install:
+        - brew install gdal
+        - brew install proj
       latex: false
       r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
-#    - os: osx
-#      osx_image: xcode7.3
-#      latex: false
-#      r_build_args: '--no-build-vignettes'
-#      r_check_args: '--ignore-vignettes --no-examples'
-#    - os: osx
-#      osx_image: beta-xcode6.1
-#      disable_homebrew: true
 
 warnings_are_errors: true
 
 r_packages:
   - roxygen2
   - covr
-  - rgdal
 
 repos:
   CRAN: https://cloud.r-project.org

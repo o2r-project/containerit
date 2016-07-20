@@ -33,7 +33,7 @@ futile.logger::flog.threshold(futile.logger::INFO)
 
 ## Dockerfile examples
 
-The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp Gallery](http://edzer.github.io/sp/).
+The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
 
 ```{r, message=FALSE}
 library("rgdal")
