@@ -1,0 +1,14 @@
+# http://readme.drone.io/usage/overview/
+# test locally with `drone exec`
+build:
+  image: rocker/r-base
+  commands: # these commands override the default entry point of rocker/r-base
+    - ls $DRONE_DIR
+    # must install required packages manually
+    - install2.r -r "http://cran.rstudio.com" knitr rmarkdown
+    - R CMD build $DRONE_DIR/$DRONE_REPO
+    - ls $DRONE_DIR
+    - R CMD check --no-manual --no-build-vignettes $DRONE_DIR/
+    - R CMD check --as-cran $DRONE_DIR/$DRONE_REPO
+    - install2.r -r "http://cran.rstudio.com" roxygen2 devtools
+    - R -e "devtools::check(pkg = '/drone/src/github.com/nuest/containeRit')"
