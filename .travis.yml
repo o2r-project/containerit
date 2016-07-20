@@ -16,8 +16,7 @@ cache: packages
 addons:
   apt:
     packages:
-      - libgdal1
-      - libgdal1-dev
+      - libgdal-dev
       - libproj-dev
 
 matrix:
