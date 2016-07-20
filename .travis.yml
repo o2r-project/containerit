@@ -5,10 +5,10 @@ language: r
 cache: packages
 sudo: false
 
-r:
-  - oldrel
-  - release
-  - devel
+#r:
+#  - oldrel
+#  - release
+#  - devel
 
 # based on https://github.com/jeroenooms/curl/blob/master/.travis.yml
 matrix:
@@ -21,6 +21,10 @@ matrix:
     - os: linux
       dist: trusty
       env: R_CODECOV=true
+      r:
+        - oldrel
+        - release
+        - devel
     - os: osx
       osx_image: xcode8
       #before_install:
