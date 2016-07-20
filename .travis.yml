@@ -13,12 +13,6 @@ cache: packages
 #- linux
 #- osx
 
-addons:
-  apt:
-    packages:
-      - libgdal-dev
-      - libproj-dev
-
 matrix:
   include:
     - os: linux
