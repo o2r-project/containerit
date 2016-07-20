@@ -13,6 +13,12 @@ cache: packages
 #- linux
 #- osx
 
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+      - libproj-dev
+
 # based on https://github.com/jeroenooms/curl/blob/master/.travis.yml and
 # https://github.com/IRkernel/IRkernel/blob/master/.travis.yml and
 # https://github.com/jonkeane/mocapGrip/blob/master/.travis.yml
@@ -22,14 +28,10 @@ matrix:
       r: release
     - os: linux
       r: devel
-    - os: linux
-      r: oldrel
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-    - os: linux
-      dist: trusty
-      r: release
-      env: R_CODECOV=true
+#    - os: linux
+#      r: oldrel
+#      r_build_args: '--no-build-vignettes'
+#      r_check_args: '--ignore-vignettes --no-examples'
     - os: osx
       osx_image: xcode8
       #before_install:
@@ -37,14 +39,14 @@ matrix:
       latex: false
       r_build_args: '--no-build-vignettes'
       r_check_args: '--ignore-vignettes --no-examples'
-    - os: osx
-      osx_image: xcode7.3
-      latex: false
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-    - os: osx
-      osx_image: beta-xcode6.1
-      disable_homebrew: true
+#    - os: osx
+#      osx_image: xcode7.3
+#      latex: false
+#      r_build_args: '--no-build-vignettes'
+#      r_check_args: '--ignore-vignettes --no-examples'
+#    - os: osx
+#      osx_image: beta-xcode6.1
+#      disable_homebrew: true
 
 warnings_are_errors: true
 
