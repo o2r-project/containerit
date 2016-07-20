@@ -28,6 +28,7 @@ matrix:
       r_check_args: '--ignore-vignettes --no-examples'
     - os: linux
       dist: trusty
+      r: release
       env: R_CODECOV=true
     - os: osx
       osx_image: xcode8
@@ -61,6 +62,6 @@ before_script:
   - git config --global user.email "travis@example.org"
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+#  - Rscript -e 'covr::codecov()'
   - echo $TRAVIS_R_VERSION
   - echo $TRAVIS_OS_NAME
