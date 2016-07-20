@@ -1,0 +1,19 @@
+# Based on https://docs.travis-ci.com/user/languages/r and https://github.com/hadley/devtools/blob/master/.travis.yml
+# Alternative configuration see https://github.com/metacran/r-builder for details.
+
+language: r
+cache: packages
+sudo: false
+
+r:
+  - oldrel
+  - release
+  - devel
+
+warnings_are_errors: true
+
+r_packages: roxygen2
+
+before_script:
+  - git config --global user.name "travis"
+  - git config --global user.email "travis@example.org"
