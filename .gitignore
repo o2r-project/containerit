@@ -1,7 +1,6 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Session Data files
 .RData
 # Example code in package build process
@@ -25,3 +24,4 @@ vignettes/*.pdf
 *.knit.md
 .Rproj.user
 inst/doc
+containerIt.Rproj

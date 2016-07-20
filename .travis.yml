@@ -15,8 +15,10 @@ cache: packages
 
 addons:
   apt:
+    # some issues with gdal on Travis: https://github.com/ropensci/RNeXML/issues/61
     packages:
-      - libgdal-dev
+      - libgdal1
+      - libgdal1-dev
       - libproj-dev
 
 # based on https://github.com/jeroenooms/curl/blob/master/.travis.yml and
