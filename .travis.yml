@@ -1,5 +1,5 @@
 # Based on https://docs.travis-ci.com/user/languages/r and https://github.com/hadley/devtools/blob/master/.travis.yml
-# Alternative configuration see https://github.com/metacran/r-builder for details.
+# For a potential alternative configuration see https://github.com/metacran/r-builder
 
 language: r
 cache: packages
@@ -10,10 +10,46 @@ r:
   - release
   - devel
 
+# based on https://github.com/jeroenooms/curl/blob/master/.travis.yml
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: linux
+      dist: trusty
+      env: R_CODECOV=true
+    - os: osx
+      osx_image: xcode8
+      #before_install:
+      #  - brew install curl
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: xcode7.3
+      latex: false
+      r_build_args: '--no-build-vignettes'
+      r_check_args: '--ignore-vignettes --no-examples'
+    - os: osx
+      osx_image: beta-xcode6.1
+disable_homebrew: true
+
 warnings_are_errors: true
 
-r_packages: roxygen2
+r_packages:
+  - roxygen2
+  - covr
+
+repos:
+  CRAN: https://cloud.r-project.org
+  ropensci: http://packages.ropensci.org
 
 before_script:
   - git config --global user.name "travis"
   - git config --global user.email "travis@example.org"
+
+after_success:
+  - Rscript -e 'covr::codecov()'
