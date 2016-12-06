@@ -11,29 +11,44 @@ vignette: >
 
 ## Introduction
 
-This R extension package provides features to bundle an R analysis together with the required runtime environment in so called [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization), more specifically [Docker]().
+This R extension package provides features to bundle an R analysis together with the required runtime environment in so called [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization), more specifically [Docker](http://docker.com/).
 The intention of this package is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](http://o2r.info)).
 
 The core functionality is to create a `Dockerfile` from a given R session, script, or workspace directory. This Dockerfile contains all the R packages and their system dependencies required by the R workflow to be packaged. 
-The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Dockerfile generation relies on the [sysrequs](https://github.com/r-hub/sysreqs) package.
 
-Load the package with
+The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Eventually it should/could be possible to create images from scratch?
+
+Dockerfile generation relies on the [sysreqs](https://github.com/r-hub/sysreqs) package.
+
+To build images and run containers, this package integrates with the [harbor](https://github.com/wch/harbor) package.
+
+For nitty gritty things like reading/loading/installing the _exact_ versions, including system dependencies, internal and external libraries etc., this project is focused on the geospatial domain.
+
+## tl;dr
 
 ```{r}
 library(containerIt)
-```
-
-The package uses [futile.logger]() for logging. Configure the log level with
-
-```{r}
+# The package uses [futile.logger]() for logging. Configure the log level with
 futile.logger::flog.threshold(futile.logger::INFO)
+
+# do stuff
+plot(c(1:10), c(1:10))
+
+# put it in a Dockerfile
+container <- dockerfile(sessionInfo(), ls())
+
+# build and run it (maybe do some piping here just for fun?)
+library(harbor)
+docker_build(container) %>% docker_run(localhost)
+image <- docker_build(container)
+con <- docker_run(image)
 ```
-
-
 
 ## Dockerfile examples
 
 The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
+
+Here is some regular R code loading a file and plotting it.
 
 ```{r, message=FALSE}
 library("rgdal")
@@ -44,11 +59,11 @@ proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
 plot(nc)
 ```
 
-### Session
+### Create Dockerfile from session
 
 ```{r}
 class(sessionInfo())
-containerIt::dockerfile(from = sessionInfo())
+containerIt::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ### Script
@@ -76,25 +91,6 @@ dir.exists(workspace)
 
 containerIt::dockerfile(from = workspace)
 ```
-
-## Packaging examples
-
-### Session
-
-...
-
-### Script
-
-...
-
-### Workspace directory
-
-```{r}
-
-```
-
-
-
 
 ## sessionInfo()
 
