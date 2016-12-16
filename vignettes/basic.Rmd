@@ -39,9 +39,10 @@ container <- dockerfile(sessionInfo(), ls())
 
 # build and run it (maybe do some piping here just for fun?)
 library(harbor)
-docker_build(container) %>% docker_run(localhost)
-image <- docker_build(container)
-con <- docker_run(image)
+library(magrittr)
+#docker_build(container) %>% docker_run(localhost)
+#image <- docker_build(container)
+#con <- docker_run(image)
 ```
 
 ## Dockerfile examples
@@ -63,7 +64,7 @@ plot(nc)
 
 ```{r}
 class(sessionInfo())
-containerIt::dockerfile(from = sessionInfo(), env = ls())
+#containerIt::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ### Script
@@ -77,7 +78,7 @@ writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "
 close(file)
 class(file)
 
-containerIt::dockerfile(from = file)
+#containerIt::dockerfile(from = file)
 ```
 
 ### Workspace
@@ -89,7 +90,7 @@ workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
 
-containerIt::dockerfile(from = workspace)
+#containerIt::dockerfile(from = workspace)
 ```
 
 ## sessionInfo()
@@ -97,4 +98,3 @@ containerIt::dockerfile(from = workspace)
 ```{r}
 sessionInfo()
 ```
-

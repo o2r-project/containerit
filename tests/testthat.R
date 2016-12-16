@@ -13,6 +13,6 @@
 # limitations under the License.
 
 library(testthat)
-library(containerIt)
+#library(containerit)
 
-test_check("containerIt")
+#test_check("containerit")

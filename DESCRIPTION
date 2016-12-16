@@ -1,4 +1,4 @@
-Package: containerIt
+Package: containerit
 Type: Package
 Title: Package R in Docker Containers
 Version: 0.1.0
@@ -24,5 +24,8 @@ Suggests:
     testthat,
     covr,
     rgdal,
-    maptools
+    maptools,
+    harbor,
+    analogsea,
+    googleComputeEngineR
 RoxygenNote: 5.0.1
