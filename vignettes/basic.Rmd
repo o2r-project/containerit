@@ -27,7 +27,7 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 ## tl;dr
 
 ```{r}
-library(containerIt)
+library(containerit)
 # The package uses [futile.logger]() for logging. Configure the log level with
 futile.logger::flog.threshold(futile.logger::INFO)
 
@@ -64,7 +64,7 @@ plot(nc)
 
 ```{r}
 class(sessionInfo())
-#containerIt::dockerfile(from = sessionInfo(), env = ls())
+#containerit::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ### Script
@@ -78,7 +78,7 @@ writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "
 close(file)
 class(file)
 
-#containerIt::dockerfile(from = file)
+#containerit::dockerfile(from = file)
 ```
 
 ### Workspace
@@ -90,7 +90,7 @@ workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
 
-#containerIt::dockerfile(from = workspace)
+#containerit::dockerfile(from = workspace)
 ```
 
 ## sessionInfo()
