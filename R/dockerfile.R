@@ -19,6 +19,7 @@
 #'
 #' @param from the source of the information to construct the Dockerfile
 #' @param to path and file name to save the Dockerfile to
+#' @param env the environment that should be included in the image
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -27,7 +28,7 @@
 #' dockerfile()
 #'
 #' @import futile.logger
-dockerfile <- function(from = sessionInfo(), to = paste0(getwd(), "/", "Dockerfile")) {
+dockerfile <- function(from = utils::sessionInfo(), to = paste0(getwd(), "/", "Dockerfile"), env = NULL) {
   flog.debug("Creating a new Dockerfile from %s to %s", from, to)
   .dockerfile <- NA
   .originalFrom <- class(from)

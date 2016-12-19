@@ -12,4 +12,6 @@
 #' @docType package
 #' @name containeRit
 #' @aliases containers, containerization
+#' @importFrom methods new
+#' @importFrom utils sessionInfo
 NULL

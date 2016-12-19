@@ -6,7 +6,7 @@
 \alias{Maintainer-class}
 \title{An S4 class to represent a Dockerfile's maintainer}
 \value{
-an object of class \code{Person}
+an object of class \code{Maintainer}
 }
 \description{
 An S4 class to represent a Dockerfile's maintainer

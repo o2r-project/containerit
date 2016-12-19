@@ -10,8 +10,6 @@ an object of class \code{Dockerfile}
 }
 \description{
 See official documentation at \url{https://docs.docker.com/engine/reference/builder/}.
-
-See official documentation at \url{https://docs.docker.com/engine/reference/builder/}.
 }
 \section{Slots}{
 
@@ -19,10 +17,6 @@ See official documentation at \url{https://docs.docker.com/engine/reference/buil
 \item{\code{image}}{the base image, used in the FROM statement}
 
 \item{\code{maintainer}}{the MAINTAINER}
-
-\item{\code{instructions}}{an ordered list of instructions in the Dockerfile}
-
-\item{\code{from}}{the base image}
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile}
 }}

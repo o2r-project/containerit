@@ -18,7 +18,7 @@
 #' @slot name The name
 #' @slot email The email
 #'
-#' @return an object of class \code{Person}
+#' @return an object of class \code{Maintainer}
 #' @export
 Maintainer <- setClass("Maintainer",
                        slots = list(name = "character",
@@ -41,13 +41,4 @@ Dockerfile <- setClass("Dockerfile",
 )
 
 
-#' An S4 class to represent instructions in a Dockerfile
-#'
-#' See official documentation at \url{https://docs.docker.com/engine/reference/builder/}.
-#'
-#' @slot from the base image
-#' @slot instructions an ordered list of instructions in the Dockerfile
-Dockerfile <- setClass("Dockerfile",
-                       slots = list(from = "character",
-                                    instructions = "list")
-)
+

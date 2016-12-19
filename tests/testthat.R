@@ -14,5 +14,9 @@
 
 library(testthat)
 library(containerIt)
+context("containterIt")
 
-test_check("containerIt")
+test_that("A basic dockerfile can be generated",{
+  expect_equal("1","1")
+})
+#test_check("containerIt")

@@ -4,8 +4,8 @@ author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -38,10 +38,11 @@ plot(c(1:10), c(1:10))
 container <- dockerfile(sessionInfo(), ls())
 
 # build and run it (maybe do some piping here just for fun?)
-library(harbor)
-docker_build(container) %>% docker_run(localhost)
-image <- docker_build(container)
-con <- docker_run(image)
+library(googleComputeEngineR)  #(googleComputeEnineR contains docker-functions from the harbor-package until harbor moves to CRAN)
+library(magrittr)
+#docker_build(container) %>% docker_run(localhost)
+#image <- docker_build(container)
+#con <- docker_run(image)
 ```
 
 ## Dockerfile examples

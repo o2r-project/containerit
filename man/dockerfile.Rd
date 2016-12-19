@@ -4,12 +4,15 @@
 \alias{dockerfile}
 \title{dockerfile}
 \usage{
-dockerfile(from = sessionInfo(), to = paste0(getwd(), "/", "Dockerfile"))
+dockerfile(from = utils::sessionInfo(), to = paste0(getwd(), "/",
+  "Dockerfile"), env = NULL)
 }
 \arguments{
 \item{from}{the source of the information to construct the Dockerfile}
 
 \item{to}{path and file name to save the Dockerfile to}
+
+\item{env}{the environment that should be included in the image}
 }
 \value{
 An object of class Dockerfile
