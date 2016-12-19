@@ -64,7 +64,7 @@ plot(nc)
 
 ```{r}
 class(sessionInfo())
-containerIt::dockerfile(from = sessionInfo(), env = ls())
+#containerIt::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ### Script
@@ -78,7 +78,7 @@ writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "
 close(file)
 class(file)
 
-containerIt::dockerfile(from = file)
+#containerIt::dockerfile(from = file)
 ```
 
 ### Workspace
@@ -90,7 +90,7 @@ workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
 
-containerIt::dockerfile(from = workspace)
+#containerIt::dockerfile(from = workspace)
 ```
 
 ## sessionInfo()
@@ -98,4 +98,3 @@ containerIt::dockerfile(from = workspace)
 ```{r}
 sessionInfo()
 ```
-

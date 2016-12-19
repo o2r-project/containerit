@@ -13,10 +13,10 @@
 # limitations under the License.
 
 library(testthat)
-library(containerIt)
-context("containterIt")
+library(containerit)
+context("containterit")
 
 test_that("A basic dockerfile can be generated",{
   expect_equal("1","1")
 })
-#test_check("containerIt")
+#test_check("containerit")
