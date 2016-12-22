@@ -8,7 +8,9 @@
 #' @param to path and file name to save the Dockerfile to
 #' @param env the environment that should be included in the image
 #' @param maintainer optionally specify the maintainer of the dockerfile (see Maintainter-class)
-#' @param r_version optionally specify the R version that should run inside the container (uses the current version that runs on host, by default)
+#' @param r_version (character) optionally specify the R version that should run inside the container (default: the current R version that runs on host)
+#'    containeRit will try to find a corresponding docker image as a base (if not sepcified otherwise)
+#' @param image (character) optionally specify the image that shall be used for the docker container (FROM-statement)
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -17,7 +19,7 @@
 #' dockerfile()
 #'
 #' @import futile.logger
-dockerfile <- function(from = utils::sessionInfo(), to = paste0(getwd(), "/", "Dockerfile"), env = NULL, maintainer = NULL, r_version = paste(R.Version()$major, R.Version()$minor, sep=".")) {
+dockerfile <- function(from = utils::sessionInfo(), to = paste0(getwd(), "/", "Dockerfile"), env = NULL, maintainer = NULL, r_version = paste(R.Version()$major, R.Version()$minor, sep="."), image = NULL) {
   flog.debug("Creating a new Dockerfile from %s to %s", from, to)
   .dockerfile <- NA
   .originalFrom <- class(from)
@@ -25,7 +27,18 @@ dockerfile <- function(from = utils::sessionInfo(), to = paste0(getwd(), "/", "D
   #Instructions that create a basic dockerfile (from could be NULL)
   
   path = to
-  image=paste("rocker/r-ver",r_version, sep=":")  #TODO: figure out if R-version is available from Rocker
+  if(is.null(image)){
+    #check if dockerized R version is available (maybe check other repositories too?)
+    tags <- tagsfromRemoteImage("rocker/r-ver")
+      if(r_version %in% tags){
+        image=paste("rocker/r-ver",r_version, sep=":")
+      }else{
+        stop("No docker image found for the given R version. ", 
+            "Please either specify a custom Docker image or \n", 
+             "  use one of the following supported version tags (maybe check the internet connection). \n\t", 
+             paste(tags, collapse = " "))
+      }
+  }
   instructions=list()
   instructions = append(instructions, paste("FROM", image))
   
@@ -54,7 +67,6 @@ dockerfile <- function(from = utils::sessionInfo(), to = paste0(getwd(), "/", "D
   }else {
     stop("Unsupported 'from': ", class(from), from)
   }
-
   
   flog.info("Created Dockerfile at %s based on %s", to, .originalFrom)
   message("Created Dockerfile at", to, " based on ", .originalFrom, ". Use 'write'-method for serialization.")
@@ -97,4 +109,17 @@ dockerfileFromWorkspace <- function(path, to, .dockerfile) {
   .rFiles <- dir(path = path, pattern = "\\.R$", full.names = TRUE, include.dirs = FALSE, recursive = TRUE)
 
   return(.dockerfile)
+}
+
+
+
+tagsfromRemoteImage = function(image){
+  urlstr = paste0("https://registry.hub.docker.com/v2/repositories/", image,"/tags/")
+  con=url(urlstr)
+  str=readLines(con, warn=FALSE);str
+  close(con)
+  parser <- rjson::newJSONParser()
+  parser$addData(str)
+  tags=sapply(parser$getObject()$results, function(x){x$name})
+  return(tags)
 }

@@ -6,7 +6,8 @@
 \usage{
 dockerfile(from = utils::sessionInfo(), to = paste0(getwd(), "/",
   "Dockerfile"), env = NULL, maintainer = NULL,
-  r_version = paste(R.Version()$major, R.Version()$minor, sep = "."))
+  r_version = paste(R.Version()$major, R.Version()$minor, sep = "."),
+  image = NULL)
 }
 \arguments{
 \item{from}{the source of the information to construct the Dockerfile}
@@ -17,7 +18,10 @@ dockerfile(from = utils::sessionInfo(), to = paste0(getwd(), "/",
 
 \item{maintainer}{optionally specify the maintainer of the dockerfile (see Maintainter-class)}
 
-\item{r_version}{optionally specify the R version that should run inside the container (uses the current version that runs on host, by default)}
+\item{r_version}{(character) optionally specify the R version that should run inside the container (default: the current R version that runs on host)
+containeRit will try to find a corresponding docker image as a base (if not sepcified otherwise)}
+
+\item{image}{(character) optionally specify the image that shall be used for the docker container (FROM-statement)}
 }
 \value{
 An object of class Dockerfile
