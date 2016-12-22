@@ -14,10 +14,14 @@ See official documentation at \url{https://docs.docker.com/engine/reference/buil
 \section{Slots}{
 
 \describe{
-\item{\code{image}}{the base image, used in the FROM statement}
+\item{\code{image}}{the base image, used in the FROM statement (character)}
 
-\item{\code{maintainer}}{the MAINTAINER}
+\item{\code{maintainer}}{the MAINTAINER (object of class maintainer)}
 
-\item{\code{instructions}}{an ordered list of instructions in the Dockerfile}
+\item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
+
+\item{\code{path}}{location where the dockerfile is created by default when applying the write-method (character)}
+
+\item{\code{context}}{Directories that shall be included in the context when dockerfile is build}
 }}
 

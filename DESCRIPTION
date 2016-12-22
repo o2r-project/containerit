@@ -15,7 +15,7 @@ VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
     by the project Opening Reproducible Research (http://o2r.info).
-License: License: GPL-3 + file LICENSE
+License: GPL-3 + file LICENSE
 URL: https://github.com/o2r/containeRit/
 BugReports: https://github.com/o2r/containeRit/issues
 Encoding: UTF-8

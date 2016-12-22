@@ -36,6 +36,6 @@ See vignette `vignettes/basic.Rmd`.
 
 ### License
 
-containeRit is licensed under Apache License, Version 2.0, see file LICENSE.
+containeRit is licensed under GNU General Public License Version 3, see file LICENSE.
 
 Copyright (C) 2016 - o2r project.
