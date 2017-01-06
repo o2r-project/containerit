@@ -4,15 +4,12 @@
 \alias{dockerfile}
 \title{dockerfile}
 \usage{
-dockerfile(from = utils::sessionInfo(), to = paste0(getwd(), "/",
-  "Dockerfile"), env = NULL, maintainer = NULL,
+dockerfile(from = utils::sessionInfo(), env = NULL, maintainer = NULL,
   r_version = paste(R.Version()$major, R.Version()$minor, sep = "."),
-  image = NULL)
+  image = NULL, context = NA_character_)
 }
 \arguments{
 \item{from}{the source of the information to construct the Dockerfile}
-
-\item{to}{path and file name to save the Dockerfile to}
 
 \item{env}{the environment that should be included in the image}
 
@@ -22,6 +19,8 @@ dockerfile(from = utils::sessionInfo(), to = paste0(getwd(), "/",
 containeRit will try to find a corresponding docker image as a base (if not sepcified otherwise)}
 
 \item{image}{(character) optionally specify the image that shall be used for the docker container (FROM-statement)}
+
+\item{context}{(character vector) optionally specify one or many build context paths}
 }
 \value{
 An object of class Dockerfile

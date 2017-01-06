@@ -4,7 +4,7 @@
 \alias{write.Dockerfile}
 \title{Write a dockerfile}
 \usage{
-write.Dockerfile(x, file = slot(x, "path"))
+write.Dockerfile(x, file = paste0(getwd(), "/", "Dockerfile"))
 }
 \arguments{
 \item{x}{Dockerfile-object to be serialized}
@@ -17,7 +17,7 @@ Write a dockerfile
 \examples{
 # write a dockerfile with default parameters to temporary file and show content:
 temp = tempfile()
-write.Dockerfile(dockerfile(to=temp)) 
+write.Dockerfile(dockerfile(), file=temp) 
 print(readLines(temp)) 
 unlink(temp)
 }
