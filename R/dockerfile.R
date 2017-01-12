@@ -9,7 +9,7 @@
 #' @param maintainer optionally specify the maintainer of the dockerfile (see Maintainter-class)
 #' @param r_version (character) optionally specify the R version that should run inside the container (default: the current R version that runs on host)
 #'    containeRit will try to find a corresponding docker image as a base (if not sepcified otherwise)
-#' @param image (character) optionally specify the image that shall be used for the docker container (FROM-statement)
+#' @param image (From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
 #' @param context (character vector) optionally specify one or many build context paths
 #'
 #' @return An object of class Dockerfile
@@ -26,24 +26,29 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
   
   #Instructions that create a basic dockerfile (from could be NULL)
   
-  if(is.null(image)){
+  if(is.null(image)) {
     #check if dockerized R version is available (maybe check other repositories too?)
     tags <- tagsfromRemoteImage("rocker/r-ver")
       if(r_version %in% tags){
-        image=paste("rocker/r-ver",r_version, sep=":")
+        image=From("rocker/r-ver",tag = r_version)
       }else{
         stop("No docker image found for the given R version. ", 
             "Please either specify a custom Docker image or \n", 
              "  use one of the following supported version tags (maybe check the internet connection). \n\t", 
              paste(tags, collapse = " "))
       }
+  } 
+  #parse From-object from string if necessary
+  if (is.character(image)) {
+    image = parseFrom(image)
   }
+  
   instructions=list()
-  instructions = append(instructions, paste("FROM", image))
+  instructions = append(instructions, as.character(image))
   
   
   if(!is.null(maintainer)){
-    cmd =  paste("MAINTAINER", paste0("\"", slot(maintainer, "name"),"\""), slot(maintainer, "email"))  #Default maintainer?!
+    cmd =  as.character(maintainer) #Default maintainer?!
     instructions = append(instructions, cmd)
   }
   

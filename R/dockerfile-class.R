@@ -4,7 +4,7 @@
 #'
 #' @export
 #' 
-Instruction <- setClass("Instruction")
+Instruction <- setClass("Instruction", contains = "VIRTUAL")
 
 setGeneric("docker_key", function(obj) standardGeneric("docker_key"))
 setMethod("docker_key", signature = signature(obj="Instruction"), definition = 
@@ -60,9 +60,23 @@ setMethod("as.character",
 #'
 #' @return an object of class \code{Maintainer}
 #' @export
-Maintainer <- setClass("Maintainer",
+setClass("Maintainer",
                        slots = list(name = "character",
-                                    email = "character"), contains = "Instruction")
+                                    email = "character"),
+                       contains = "Instruction")
+
+
+#' create objects of class Maintainer
+#'
+#' @param name character name (by convention: "<given name> <last name>", e.g. "Matthias Hinz")
+#' @param email The email
+#'
+#' @return Maintainer object
+#' @export
+#'
+Maintainer <- function(name, email){
+  new("Maintainer", name = name, email = email)
+}
 
 ##The maintainer is optional in a dockerfile
 setClassUnion("NullOrMaintainer", members = c("Maintainer", "NULL"))
@@ -88,10 +102,55 @@ setClassUnion("Postfix", c("Tag","Digest","NULL"))
 #'
 #' @return an object of class \code{Docker From}
 #' @export
-From <- setClass("From",
+setClass("From",
                         slots = list(image = "character",
                                      postfix = "Postfix"), contains = "Instruction")
 
+
+#' create objects of class From
+#' 
+#'
+#' @param image image name or image-id
+#' @param tag optional image tag (character) - will be ignored if digest is given
+#' @param digest optional image digest (character)
+#'
+#' @return From-object
+#' @export
+#'
+#'
+From <- function(image, tag=NULL, digest=NULL){
+  postfix = NULL
+  if(!is.null(digest)){
+    return(new("From", image=image, postfix=new("Digest",digest)))
+  }else if(!is.null(tag)){
+    tag=new("Tag",tag)
+    return(new("From", image=image, postfix=tag))
+  }
+  else
+    return(new("From", image=image))
+}
+
+
+#' Parse a From-instruction from an image-argument
+#'
+#' @param string specifying ans image, i.e. <image-id>, <image@digest>, image:tag
+#'
+#' @return From-object
+#' @export
+#'
+parseFrom=function(string){
+  if(stringr::str_detect(string,"@")){
+    split= stringr::str_split(string, "@")
+    split=unlist(split)
+    return(From(image = split[1],digest = split[2]))
+  }else if(stringr::str_detect(string,":")){
+    split= stringr::str_split(string, ":")
+    split=unlist(split)
+    return(From(image = split[1],tag = split[2]))
+  }else{
+    return(From(string))
+  }
+}
 
 setMethod("docker_arguments",
           signature(obj = "From"),
@@ -136,7 +195,7 @@ docker_arguments.Maintainer = setMethod("docker_arguments", signature = signatur
 #' @return an object of class \code{Dockerfile}
 #' @export
 Dockerfile <- setClass("Dockerfile",
-                    slots = list(image = "character",
+                    slots = list(image = "From",
                                  maintainer = "NullOrMaintainer",
                                  instructions = "list",
                                  context = "character")

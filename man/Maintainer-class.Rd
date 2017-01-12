@@ -2,7 +2,6 @@
 % Please edit documentation in R/dockerfile-class.R
 \docType{class}
 \name{Maintainer-class}
-\alias{Maintainer}
 \alias{Maintainer-class}
 \title{An S4 class to represent a Dockerfile's maintainer}
 \value{

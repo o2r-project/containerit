@@ -19,7 +19,7 @@ test_that("A From instruction can be created",{
   instruction = toString(new("From", image="myimage", postfix=new("Digest","digest")))
   expect_equal(instruction, "FROM myimage@digest")
   
-  instruction = toString(new("Docker_From", image="myimage", postfix=new("Tag","mytag")))
+  instruction = toString(new("From", image="myimage", postfix=new("Tag","mytag")))
   expect_equal(instruction, "FROM myimage:mytag")
 })
 

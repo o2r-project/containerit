@@ -38,25 +38,22 @@ test_that("users can specify the maintainer",{
 
 test_that("users can specify the base image",{
   imagestr="rocker/r-ver:3.0.0"
-  maintainer = new("Maintainer", name="Matthias Hinz", email="matthias.m.hinz@gmail.com")
-  dfile1 = dockerfile(from=NULL, image=imagestr, maintainer = maintainer);dfile1
-  expect_equal(slot(dfile1, "image"), imagestr)
-  fromstr=paste("FROM", imagestr)
+  fromstr=paste("FROM",imagestr)
+  dfile1 = dockerfile(from=NULL, image=imagestr)
+  expect_equal(as.character(slot(dfile1, "image")), fromstr)
   expect_length(which(slot(dfile1,"instructions")== fromstr),1)
   
   #expect that custom image is preferred over R version argument
-  dfile2 = dockerfile(from=NULL, image=imagestr, maintainer = maintainer, r_version = "3.1.0");dfile2
-  expect_equal(slot(dfile2, "image"), imagestr)
-  fromstr=paste("FROM", imagestr)
+  dfile2 = dockerfile(from=NULL, image=imagestr, r_version = "3.1.0");dfile2
+  expect_equal(as.character(slot(dfile2, "image")), fromstr)
   expect_length(which(slot(dfile2,"instructions")== fromstr),1)
 })
 
 test_that("users can specify the R version",{
   versionstr="3.1.0"
-  maintainer = new("Maintainer", name="Matthias Hinz", email="matthias.m.hinz@gmail.com")
-  dfile = dockerfile(r_version = versionstr, maintainer = maintainer);dfile
+  dfile = dockerfile(from=NULL, r_version = versionstr);dfile
   #check content of image and instructions slots
-  expect_match(slot(dfile, "image"), versionstr)
+  expect_equal(as.character(slot(slot(dfile, "image"),"postfix")), versionstr)
   expect_match(as.character(slot(dfile,"instructions")), versionstr, all=FALSE)
   #expect am error if the user specifies an unsupported R version
   expect_error(dockerfile(r_version = "2.0"))
@@ -66,7 +63,7 @@ test_that("users can specify the R version",{
 test_that("R version is the current version if not specified otherwise",{
   dfile = dockerfile(NULL)
   #expect that image string contains the current R version
-  expect_match(slot(dfile, "image"), paste(R.Version()$major, R.Version()$minor, sep="."))
+  expect_equal(as.character(slot(slot(dfile, "image"),"postfix")), paste(R.Version()$major, R.Version()$minor, sep="."))
 })
 
 
