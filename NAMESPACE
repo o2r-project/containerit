@@ -2,8 +2,11 @@
 
 export(dockerfile)
 export(write.Dockerfile)
+exportClasses(Docker_From)
+exportClasses(Docker_Instruction)
 exportClasses(Dockerfile)
 exportClasses(Maintainer)
+exportMethods(as.character)
 import(futile.logger)
 importFrom(methods,new)
 importFrom(methods,slot)

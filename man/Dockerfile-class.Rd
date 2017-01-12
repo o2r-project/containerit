@@ -20,8 +20,6 @@ See official documentation at \url{https://docs.docker.com/engine/reference/buil
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 
-\item{\code{path}}{location where the dockerfile is created by default when applying the write-method (character)}
-
 \item{\code{context}}{Directories that shall be included in the context when dockerfile is build}
 }}
 

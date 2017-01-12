@@ -11,9 +11,10 @@ test_that("a simple dockerfile object can be saved to file",{
   maintainer = new("Maintainer", name="Matthias Hinz", email="matthias.m.hinz@gmail.com")
   dfile = dockerfile(from=NULL, maintainer = maintainer)
   write.Dockerfile(dfile, file = gen_file)
-  control_file = "./dockerfile-method-resources/simple_dockerfile" #system.file("./simple_dockerfile", package = "containerit")
+  control_file = "./dockerfile-method-resources/simple_dockerfile"
   control_instructions = readLines(control_file)
   generated_instructions = readLines(gen_file)
+  #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
   
   unlink(t_dir,recursive = TRUE)
@@ -28,6 +29,9 @@ test_that("users can specify the maintainer",{
   expect_equal(attr(class(slot(dfile, "maintainer")),"package"), "containerit")
   expect_equal(slot(slot(dfile, "maintainer"), "name"), "Matthias Hinz")
   expect_equal(slot(slot(dfile, "maintainer"), "email"), "matthias.m.hinz@gmail.com")
+  
+  #expect Maintainer instruction
+  expect_equal(toString(maintainer), "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 
 })
 
