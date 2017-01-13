@@ -18,7 +18,7 @@ dockerfile(from = utils::sessionInfo(), env = NULL, maintainer = NULL,
 \item{r_version}{(character) optionally specify the R version that should run inside the container (default: the current R version that runs on host)
 containeRit will try to find a corresponding docker image as a base (if not sepcified otherwise)}
 
-\item{image}{(character) optionally specify the image that shall be used for the docker container (FROM-statement)}
+\item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)}
 
 \item{context}{(character vector) optionally specify one or many build context paths}
 }

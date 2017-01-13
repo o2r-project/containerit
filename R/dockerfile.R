@@ -44,13 +44,6 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
   }
   
   instructions=list()
-  instructions = append(instructions, as.character(image))
-  
-  
-  if(!is.null(maintainer)){
-    cmd =  as.character(maintainer) #Default maintainer?!
-    instructions = append(instructions, cmd)
-  }
   
   cmd = paste("CMD [\"R\"]")  #May not be necessary in future
   instructions = append(instructions, cmd)
@@ -76,6 +69,32 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
   return(.dockerfile)
 }
 
+#' Format a dockerfile object to a series of instruction
+#'
+#' @param x An object of class Dockerfile
+#'  @param ... Arguments to be passed down to format.default
+#'
+#' @return The Content of the dockerfile represented by the dockerfile object, by default formated as a List of strings where each string represent a new line
+#' @export
+#'
+#' @examples
+#' format(dockerfile())
+format.Dockerfile <- function(x, ...){
+  #initialize dockerfile with from
+  output = list()
+  from = toString(slot(x,"image"))
+  output = append(output, from)
+  maintainer = slot(x,"maintainer")
+  if(!is.null(maintainer))
+    output = append(output, toString(maintainer))
+  instructions = slot(x,"instructions")
+  if(!is.null(instructions) && length(instructions) > 0){
+    instructions = sapply(instructions, toString)
+    output = append(output, unlist(instructions))
+  }
+  return(format(output, ...))
+}
+
 
 #' Write a dockerfile
 #'
@@ -93,7 +112,7 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
 write.Dockerfile = function(x, file = paste0(getwd(), "/", "Dockerfile")){
   flog.info("Writing dockerfile to %s", file)
   message("Writing dockerfile to ", file)
-  return(write(as.character(slot(x,"instructions")), file))
+  return(write(as.character(format(x)), file))
 }
   
  

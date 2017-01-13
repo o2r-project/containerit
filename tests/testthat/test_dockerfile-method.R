@@ -41,12 +41,13 @@ test_that("users can specify the base image",{
   fromstr=paste("FROM",imagestr)
   dfile1 = dockerfile(from=NULL, image=imagestr)
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
-  expect_length(which(slot(dfile1,"instructions")== fromstr),1)
+  #check if from - instruction is the first (may be necessary to ignore comments in later tests)
+  expect_length(which(format(dfile1)== fromstr),1)
   
   #expect that custom image is preferred over R version argument
   dfile2 = dockerfile(from=NULL, image=imagestr, r_version = "3.1.0");dfile2
   expect_equal(as.character(slot(dfile2, "image")), fromstr)
-  expect_length(which(slot(dfile2,"instructions")== fromstr),1)
+  expect_length(which(format(dfile2)== fromstr),1)
 })
 
 test_that("users can specify the R version",{
@@ -54,7 +55,7 @@ test_that("users can specify the R version",{
   dfile = dockerfile(from=NULL, r_version = versionstr);dfile
   #check content of image and instructions slots
   expect_equal(as.character(slot(slot(dfile, "image"),"postfix")), versionstr)
-  expect_match(as.character(slot(dfile,"instructions")), versionstr, all=FALSE)
+  expect_match(as.character(format(dfile)), versionstr, all=FALSE)
   #expect am error if the user specifies an unsupported R version
   expect_error(dockerfile(r_version = "2.0"))
 })

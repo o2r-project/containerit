@@ -1,5 +1,9 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
+
+# TODO: If necessary, add one of the following classes refering to Docker-instructions: Arg, Onbuild, Stopsignal, Heathcheck, Shell
+# 
+
 #' Docker Instruction - Class
 #'
 #' @export
@@ -168,15 +172,299 @@ setMethod("docker_arguments",
           }
 )
 
+setMethod("docker_arguments",
+  signature(obj = "Maintainer"),
+  function(obj) {
+    arg = paste0("\"", obj@name, "\"")
+    if (length(obj@email > 0))
+      arg = paste(arg, obj@email)
+    return(arg)
+  }
+)
 
 
-docker_arguments.Maintainer = setMethod("docker_arguments", signature = signature(obj="Maintainer"),
-                                        definition = function(obj){
-                                          arg=paste0("\"",obj@name,"\"")
-                                          if(length(obj@email>0))
-                                            arg = paste(arg, obj@email)
-                                          return(arg)
-                                        }
+setClass("Cmd",
+         slots = list(exec = "character", 
+                      params="character"), contains = "Instruction")
+
+Cmd <- function(exec = NULL, params){
+  new("Cmd",  exec = exec, params = params)
+}
+
+
+setMethod("docker_arguments",
+          signature(obj = "Cmd"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+setClass("Run",
+         slots = list(exec = "character", 
+                      params="character"), contains = "Instruction")
+
+Run <- function(exec, params){
+  new("Run",  exec = exec, params = params)
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Run"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+setClass("Label", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Label <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Label"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+setClass("Expose", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Expose <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Expose"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Env", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Env <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Env"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+
+
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Add", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Add <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Add"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Copy", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Copy <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Copy"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Entrypoint", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Entrypoint <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Entrypoint"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Volume", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Volume <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Volume"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
+)
+
+
+
+#' Instruction class yet to be implemented
+#'
+#' @return object
+#' @export
+#'
+#' @examples
+#' #no example yet
+setClass("Workdir", contains = "Instruction")
+
+
+#' Constructor yet to be implemented
+#'
+#' @param ... fields yet to be implemented
+#'
+#' @return the object
+#' @export
+#'
+#' @examples
+#' #no example yet
+Workdir <- function(...){
+  stop("Constructor not yet implemented for this class.")
+}
+
+setMethod("docker_arguments",
+          signature(obj = "Workdir"),
+          function(obj){
+            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          }
 )
 
 

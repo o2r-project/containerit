@@ -9,7 +9,7 @@ From(image, tag = NULL, digest = NULL)
 \arguments{
 \item{image}{image name or image-id}
 
-\item{tag}{optional image tag (character)}
+\item{tag}{optional image tag (character) - will be ignored if digest is given}
 
 \item{digest}{optional image digest (character)}
 }
