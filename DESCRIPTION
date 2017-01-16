@@ -8,7 +8,7 @@ Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Depends:
     R (>= 3.0.0)
 Imports:
-    futile.logger, 
+    futile.logger,
     methods,
     utils,
     rjson,
@@ -34,3 +34,21 @@ Suggests:
     analogsea,
     googleComputeEngineR
 RoxygenNote: 5.0.1
+Collate:
+    'Class-Instruction.R'
+    'Class-Add.R'
+    'Class-Cmd.R'
+    'Class-Copy.R'
+    'Class-From.R'
+    'Class-Maintainer.R'
+    'Class-Dockerfile.R'
+    'Class-Entrypoint.R'
+    'Class-Env.R'
+    'Class-Expose.R'
+    'Class-Label.R'
+    'Class-Run.R'
+    'Class-Volume.R'
+    'Class-Workdir.R'
+    'containeRit.R'
+    'dockerfile.R'
+    'session.R'

@@ -35,7 +35,7 @@ futile.logger::flog.threshold(futile.logger::INFO)
 plot(c(1:10), c(1:10))
 
 # put it in a Dockerfile
-container <- dockerfile(sessionInfo(), env = ls())
+container <- dockerfile(sessionInfo(), objects = ls())
 
 # build and run it (maybe do some piping here just for fun?)
 library(googleComputeEngineR)  #(googleComputeEnineR contains docker-functions from the harbor-package until harbor moves to CRAN)

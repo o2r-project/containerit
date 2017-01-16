@@ -2,7 +2,7 @@
 % Please edit documentation in R/dockerfile.R
 \name{format.Dockerfile}
 \alias{format.Dockerfile}
-\title{Format a dockerfile object to a series of instruction}
+\title{Format a Dockerfile object to a series of instructions}
 \usage{
 \method{format}{Dockerfile}(x, ...)
 }
@@ -12,10 +12,10 @@
 \item{...}{Arguments to be passed down to format.default}
 }
 \value{
-The Content of the dockerfile represented by the dockerfile object, by default formated as a List of strings where each string represent a new line
+The content of the dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
 }
 \description{
-Format a dockerfile object to a series of instruction
+Format a Dockerfile object to a series of instructions
 }
 \examples{
 format(dockerfile())

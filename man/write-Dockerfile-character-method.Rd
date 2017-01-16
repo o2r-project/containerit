@@ -3,18 +3,18 @@
 \docType{methods}
 \name{write,Dockerfile,character-method}
 \alias{write,Dockerfile,character-method}
-\title{Write a dockerfile}
+\title{Write a Dockerfile object to a dockerfile}
 \usage{
 \S4method{write}{Dockerfile,character}(x, file = paste0(getwd(), "/",
   "Dockerfile"))
 }
 \arguments{
-\item{x}{Dockerfile-object to be serialized}
+\item{x}{Dockerfile object to be serialized}
 
-\item{file}{optional argument for specifying a costum file path}
+\item{file}{optional argument specifying a costum file path}
 }
 \description{
-Write a dockerfile
+Write a Dockerfile object to a dockerfile
 }
 \examples{
 # write a dockerfile with default parameters to temporary file and show content:
