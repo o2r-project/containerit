@@ -45,10 +45,9 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
   
   instructions=list()
   
-  cmd = paste("CMD [\"R\"]")  #May not be necessary in future
-  instructions = append(instructions, cmd)
+  cmd = Cmd("R") ###default CMD may be overwritten e.g. from dockerfileFromSession
   
-  .dockerfile = new("Dockerfile", instructions=instructions, maintainer=maintainer, image=image, context=context)
+  .dockerfile = new("Dockerfile", instructions=instructions, maintainer=maintainer, image=image, context=context, cmd=cmd)
   
   
   if(inherits(x = from, "sessionInfo")) {
@@ -72,7 +71,7 @@ dockerfile <- function(from = utils::sessionInfo(),env = NULL, maintainer = NULL
 #' Format a dockerfile object to a series of instruction
 #'
 #' @param x An object of class Dockerfile
-#'  @param ... Arguments to be passed down to format.default
+#' @param ... Arguments to be passed down to format.default
 #'
 #' @return The Content of the dockerfile represented by the dockerfile object, by default formated as a List of strings where each string represent a new line
 #' @export
@@ -92,9 +91,19 @@ format.Dockerfile <- function(x, ...){
     instructions = sapply(instructions, toString)
     output = append(output, unlist(instructions))
   }
+  cmd = slot(x,"cmd")
+  if(!is.null(cmd))
+    output = append(output, toString(cmd))
   return(format(output, ...))
 }
 
+
+
+write.Dockerfile = function(x, file = paste0(getwd(), "/", "Dockerfile")){
+  flog.info("Writing dockerfile to %s", file)
+  message("Writing dockerfile to ", file)
+  return(write(as.character(format(x)), file))
+}
 
 #' Write a dockerfile
 #'
@@ -106,14 +115,10 @@ format.Dockerfile <- function(x, ...){
 #' @examples
 #' # write a dockerfile with default parameters to temporary file and show content:
 #' temp = tempfile()
-#' write.Dockerfile(dockerfile(), file=temp) 
+#' write(dockerfile(), file=temp) 
 #' print(readLines(temp)) 
 #' unlink(temp)
-write.Dockerfile = function(x, file = paste0(getwd(), "/", "Dockerfile")){
-  flog.info("Writing dockerfile to %s", file)
-  message("Writing dockerfile to ", file)
-  return(write(as.character(format(x)), file))
-}
+setMethod("write", signature(x = "Dockerfile", file = "character"), write.Dockerfile)
   
  
 

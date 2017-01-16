@@ -21,5 +21,7 @@ See official documentation at \url{https://docs.docker.com/engine/reference/buil
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 
 \item{\code{context}}{Directories that shall be included in the context when dockerfile is build}
+
+\item{\code{cmd}}{the default cmd instruction applied to the container}
 }}
 

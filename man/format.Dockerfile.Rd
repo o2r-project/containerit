@@ -7,8 +7,9 @@
 \method{format}{Dockerfile}(x, ...)
 }
 \arguments{
-\item{x}{An object of class Dockerfile
-@param ... Arguments to be passed down to format.default}
+\item{x}{An object of class Dockerfile}
+
+\item{...}{Arguments to be passed down to format.default}
 }
 \value{
 The Content of the dockerfile represented by the dockerfile object, by default formated as a List of strings where each string represent a new line

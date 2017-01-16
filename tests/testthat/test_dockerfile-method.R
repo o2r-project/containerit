@@ -10,7 +10,7 @@ test_that("a simple dockerfile object can be saved to file",{
   gen_file=paste(t_dir, "Dockerfile",sep="/");gen_file
   maintainer = new("Maintainer", name="Matthias Hinz", email="matthias.m.hinz@gmail.com")
   dfile = dockerfile(from=NULL, maintainer = maintainer)
-  write.Dockerfile(dfile, file = gen_file)
+  write(dfile, file = gen_file)
   control_file = "./dockerfile-method-resources/simple_dockerfile"
   control_instructions = readLines(control_file)
   generated_instructions = readLines(gen_file)
