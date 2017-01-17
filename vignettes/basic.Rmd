@@ -4,8 +4,8 @@ author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -27,7 +27,7 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 ## tl;dr
 
 ```{r}
-library(containerIt)
+library(containerit)
 # The package uses [futile.logger]() for logging. Configure the log level with
 futile.logger::flog.threshold(futile.logger::INFO)
 
@@ -35,10 +35,10 @@ futile.logger::flog.threshold(futile.logger::INFO)
 plot(c(1:10), c(1:10))
 
 # put it in a Dockerfile
-container <- dockerfile(sessionInfo(), ls())
+container <- dockerfile(sessionInfo(), objects = ls())
 
 # build and run it (maybe do some piping here just for fun?)
-library(harbor)
+library(googleComputeEngineR)  #(googleComputeEnineR contains docker-functions from the harbor-package until harbor moves to CRAN)
 library(magrittr)
 #docker_build(container) %>% docker_run(localhost)
 #image <- docker_build(container)
@@ -64,7 +64,7 @@ plot(nc)
 
 ```{r}
 class(sessionInfo())
-#containerIt::dockerfile(from = sessionInfo(), env = ls())
+#containerit::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ### Script
@@ -78,7 +78,7 @@ writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "
 close(file)
 class(file)
 
-#containerIt::dockerfile(from = file)
+#containerit::dockerfile(from = file)
 ```
 
 ### Workspace
@@ -90,7 +90,7 @@ workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
 
-#containerIt::dockerfile(from = workspace)
+#containerit::dockerfile(from = workspace)
 ```
 
 ## sessionInfo()

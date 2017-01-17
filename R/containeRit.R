@@ -1,3 +1,5 @@
+# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+
 #' containeRit: A package for packaging R objects and their dependencies in software containers
 #'
 #' The containeRit package provides two core functions:
@@ -12,4 +14,8 @@
 #' @docType package
 #' @name containeRit
 #' @aliases containers, containerization
+#' @importFrom methods new
+#' @importFrom methods slot
+#' @importFrom utils sessionInfo
+
 NULL

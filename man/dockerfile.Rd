@@ -2,20 +2,36 @@
 % Please edit documentation in R/dockerfile.R
 \name{dockerfile}
 \alias{dockerfile}
-\title{dockerfile}
+\title{dockerfile-method}
 \usage{
-dockerfile(from = sessionInfo(), to = paste0(getwd(), "/", "Dockerfile"))
+dockerfile(from = utils::sessionInfo(), objects = character(0),
+  maintainer = Maintainer(name = Sys.info()[["user"]]),
+  r_version = paste(R.Version()$major, R.Version()$minor, sep = "."),
+  image = imagefromRVersion(r_version), env = NULL,
+  context = NA_character_)
 }
 \arguments{
-\item{from}{the source of the information to construct the Dockerfile}
+\item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
 
-\item{to}{path and file name to save the Dockerfile to}
+\item{objects}{character vector naming all R objects to be included in the docker image / R session. Can be character(0) (default), ls() or a fraction of ls()}
+
+\item{maintainer}{optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}}
+
+\item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the current R version is used.}
+
+\item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
+By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
+see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}}
+
+\item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
+
+\item{context}{(character vector) optionally specify one or many build context paths}
 }
 \value{
 An object of class Dockerfile
 }
 \description{
-Create a Dockerfile from the
+Create a Dockerfile based on either a sessionInfo, a workspace or a file
 }
 \examples{
 dockerfile()

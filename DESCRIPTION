@@ -2,18 +2,22 @@ Package: containerit
 Type: Package
 Title: Package R in Docker Containers
 Version: 0.1.0
-Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "danie.nuest@uni-muenster.de"))
-Author: Daniel Nuest [aut, cre]
+Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "danie.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
+Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Depends:
     R (>= 3.0.0)
 Imports:
-    futile.logger
+    futile.logger,
+    methods,
+    utils,
+    rjson,
+    stringr
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
     by the project Opening Reproducible Research (http://o2r.info).
-License: Apache License (== 2.0) + file LICENSE
+License: GPL-3 + file LICENSE
 URL: https://github.com/o2r/containeRit/
 BugReports: https://github.com/o2r/containeRit/issues
 Encoding: UTF-8
@@ -25,7 +29,26 @@ Suggests:
     covr,
     rgdal,
     maptools,
+    magrittr,
     harbor,
     analogsea,
     googleComputeEngineR
 RoxygenNote: 5.0.1
+Collate:
+    'Class-Instruction.R'
+    'Class-Add.R'
+    'Class-Cmd.R'
+    'Class-Copy.R'
+    'Class-From.R'
+    'Class-Maintainer.R'
+    'Class-Dockerfile.R'
+    'Class-Entrypoint.R'
+    'Class-Env.R'
+    'Class-Expose.R'
+    'Class-Label.R'
+    'Class-Run.R'
+    'Class-Volume.R'
+    'Class-Workdir.R'
+    'containeRit.R'
+    'dockerfile.R'
+    'session.R'
