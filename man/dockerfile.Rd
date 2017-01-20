@@ -7,7 +7,8 @@
 dockerfile(from = utils::sessionInfo(), objects = character(0),
   maintainer = Maintainer(name = Sys.info()[["user"]]),
   r_version = paste(R.Version()$major, R.Version()$minor, sep = "."),
-  image = imagefromRVersion(r_version), env = NULL,
+  image = imagefromRVersion(r_version), env = list(generator =
+  paste("containerit", utils::packageVersion("containerit"))),
   context = NA_character_)
 }
 \arguments{

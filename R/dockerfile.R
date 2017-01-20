@@ -7,7 +7,7 @@
 #' @param from (sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile
 #' @param objects character vector naming all R objects to be included in the docker image / R session. Can be character(0) (default), ls() or a fraction of ls()
 #' @param maintainer optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}
-#' @param r_version (character) optionally specify the R version that should run inside the container. By default, the current R version is used.
+#' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance 
 #' @param image (From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
@@ -21,7 +21,7 @@
 #' dockerfile()
 #'
 #' @import futile.logger
-dockerfile <- function(from = utils::sessionInfo(), objects=character(0), maintainer = Maintainer(name = Sys.info()[["user"]]), r_version = paste(R.Version()$major, R.Version()$minor, sep="."), image = imagefromRVersion(r_version), env = list(generator = paste("containerit", packageVersion("containerit"))), context = NA_character_) {
+dockerfile <- function(from = utils::sessionInfo(), objects=character(0), maintainer = Maintainer(name = Sys.info()[["user"]]), r_version = .defaultRVersion(from), image = imagefromRVersion(r_version), env = list(generator = paste("containerit", utils::packageVersion("containerit"))), context = NA_character_) {
   flog.debug("Creating a new Dockerfile from %s", from)
   .dockerfile <- NA
   .originalFrom <- class(from)
@@ -33,6 +33,14 @@ dockerfile <- function(from = utils::sessionInfo(), objects=character(0), mainta
   
   instructions=list()
   cmd = Cmd("R") ### default CMD may be overwritten e.g. from dockerfileFromSession
+  # whether image is supported
+  supportedimages= c("rocker/r-ver", "rocker/rstudio", "rocker/tidyverse","rocker/verse")
+  
+  image_name = image@image
+  if(!image_name %in% supportedimages){
+    stop("Invalid base image. Currently, only the following base images are supported: ", paste(supportedimages, collapse = "\n"))
+  }
+  
   .dockerfile = new("Dockerfile", instructions=instructions, maintainer=maintainer, image=image, context=context, cmd=cmd)
   
   
@@ -105,11 +113,21 @@ format.Dockerfile <- function(x, ...){
 #' write(dockerfile(), file=temp) 
 #' print(readLines(temp)) 
 #' unlink(temp)
-setMethod("write", signature(x = "Dockerfile", file = "character"), .write.Dockerfile)
+setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
   
  
 
 dockerfileFromSession <- function(session, .dockerfile) {
+  instructions <- slot(.dockerfile, "instructions")
+  
+  bpks_names = session$basePkgs
+  apks = session$otherPkgs
+  lpks = session$loadedOnly
+  pkgs= append(apks,lpks) ##packages to be installed
+  run_instructions = .create_run_install(append(apks,lpks))
+  
+  instructions <- append(instructions, run_instructions)
+  slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
 }
 
@@ -148,4 +166,51 @@ tagsfromRemoteImage = function(image){
   parser$addData(str)
   tags=sapply(parser$getObject()$results, function(x){x$name})
   return(tags)
+}
+
+
+
+#pkgs list of packages as returned by sessionInfo
+.create_run_install <- function(pkgs){
+  #create expression
+  cran_packages = github_packages = local_packages = other_packages = character(0)
+  # if necessary, retrieve package version with 
+  
+  sapply(pkgs, 
+         function(pkg) {
+           if("Package" %in% names(pkg))
+             name = pkg$Package
+           else
+             stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
+           if("Priority" %in% names(pkg) &&
+              stringr::str_detect(pkg$Priority, "(?i)base")){ 
+             #packages with these priorities are normally included and don't need to be installed; do nothing
+             return()
+           }
+           #check if package come from CRAN (alternatively you may use devtools::session_info)
+           if("Repository" %in% names(pkg) && 
+              stringr::str_detect(pkg$Repository, "(?i)CRAN")) 
+           {
+             
+             cran_packages <<- append(cran_packages, pkg$Package)
+             return()
+             ##TODO: handle github and outher package sources
+           } else
+             warning("Failed to identify source for package ",pkg$Package, ". Therefore the package cannot be installed in the docker image.")
+         }
+  )
+  
+  params = append("-r 'https://cran.rstudio.com'", cran_packages) ##set cran mirror (rocker default MRAN installs sometimes outdated packages)
+  run_install_cran = Run("install2.r", params)
+  return(list(run_install_cran))
+}
+
+.defaultRVersion <- function(from){
+  r_version = NULL
+  if(inherits(from, "sessionInfo")){
+    r_version = from$R.version
+  }else
+    r_version = R.Version()
+  
+  return(paste(r_version$major, r_version$minor, sep="."))
 }

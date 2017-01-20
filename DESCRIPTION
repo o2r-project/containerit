@@ -52,3 +52,4 @@ Collate:
     'containeRit.R'
     'dockerfile.R'
     'session.R'
+    'sessionInfo-localbuild-methods.R'
