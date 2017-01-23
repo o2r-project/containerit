@@ -6,10 +6,9 @@
 \usage{
 dockerfile(from = utils::sessionInfo(), objects = character(0),
   maintainer = Maintainer(name = Sys.info()[["user"]]),
-  r_version = paste(R.Version()$major, R.Version()$minor, sep = "."),
-  image = imagefromRVersion(r_version), env = list(generator =
-  paste("containerit", utils::packageVersion("containerit"))),
-  context = NA_character_)
+  r_version = .defaultRVersion(from), image = imagefromRVersion(r_version),
+  env = list(generator = paste("containerit",
+  utils::packageVersion("containerit"))), context = NA_character_)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -18,7 +17,7 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
 
 \item{maintainer}{optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}}
 
-\item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the current R version is used.}
+\item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance}
 
 \item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
 By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver

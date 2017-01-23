@@ -12,7 +12,8 @@ Imports:
     methods,
     utils,
     rjson,
-    stringr
+    stringr,
+    sysreqs
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
@@ -50,6 +51,7 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'containeRit.R'
+    'defaults.R'
     'dockerfile.R'
     'session.R'
     'sessionInfo-localbuild-methods.R'

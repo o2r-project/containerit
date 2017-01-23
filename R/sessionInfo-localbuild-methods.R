@@ -104,3 +104,6 @@ obtain_dockerSessionInfo = function(docker_image, expr = c(), vanilla=FALSE, doc
     unlink(local_tempdir,recursive = TRUE)
   return(get("info"))
 }
+
+
+

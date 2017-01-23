@@ -4,12 +4,18 @@ library(containerit)
 context("session-reproduction")
 
 #test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it
-expressions = list(quote(  library(sp)  ),
-                   quote(  codetools::showTree(quote(-3))  ))
+#Any library in use needs to be locally installed prior to running this test
+expressions = list(
+                  quote(  library(rgdal)  ),
+                  quote(  library(proj4) ),
+                  quote(  library(sp) ),
+                  quote(  codetools::showTree(quote(-3)) )  
+                  )
 
 local_sessionInfo <- NULL
 
 docker_sessionInfo <-NULL
+dockerfile_object <- NULL
 
 test_that("a local sessionInfo() can be created ",{
   local_sessionInfo <<- obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
@@ -18,8 +24,8 @@ test_that("a local sessionInfo() can be created ",{
 )
 
 test_that("a sessionInfo can be reproduced with docker",{
-    dockerfile_object = dockerfile(local_sessionInfo)
-    docker_tempimage = create_localDockerImage(dockerfile_object, no_cache=TRUE)
+    dockerfile_object <<- dockerfile(local_sessionInfo)
+    docker_tempimage = create_localDockerImage(dockerfile_object, no_cache=FALSE)
     
     #expect that image was created:
     expect_equal(length(harbor::docker_cmd(harbor::localhost,"images", docker_tempimage,capture_text=TRUE)), 2)
@@ -66,10 +72,23 @@ test_that("the R versions are the same ",{
 })
 
 
+test_that("the locales are the same ",{
+  message("TODO: session locales are currently not reproduced.")
+  #expect that same base and non-base packages loaded via namespace
+  #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
+})
+
+
 #visual comparism
 cat("\nlocal sessionInfo: \n\n")
 print(local_sessionInfo)
 cat("\n------------------------------------")
 cat("\nreproduced sessionInfo in docker: \n\n")
 print(docker_sessionInfo)
+
+cat("\nDockerfile: \n\n")
+cat(paste(format(dockerfile_object),collapse="\n"))
+
+
+
 

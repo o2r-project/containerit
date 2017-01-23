@@ -173,6 +173,7 @@ tagsfromRemoteImage = function(image){
 #pkgs list of packages as returned by sessionInfo
 .create_run_install <- function(pkgs){
   #create expression
+  package_reqs = character(0)
   cran_packages = github_packages = local_packages = other_packages = character(0)
   # if necessary, retrieve package version with 
   
@@ -182,11 +183,14 @@ tagsfromRemoteImage = function(image){
              name = pkg$Package
            else
              stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
+           
            if("Priority" %in% names(pkg) &&
               stringr::str_detect(pkg$Priority, "(?i)base")){ 
              #packages with these priorities are normally included and don't need to be installed; do nothing
              return()
            }
+           package_reqs <<- append(package_reqs, .findPkgSysreqs(name, pkg$Version))
+           
            #check if package come from CRAN (alternatively you may use devtools::session_info)
            if("Repository" %in% names(pkg) && 
               stringr::str_detect(pkg$Repository, "(?i)CRAN")) 
@@ -200,10 +204,58 @@ tagsfromRemoteImage = function(image){
          }
   )
   
-  params = append("-r 'https://cran.rstudio.com'", cran_packages) ##set cran mirror (rocker default MRAN installs sometimes outdated packages)
+  run_instructions = list()
+  
+
+  
+  #install system dependencies
+  if(length(package_reqs)>0){
+    run_instructions = append(run_instructions,  Run("apt-get",params = c("update","-qq")))
+    package_reqs = levels(as.factor(package_reqs)) #remove dublicates
+    run_instructions = append(run_instructions,  Run("apt-get", params = c("install","-y" ,package_reqs)))
+  }
+  
+  #install cran packages
+  params = append(paste0("-r '",get_docker_cran_mirror(),"'"), cran_packages) 
   run_install_cran = Run("install2.r", params)
-  return(list(run_install_cran))
+  run_instructions=append(run_instructions, run_install_cran)
+  return(run_instructions)
 }
+
+
+.findPkgSysreqs <- function(package, version=utils::packageVersion(package), localFirst=TRUE, platform= "linux-x86_64-debian-gcc"){
+  sysreqs = character(0)
+  if(localFirst){
+    path=find.package(package, quiet = TRUE)
+    if(is.null(path) || length(path) == 0 || utils::packageVersion(package)!=version){
+      message("No package DESCRIPTION found locally for package '",package,"', version '", version,"' .")
+    }else{
+      sysreqs = sysreqs::sysreqs(file.path(path,"DESCRIPTION"),platform)
+      return(sysreqs)
+    }
+  }
+  
+  message("Trying to determine system requirements for package '",package,"' from the latest DESCRIPTION file on CRAN")
+  
+  con = url(paste0("https://CRAN.R-project.org/package=",package,"/DESCRIPTION"))
+  temp=tempfile()
+  success = TRUE
+  tryCatch({
+    desc=readLines(con)
+    writeLines(desc, temp)
+    sysreqs = sysreqs(temp, platform)
+  },error=function(e) success=FALSE,finally = {
+    unlink(temp)
+    close(con)
+  }
+  )
+  if(!success){
+    warning("Could not package DESCRIPTION for package '",package,", on CRAN. Containerit failed to determine system requriements.")
+  }
+  
+  return(sysreqs)
+}
+
 
 .defaultRVersion <- function(from){
   r_version = NULL
