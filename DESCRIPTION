@@ -33,7 +33,8 @@ Suggests:
     magrittr,
     harbor,
     analogsea,
-    googleComputeEngineR
+    googleComputeEngineR,
+    lintr
 RoxygenNote: 5.0.1
 Collate:
     'Class-Instruction.R'
@@ -53,5 +54,6 @@ Collate:
     'containeRit.R'
     'defaults.R'
     'dockerfile.R'
+    'package-installation-methods.R'
     'session.R'
     'sessionInfo-localbuild-methods.R'

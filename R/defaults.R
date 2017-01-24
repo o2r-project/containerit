@@ -18,5 +18,5 @@ get_docker_cran_mirror <- function() {
 #' @export
 #'
 set_docker_cran_mirror <- function(cran_url){
-  .default_cran_mirror <- cran_url
+  .default_cran_mirror <<- cran_url
 }

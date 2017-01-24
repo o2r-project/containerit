@@ -24,5 +24,3 @@ Dockerfile <- setClass("Dockerfile",
                                  context = "character",
                                  cmd = "Cmd")
 )
-
-
