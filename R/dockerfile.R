@@ -13,6 +13,7 @@
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
 #' @param context (character vector) optionally specify one or many build context paths
+#' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -28,7 +29,7 @@ dockerfile <-
            r_version = .defaultRVersion(from),
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
-           context = NA_character_) {
+           context = NA_character_, soft = FALSE) {
     flog.debug("Creating a new Dockerfile from %s", from)
     .dockerfile <- NA
     .originalFrom <- class(from)
@@ -37,22 +38,17 @@ dockerfile <-
     if (is.character(image)) {
       image <- parseFrom(image)
     }
-    
+
     instructions <- list()
     ### default CMD may be overwritten e.g. from dockerfileFromSession
     cmd <- Cmd("R")
     # whether image is supported
-    supportedimages <-
-      c("rocker/r-ver",
-        "rocker/rstudio",
-        "rocker/tidyverse",
-        "rocker/verse")
     
     image_name <- image@image
-    if (!image_name %in% supportedimages) {
+    if (!image_name %in% .supported_images) {
       stop(
         "Invalid base image. Currently, only the following base images are supported: ",
-        paste(supportedimages, collapse = "\n")
+        paste(.supported_images, collapse = "\n")
       )
     }
     
@@ -65,16 +61,16 @@ dockerfile <-
         context = context,
         cmd = cmd
       )
-    
+
     if (inherits(x = from, "sessionInfo")) {
       .dockerfile <-
-        dockerfileFromSession(session = from, .dockerfile = .dockerfile)
+        dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft)
     } else if (inherits(x = from, "file")) {
       .dockerfile <-
-        dockerfileFromFile(file = from, .dockerfile = .dockerfile)
+        dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft)
     } else if (inherits(x = from, "character") && dir.exists(from)) {
       .dockerfile <-
-        dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile)
+        dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft)
       .originalFrom <- from
     } else if (is.null(from)) {
       #Creates a basic dockerfile without the 'from'-argument
@@ -143,25 +139,32 @@ setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 
 
-dockerfileFromSession <- function(session, .dockerfile) {
+dockerfileFromSession <- function(session, .dockerfile, soft) {
   instructions <- slot(.dockerfile, "instructions")
   
   apks <- session$otherPkgs
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) ##packages to be installed
-  run_instructions <- .create_run_install(pkgs)
+  
+  # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms 
+  platform = NULL 
+  image_name = .dockerfile@image@image
+  if(image_name %in% .rocker_images)
+    platform = .debian_platform 
+  
+  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft)
   
   instructions <- append(instructions, run_instructions)
   slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile) {
+dockerfileFromFile <- function(file, .dockerfile, soft) {
   return(.dockerfile)
 }
 
 
-dockerfileFromWorkspace <- function(path, .dockerfile) {
+dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
   .rFiles <-
     dir(
       path = path,
@@ -197,7 +200,7 @@ tagsfromRemoteImage <- function(image) {
   urlstr <-
     paste0("https://registry.hub.docker.com/v2/repositories/",
            image,
-           "/","tags,"/")
+           "/tags/")
   con <- url(urlstr)
   str <- readLines(con, warn = FALSE)
   str

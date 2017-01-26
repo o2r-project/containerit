@@ -1,3 +1,17 @@
+#' Build a Docker image from a local Dockerfile
+#'
+#' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
+#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
+#' 
+#' @param host A host object (see harbor-package)
+#' @param dockerfolder Local location of build directory including valid Dockerfile
+#' @param new_image Name of the new image to be created
+#' @param wait Whether to block R console until finished build
+#' @param no_cache Wheter to use cached layers to build the image
+#' @param ... Other arguments passed to the SSH command for the host
+#'
+#' @return A table of active images on the instance
+#' @export
 docker_build <-
   function (host = harbor::localhost,
             dockerfolder,
@@ -5,6 +19,8 @@ docker_build <-
             wait = FALSE,
             no_cache = FALSE,
             ...) {
+    #TODO: This method may be enhanced with random image name as default (?) 
+    # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(file.exists(dockerfolder))
     docker_opts <- paste("-t", new_image)
     if (no_cache)
@@ -18,11 +34,12 @@ docker_build <-
       wait = wait,
       ...
     )
+    
+    harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
   }
 
-#shorthand method for creating a local docker Image based on either an existing dockerfile or a Dockerfile object
-#
-create_localDockerImage <- function(x,
+#shorthand method for creating a local docker Image based on either an existing dockerfile (given by folder) or a Dockerfile object
+create_localDockerImage <- function(x, host = harbor::localhost,
                                    image_name = strsplit(tempfile(pattern = "containerit_test", tmpdir = ""), "/")[[1]][2],
                                    no_cache = FALSE) {
   if (is.character(x))
@@ -39,7 +56,7 @@ create_localDockerImage <- function(x,
     #write dockerfile into temp dir
     write(x, file = file.path(tempdir, "Dockerfile"))
     docker_build(
-      harbor::localhost,
+      host,
       dockerfolder = tempdir,
       new_image = image_name,
       wait = TRUE,

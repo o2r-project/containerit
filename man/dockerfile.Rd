@@ -8,7 +8,8 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
   maintainer = Maintainer(name = Sys.info()[["user"]]),
   r_version = .defaultRVersion(from), image = imagefromRVersion(r_version),
   env = list(generator = paste("containerit",
-  utils::packageVersion("containerit"))), context = NA_character_)
+  utils::packageVersion("containerit"))), context = NA_character_,
+  soft = FALSE)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -26,6 +27,8 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 
 \item{context}{(character vector) optionally specify one or many build context paths}
+
+\item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
 }
 \value{
 An object of class Dockerfile

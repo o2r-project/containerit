@@ -18,8 +18,8 @@ Write a Dockerfile object to a dockerfile
 \examples{
 # write a dockerfile with default parameters to temporary file and show content:
 temp = tempfile()
-write(dockerfile(), file=temp) 
-print(readLines(temp)) 
+write(dockerfile(), file=temp)
+print(readLines(temp))
 unlink(temp)
 }
 

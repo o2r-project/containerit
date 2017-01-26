@@ -95,7 +95,6 @@ test_that("the R versions are the same ", {
 
 test_that("the locales are the same ", {
   message("TODO: session locales are currently not reproduced.")
-  #expect that same base and non-base packages loaded via namespace
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
 })
 

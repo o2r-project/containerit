@@ -32,7 +32,7 @@ setMethod("docker_arguments",
           .arguments.Cmd_Run #uses the same function as Cmd for now
 )
 
-setValidity("Run", 
+setValidity("Run",
             method = function(object) {
               exec <- slot(object, "exec")
               params <- slot(object, "params")
@@ -46,7 +46,7 @@ setValidity("Run",
                 if ((length(params) > 1 && any(is.na(params))) ||
                    any(stringr::str_length(params) == 0))
                   return("If parameters are given for RUN (optional), they cannot be empty strings or NA")
-              else    
+              else  
                 return(TRUE)
             }
 )

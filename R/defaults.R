@@ -1,3 +1,4 @@
+# Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
 ##set CRAN mirror (the rocker default MRAN is sometimes not up-to-date with current packages)
 .default_cran_mirror <- "https://cran.rstudio.com"
@@ -20,3 +21,18 @@ get_docker_cran_mirror <- function() {
 set_docker_cran_mirror <- function(cran_url){
   .default_cran_mirror <<- cran_url
 }
+
+.rocker_images <- c("rocker/r-ver",
+                   "rocker/rstudio",
+                   "rocker/tidyverse",
+                   "rocker/verse")
+
+##TODO: append more supported images
+.supported_images <- .rocker_images
+
+.debian_platform = "linux-x86_64-debian-gcc"
+
+# TODO: Support more platforms analogue to rsysreqs > https://github.com/r-hub/sysreqsdb/tree/master/platforms
+## Enhance method .create_run_install with mappings from system requrirements to system comands
+.supported_platforms <- .debian_platform
+
