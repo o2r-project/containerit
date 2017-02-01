@@ -2,7 +2,7 @@
 
 #' Instruction class yet to be implemented
 #' @include Class-Instruction.R
-#' 
+#'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#volume}.
 #'
 #' @return object
@@ -22,13 +22,13 @@ setClass("Volume", contains = "Instruction")
 #'
 #' @examples
 #' #no example yet
-Volume <- function(...){
+Volume <- function(...) {
   stop("Constructor not yet implemented for this class.")
 }
 
 setMethod("docker_arguments",
           signature(obj = "Volume"),
-          function(obj){
-            stop("The generic function docker_arguments is not implemented for class ",class(obj))
-          }
-)
+          function(obj) {
+            stop("The generic function docker_arguments is not implemented for class ",
+                 class(obj))
+          })

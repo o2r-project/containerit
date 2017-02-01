@@ -1,3 +1,5 @@
+# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+
 ---
 title: "Introduction to package `containeRit`"
 author: "Daniel Nüst"
@@ -28,6 +30,7 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 
 ```{r}
 library(containerit)
+library(harbor)
 # The package uses [futile.logger]() for logging. Configure the log level with
 futile.logger::flog.threshold(futile.logger::INFO)
 
@@ -38,7 +41,6 @@ plot(c(1:10), c(1:10))
 container <- dockerfile(sessionInfo(), objects = ls())
 
 # build and run it (maybe do some piping here just for fun?)
-library(googleComputeEngineR)  #(googleComputeEnineR contains docker-functions from the harbor-package until harbor moves to CRAN)
 library(magrittr)
 #docker_build(container) %>% docker_run(localhost)
 #image <- docker_build(container)

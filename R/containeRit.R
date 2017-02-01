@@ -16,6 +16,7 @@
 #' @aliases containers, containerization
 #' @importFrom methods new
 #' @importFrom methods slot
+#' @importFrom methods slot<-
 #' @importFrom utils sessionInfo
 
 NULL

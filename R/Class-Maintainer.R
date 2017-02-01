@@ -34,9 +34,9 @@ setClassUnion("NullOrMaintainer", members = c("Maintainer", "NULL"))
 ##Specify how class slots are composed to instruction arguments
 setMethod("docker_arguments", signature = signature(obj="Maintainer"),
           definition = function(obj){
-            arg=paste0("\"",obj@name,"\"")
-            if(!is.na(obj@email) && length(obj@email)>0)
-              arg = paste(arg, obj@email)
+            arg <- paste0("\"", obj@name, "\"")
+            if (!is.na(obj@email) && length(obj@email) > 0)
+              arg <- paste(arg, obj@email)
             return(arg)
           }
 )

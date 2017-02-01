@@ -29,7 +29,8 @@ Env <- function(...){
 
 setMethod("docker_arguments",
           signature(obj = "Env"),
-          function(obj){
-            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          function(obj) {
+            stop("The generic function docker_arguments is not implemented for class ",
+                 class(obj))
           }
 )
