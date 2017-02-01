@@ -4,6 +4,9 @@
 # For a potential alternative configuration see https://github.com/metacran/r-builder
 
 language: r
+repos:
+  ropensci: http://packages.ropensci.org
+
 cache: packages
 sudo: required
 dist: trusty
@@ -25,9 +28,6 @@ r_github_packages:
   - r-hub/sysreqs
   - wch/harbor
 
-repos:
-  cran: https://cloud.r-project.org
-  ropensci: http://packages.ropensci.org
 
 after_success:
 #  - Rscript -e 'covr::codecov()'

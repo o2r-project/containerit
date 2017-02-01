@@ -35,7 +35,7 @@ Suggests:
     analogsea,
     googleComputeEngineR,
     lintr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'

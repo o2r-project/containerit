@@ -5,7 +5,7 @@ containeRit
 
 `containeRit` packages R script/session/workspace and all dependencies as a Docker container.
 
-[![Build Status](https://travis-ci.org/o2r-project/containeRit.svg?branch=master)](https://travis-ci.org/o2r-project/containeRit)
+[![Build Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 
 Quick start
 -----------
