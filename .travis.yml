@@ -5,6 +5,7 @@
 
 language: r
 repos:
+  CRAN: https://cloud.r-project.org
   ropensci: http://packages.ropensci.org
 
 cache: packages
