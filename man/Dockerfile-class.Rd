@@ -2,8 +2,8 @@
 % Please edit documentation in R/Class-Dockerfile.R
 \docType{class}
 \name{Dockerfile-class}
-\alias{Dockerfile}
 \alias{Dockerfile-class}
+\alias{Dockerfile}
 \title{An S4 class to represent a Dockerfile}
 \value{
 an object of class \code{Dockerfile}
@@ -20,7 +20,7 @@ An S4 class to represent a Dockerfile
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 
-\item{\code{context}}{Directories that shall be included in the context when dockerfile is build}
+\item{\code{context}}{Directories that shall be included in the context when Dockerfile is build}
 
 \item{\code{cmd}}{the default cmd instruction applied to the container}
 }}

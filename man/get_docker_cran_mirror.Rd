@@ -7,9 +7,8 @@
 get_docker_cran_mirror()
 }
 \value{
-The mirror's url as single character string (default: "https://cran.rstudio.com")
+The mirror's url as single character string (default: "https://cloud.r-project.org")
 }
 \description{
 Get default cran mirror to be used to install R packages
 }
-

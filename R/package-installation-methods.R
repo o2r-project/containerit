@@ -15,7 +15,7 @@
              name <- pkg$Package
            else
              stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
-           
+
            if ("Priority" %in% names(pkg) &&
                stringr::str_detect(pkg$Priority, "(?i)base")) {
              #packages with these priorities are normally included and don't need to be installed; do nothing
@@ -26,7 +26,7 @@
              pkg_dep <- .find_system_dependencies(name, platform = platform, package_version = pkg$Version, soft = soft)
              package_reqs <<- append(package_reqs, pkg_dep)
            }
-           
+
            #check if package come from CRAN (alternatively you may use devtools::session_info)
            if ("Repository" %in% names(pkg) &&
                stringr::str_detect(pkg$Repository, "(?i)CRAN"))
@@ -38,14 +38,14 @@
              warning(
                "Failed to identify source for package ",
                pkg$Package,
-               ". Therefore the package cannot be installed in the docker image."
+               ". Therefore the package cannot be installed in the docker image.\n"
              )
          })
-  
+
   run_instructions <- list()
   package_reqs <-
     levels(as.factor(package_reqs)) #remove dublicate system requirements
-  
+
   #install system dependencies
   if(!isTRUE(platform %in% .supported_platforms)){
     warning("The determined platform '", platform, "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containerit.")
@@ -62,12 +62,12 @@
 
     # TODO:'mapping plaftorm > installation' command goes here, analogue to rsysreqs > https://github.com/r-hub/sysreqsdb/tree/master/platforms
   }
-  
+
   #install cran packages
   params <- append(paste0("-r '", get_docker_cran_mirror(), "'"), cran_packages)
   run_install_cran <- Run("install2.r", params)
   run_instructions <- append(run_instructions, run_install_cran)
-  
+
   # TODO: install packages from other sources
   return(run_instructions)
 }
@@ -96,7 +96,7 @@
           soft = soft
         )
       )
-    
+
     # faster, but only finds direct package dependencies from all attached / loaded packages
     if (method == "sysreq-api")
       return(.find_by_sysreqs_api(package = package, platform = platform))
@@ -106,15 +106,12 @@
   function(package, platform, soft, package_version, localFirst = TRUE) {
     sysreqs <- character(0)
     if (localFirst) {
-      message(
-        "Trying to determine system requirements for package '",
-        package,
-        "' from the local DESCRIPTION file"
-      )
+      flog.info("Trying to determine system requirements for package '%s' from the local DESCRIPTION file",
+                package)
       path <- find.package(package, quiet = TRUE)
       if (is.null(path) ||
           length(path) == 0 || utils::packageVersion(package) != package_version) {
-        message(
+        flog.warn(
           "No matching package DESCRIPTION found locally for package '",
           package,
           "', version '",
@@ -122,18 +119,15 @@
           "' ."
         )
       } else{
-        
+
         sysreqs <- sysreqs::sysreqs(file.path(path, "DESCRIPTION"), platform = platform, soft = soft)
         return(sysreqs)
       }
     }
-    
-    message(
-      "Trying to determine system requirements for package '",
-      package,
-      "' from the latest DESCRIPTION file on CRAN"
-    )
-    
+
+    flog.info("Trying to determine system requirements for package '%s' from the latest DESCRIPTION file on CRAN",
+      package)
+
     con <-
       url(paste0(
         "https://CRAN.R-project.org/package=",
@@ -146,32 +140,32 @@
       desc <- readLines(con)
       writeLines(desc, temp)
       sysreqs <- sysreqs::sysreqs(temp, platform = platform, soft = soft)
-    }, error = function(e)
-      success <- FALSE,
+    }, error = function(e) {
+      success <- FALSE
+    },
     finally = {
       unlink(temp)
       close(con)
     })
+
     if (!success) {
       warning(
         "Could not package DESCRIPTION for package '",
         package,
         ", on CRAN. Containerit failed to determine system requriements."
       )
+      return(NULL)
+    } else {
+      return(sysreqs)
     }
-    
-    return(sysreqs)
+
   }
 
 
 .find_by_sysreqs_api <-
   function(package, platform) {
-    message(
-      "Trying to determine system requirements for package '",
-      package,
-      "' from sysreq online DB"
-    )
-    
+    flog.info("Trying to determine system requirements for package '%s' from sysreq online DB", package)
+
     con <-
       url(paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform))
     success <- TRUE
@@ -181,9 +175,9 @@
       parser <- rjson::newJSONParser()
       parser$addData(desc)
       desc <- as.character(parser$getObject())
-      
+
     }, error = function(e)
-      success <- FALSE, 
+      success <- FALSE,
     finally = {
         close(con)
     })

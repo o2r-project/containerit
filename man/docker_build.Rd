@@ -27,4 +27,3 @@ A table of active images on the instance
 Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
 The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
 }
-

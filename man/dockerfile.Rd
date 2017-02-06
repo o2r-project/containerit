@@ -6,9 +6,9 @@
 \usage{
 dockerfile(from = utils::sessionInfo(), objects = character(0),
   maintainer = Maintainer(name = Sys.info()[["user"]]),
-  r_version = .defaultRVersion(from), image = imagefromRVersion(r_version),
-  env = list(generator = paste("containerit",
-  utils::packageVersion("containerit"))), context = NA_character_,
+  r_version = getRVersionTag(from), image = imagefromRVersion(r_version),
+  env = list(generator = paste("containeRit",
+  utils::packageVersion("containeRit"))), context = NA_character_,
   soft = FALSE)
 }
 \arguments{
@@ -40,4 +40,3 @@ Create a Dockerfile based on either a sessionInfo, a workspace or a file
 dockerfile()
 
 }
-

@@ -2,7 +2,7 @@
 #'
 #' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
 #' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
-#' 
+#'
 #' @param host A host object (see harbor-package)
 #' @param dockerfolder Local location of build directory including valid Dockerfile
 #' @param new_image Name of the new image to be created
@@ -19,13 +19,13 @@ docker_build <-
             wait = FALSE,
             no_cache = FALSE,
             ...) {
-    #TODO: This method may be enhanced with random image name as default (?) 
+    #TODO: This method may be enhanced with random image name as default (?)
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(file.exists(dockerfolder))
     docker_opts <- paste("-t", new_image)
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
-    
+
     harbor::docker_cmd(
       host,
       "build",
@@ -34,11 +34,11 @@ docker_build <-
       wait = wait,
       ...
     )
-    
+
     harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
   }
 
-#shorthand method for creating a local docker Image based on either an existing dockerfile (given by folder) or a Dockerfile object
+#shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
 create_localDockerImage <- function(x, host = harbor::localhost,
                                    image_name = strsplit(tempfile(pattern = "containerit_test", tmpdir = ""), "/")[[1]][2],
                                    no_cache = FALSE) {
@@ -64,7 +64,7 @@ create_localDockerImage <- function(x, host = harbor::localhost,
     )
     message("Deleting temporary docker file...")
     unlink(tempdir, recursive = TRUE)
-    
+
   }
   return(image_name)
 }
@@ -75,7 +75,7 @@ create_localDockerImage <- function(x, host = harbor::localhost,
   e1 <- quote(info <- sessionInfo())
   e2 <- quote(save(list = "info", file = tempfile))
   e2[[3]] <- tempfile
-  
+
   return(c(e1, e2))
 }
 
@@ -99,10 +99,10 @@ obtain_localSessionInfo <-
     expr <- append(expr, .writeSessionInfoExp(local_tempfile))
     #convert to cmd parameters
     expr <- .exprToParam(expr)
-    
+
     if (vanilla)
       expr <- append("--vanilla", expr)
-    
+
     message(
       "Creating R session with the following arguments:\n\t Rscript ",
       paste(expr, collapse = " ")
@@ -126,10 +126,10 @@ obtain_dockerSessionInfo <-
     dir.create(local_tempdir)
     if (!dir.exists(local_tempdir))
       stop("Unable to locate temporary directory: ", local_tempdir)
-    
+
     #mount option
     volume_opt = paste0("-v ", local_tempdir, ":", docker_tempdir)
-    
+
     #rdata file to which session info shall be written
     docker_tempfile =  paste0(docker_tempdir, "/", "rdata")
     local_docker_tempfile = file.path(local_tempdir, "rdata")
@@ -137,7 +137,7 @@ obtain_dockerSessionInfo <-
     expr <- append(expr, .writeSessionInfoExp(docker_tempfile))
     #convert to cmd parameters
     expr <- .exprToParam(expr)
-    
+
     cmd <- c("Rscript")
     if (vanilla) {
       cmd <- append(cmd, "--vanilla")
@@ -151,16 +151,16 @@ obtain_dockerSessionInfo <-
       cmd = cmd ,
       docker_opts = volume_opt
     )
-    
+
     if (harbor::container_running(container))
       stop("Unexpected behavior: The container is still running!")
-    
+
     harbor::container_rm(container)
-    
+
     if (!file.exists(local_docker_tempfile))
       stop("Sessioninfo was not written to file (it does not exist): ",
            local_docker_tempfile)
-    
+
     message("Wrote sessioninfo from Docker to this tempfile:",
             local_docker_tempfile)
     load(local_docker_tempfile)
