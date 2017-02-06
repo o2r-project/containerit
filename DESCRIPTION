@@ -1,14 +1,13 @@
-Package: containerit
+Package: containeRit
 Type: Package
 Title: Package R in Docker Containers
 Version: 0.1.0
-Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "danie.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
+Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Depends:
     R (>= 3.0.0)
 Imports:
-    futile.logger,
     methods,
     utils,
     rjson,
