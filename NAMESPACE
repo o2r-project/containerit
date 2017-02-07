@@ -2,6 +2,7 @@
 
 S3method(format,Dockerfile)
 export(Add)
+export(CMD_Rscript)
 export(Cmd)
 export(Copy)
 export(Entrypoint)

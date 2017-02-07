@@ -1,35 +1,57 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-#' Instruction class yet to be implemented
+#' S4 Class representing a COPY-instruction
 #' @include Class-Instruction.R
 #' 
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#copy}.
-#'
+#
+#' @param src (character vector) list of files or directories to be copied
+#' @param dest (character string) destination directory on the docker image (either absolute or relative to working directory)
+#' 
 #' @return object
 #' @export
 #'
 #' @examples
 #' #no example yet
-setClass("Copy", contains = "Instruction")
+setClass("Copy", slots=list(src = "character", dest="character"), contains = "Instruction")
 
 
-#' Constructor yet to be implemented
+#' Copy one or more files or directories to a Docker image
 #'
-#' @param ... fields yet to be implemented
+#' @param src (character vector) list of files or directories to be copied
+#' @param dest (character string) destination directory on the docker image (either absolute or relative to working directory)
 #'
 #' @return the object
 #' @export
 #'
 #' @examples
 #' #no example yet
-Copy <- function(...){
-  stop("Constructor not yet implemented for this class.")
+Copy <- function(src, dest){
+  new("Copy",  src = src, dest=dest)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Copy"),
           function(obj) {
-            stop("The generic function docker_arguments is not implemented for class ",
-                 class(obj))
+            out=sprintf('"%s"', slot(obj, "src"))
+            out=append(out, sprintf('"%s"', slot(obj, "dest")))
+            out=paste(out, collapse = ", ")
+            out=sprintf("[%s]", out)
           }
+)
+
+
+setValidity("Copy",
+            method = function(object) {
+              src <- slot(object, "src")
+              dest <- slot(object, "dest")
+              
+              if(length(src) < 1){
+                return("Invalid RUN instruction: There must be at least one file / directory given by 'src'")
+              }
+              
+              if(length(dest) != 1){
+                return("Invalid RUN instruction: There must be exactly one destination folder given by 'dest'")
+              }
+            }
 )

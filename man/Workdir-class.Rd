@@ -3,12 +3,12 @@
 \docType{class}
 \name{Workdir-class}
 \alias{Workdir-class}
-\title{Instruction class yet to be implemented}
+\title{S4 Class representing a WORKDIR instruction}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+S4 Class representing a WORKDIR instruction
 }
 \examples{
 #no example yet

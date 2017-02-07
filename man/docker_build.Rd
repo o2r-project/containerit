@@ -5,7 +5,8 @@
 \title{Build a Docker image from a local Dockerfile}
 \usage{
 docker_build(host = harbor::localhost, dockerfolder, new_image,
-  wait = FALSE, no_cache = FALSE, ...)
+  dockerfile = character(0), wait = FALSE, no_cache = FALSE,
+  docker_opts = character(0), ...)
 }
 \arguments{
 \item{host}{A host object (see harbor-package)}
@@ -14,9 +15,13 @@ docker_build(host = harbor::localhost, dockerfolder, new_image,
 
 \item{new_image}{Name of the new image to be created}
 
+\item{dockerfile}{(optional) set path to the dockerfile (equals to path/to/Dockerfile"))}
+
 \item{wait}{Whether to block R console until finished build}
 
 \item{no_cache}{Wheter to use cached layers to build the image}
+
+\item{docker_opts}{Additional docker opts}
 
 \item{...}{Other arguments passed to the SSH command for the host}
 }

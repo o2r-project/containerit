@@ -2,18 +2,18 @@
 % Please edit documentation in R/Class-Workdir.R
 \name{Workdir}
 \alias{Workdir}
-\title{Constructor yet to be implemented}
+\title{Constructor for a WORKDIR instruction}
 \usage{
-Workdir(...)
+Workdir(path)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{path}{The path of the working directory}
 }
 \value{
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for a WORKDIR instruction
 }
 \examples{
 #no example yet

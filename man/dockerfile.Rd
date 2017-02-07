@@ -8,8 +8,8 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
   maintainer = Maintainer(name = Sys.info()[["user"]]),
   r_version = getRVersionTag(from), image = imagefromRVersion(r_version),
   env = list(generator = paste("containeRit",
-  utils::packageVersion("containeRit"))), context = NA_character_,
-  soft = FALSE)
+  utils::packageVersion("containeRit"))), context = "workdir", soft = FALSE,
+  copy = "script", container_workdir = "payload/", cmd = Cmd("R"))
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -26,9 +26,15 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 
-\item{context}{(character vector) optionally specify one or many build context paths}
+\item{context}{(character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()}
 
 \item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
+
+\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied}
+
+\item{container_workdir}{the working directory of the container}
+
+\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
 }
 \value{
 An object of class Dockerfile

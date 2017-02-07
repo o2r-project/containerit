@@ -3,12 +3,17 @@
 \docType{class}
 \name{Copy-class}
 \alias{Copy-class}
-\title{Instruction class yet to be implemented}
+\title{S4 Class representing a COPY-instruction}
+\arguments{
+\item{src}{(character vector) list of files or directories to be copied}
+
+\item{dest}{(character string) destination directory on the docker image (either absolute or relative to working directory)}
+}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+S4 Class representing a COPY-instruction
 }
 \examples{
 #no example yet

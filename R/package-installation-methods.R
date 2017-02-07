@@ -64,9 +64,11 @@
   }
 
   #install cran packages
-  params <- append(paste0("-r '", get_docker_cran_mirror(), "'"), cran_packages)
-  run_install_cran <- Run("install2.r", params)
-  run_instructions <- append(run_instructions, run_install_cran)
+  if(length(cran_packages) > 0){
+    params <- append(paste0("-r '", get_docker_cran_mirror(), "'"), cran_packages)
+    run_install_cran <- Run("install2.r", params)
+    run_instructions <- append(run_instructions, run_install_cran)
+  }
 
   # TODO: install packages from other sources
   return(run_instructions)

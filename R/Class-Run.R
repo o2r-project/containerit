@@ -10,19 +10,17 @@
 #'
 #' @return object of class Run
 #' @export
-#'
 setClass("Run",
          slots = list(exec = "character",
                       params = "character"), contains = "Instruction")
 
-#' create objects representing a RUN instruction
+#' Create objects representing a RUN instruction
 #'
 #' @param exec character argument naming the executable
 #' @param params paramterer arguments
 #'
 #' @return An S4 object of class Run
 #' @export
-#'
 Run <- function(exec, params = NA_character_){
   new("Run",  exec = exec, params = params)
 }

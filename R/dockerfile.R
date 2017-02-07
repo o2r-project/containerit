@@ -12,8 +12,12 @@
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
-#' @param context (character vector) optionally specify one or many build context paths
+#' @param context (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
+#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
+#' @param container_workdir the working directory of the container
+#' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
+#' 
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -29,7 +33,13 @@ dockerfile <-
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containeRit", utils::packageVersion("containeRit"))),
-           context = NA_character_, soft = FALSE) {
+           context = "workdir", 
+           soft = FALSE,
+           copy = "script",
+           container_workdir = "payload/",
+           cmd = Cmd("R")
+           )
+      {
     flog.debug("Creating a new Dockerfile from %s", from)
     .dockerfile <- NA
     .originalFrom <- class(from)
@@ -40,10 +50,16 @@ dockerfile <-
     }
 
     instructions <- list()
-    ### default CMD may be overwritten e.g. from dockerfileFromSession
-    cmd <- Cmd("R")
+    ### check CMD-instruction
+    if(!inherits(x=cmd, "Cmd")){
+      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(cmd))
+    }
+    
+    if(!inherits(x=context, "character") || (!isTRUE(context == "workdir")) && !dir.exists(context)){
+      stop("Unsupported parameter for 'context', expected an existing directory path or the the key 'workdir', given was :", class(context)," ",context)
+    }
+    
     # whether image is supported
-
     image_name <- image@image
     if (!image_name %in% .supported_images) {
       stop(
@@ -61,21 +77,30 @@ dockerfile <-
         context = context,
         cmd = cmd
       )
+    
+    #set the working directory (If the directory does not exist, Docker will create it)
+    addInstruction(.dockerfile) <- Workdir(container_workdir)
 
     if (inherits(x = from, "sessionInfo")) {
       .dockerfile <-
         dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft)
-    } else if (inherits(x = from, "file")) {
-      .dockerfile <-
-        dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft)
-    } else if (inherits(x = from, "character") && dir.exists(from)) {
-      .dockerfile <-
-        dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft)
-      .originalFrom <- from
+    } else if (inherits(x = from, "character") ) {
+      
+      if (dir.exists(from)){
+        .originalFrom <- from
+        .dockerfile <-
+          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft)
+      } else if (file.exists(from)){
+        .originalFrom <- from
+        .dockerfile <-
+          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy)
+      } else {
+        stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
+      }
     } else if (is.null(from)) {
       #Creates a basic dockerfile without the 'from'-argument
     } else {
-      stop("Unsupported 'from': ", class(from), from)
+      stop("Unsupported 'from': ", class(from)," ", from)
     }
 
     flog.info("Created Dockerfile-Object based on %s", .originalFrom)
@@ -115,8 +140,8 @@ format.Dockerfile <- function(x, ...) {
 
 
 .write.Dockerfile <-
-  function(x, file = paste0(getwd(), "/", "Dockerfile")) {
-    flog.info("Writing Dockerfile to %s", file)
+  function(x, file = file.path(.contextPath(x), "Dockerfile")) {
+    flog.info("Writing dockerfile to %s", file)
     return(write(as.character(format(x)), file))
   }
 
@@ -158,12 +183,70 @@ dockerfileFromSession <- function(session, .dockerfile, soft) {
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile, soft) {
+dockerfileFromFile <- function(file, .dockerfile, soft, copy) {
+  context = .contextPath(.dockerfile)
+  file = normalizePath(file)
+
+  #Is the file within the context?
+  len = stringr::str_length(context)
+  substr = stringr::str_sub(context, end=len)
+  if(context != substr)
+    stop("The given file is not inside the context directory!")
+
+  #If context directory and work directory are not the same, there might occur problems with relative paths
+  if(context != getwd())
+    warning("The context directory is not the same as the current R working directory! Code/workspace may not be reproducible.")
+  # make sure that the path is relative to context
+  rel_path <- .makeRelative(file, context)
+  
+  copy = unlist(copy)
+  if(!is.character(copy)){
+    stop("Invalid argument given for 'copy'")
+  } else if(length(copy) == 1 && copy == "script"){
+    #unless we use some kind of Windows-based docker images, the destination path has to be unix compatible:
+    rel_path_dest <- stringr::str_replace_all(rel_path,pattern = "\\\\",replacement="/")
+    addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
+  }else if(length(copy) == 1 && copy == "script_dir"){
+    script_dir <- normalizePath(dirname(file))
+    rel_dir <- .makeRelative(script_dir, context)
+
+    #unless we use some kind of Windows-based docker images, the destination path has to be unix compatible:
+    rel_dir_dest <- stringr::str_replace_all(rel_dir,pattern = "\\\\",replacement="/")
+    if (!stringr::str_detect(rel_dir_dest, "/$"))
+      # directories given as destination must have a trailing slash in dockerfiles
+      rel_dir_dest <- paste0(rel_dir_dest, "/")
+
+    addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
+  }else {
+    ## assume that a list or vector of paths is given
+    sapply(copy, function(file){
+      if(file.exists(file)){
+        rel_path <- .makeRelative(normalizePath(file), context)
+        rel_path_dest <- stringr::str_replace_all(rel_path,pattern = "\\\\",replacement="/")
+        if(dir.exists(file) && !stringr::str_detect(rel_path_dest, "/$"))
+            rel_path_dest <- paste0(rel_dir_dest, "/")
+        addInstruction(.dockerfile) <<- Copy(rel_path, rel_path_dest)
+      } else {
+        stop("The file ", file, ", given by 'copy', does not exist! Invalid argument.")
+      }
+    }
+    )
+  }
+  
+  if(!stringr::str_detect(file, ".R$")){
+    message("The supplied file ",file," has no known extension. ContaineRit will handle it as an R script for packaging.")
+  }
+  message("Executing R file in ", rel_path," locally.")
+  sessionInfo <- obtain_localSessionInfo(file = file)
+  ##append system dependencies
+  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft)
+    
   return(.dockerfile)
 }
 
 
 dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
+
   .rFiles <-
     dir(
       path = path,
@@ -172,8 +255,18 @@ dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
       include.dirs = FALSE,
       recursive = TRUE
     )
-
-  return(.dockerfile)
+ 
+  if(length(.rFiles) > 0){
+    if(length(.rFiles) > 1)
+      warning("Found ",length(.rFiles)," .R files in the workspace. ContaineRit will use the first one as follows for packaging: \n\t",
+              .rFiles[1])
+    else
+      message("ContaineRit will use the followint R script packaging: \n\t",
+            .rFiles[1])
+    return(dockerfileFromFile(.rFiles[1], .dockerfile = .dockerfile, soft = soft, copy = "script_dir"))
+  }else { 
+    stop("The Workspace does not contain any R file that can be packaged.")
+  }
 }
 
 
@@ -232,3 +325,17 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
 
   return(paste(r_version$major, r_version$minor, sep = "."))
 }
+
+.makeRelative <- function(files, from) {
+  out = sapply(files, function(file) {
+    len = stringr::str_length(from)
+    rel_path = stringr::str_sub(file, start = len + 1)
+    if (stringr::str_detect(rel_path, "^[\\/]"))
+      rel_path = stringr::str_sub(rel_path, start = 2)
+    if(stringr::str_length(rel_path)==0)
+      rel_path <- "."
+    return(rel_path)
+  })
+  as.character(out)
+}
+

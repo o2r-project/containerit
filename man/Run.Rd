@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Run.R
 \name{Run}
 \alias{Run}
-\title{create objects representing a RUN instruction}
+\title{Create objects representing a RUN instruction}
 \usage{
 Run(exec, params = NA_character_)
 }
@@ -15,5 +15,5 @@ Run(exec, params = NA_character_)
 An S4 object of class Run
 }
 \description{
-create objects representing a RUN instruction
+Create objects representing a RUN instruction
 }

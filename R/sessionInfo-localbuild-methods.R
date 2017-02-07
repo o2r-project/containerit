@@ -6,8 +6,10 @@
 #' @param host A host object (see harbor-package)
 #' @param dockerfolder Local location of build directory including valid Dockerfile
 #' @param new_image Name of the new image to be created
+#' @param dockerfile (optional) set path to the dockerfile (equals to path/to/Dockerfile"))
 #' @param wait Whether to block R console until finished build
 #' @param no_cache Wheter to use cached layers to build the image
+#' @param docker_opts Additional docker opts
 #' @param ... Other arguments passed to the SSH command for the host
 #'
 #' @return A table of active images on the instance
@@ -16,13 +18,19 @@ docker_build <-
   function (host = harbor::localhost,
             dockerfolder,
             new_image,
+            dockerfile = character(0),
             wait = FALSE,
             no_cache = FALSE,
+            docker_opts = character(0),
             ...) {
     #TODO: This method may be enhanced with random image name as default (?)
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
-    stopifnot(file.exists(dockerfolder))
-    docker_opts <- paste("-t", new_image)
+    stopifnot(dir.exists(dockerfolder))
+    docker_opts <- append(docker_opts, paste("-t", new_image))
+    if(length(dockerfile) > 0){
+      stopifnot(file.exists(dockerfile))
+      docker_opts <- append(docker_opts, paste("-f", normalizePath(dockerfile)))
+    }
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
 
@@ -38,10 +46,13 @@ docker_build <-
     harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
   }
 
-#shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
+
+# Shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
+# When a Dockerfile object is written, a temporary file is written in the context directory and deleted after build 
+# Currently used for testing only. 
 create_localDockerImage <- function(x, host = harbor::localhost,
                                    image_name = strsplit(tempfile(pattern = "containerit_test", tmpdir = ""), "/")[[1]][2],
-                                   no_cache = FALSE) {
+                                   no_cache = FALSE, use_context = FALSE) {
   if (is.character(x))
     docker_build(
       harbor::localhost,
@@ -50,20 +61,44 @@ create_localDockerImage <- function(x, host = harbor::localhost,
       wait = TRUE
     )
   if (inherits(x, "Dockerfile")) {
-    message("Building docker image from temporary docker file...")
+    
+
     tempdir <- tempfile(pattern = "dir")
-    dir.create(tempdir)
-    #write dockerfile into temp dir
-    write(x, file = file.path(tempdir, "Dockerfile"))
+    
+    if(use_context){
+      context = .contextPath(x)
+      message("Building Docker image from temporary Dockerfile in context directory:\n\t",
+              context)
+      dockerfile_path = tempfile(pattern = "Dockerfile",tmpdir = context)
+    } else{
+      message("Building docker image from temporary docker file and directory...")
+      context = tempdir
+      dir.create(tempdir)
+      #write dockerfile into temp dir
+      dockerfile_path = file.path(tempdir, "Dockerfile");
+    }
+
+  
+    write(x, file = dockerfile_path)
+    dockerfile_path = normalizePath(dockerfile_path)
+    
     docker_build(
       host,
-      dockerfolder = tempdir,
+      dockerfolder = context,
       new_image = image_name,
       wait = TRUE,
-      no_cache = no_cache
+      no_cache = no_cache,
+      dockerfile = dockerfile_path
+      
     )
-    message("Deleting temporary docker file...")
-    unlink(tempdir, recursive = TRUE)
+
+    if(use_context){
+      message("Deleting temporary Dockerfile...")
+      unlink(dockerfile_path, recursive = TRUE)
+    }else{
+      message("Deleting temporary Dockerfile and directory...")
+      unlink(tempdir, recursive = TRUE)
+    }
 
   }
   return(image_name)
@@ -82,45 +117,81 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 #converts an vector or list of R expression into commandline parmaeters for RScript
 .exprToParam <- function(expr) {
   #convert from expressions to enquoted strings
-  expr <- sapply(expr, deparse)
-  expr <- sapply(expr, deparse)
+  expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
+  expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
   expr <- sapply(expr, function(x) {
     paste("-e", x)
   }, simplify = TRUE, USE.NAMES = FALSE)
   return(expr)
 }
 
-##optains a session info from a local R session executed by external system commands with the given expression expr
+
+# Obtains a session info from a local R session executed by external system commands with the given expression expr or file
+# In any case, a sessioninfo is written to a temporary file and then loaded into the current session
+# If a file (rscript) is given, the script is copied to a temporary file and the commands to write the sessionInfo are appended
+#
+# This method is used for packaging R scripts (see dockerFileFromFile) 
+# and for comparing session information (see test/testtheat/test_sessioninfo_repoduce.R)
 obtain_localSessionInfo <-
-  function(expr = c(),
+  function(expr = c(), 
+           file = NULL,
            vanilla = FALSE,
-           local_tempfile = tempfile(pattern = "rdata-sessioninfo")) {
-    #create a local sessionInfo
+           local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
+    
+    
+    #append commands to create a local sessionInfo
     expr <- append(expr, .writeSessionInfoExp(local_tempfile))
+    
+    if(!is.null(file) && file.exists(file)){
+      #if a script file is given, create modified temporary script with commands appended for writing the sessioninfo
+      success <- file.copy(file, local_temp_script)
+      if(!success){
+        stop("Failed to create temporary file!")
+      }
+      
+      expr <- sapply(expr, deparse)
+      expr <- append("\r\n", expr) #insert line break
+      write(expr, file = local_temp_script, append = TRUE)
+      args <- local_temp_script
+    }else{
+
     #convert to cmd parameters
-    expr <- .exprToParam(expr)
-
+    args <- .exprToParam(expr)
+    }
+    
     if (vanilla)
-      expr <- append("--vanilla", expr)
-
+      args <- append("--vanilla", args)
+    
     message(
-      "Creating R session with the following arguments:\n\t Rscript ",
-      paste(expr, collapse = " ")
+      "Creating an R session with the following arguments:\n\t Rscript ",
+      paste(args, collapse = " ")
     )
-    system2("Rscript", expr)
+    
+    system2("Rscript", args)
+    
+    if(!file.exists(local_tempfile))
+      stop("Failed to execute the script locally! A sessionInfo could not be determined.")
+
     load(local_tempfile)
-    #unlink(local_tempfile);rm(local_tempfile)
+    #clean up:
+    unlink(local_tempfile)
+    unlink(local_temp_script)
     return(get("info"))
   }
 
-##optains a session info from an R session executed in docker given expression expr and a docker image with R installed
+## optains a session info from an R session executed in docker given expression expr and a docker image with R installed
+# TODO: 
+#  This method currently supports only expressions as an input (they sould not be to long and complex). 
+#  If the method should also execute complete scripts and optain the sessionInfo, it would have to be re-written according to optain_localSessionInfo. 
+#  A temporary R script must be mounted. And then exectuted inside the container.
+#  As this function was only created for test purposes in order to compare sessionInfos
+#  (see test/testtheat/test_sessioninfo_repoduce.R) this feature is out of scope at the moment.
 obtain_dockerSessionInfo <-
   function(docker_image,
            expr = c(),
            vanilla = FALSE,
            docker_tempdir = "/tmp/containerit_temp",
-           local_tempdir = tempfile(pattern = "dir")
-           ,
+           local_tempdir = tempfile(pattern = "dir"),
            deleteTempfiles = TRUE) {
     #create local temporary directory
     dir.create(local_tempdir)
@@ -169,3 +240,23 @@ obtain_dockerSessionInfo <-
       unlink(local_tempdir, recursive = TRUE)
     return(get("info"))
   }
+
+
+
+#dynamically evaluates the 'context' slot of a dockerfile object and returns the normalized path if possible (see base::normalizePath(...))
+.contextPath <- function(dockerfile){
+  path = slot(dockerfile, "context")
+  if(path == "workdir"){
+    return(normalizePath(getwd()))
+  }
+  else return(normalizePath(path))
+}
+
+addInstruction <- function(dockerfileObject, value){
+  instructions <- slot(dockerfileObject,"instructions")
+  instructions <- append(instructions, value)
+  slot(dockerfileObject,"instructions") <- instructions
+  return(dockerfileObject)
+}
+
+"addInstruction<-" <- addInstruction
