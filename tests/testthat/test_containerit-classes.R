@@ -71,3 +71,17 @@ test_that("A valid Run instruction can be created" , {
   expect_error(Run(exec = "R", params = c("param", NA_character_)))
   expect_error(Run(exec = "R", params = c("param", "")))
 })
+
+
+test_that("A valid Copy instruction can be created" , {
+  obj <- Copy(c("script.R","exampleFolder"),"path/to/destination")
+  expect_equal(toString(obj), "COPY [\"script.R\", \"exampleFolder\", \"path/to/destination\"]")
+
+  expect_error(Copy())
+  expect_error(Copy("src"))
+  expect_error(Copy(c("a","b"),c("dest","b")))
+})
+
+
+toString(Copy(c("script.R","exampleFolder"),"path/to/destination"))
+

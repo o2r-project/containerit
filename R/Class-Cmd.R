@@ -85,3 +85,22 @@ setValidity(
 setMethod("docker_arguments",
           signature(obj = "Cmd"),
           .arguments.Cmd_Run)
+
+
+#' Create CMD instruction for running an Rscript
+#' 
+#' Schema: Rscript [--options] [file] [args]
+#'
+#' @param path The name of the R script that should run on startup or a path relative to the working directory
+#' @param options (optional) Options or flags to be passed to Rscript
+#' @param args (otional) Argumands to be passed to the R script
+#' 
+#' @return A CMD instruction
+#' @export
+CMD_Rscript <- function(path, options = character(0), args = character(0)){
+  params = append(options, path)
+  params = append(params, args)
+  Cmd("Rscript", params=params)
+}
+
+

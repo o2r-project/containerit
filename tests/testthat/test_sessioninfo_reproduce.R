@@ -1,5 +1,7 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
+# This script may take a few minutes. Disable this test, e.g. by renaming the file, in order to speed-up the testing
+
 library(containerit)
 context("session-reproduction")
 
