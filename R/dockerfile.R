@@ -30,9 +30,9 @@ dockerfile <-
   function(from = utils::sessionInfo(),
            objects = character(0),
            maintainer = Maintainer(name = Sys.info()[["user"]]),
-           r_version = .defaultRVersion(from),
+           r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
-           env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
+           env = list(generator = paste("containeRit", utils::packageVersion("containeRit"))),
            context = "workdir", 
            soft = FALSE,
            copy = "script",
@@ -43,7 +43,7 @@ dockerfile <-
     flog.debug("Creating a new Dockerfile from %s", from)
     .dockerfile <- NA
     .originalFrom <- class(from)
-    
+
     #parse From-object from string if necessary
     if (is.character(image)) {
       image <- parseFrom(image)
@@ -67,7 +67,7 @@ dockerfile <-
         paste(.supported_images, collapse = "\n")
       )
     }
-    
+
     .dockerfile <-
       new(
         "Dockerfile",
@@ -103,7 +103,6 @@ dockerfile <-
       stop("Unsupported 'from': ", class(from)," ", from)
     }
 
-    
     flog.info("Created Dockerfile-Object based on %s", .originalFrom)
     message("Created Dockerfile-Object based on ", .originalFrom, ".")
     return(.dockerfile)
@@ -114,7 +113,7 @@ dockerfile <-
 #' @param x An object of class Dockerfile
 #' @param ... Arguments to be passed down to format.default
 #'
-#' @return The content of the dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
+#' @return The content of the Dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
 #' @export
 #'
 #' @examples
@@ -143,7 +142,6 @@ format.Dockerfile <- function(x, ...) {
 .write.Dockerfile <-
   function(x, file = file.path(.contextPath(x), "Dockerfile")) {
     flog.info("Writing dockerfile to %s", file)
-    message("Writing dockerfile to ", file)
     return(write(as.character(format(x)), file))
   }
 
@@ -167,19 +165,19 @@ setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 dockerfileFromSession <- function(session, .dockerfile, soft) {
   instructions <- slot(.dockerfile, "instructions")
-  
+
   apks <- session$otherPkgs
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) ##packages to be installed
-  
-  # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms 
-  platform = NULL 
+
+  # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms
+  platform = NULL
   image_name = .dockerfile@image@image
   if(image_name %in% .rocker_images)
-    platform = .debian_platform 
-  
+    platform = .debian_platform
+
   run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft)
-  
+
   instructions <- append(instructions, run_instructions)
   slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
@@ -257,7 +255,7 @@ dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
       include.dirs = FALSE,
       recursive = TRUE
     )
-  
+ 
   if(length(.rFiles) > 0){
     if(length(.rFiles) > 1)
       warning("Found ",length(.rFiles)," .R files in the workspace. ContaineRit will use the first one as follows for packaging: \n\t",
@@ -275,7 +273,7 @@ dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
 
 imagefromRVersion <- function(r_version) {
   #check if dockerized R version is available (maybe check other repositories too?)
-  tags <- tagsfromRemoteImage("rocker/r-ver")
+  tags <- tagsfromRemoteImage(.rocker_images[["versioned"]])
   if (!r_version %in% tags) {
     warning(
       "No Docker image found for the given R version. ",
@@ -285,8 +283,8 @@ imagefromRVersion <- function(r_version) {
       paste(tags, collapse = " ")
     )
   }
-  
-  image <- From("rocker/r-ver", tag = r_version)
+
+  image <- From(.rocker_images[["versioned"]], tag = r_version)
   return(image)
 }
 
@@ -307,18 +305,26 @@ tagsfromRemoteImage <- function(image) {
   return(tags)
 }
 
-
-.defaultRVersion <- function(from) {
+#' Get R version from a variety of sources in a string format used for image tags
+#'
+#' Returns either a version extracted from a given object or the default version.
+#'
+#' @param from the source to extract an R version: an `sessionInfo()` object
+#'
+#' @export
+#'
+#' @examples
+#' getRVersionTag(from = sessionInfo())
+#' getRVersionTag()
+getRVersionTag <- function(from = NULL, default = R.Version()) {
   r_version <- NULL
   if (inherits(from, "sessionInfo")) {
     r_version <- from$R.version
   } else
     r_version <- R.Version()
-  
+
   return(paste(r_version$major, r_version$minor, sep = "."))
 }
-
-
 
 .makeRelative <- function(files, from) {
   out = sapply(files, function(file) {
@@ -332,3 +338,4 @@ tagsfromRemoteImage <- function(image) {
   })
   as.character(out)
 }
+

@@ -16,4 +16,3 @@ A single character string in Dockerfile syntax
 \description{
 Convert an Instruction-object to a string holding a Docker instruction
 }
-

@@ -18,4 +18,3 @@ S4 Class representing a COPY-instruction
 \examples{
 #no example yet
 }
-

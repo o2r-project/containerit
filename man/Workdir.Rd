@@ -18,4 +18,3 @@ Constructor for a WORKDIR instruction
 \examples{
 #no example yet
 }
-

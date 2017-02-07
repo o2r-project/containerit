@@ -1,11 +1,11 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
 ##set CRAN mirror (the rocker default MRAN is sometimes not up-to-date with current packages)
-.default_cran_mirror <- "https://cran.rstudio.com"
+.default_cran_mirror <- "https://cloud.r-project.org"
 
 #' Get default cran mirror to be used to install R packages
 #'
-#' @return The mirror's url as single character string (default: "https://cran.rstudio.com")
+#' @return The mirror's url as single character string (default: "https://cloud.r-project.org")
 #' @export
 #'
 get_docker_cran_mirror <- function() {
@@ -22,10 +22,10 @@ set_docker_cran_mirror <- function(cran_url){
   .default_cran_mirror <<- cran_url
 }
 
-.rocker_images <- c("rocker/r-ver",
-                   "rocker/rstudio",
-                   "rocker/tidyverse",
-                   "rocker/verse")
+.rocker_images <- c(versioned = "rocker/r-ver",
+                   rstudio = "rocker/rstudio",
+                   tidyverse = "rocker/tidyverse",
+                   verse = "rocker/verse")
 
 ##TODO: append more supported images
 .supported_images <- .rocker_images

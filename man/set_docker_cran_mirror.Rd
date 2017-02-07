@@ -12,4 +12,3 @@ set_docker_cran_mirror(cran_url)
 \description{
 Set default cran mirror to be used to install R packages
 }
-

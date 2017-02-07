@@ -20,4 +20,3 @@ Copy one or more files or directories to a Docker image
 \examples{
 #no example yet
 }
-

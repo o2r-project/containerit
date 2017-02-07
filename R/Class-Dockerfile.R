@@ -6,13 +6,13 @@
 #' @include Class-Cmd.R
 #' @include Class-From.R
 #' @include Class-Instruction.R
-#' 
+#'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/}.
 #'
 #' @slot image the base image, used in the FROM statement (character)
 #' @slot maintainer the MAINTAINER (object of class maintainer)
 #' @slot instructions an ordered list of instructions in the Dockerfile (list of character)
-#' @slot context Directories that shall be included in the context when dockerfile is build
+#' @slot context Directories that shall be included in the context when Dockerfile is build
 #' @slot cmd the default cmd instruction applied to the container
 #'
 #' @return an object of class \code{Dockerfile}

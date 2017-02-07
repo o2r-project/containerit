@@ -12,7 +12,7 @@
 \item{...}{Arguments to be passed down to format.default}
 }
 \value{
-The content of the dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
+The content of the Dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
 }
 \description{
 Format a Dockerfile object to a series of instructions
@@ -20,4 +20,3 @@ Format a Dockerfile object to a series of instructions
 \examples{
 format(dockerfile())
 }
-

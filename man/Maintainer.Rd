@@ -17,4 +17,3 @@ Maintainer object
 \description{
 create objects of class Maintainer
 }
-

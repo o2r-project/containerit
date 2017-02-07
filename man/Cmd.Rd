@@ -20,4 +20,3 @@ create objects representing a CMD instruction
 \examples{
 toString(Cmd("R","--vanilla"))
 }
-
