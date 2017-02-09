@@ -9,7 +9,8 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
   r_version = getRVersionTag(from), image = imagefromRVersion(r_version),
   env = list(generator = paste("containeRit",
   utils::packageVersion("containeRit"))), context = "workdir", soft = FALSE,
-  copy = "script", container_workdir = "payload/", cmd = Cmd("R"))
+  copy = "script", container_workdir = "payload/", cmd = Cmd("R"),
+  add_self = FALSE)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -35,6 +36,8 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 \item{container_workdir}{the working directory of the container}
 
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
+
+\item{add_self}{Whether to add the package containeRit itself if loaded/attached to the session}
 }
 \value{
 An object of class Dockerfile
@@ -46,4 +49,3 @@ Create a Dockerfile based on either a sessionInfo, a workspace or a file
 dockerfile()
 
 }
-

@@ -17,7 +17,7 @@
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
-#' 
+#' @param add_self Whether to add the package containeRit itself if loaded/attached to the session
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -36,7 +36,8 @@ dockerfile <-
            soft = FALSE,
            copy = "script",
            container_workdir = "payload/",
-           cmd = Cmd("R")
+           cmd = Cmd("R"),
+           add_self = FALSE
            )
       {
     flog.debug("Creating a new Dockerfile from %s", from)
@@ -82,17 +83,17 @@ dockerfile <-
 
     if (inherits(x = from, "sessionInfo")) {
       .dockerfile <-
-        dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft)
+        dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
     } else if (inherits(x = from, "character") ) {
       
       if (dir.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft)
+          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
       } else if (file.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy)
+          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy, add_self = add_self)
       } else {
         stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
       }
@@ -163,7 +164,7 @@ setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 
 
-dockerfileFromSession <- function(session, .dockerfile, soft) {
+dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   instructions <- slot(.dockerfile, "instructions")
 
   apks <- session$otherPkgs
@@ -176,14 +177,14 @@ dockerfileFromSession <- function(session, .dockerfile, soft) {
   if(image_name %in% .rocker_images)
     platform = .debian_platform
 
-  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft)
+  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft, add_self = add_self)
 
   instructions <- append(instructions, run_instructions)
   slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile, soft, copy) {
+dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
   context = .contextPath(.dockerfile)
   file = normalizePath(file)
 
@@ -239,13 +240,13 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy) {
   message("Executing R file in ", rel_path," locally.")
   sessionInfo <- obtain_localSessionInfo(file = file)
   ##append system dependencies
-  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft)
+  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
     
   return(.dockerfile)
 }
 
 
-dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
+dockerfileFromWorkspace <- function(path, .dockerfile, soft, add_self) {
 
   .rFiles <-
     dir(
@@ -263,7 +264,7 @@ dockerfileFromWorkspace <- function(path, .dockerfile, soft) {
     else
       message("ContaineRit will use the followint R script packaging: \n\t",
             .rFiles[1])
-    return(dockerfileFromFile(.rFiles[1], .dockerfile = .dockerfile, soft = soft, copy = "script_dir"))
+    return(dockerfileFromFile(.rFiles[1], .dockerfile = .dockerfile, soft = soft, copy = "script_dir", add_self = add_self))
   }else { 
     stop("The Workspace does not contain any R file that can be packaged.")
   }
@@ -293,10 +294,13 @@ tagsfromRemoteImage <- function(image) {
     paste0("https://registry.hub.docker.com/v2/repositories/",
            image,
            "/tags/")
-  con <- url(urlstr)
-  str <- readLines(con, warn = FALSE)
-  str
-  close(con)
+  
+  tryCatch({
+    con <- url(urlstr)
+    str <- readLines(con, warn = FALSE)
+  },
+  finally = close(con))
+
   parser <- rjson::newJSONParser()
   parser$addData(str)
   tags <- sapply(parser$getObject()$results, function(x) {

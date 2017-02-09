@@ -1,7 +1,7 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
 #pkgs list of packages as returned by sessionInfo
-.create_run_install <- function(pkgs, platform, soft) {
+.create_run_install <- function(pkgs, platform, soft, add_self) {
 
   #create RUN expressions
   package_reqs <- character(0)
@@ -15,6 +15,9 @@
              name <- pkg$Package
            else
              stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
+           
+           if(name == "containeRit" && !add_self)
+             return()
 
            if ("Priority" %in% names(pkg) &&
                stringr::str_detect(pkg$Priority, "(?i)base")) {

@@ -72,3 +72,15 @@ test_that("R version is the current version if not specified otherwise", {
   expect_equal(as.character(slot(slot(dfile, "image"), "postfix")),
                paste(R.Version()$major, R.Version()$minor, sep = "."))
 })
+
+
+test_that("The package containerIt is not packaged by default (add_self = FALSE)", {
+  sessionInfo = obtain_localSessionInfo(expr = quote(library(containeRit)))
+  df = dockerfile(sessionInfo)
+  #test should have sufficient accuracy. Optionally test also with add_self = TRUE later on
+  expect_false(any(stringr::str_detect(format(df), "^RUN.*containeRit")))
+  
+})
+
+
+

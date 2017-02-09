@@ -18,4 +18,3 @@ Returns either a version extracted from a given object or the default version.
 getRVersionTag(from = sessionInfo())
 getRVersionTag()
 }
-

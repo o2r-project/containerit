@@ -36,11 +36,14 @@ r_packages:
   - sp
   - gstat
   - proj4
+  - devtools
 
 r_github_packages:
   - r-hub/sysreqs
   - wch/harbor
 
+after_failure:
+  - Rscript -e 'library(methods)' -e 'devtools::test()'
 
 after_success:
 #  - Rscript -e 'covr::codecov()'

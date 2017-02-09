@@ -3,9 +3,9 @@
 \docType{package}
 \name{containeRit}
 \alias{containeRit}
-\alias{containeRit-package}
-\alias{containerization}
 \alias{containers,}
+\alias{containerization}
+\alias{containeRit-package}
 \title{containeRit: A package for packaging R objects and their dependencies in software containers}
 \description{
 The containeRit package provides two core functions:

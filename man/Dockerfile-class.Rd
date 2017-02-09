@@ -2,8 +2,8 @@
 % Please edit documentation in R/Class-Dockerfile.R
 \docType{class}
 \name{Dockerfile-class}
-\alias{Dockerfile}
 \alias{Dockerfile-class}
+\alias{Dockerfile}
 \title{An S4 class to represent a Dockerfile}
 \value{
 an object of class \code{Dockerfile}

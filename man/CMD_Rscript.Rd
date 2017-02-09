@@ -19,4 +19,3 @@ A CMD instruction
 \description{
 Schema: Rscript [--options] [file] [args]
 }
-

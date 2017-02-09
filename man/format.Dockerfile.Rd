@@ -20,4 +20,3 @@ Format a Dockerfile object to a series of instructions
 \examples{
 format(dockerfile())
 }
-
