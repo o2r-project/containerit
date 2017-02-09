@@ -7,7 +7,9 @@
 getRVersionTag(from = NULL, default = R.Version())
 }
 \arguments{
-\item{from}{the source to extract an R version: an `sessionInfo()` object}
+\item{from}{the source to extract an R version: a `sessionInfo()` object}
+
+\item{default}{if 'from' does not contain version information (e.g. its an Rscript), use this default version information.}
 }
 \description{
 Returns either a version extracted from a given object or the default version.
@@ -16,3 +18,4 @@ Returns either a version extracted from a given object or the default version.
 getRVersionTag(from = sessionInfo())
 getRVersionTag()
 }
+

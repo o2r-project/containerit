@@ -1,6 +1,6 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-library(containerit)
+library(containeRit)
 context("dockerfile-generation")
 
 test_that("a simple dockerfile object can be saved to file", {
@@ -28,13 +28,12 @@ test_that("users can specify the maintainer", {
   
   #check maintainer slot content and class
   expect_is(slot(dfile, "maintainer"), "Maintainer")
-  expect_equal(attr(class(slot(
-    dfile, "maintainer"
-  )), "package"), "containerit")
-  expect_equal(slot(slot(dfile, "maintainer"), "name"), "Matthias Hinz")
-  expect_equal(slot(slot(dfile, "maintainer"), "email"), "matthias.m.hinz@gmail.com")
+  mslot = slot(dfile, "maintainer")
+  expect_equal(attr(class(mslot), "package"), "containeRit")
+  expect_equal(slot(mslot, "name"), "Matthias Hinz")
+  expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
   #expect Maintainer instruction
-  expect_equal(toString(maintainer),
+  expect_equal(toString(mslot),
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 })
 

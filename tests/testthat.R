@@ -1,7 +1,7 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
 library(testthat)
-library(containerit)
+library(containeRit)
 
 
 
@@ -9,4 +9,4 @@ library(containerit)
 # See https://github.com/hadley/testthat/issues/144
 Sys.setenv("R_TESTS" = "")
 
-test_check("containerit")
+test_check("containeRit")

@@ -1,6 +1,8 @@
 
 context("Packaging R-Scripts and workspaces.")
 
+
+
 test_that("the R script location is checked ",{
   expect_error(dockerfile("falseScriptLocation.R"))
 })
@@ -45,17 +47,18 @@ test_that("a list of resources can be packaged ",{
 
 
 test_that("The gstat demo 'zonal' can be packaged ",{
-  setwd("test_script_gstat/")
+  expect_true(requireNamespace("sp"))
+  expect_true(requireNamespace("gstat"))
+  
   expect_false(file.exists("Rplots.pdf"))
-  df=dockerfile("zonal.R", cmd = CMD_Rscript("zonal.R")
+  df=dockerfile("test_script_gstat/zonal.R", cmd = CMD_Rscript("test_script_gstat/zonal.R")
                 , maintainer = Maintainer("matthiashinz"), r_version = "3.3.2")
   expect_true(file.exists("Rplots.pdf"))
   expect_true(file.size("Rplots.pdf") > 10000)
   #test execution would be similar to the test above; will not be done because of slowlieness
-  expected_file = readLines("Dockerfile") ## TODO: will not run yet
+  expected_file = readLines("test_script_gstat/Dockerfile") ## TODO: will not run yet
   expect_equal(format(df), expected_file)
   ##clean up:
   unlink("Rplots.pdf")
-  setwd("..")
 })
 

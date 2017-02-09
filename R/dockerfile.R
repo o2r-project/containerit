@@ -21,11 +21,10 @@
 #'
 #' @return An object of class Dockerfile
 #' @export
-#'
+#' @import futile.logger
 #' @examples
 #' dockerfile()
 #'
-#' @import futile.logger
 dockerfile <-
   function(from = utils::sessionInfo(),
            objects = character(0),
@@ -159,6 +158,7 @@ format.Dockerfile <- function(x, ...) {
 #' write(dockerfile(), file=temp)
 #' print(readLines(temp))
 #' unlink(temp)
+#' 
 setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 
@@ -309,8 +309,9 @@ tagsfromRemoteImage <- function(image) {
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
-#' @param from the source to extract an R version: an `sessionInfo()` object
-#'
+#' @param from the source to extract an R version: a `sessionInfo()` object
+#' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
+#' 
 #' @export
 #'
 #' @examples
@@ -321,7 +322,7 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
   if (inherits(from, "sessionInfo")) {
     r_version <- from$R.version
   } else
-    r_version <- R.Version()
+    r_version <- default
 
   return(paste(r_version$major, r_version$minor, sep = "."))
 }

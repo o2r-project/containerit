@@ -2,7 +2,13 @@
 
 # This script may take a few minutes. Disable this test, e.g. by renaming the file, in order to speed-up the testing
 
-library(containerit)
+library(containeRit)
+
+requireNamespace("rgdal")
+requireNamespace("proj4")
+requireNamespace("sp")
+requireNamespace("codetools")
+
 context("session-reproduction")
 
 #test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it

@@ -1,6 +1,6 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-library(containerit)
+library(containeRit)
 context("class-testing")
 
 test_that("a Maintainer instruction can be created", {

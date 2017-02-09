@@ -12,7 +12,8 @@ Imports:
     utils,
     rjson,
     stringr,
-    sysreqs
+    sysreqs,
+    futile.logger
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
@@ -33,8 +34,10 @@ Suggests:
     harbor,
     analogsea,
     googleComputeEngineR,
-    lintr
-RoxygenNote: 6.0.0
+    lintr,
+    sp,
+    gstat
+RoxygenNote: 5.0.1
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'

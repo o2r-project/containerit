@@ -46,3 +46,4 @@ Create a Dockerfile based on either a sessionInfo, a workspace or a file
 dockerfile()
 
 }
+

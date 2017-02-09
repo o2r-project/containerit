@@ -13,3 +13,4 @@ S4 Class representing a WORKDIR instruction
 \examples{
 #no example yet
 }
+

@@ -2,9 +2,10 @@
 % Please edit documentation in R/Class-Instruction.R
 \docType{class}
 \name{Instruction-class}
-\alias{Instruction-class}
 \alias{Instruction}
+\alias{Instruction-class}
 \title{The Docker Instruction - Class}
 \description{
 See official documentation at \url{https://docs.docker.com/engine/reference/builder/#format}.
 }
+

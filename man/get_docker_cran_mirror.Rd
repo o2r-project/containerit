@@ -12,3 +12,4 @@ The mirror's url as single character string (default: "https://cloud.r-project.o
 \description{
 Get default cran mirror to be used to install R packages
 }
+
