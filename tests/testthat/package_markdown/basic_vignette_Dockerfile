@@ -1,0 +1,9 @@
+FROM rocker/r-ver:3.3.2
+MAINTAINER "matthiashinz"
+WORKDIR payload/
+COPY ["package_markdown", "package_markdown/"]
+RUN ["/bin/sh", "-c", "export", "DEBIAN_FRONTEND=noninteractive"]
+RUN ["apt-get", "update", "-qq"]
+RUN ["apt-get", "install", "-y", "gdal-bin", "libgdal-dev", "libproj-dev", "pandoc pandoc-citeproc"]
+RUN ["install2.r", "-r 'https://cloud.r-project.org'", "lattice", "intervals", "FNN", "spacetime", "zoo", "gstat", "futile.options", "magrittr", "evaluate", "highr", "stringi", "sp", "futile.logger", "xts", "rgdal", "rjson", "lambda.r", "foreign", "stringr", "maptools", "knitr"]
+CMD ["R"]

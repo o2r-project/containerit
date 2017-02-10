@@ -134,31 +134,40 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 # and for comparing session information (see test/testtheat/test_sessioninfo_repoduce.R)
 obtain_localSessionInfo <-
   function(expr = c(), 
-           file = NULL,
-           vanilla = FALSE,
+           file = NULL, #an R script to be executed
+           md_file = NULL, #a markdown file or anything that can be compiled with knitr::knit(...)
+           vanilla = TRUE,
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
     
-    
     #append commands to create a local sessionInfo
-    expr <- append(expr, .writeSessionInfoExp(local_tempfile))
     
     if(!is.null(file) && file.exists(file)){
+      expr <- append(expr, call("source", file))
+
       #if a script file is given, create modified temporary script with commands appended for writing the sessioninfo
-      success <- file.copy(file, local_temp_script)
-      if(!success){
-        stop("Failed to create temporary file!")
-      }
+      #success <- file.copy(file, local_temp_script)
+      #if(!success){
+      #  stop("Failed to create temporary file!")
+      #}
       
-      expr <- sapply(expr, deparse)
-      expr <- append("\r\n", expr) #insert line break
-      write(expr, file = local_temp_script, append = TRUE)
-      args <- local_temp_script
-    }else{
+      #expr <- sapply(expr, deparse)
+      #expr <- append("\r\n", expr) #insert line break
+      #write(expr, file = local_temp_script, append = TRUE)
+      #args <- local_temp_script
+    }#else{
 
     #convert to cmd parameters
-    args <- .exprToParam(expr)
+    #args <- .exprToParam(expr)
+    #}
+    
+    
+    if(!is.null(md_file) && file.exists(md_file)){
+      expr <-  append(expr, quote(library(knitr)))
+      expr <- append(expr, call("knit", input = md_file))
     }
     
+    expr <- append(expr, .writeSessionInfoExp(local_tempfile))
+    args <- .exprToParam(expr)
     if (vanilla)
       args <- append("--vanilla", args)
     

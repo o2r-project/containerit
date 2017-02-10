@@ -234,11 +234,15 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
     )
   }
   
-  if(!stringr::str_detect(file, ".R$")){
-    message("The supplied file ",file," has no known extension. ContaineRit will handle it as an R script for packaging.")
-  }
-  message("Executing R file in ", rel_path," locally.")
-  sessionInfo <- obtain_localSessionInfo(file = file)
+  if(stringr::str_detect(file, ".R$")){
+    message("Executing R script file in ", rel_path," locally.")
+    sessionInfo <- obtain_localSessionInfo(file = file)
+  } else if(stringr::str_detect(file, ".Rnw$") || stringr::str_detect(file, ".Rmd$")){
+      message("Processing the given file ", rel_path," locally using knitr::knit(...)")
+      sessionInfo <- obtain_localSessionInfo(md_file = file)
+  } else
+    message("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
+  
   ##append system dependencies
   .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
     
@@ -246,30 +250,74 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
 }
 
 
-dockerfileFromWorkspace <- function(path, .dockerfile, soft, add_self) {
-
-  .rFiles <-
-    dir(
-      path = path,
-      pattern = "\\.R$",
-      full.names = TRUE,
-      include.dirs = FALSE,
-      recursive = TRUE
-    )
- 
-  if(length(.rFiles) > 0){
-    if(length(.rFiles) > 1)
-      warning("Found ",length(.rFiles)," .R files in the workspace. ContaineRit will use the first one as follows for packaging: \n\t",
-              .rFiles[1])
-    else
-      message("ContaineRit will use the followint R script packaging: \n\t",
-            .rFiles[1])
-    return(dockerfileFromFile(.rFiles[1], .dockerfile = .dockerfile, soft = soft, copy = "script_dir", add_self = add_self))
-  }else { 
-    stop("The Workspace does not contain any R file that can be packaged.")
+dockerfileFromWorkspace <-
+  function(path, .dockerfile, soft, add_self) {
+    .rFiles <-
+      dir(
+        path = path,
+        pattern = "\\.R$",
+        full.names = TRUE,
+        include.dirs = FALSE,
+        recursive = TRUE
+      )
+    
+    .md_Files <-
+      dir(
+        path = path,
+        pattern = "\\.Rmd$|\\.Rnw$",
+        full.names = TRUE,
+        include.dirs = FALSE,
+        recursive = TRUE
+      )
+    
+    if (length(.rFiles) > 0) {
+      if (length(.rFiles) > 1)
+        warning(
+          "Found ",
+          length(.rFiles),
+          " .R files in the workspace. ContaineRit will use the first one as follows for packaging: \n\t",
+          .rFiles[1]
+        )
+      else
+        message("ContaineRit will use the following R script for packaging: \n\t",
+                .rFiles[1])
+      
+      return(
+        dockerfileFromFile(
+          .rFiles[1],
+          .dockerfile = .dockerfile,
+          soft = soft,
+          copy = "script_dir",
+          add_self = add_self
+        )
+      )
+    } else if (length(.md_Files) > 0) {
+      if (length(.md_Files) > 1)
+        warning(
+          "Found ",
+          length(.md_Files),
+          " Sweave / Markdown files in the workspace. ContaineRit will use the first one as follows for packaging: \n\t",
+          .md_Files[1]
+        )
+      else
+        message(
+          "ContaineRit will use the following Sweave / Markdown file for packaging: \n\t",
+          .md_Files[1]
+        )
+      
+      return(
+        dockerfileFromFile(
+          .md_Files[1],
+          .dockerfile = .dockerfile,
+          soft = soft,
+          copy = "script_dir",
+          add_self = add_self
+        )
+      )
+      
+    } else
+      stop("The Workspace does not contain any R file that can be packaged.")
   }
-}
-
 
 
 imagefromRVersion <- function(r_version) {
