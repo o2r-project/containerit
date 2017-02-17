@@ -135,7 +135,8 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 obtain_localSessionInfo <-
   function(expr = c(), 
            file = NULL, #an R script to be executed
-           md_file = NULL, #a markdown file or anything that can be compiled with knitr::knit(...)
+           rmd_file = NULL, #a markdown file
+           rnw_file = NULL, # a sweave file or anything that can be compiled with knitr::knit(...)
            vanilla = TRUE,
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
     
@@ -161,9 +162,17 @@ obtain_localSessionInfo <-
     #}
     
     
-    if(!is.null(md_file) && file.exists(md_file)){
-      expr <-  append(expr, quote(library(knitr)))
-      expr <- append(expr, call("knit", input = md_file))
+    if(!is.null(rmd_file) && file.exists(rmd_file)){
+      #TODO: configure output format?
+      render_call <- quote(rmarkdown::render("file"))
+      render_call[[2]] <- rmd_file #replace the argument "file
+      expr <- append(expr, render_call)
+    }
+    
+    if(!is.null(rnw_file) && file.exists(rnw_file)){
+      render_call <- quote(knitr::knit2pdf("file", clean = TRUE))
+      render_call[[2]] <- rnw_file  #replace the argument "file
+      expr <- append(expr, render_call)
     }
     
     expr <- append(expr, .writeSessionInfoExp(local_tempfile))

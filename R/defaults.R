@@ -25,12 +25,15 @@ set_docker_cran_mirror <- function(cran_url){
 .rocker_images <- c(versioned = "rocker/r-ver",
                    rstudio = "rocker/rstudio",
                    tidyverse = "rocker/tidyverse",
-                   verse = "rocker/verse")
+                   verse = "rocker/verse",
+                   geospatial = "rocker/geospatial")
 
 ##TODO: append more supported images
 .supported_images <- .rocker_images
 
 .debian_platform = "linux-x86_64-debian-gcc"
+
+.ubuntu_platform = "linux-x86_64-ubuntu-gcc"
 
 # TODO: Support more platforms analogue to rsysreqs > https://github.com/r-hub/sysreqsdb/tree/master/platforms
 ## Enhance method .create_run_install with mappings from system requrirements to system comands

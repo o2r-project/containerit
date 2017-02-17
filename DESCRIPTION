@@ -36,7 +36,8 @@ Suggests:
     googleComputeEngineR,
     lintr,
     sp,
-    gstat
+    gstat,
+    sf
 RoxygenNote: 6.0.1
 Collate:
     'Class-Instruction.R'

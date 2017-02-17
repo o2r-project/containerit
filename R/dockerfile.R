@@ -237,9 +237,12 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
   if(stringr::str_detect(file, ".R$")){
     message("Executing R script file in ", rel_path," locally.")
     sessionInfo <- obtain_localSessionInfo(file = file)
-  } else if(stringr::str_detect(file, ".Rnw$") || stringr::str_detect(file, ".Rmd$")){
-      message("Processing the given file ", rel_path," locally using knitr::knit(...)")
-      sessionInfo <- obtain_localSessionInfo(md_file = file)
+  } else if(stringr::str_detect(file, ".Rnw$")){
+      message("Processing the given file ", rel_path," locally using knitr::knit2pdf(..., clean = TRUE)")
+      sessionInfo <- obtain_localSessionInfo(rnw_file = file)
+  }else if(stringr::str_detect(file, ".Rmd$")){
+    message("Processing the given file ", rel_path," locally using rmarkdown::render(...)")
+    sessionInfo <- obtain_localSessionInfo(rmd_file = file)
   } else
     message("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
   

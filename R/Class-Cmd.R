@@ -97,10 +97,34 @@ setMethod("docker_arguments",
 #' 
 #' @return A CMD instruction
 #' @export
-CMD_Rscript <- function(path, options = character(0), args = character(0)){
-  params = append(options, path)
-  params = append(params, args)
-  Cmd("Rscript", params=params)
+CMD_Rscript <- function(path, options = character(0), args = character(0), vanilla = TRUE){
+  params <- append(options, path)
+  params <- append(params, args)
+  Cmd("Rscript", params = params)
 }
 
+
+
+#' Create CMD instruction for rendering a markdown file
+#' 
+#' Schema: Rscript [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
+#'
+#' @param path The name of the R markdown file that should run on startup or a path relative to the working directory
+#' @param options (optional) Options or flags to be passed to Rscript
+#' @param output_format The output format as ins \code{rmakdown::render(...)}
+#' 
+#' @seealso \link{markdown::render}
+#' 
+#' @return A CMD instruction
+#' @export
+CMD_Render <- function(path, options = character(0), output_format = rmarkdown::html_document()){
+  params <- options
+  render_call <- quote(rmarkdown::render("file", output_format = "format"))
+  render_call[[2]] <- path
+  render_call[[3]] <- substitute(output_format)
+  expr <- .exprToParam(as.expression(render_call))
+  params <- append(params , expr)
+#CMD ["R --vanilla -e \"rmarkdown::render(input = '/erc/2016-07-17-sf2.Rmd', output_format = rmarkdown::html_document())\""]  
+  Cmd("Rscript", params = as.character(params))
+}
 
