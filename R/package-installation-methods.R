@@ -1,7 +1,7 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
 #pkgs list of packages as returned by sessionInfo
-.create_run_install <- function(pkgs, platform, soft, add_self) {
+.create_run_install <- function(pkgs, platform, soft, add_self, no_apt) {
 
   #create RUN expressions
   package_reqs <- character(0)
@@ -27,6 +27,9 @@
            #determine package dependencies (if applicable by given platform)
            if(isTRUE(platform %in% .supported_platforms)){
              pkg_dep <- .find_system_dependencies(name, platform = platform, package_version = pkg$Version, soft = soft)
+             #workaround for issue https://github.com/r-hub/sysreqsdb/issues/22 TODO: remove if not needed anymore
+             pkg_dep <- unlist(stringr::str_split(pkg_dep, pattern = " "))
+
              package_reqs <<- append(package_reqs, pkg_dep)
            }
 
@@ -46,8 +49,10 @@
          })
 
   run_instructions <- list()
-  package_reqs <-
-    levels(as.factor(package_reqs)) #remove dublicate system requirements
+  #remove dublicate system requirements
+  package_reqs <- levels(as.factor(package_reqs)) 
+  #some packages may not need to be installed, e.g. because they are pre-installed for a certain image
+  package_reqs <- package_reqs[!package_reqs %in% no_apt]
 
   #install system dependencies
   if(!isTRUE(platform %in% .supported_platforms)){
@@ -157,7 +162,7 @@
       warning(
         "Could not package DESCRIPTION for package '",
         package,
-        ", on CRAN. Containerit failed to determine system requriements."
+        ", on CRAN. ContaineRit failed to determine system requriements."
       )
       return(NULL)
     } else {

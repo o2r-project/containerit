@@ -115,13 +115,15 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 }
 
 #converts an vector or list of R expression into commandline parmaeters for RScript
-.exprToParam <- function(expr) {
+.exprToParam <- function(expr, e_append = paste) {
   #convert from expressions to enquoted strings
   expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
-  expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
-  expr <- sapply(expr, function(x) {
-    paste("-e", x)
-  }, simplify = TRUE, USE.NAMES = FALSE)
+  expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)}, simplify = TRUE, USE.NAMES = FALSE)
+  
+  if(!is.null(e_append))
+    expr <- sapply(expr, function(x) {
+      e_append("-e", x)
+    })
   return(expr)
 }
 

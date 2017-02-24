@@ -1,0 +1,213 @@
+---
+layout: post
+title:  "Simple features for R, part 2"
+date:  "Jul 18, 2016"
+comments: true
+author: Edzer Pebesma
+categories: r
+---
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+[This ERC is based on the blog post [Simple features for R, part 2](http://r-spatial.org/r/2016/07/18/sf2.html), published under [CC-BY](http://creativecommons.org/licenses/by/4.0/) license.]
+
+# What happened so far?
+
+* in an earlier [blog post](http://r-spatial.org/r/2016/02/15/simple-features-for-r.html) I introduced the idea of having simple features mapped directly into simple R objects
+* an R Consortium [ISC proposal](https://github.com/edzer/sfr/blob/master/PROPOSAL.md) to implement this got [granted](https://www.r-consortium.org/news/announcement/2016/03/r-consortium-funds-technical-initiatives-community-events-and-training)
+* during [UseR! 2016](https://user2016.sched.org/event/7BRR/spatial-data-in-r-simple-features-and-future-perspectives) I presented this proposal ([slides](http://pebesma.staff.ifgi.de/pebesma_sfr.pdf)), which we followed up with an open discussion on future directions
+* first steps to implement this in the [sf](https://github.com/edzer/sfr/) package have finished, and are described below
+
+This blog post describes current progress.
+
+# Install & test
+
+You can install package `sf` directly from github:
+```{r eval=FALSE}
+library(devtools) # maybe install first?
+install_github("edzer/sfr", ref = "16e205f54976bee75c72ac1b54f117868b6fafbc")
+```
+if you want to try out `read.sf`, which reads through GDAL 2.0, 
+you also need my fork of the R package [rgdal2](https://github.com/thk686/rgdal2), installed by
+```{r eval=FALSE}
+install_github("edzer/rgdal2")
+```
+this, obviously, requires that GDAL 2.0 or later is installed, along with development files. 
+
+After installing, a vignette contains some basic operations, and is shown by
+```{r eval=FALSE}
+library(sf)
+vignette("basic")
+```
+
+# How does it work?
+
+Basic design ideas and constraints have been written in [this document](https://github.com/edzer/sfr/blob/master/DESIGN.md).
+
+Simple features are one of the following [17 types](https://en.wikipedia.org/wiki/Well-known_text): Point,
+LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection, CircularString, CompoundCurve, CurvePolygon, MultiCurve, MultiSurface, Curve, Surface, PolyhedralSurface, TIN, and Triangle.  Each type can have 2D points (XY), 3D points (XYZ), 2D points with measure (XYM) and 3D points with measure (XYZM). This leads to 17 x 4 = 68 combinations.
+
+The first seven of these are most common, and *have been implemented*, allowing for XY, XYZ, XYM and XYZM geometries.
+
+## Simple feature instances: `sfi`
+
+A single simple feature is created by calling the constructor function, along with a modifier in case a three-dimensional geometry has measure "M" as its third dimension:
+```{r}
+library(sf)
+POINT(c(2,3))
+POINT(c(2,3,4))
+POINT(c(2,3,4), "M")
+POINT(c(2,3,4,5))
+```
+what is printed is a [well kown text](https://en.wikipedia.org/wiki/Well-known_text) representation of the object; the data itself is however stored as a regular R vector or matrix:
+```{r}
+str(POINT(c(2,3,4), "M"))
+str(LINESTRING(rbind(c(2,2), c(3,3), c(3,2))))
+```
+
+By using the two simple rules that
+
+1. sets of points are kept in a `matrix`
+1. other sets are kept in a `list`
+
+we end up with the following structures, with increasing complexity:
+
+### Sets of points (matrix):
+```{r}
+str(LINESTRING(rbind(c(2,2), c(3,3), c(3,2))))
+str(MULTIPOINT(rbind(c(2,2), c(3,3), c(3,2))))
+```
+### Sets of sets of points:
+```{r}
+str(MULTILINESTRING(list(rbind(c(2,2), c(3,3), c(3,2)), rbind(c(2,1),c(0,0)))))
+outer = matrix(c(0,0,10,0,10,10,0,10,0,0),ncol=2, byrow=TRUE)
+hole1 = matrix(c(1,1,1,2,2,2,2,1,1,1),ncol=2, byrow=TRUE)
+hole2 = matrix(c(5,5,5,6,6,6,6,5,5,5),ncol=2, byrow=TRUE)
+str(POLYGON(list(outer, hole1, hole2)))
+```
+
+### Sets of sets of sets of points:
+```{r}
+pol1 = list(outer, hole1, hole2)
+pol2 = list(outer + 12, hole1 + 12)
+pol3 = list(outer + 24)
+mp = MULTIPOLYGON(list(pol1,pol2,pol3))
+str(mp)
+```
+### Sets of sets of sets of sets of points:
+```{r}
+str(GEOMETRYCOLLECTION(list(MULTIPOLYGON(list(pol1,pol2,pol3)), POINT(c(2,3)))))
+```
+where this is of course a worst case: `GEOMETRYCOLLECTION` objects
+with simpler elements have less nesting.
+
+### Methods for `sfi`
+
+The following methods have been implemented for `sfi` objects:
+```{r}
+methods(class = "sfi")
+```
+
+### Alternatives to this implementation
+
+1. Package [rgdal2](https://github.com/thk686/rgdal2) reads point sets not in a matrix, but into a list with numeric vectors named `x` and `y`. This is closer to the GDAL (OGR) data model, and would allow for easier disambiguation of the third dimension (`m` or `z`) in case of three-dimensional points. It is more difficult to select a single point, and requires validation of vector lenghts being identical. I'm inclined to keep using `matrix` for point sets.
+1. Currently, `POINT Z` is of class `c("POINT Z", "sfi")`. An alternative would be to have it derive from `POINT`, i.e. give it class `c("POINT Z", "POINT", "sfi")`. This would make it easier to write methods for XYZ, XYM and XYZM geometries.  This may be worth trying out.
+
+## Simple feature list columns: `sfc`
+
+Collections of simple features can be added together into a list. If all elements of this list
+
+* are of identical type (have identical class), or are a mix of `X` and `MULTIX` (with `X` being one of `POINT`, `LINESTRING` or `POLYGON`)
+* have an identical coordinate reference system
+
+then they can be combined in a `sfc` object. This object
+
+* converts, if needed, `X` into `MULTIX` (this is also what PostGIS does),
+* registers the coordinate reference system in attributes `epsg` and `proj4string`,
+* has the bounding box in attribute `bbox`, and updates it after subsetting
+
+```{r}
+ls1 = LINESTRING(rbind(c(2,2), c(3,3), c(3,2)))
+ls2 = LINESTRING(rbind(c(5,5), c(4,1), c(1,2)))
+sfc = sfc(list(ls1, ls2), epsg = 4326)
+attributes(sfc)
+attributes(sfc[1])
+```
+
+The following methods have been implemented for `sfc` simple feature list columns:
+```{r}
+methods(class = "sfc")
+```
+
+## data.frames with simple features: `sf`
+
+Typical spatial data contain attribute values and attribute geometries. When combined in a table, they can be converted into `sf` objects, e.g. by
+```{r}
+roads = data.frame(widths = c(5, 4.5))
+roads$geom = sfc
+roads.sf = sf(roads)
+roads.sf
+summary(roads.sf)
+attributes(roads.sf)
+```
+here, attribute `relation_to_geometry` allows documenting how attributes relate to the geometry: are they constant (field), aggregated over the geometry (lattice), or do they identify individual entities (buildings, parcels etc.)?
+
+The following methods have been implemented for `sfc` simple feature list columns:
+```{r}
+methods(class = "sf")
+```
+
+
+## Coercion to and from `sp`
+
+Points, MultiPoints, Lines, MultiLines, Polygons and MultiPolygons can be converted between `sf` and [sp](https://cran.r-project.org/web/packages/sp/index.html), both ways. A round trip is demonstrated by:
+```{r}
+df = data.frame(a=1)
+df$geom = sfc(list(mp))
+sf = sf(df)
+library(methods)
+a = as(sf, "Spatial")
+class(a)
+b = as.sf(a)
+all.equal(sf, b) # round-trip sf-sp-sf
+a2 = as(a, "SpatialPolygonsDataFrame")
+all.equal(a, a2) # round-trip sp-sf-sp
+```
+
+## Reading through GDAL
+
+Function `read.sf` works, if `rgdal2` is installed (see above), and reads
+simple features through GDAL:
+```{r}
+(s = read.sf(system.file("shapes/", package="maptools"), "sids"))[1:5,]
+summary(s)
+```
+This also shows the abbreviation of long geometries when printed or summarized,
+provided by the `format` methods.
+
+The following works for me, with PostGIS installed and data loaded:
+```{r, eval=FALSE}
+(s = read.sf("PG:dbname=postgis", "meuse2"))[1:5,]
+summary(s)
+```
+
+# Still to do/to be decided
+
+The following issues need to be decided upon:
+
+* reproject sf objects through `rgdal2`? support well-known-text for CRS? or use PROJ.4 directly?
+* when subsetting attributes from an `sf` objects, make geometry sticky (like sp does), or drop geometry and return `data.frame` (data.frame behaviour)?
+
+The following things still need to be done: 
+
+* write simple features through GDAL (using rgdal2)
+* using gdal geometry functions in `rgdal2`
+* extend rgdal2 to also read `XYZ`, `XYM`, and `XYZM` geometries - my feeling is that this will be easier than modifying `rgdal`
+* reprojection of sf objects
+* link to GEOS, using GEOS functions: GDAL with GEOS enabled (and `rgdal2`) has some of this, but not for instance `rgeos::gRelate`
+* develop better and more complete test cases; also check the OGC [test suite](http://cite.opengeospatial.org/teamengine/)
+* improve documentation, add tutorial (vignettes, paper)
+* add plot functions (base, grid)
+* explore direct WKB - sf conversion, without GDAL
+* explore how meaningfulness of operations can be verified when for attributes their `relation_to_geometry` has been specified
+
+Please let me know if you have any comments, suggestions or questions!

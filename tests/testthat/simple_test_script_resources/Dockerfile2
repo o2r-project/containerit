@@ -1,6 +1,6 @@
 FROM rocker/r-ver:3.3.2
 MAINTAINER "matthiashinz"
-WORKDIR payload/
+WORKDIR /payload/
 COPY ["simple_test_script_resources/simple_test.R", "simple_test_script_resources/simple_test.R"]
 COPY ["simple_test_script_resources/test_table.csv", "simple_test_script_resources/test_table.csv"]
 COPY ["simple_test_script_resources/test_subfolder/testresource", "simple_test_script_resources/test_subfolder/testresource"]

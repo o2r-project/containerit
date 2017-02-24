@@ -4,7 +4,8 @@
 \alias{CMD_Rscript}
 \title{Create CMD instruction for running an Rscript}
 \usage{
-CMD_Rscript(path, options = character(0), args = character(0))
+CMD_Rscript(path, options = character(0), args = character(0),
+  vanilla = TRUE)
 }
 \arguments{
 \item{path}{The name of the R script that should run on startup or a path relative to the working directory}

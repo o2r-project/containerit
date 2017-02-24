@@ -35,7 +35,7 @@ dockerfile <-
            context = "workdir", 
            soft = FALSE,
            copy = "script",
-           container_workdir = "payload/",
+           container_workdir = "/payload",
            cmd = Cmd("R"),
            add_self = FALSE
            )
@@ -67,6 +67,11 @@ dockerfile <-
         paste(.supported_images, collapse = "\n")
       )
     }
+    
+    
+    if (!stringr::str_detect(container_workdir, "/$"))
+      # directories given as destination must have a trailing slash in dockerfiles
+      rel_dir_dest <- paste0(container_workdir, "/")
 
     .dockerfile <-
       new(
@@ -78,22 +83,24 @@ dockerfile <-
         cmd = cmd
       )
     
-    #set the working directory (If the directory does not exist, Docker will create it)
-    addInstruction(.dockerfile) <- Workdir(container_workdir)
-
-    if (inherits(x = from, "sessionInfo")) {
+    if(is.null(from))
+      #very simple case
+      addInstruction(.dockerfile) <- Workdir(container_workdir)
+    else if (inherits(x = from, "sessionInfo")) {
       .dockerfile <-
         dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
+        #set the working directory (If the directory does not exist, Docker will create it)
+        addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "character") ) {
       
       if (dir.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
+          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, copy_destination = container_workdir)
       } else if (file.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy, add_self = add_self)
+          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy, add_self = add_self, copy_destination = container_workdir)
       } else {
         stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
       }
@@ -177,14 +184,38 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   if(image_name %in% .rocker_images)
     platform = .debian_platform
 
-  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft, add_self = add_self)
+  no_apt = character(0)
+  
+  if("sf" %in% pkgs){
+    # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated. 
+     
+    # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
+    if(!image_name == "rocker/geospatial"){
+      warning("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.
+              We recommend using the base image rocker/geospatial or any base image were these system requirements are pre-installed\n.")
+      # TODO: maybe support install from source? See https://hub.docker.com/r/rocker/geospatial/~/dockerfile/ 
+      #### or system.file("template_source_install_GDAL_PROJ",package ="containeRit"), 
+      
+      # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from ubuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
+    }
+  }
+  
+  # TODO: we may add some some more no-apt or analogue no-package exceptions here, but at the moment it won't be necessary
+  if(image_name == "rocker/geospatial")
+    #these packages are pre-installed
+    no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
+
+  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft, add_self = add_self, no_apt = no_apt)
 
   instructions <- append(instructions, run_instructions)
   slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
+dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination) {
+  #################################################
+  # prepare context and normalize paths:
+  #################################################
   context = .contextPath(.dockerfile)
   file = normalizePath(file)
 
@@ -199,7 +230,28 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
     warning("The context directory is not the same as the current R working directory! Code/workspace may not be reproducible.")
   # make sure that the path is relative to context
   rel_path <- .makeRelative(file, context)
+  ####################################################
+  # execute script / markdowns and optain sessioninfo
+  #####################################################
+  if(stringr::str_detect(file, ".R$")){
+    message("Executing R script file in ", rel_path," locally.")
+    sessionInfo <- obtain_localSessionInfo(file = file)
+  } else if(stringr::str_detect(file, ".Rnw$")){
+    message("Processing the given file ", rel_path," locally using knitr::knit2pdf(..., clean = TRUE)")
+    sessionInfo <- obtain_localSessionInfo(rnw_file = file)
+  }else if(stringr::str_detect(file, ".Rmd$")){
+    message("Processing the given file ", rel_path," locally using rmarkdown::render(...)")
+    sessionInfo <- obtain_localSessionInfo(rmd_file = file)
+  } else
+    message("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
+
+  # append system dependencies and package installation instructions
+  ####################################################
+  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
   
+  ## set working directory to the copy destination and add copy instructions
+  ####################################################
+  addInstruction(.dockerfile) <- Workdir(copy_destination)
   copy = unlist(copy)
   if(!is.character(copy)){
     stop("Invalid argument given for 'copy'")
@@ -234,27 +286,13 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self) {
     )
   }
   
-  if(stringr::str_detect(file, ".R$")){
-    message("Executing R script file in ", rel_path," locally.")
-    sessionInfo <- obtain_localSessionInfo(file = file)
-  } else if(stringr::str_detect(file, ".Rnw$")){
-      message("Processing the given file ", rel_path," locally using knitr::knit2pdf(..., clean = TRUE)")
-      sessionInfo <- obtain_localSessionInfo(rnw_file = file)
-  }else if(stringr::str_detect(file, ".Rmd$")){
-    message("Processing the given file ", rel_path," locally using rmarkdown::render(...)")
-    sessionInfo <- obtain_localSessionInfo(rmd_file = file)
-  } else
-    message("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
-  
-  ##append system dependencies
-  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
-    
+
   return(.dockerfile)
 }
 
 
 dockerfileFromWorkspace <-
-  function(path, .dockerfile, soft, add_self) {
+  function(path, .dockerfile, soft, add_self, copy_destination) {
     .rFiles <-
       dir(
         path = path,
@@ -291,7 +329,8 @@ dockerfileFromWorkspace <-
           .dockerfile = .dockerfile,
           soft = soft,
           copy = "script_dir",
-          add_self = add_self
+          add_self = add_self,
+          copy_destination = copy_destination
         )
       )
     } else if (length(.md_Files) > 0) {
@@ -314,7 +353,8 @@ dockerfileFromWorkspace <-
           .dockerfile = .dockerfile,
           soft = soft,
           copy = "script_dir",
-          add_self = add_self
+          add_self = add_self,
+          copy_destination = copy_destination
         )
       )
       

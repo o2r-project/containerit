@@ -18,7 +18,7 @@ test_that("A simple Sweave file can be packaged", {
                    r_version = "3.3.2")
   
   #write(df, "package_markdown/knitr_minimal_Dockerfile")
-  expected_file = readLines("package_markdown/knitr_minimal_Dockerfile")
+  expected_file <- readLines("package_markdown/knitr_minimal_Dockerfile")
   expect_equal(format(df), expected_file)
   
   expect_true(file.exists("knitr-minimal.tex"))
@@ -40,10 +40,10 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
   #let containerIt find the markdownfile by itself
   df <- dockerfile("package_markdown/markdowntainer-units/",  
                    maintainer = Maintainer("matthiashinz"),
-                   r_version = "3.3.2")
+                   r_version = "3.3.2", cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
   #for overwriting:
   #write(df,"package_markdown/units_Dockerfile")
-  expected_file = readLines("package_markdown/units_Dockerfile")
+  expected_file <- readLines("package_markdown/units_Dockerfile")
   expect_equal(format(df), expected_file)
   
   expect_true(all(file.exists(expected_output)))
@@ -52,21 +52,26 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
 
 
 
-# 
-# test_that("A sf markdown file can be packaged", {
-#   expect_false(file.exists("package_markdown/sf/sf1.html"))
-# 
-#   
-#   #let containerIt find the markdownfile by itself
-#   df <- dockerfile("package_markdown/sf",  
-#                    maintainer = Maintainer("matthiashinz"),
-#                    image = "rocker/geospatial")
-#   #for overwriting:
-#   #write(df,"package_markdown/sf_vignette_Dockerfile")
-#   expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
-#   expect_equal(format(df), expected_file)
-#   
-#   expect_true(file.exists("package_markdown/sf/sf.html"))
-#   unlink("package_markdown/",recursive = TRUE)
-# })
+
+test_that("A sf markdown file can be packaged", {
+  expect_false(file.exists("package_markdown/sf"))
+  md_file <- system.file("doc/sf3.Rmd",package = "sf")
+  expect_false(file.exists("package_markdown/sf"))
+  dir.create("package_markdown/sf")
+  expect_true(file.copy(md_file, "package_markdown/sf/"))
+
+
+
+  #let containerIt find the markdownfile by itself
+  df <- dockerfile("package_markdown/sf",
+                   maintainer = Maintainer("matthiashinz"),
+                   image = "rocker/geospatial", cmd = CMD_Render("package_markdown/sf/", output_dir = "/output"))
+  #for overwriting:
+  #write(df,"package_markdown/sf_vignette_Dockerfile")
+  expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
+  expect_equal(format(df), expected_file)
+
+  expect_true(file.exists("package_markdown/sf/sf3.html"))
+  unlink("package_markdown/sf",recursive = TRUE)
+})
 
