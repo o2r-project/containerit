@@ -13,6 +13,8 @@ CMD_Rscript(path, options = character(0), args = character(0),
 \item{options}{(optional) Options or flags to be passed to Rscript}
 
 \item{args}{(otional) Argumands to be passed to the R script}
+
+\item{vanilla}{Whether R should startup in vanilla mode. Default: TRUE}
 }
 \value{
 A CMD instruction

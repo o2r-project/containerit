@@ -71,7 +71,7 @@ dockerfile <-
     
     if (!stringr::str_detect(container_workdir, "/$"))
       # directories given as destination must have a trailing slash in dockerfiles
-      rel_dir_dest <- paste0(container_workdir, "/")
+      container_workdir <- paste0(container_workdir, "/")
 
     .dockerfile <-
       new(

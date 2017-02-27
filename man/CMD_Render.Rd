@@ -5,7 +5,8 @@
 \title{Create CMD instruction for rendering a markdown file}
 \usage{
 CMD_Render(path, options = character(0),
-  output_format = rmarkdown::html_document(), output_dir = NULL)
+  output_format = rmarkdown::html_document(), output_dir = NULL,
+  vanilla = TRUE)
 }
 \arguments{
 \item{path}{The name of the R markdown file that should run on startup or a path relative to the working directory}
@@ -14,7 +15,9 @@ CMD_Render(path, options = character(0),
 
 \item{output_format}{The output format as in \code{rmakdown::render(...)}}
 
-\item{outpur_dir}{The output dir as in \code{rmakdown::render(...)}}
+\item{output_dir}{The output dir as in \code{rmakdown::render(...)}}
+
+\item{vanilla}{Whether R should startup in vanilla mode. Default: TRUE}
 }
 \value{
 A CMD instruction
@@ -23,5 +26,5 @@ A CMD instruction
 Schema: Rscript [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
 }
 \seealso{
-\link{markdown::render}
+\link[rmarkdown]{render}
 }

@@ -6,4 +6,4 @@ RUN ["apt-get", "install", "-y", "libudunits2-dev", "pandoc", "pandoc-citeproc"]
 RUN ["install2.r", "-r 'https://cloud.r-project.org'", "dplyr", "sf", "Rcpp", "assertthat", "digest", "rprojroot", "R6", "DBI", "backports", "magrittr", "evaluate", "units", "stringi", "rmarkdown", "stringr", "udunits2", "yaml", "htmltools", "knitr", "tibble"]
 WORKDIR /payload/
 COPY ["package_markdown/sf", "package_markdown/sf/"]
-CMD ["Rscript", "-e", "rmarkdown::render(\"package_markdown/sf/\", output_format = rmarkdown::html_document(), output_dir = \"/output\")"]
+CMD ["Rscript", "--vanilla", "-e", "rmarkdown::render(\"package_markdown/sf/\", output_format = rmarkdown::html_document(), output_dir = \"/output\")"]

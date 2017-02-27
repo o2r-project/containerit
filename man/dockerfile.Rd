@@ -9,7 +9,7 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
   r_version = getRVersionTag(from), image = imagefromRVersion(r_version),
   env = list(generator = paste("containeRit",
   utils::packageVersion("containeRit"))), context = "workdir", soft = FALSE,
-  copy = "script", container_workdir = "payload/", cmd = Cmd("R"),
+  copy = "script", container_workdir = "/payload", cmd = Cmd("R"),
   add_self = FALSE)
 }
 \arguments{

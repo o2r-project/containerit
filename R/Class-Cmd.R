@@ -94,10 +94,13 @@ setMethod("docker_arguments",
 #' @param path The name of the R script that should run on startup or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
 #' @param args (otional) Argumands to be passed to the R script
+#' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
 #' 
 #' @return A CMD instruction
 #' @export
 CMD_Rscript <- function(path, options = character(0), args = character(0), vanilla = TRUE){
+  if(vanilla)
+    options <- append(options, "--vanilla")
   params <- append(options, path)
   params <- append(params, args)
   Cmd("Rscript", params = params)
@@ -112,13 +115,16 @@ CMD_Rscript <- function(path, options = character(0), args = character(0), vanil
 #' @param path The name of the R markdown file that should run on startup or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
 #' @param output_format The output format as in \code{rmakdown::render(...)}
-#' @param outpur_dir The output dir as in \code{rmakdown::render(...)}
+#' @param output_dir The output dir as in \code{rmakdown::render(...)}
+#' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
 #' 
-#' @seealso \link{markdown::render}
+#' @seealso \link[rmarkdown]{render}
 #' 
 #' @return A CMD instruction
 #' @export
-CMD_Render <- function(path, options = character(0), output_format = rmarkdown::html_document(), output_dir = NULL){
+CMD_Render <- function(path, options = character(0), output_format = rmarkdown::html_document(), output_dir = NULL, vanilla = TRUE){
+  if(vanilla)
+    options <- append(options, "--vanilla")
   params <- options
   render_call <- quote(rmarkdown::render("file", output_format = "format", output_dir = NULL))
   render_call[[2]] <- path
