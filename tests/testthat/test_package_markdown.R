@@ -1,6 +1,6 @@
 library(testthat)
 library(containeRit)
-
+context("Package R markdown files")
 
 test_that("A simple Sweave file can be packaged", {
   expect_false(file.exists("knitr-minimal.tex"))
@@ -19,7 +19,8 @@ test_that("A simple Sweave file can be packaged", {
   
   #write(df, "package_markdown/knitr_minimal_Dockerfile")
   expected_file <- readLines("package_markdown/knitr_minimal_Dockerfile")
-  expect_equal(format(df), expected_file)
+  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  expect_equal(generated_file, expected_file)
   
   expect_true(file.exists("knitr-minimal.tex"))
   unlink("knitr-minimal.tex")
@@ -27,7 +28,7 @@ test_that("A simple Sweave file can be packaged", {
   expect_true(file.exists("knitr-minimal.pdf"))
   unlink("knitr-minimal.pdf")
   unlink(temp_sweave)
-  unlink("figure")
+  unlink("figure", recursive = TRUE)
 })
 
 
@@ -44,7 +45,8 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
   #for overwriting:
   #write(df,"package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
-  expect_equal(format(df), expected_file)
+  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  expect_equal(generated_file, expected_file)
   
   expect_true(all(file.exists(expected_output)))
   unlink(expected_output,recursive = TRUE)
@@ -59,9 +61,6 @@ test_that("A sf markdown file can be packaged", {
   expect_false(file.exists("package_markdown/sf"))
   dir.create("package_markdown/sf")
   expect_true(file.copy(md_file, "package_markdown/sf/"))
-
-
-
   #let containerIt find the markdownfile by itself
   df <- dockerfile("package_markdown/sf",
                    maintainer = Maintainer("matthiashinz"),
@@ -69,7 +68,8 @@ test_that("A sf markdown file can be packaged", {
   #for overwriting:
   #write(df,"package_markdown/sf_vignette_Dockerfile")
   expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
-  expect_equal(format(df), expected_file)
+  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  expect_equal(generated_file, expected_file)
 
   expect_true(file.exists("package_markdown/sf/sf3.html"))
   unlink("package_markdown/sf",recursive = TRUE)

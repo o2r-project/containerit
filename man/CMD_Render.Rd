@@ -23,7 +23,7 @@ CMD_Render(path, options = character(0),
 A CMD instruction
 }
 \description{
-Schema: Rscript [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
+Schema: R [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
 }
 \seealso{
 \link[rmarkdown]{render}

@@ -27,7 +27,7 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 
-\item{context}{(character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()}
+\item{context}{[TODO: CONSIDER REMOVE] (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()}
 
 \item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
 

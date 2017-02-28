@@ -12,7 +12,7 @@
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
-#' @param context (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()
+#' @param context [TODO: CONSIDER REMOVE] (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
@@ -186,14 +186,23 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
 
   no_apt = character(0)
   
-  if("sf" %in% pkgs){
+  if("sf" %in% names(pkgs)){
     # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated. 
      
     # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
     if(!image_name == "rocker/geospatial"){
-      warning("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.
-              We recommend using the base image rocker/geospatial or any base image were these system requirements are pre-installed\n.")
-      # TODO: maybe support install from source? See https://hub.docker.com/r/rocker/geospatial/~/dockerfile/ 
+      message("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.",
+              "We recommend using the base image rocker/geospatial.")
+      message("Docker will try to install GDAL 2.1.3 from source")
+      
+      addInstruction(.dockerfile) <- Workdir("/tmp/gdal")
+      addInstruction(.dockerfile) <- Run_shell(c("wget http://download.osgeo.org/gdal/2.1.3/gdal-2.1.3.tar.gz", 
+                  "tar zxf gdal-2.1.3.tar.gz","cd gdal-2.1.3", 
+                  "./configure","make",
+                  "make install",
+                  "ldconfig",
+                  "rm -r /tmp/gdal"))
+      
       #### or system.file("template_source_install_GDAL_PROJ",package ="containeRit"), 
       
       # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from ubuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
@@ -206,9 +215,8 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
     no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
 
   run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft, add_self = add_self, no_apt = no_apt)
+  addInstruction(.dockerfile) <- run_instructions
 
-  instructions <- append(instructions, run_instructions)
-  slot(.dockerfile, "instructions") <- instructions
   return(.dockerfile)
 }
 

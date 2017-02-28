@@ -114,7 +114,7 @@ create_localDockerImage <- function(x, host = harbor::localhost,
   return(c(e1, e2))
 }
 
-#converts an vector or list of R expression into commandline parmaeters for RScript
+#converts an vector or list of R expression into command line parmaeters for R (batch mode)
 .exprToParam <- function(expr, e_append = paste) {
   #convert from expressions to enquoted strings
   expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
@@ -130,7 +130,7 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 
 # Obtains a session info from a local R session executed by external system commands with the given expression expr or file
 # In any case, a sessioninfo is written to a temporary file and then loaded into the current session
-# If a file (rscript) is given, the script is copied to a temporary file and the commands to write the sessionInfo are appended
+# If a file (R script) is given, the script is copied to a temporary file and the commands to write the sessionInfo are appended
 #
 # This method is used for packaging R scripts (see dockerFileFromFile) 
 # and for comparing session information (see test/testtheat/test_sessioninfo_repoduce.R)
@@ -140,12 +140,14 @@ obtain_localSessionInfo <-
            rmd_file = NULL, #a markdown file
            rnw_file = NULL, # a sweave file or anything that can be compiled with knitr::knit(...)
            vanilla = TRUE,
+           silent = TRUE,
+           echo = TRUE, #whether R scripts should be 'echoed'
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
     
     #append commands to create a local sessionInfo
     
     if(!is.null(file) && file.exists(file)){
-      expr <- append(expr, call("source", file))
+      expr <- append(expr, call("source", file = file, echo = echo))
 
       #if a script file is given, create modified temporary script with commands appended for writing the sessioninfo
       #success <- file.copy(file, local_temp_script)
@@ -182,12 +184,15 @@ obtain_localSessionInfo <-
     if (vanilla)
       args <- append("--vanilla", args)
     
+    if (silent)
+      args <- append("--silent", args)
+    
     message(
-      "Creating an R session with the following arguments:\n\t Rscript ",
+      "Creating an R session with the following arguments:\n\t R ",
       paste(args, collapse = " ")
     )
     
-    system2("Rscript", args)
+    system2("R", args)
     
     if(!file.exists(local_tempfile))
       stop("Failed to execute the script locally! A sessionInfo could not be determined.")
@@ -229,7 +234,7 @@ obtain_dockerSessionInfo <-
     #convert to cmd parameters
     expr <- .exprToParam(expr)
 
-    cmd <- c("Rscript")
+    cmd <- c("R")
     if (vanilla) {
       cmd <- append(cmd, "--vanilla")
     }

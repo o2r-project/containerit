@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Cmd.R
 \name{CMD_Rscript}
 \alias{CMD_Rscript}
-\title{Create CMD instruction for running an Rscript}
+\title{Create CMD instruction for running an R script}
 \usage{
 CMD_Rscript(path, options = character(0), args = character(0),
   vanilla = TRUE)
@@ -20,5 +20,5 @@ CMD_Rscript(path, options = character(0), args = character(0),
 A CMD instruction
 }
 \description{
-Schema: Rscript [--options] [file] [args]
+Schema: R [--options] [file] [args]
 }

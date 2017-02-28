@@ -87,9 +87,9 @@ setMethod("docker_arguments",
           .arguments.Cmd_Run)
 
 
-#' Create CMD instruction for running an Rscript
+#' Create CMD instruction for running an R script
 #' 
-#' Schema: Rscript [--options] [file] [args]
+#' Schema: R [--options] [file] [args]
 #'
 #' @param path The name of the R script that should run on startup or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
@@ -101,16 +101,16 @@ setMethod("docker_arguments",
 CMD_Rscript <- function(path, options = character(0), args = character(0), vanilla = TRUE){
   if(vanilla)
     options <- append(options, "--vanilla")
-  params <- append(options, path)
+  params <- append(options, c("-f", path))
   params <- append(params, args)
-  Cmd("Rscript", params = params)
+  Cmd("R", params = params)
 }
 
 
 
 #' Create CMD instruction for rendering a markdown file
 #' 
-#' Schema: Rscript [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
+#' Schema: R [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
 #'
 #' @param path The name of the R markdown file that should run on startup or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
@@ -135,6 +135,6 @@ CMD_Render <- function(path, options = character(0), output_format = rmarkdown::
   render_call <- stringr::str_replace_all(render_call,"^\\\"|\\\"$","")
   expr <- c("-e", render_call)
   params <- append(params , expr)
-  Cmd("Rscript", params = as.character(params))
+  Cmd("R", params = as.character(params))
 }
 
