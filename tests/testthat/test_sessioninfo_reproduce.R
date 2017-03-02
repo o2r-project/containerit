@@ -16,7 +16,8 @@ context("session-reproduction")
 expressions <- list(quote(library(rgdal)),
                     quote(library(proj4)),
                     quote(library(sp)),
-                    quote(codetools::showTree(quote(-3))))
+                    quote(library(sysreqs)), # test for github package
+                    quote(codetools::showTree(quote(-3)))) # test for attached package
 
 local_sessionInfo <- NULL
 
@@ -35,14 +36,13 @@ test_that("a sessionInfo can be reproduced with docker", {
     create_localDockerImage(dockerfile_object, no_cache = FALSE)
   
   #expect that image was created:
-  expect_equal(length(
+  expect_match(
     harbor::docker_cmd(
       harbor::localhost,
       "images",
       docker_tempimage,
       capture_text = TRUE
-    )
-  ), 2)
+    ), docker_tempimage)
   
   docker_sessionInfo <<-
     obtain_dockerSessionInfo(docker_tempimage, expressions, vanilla = TRUE)

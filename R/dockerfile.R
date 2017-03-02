@@ -177,6 +177,8 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   apks <- session$otherPkgs
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) ##packages to be installed
+  if(!add_self)
+    pkgs <- pkgs[names(pkgs) != "containeRit"]
 
   # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms
   platform = NULL
@@ -184,38 +186,7 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   if(image_name %in% .rocker_images)
     platform = .debian_platform
 
-  no_apt = character(0)
-  
-  if("sf" %in% names(pkgs)){
-    # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated. 
-     
-    # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
-    if(!image_name == "rocker/geospatial"){
-      message("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.",
-              "We recommend using the base image rocker/geospatial.")
-      message("Docker will try to install GDAL 2.1.3 from source")
-      
-      addInstruction(.dockerfile) <- Workdir("/tmp/gdal")
-      addInstruction(.dockerfile) <- Run_shell(c("wget http://download.osgeo.org/gdal/2.1.3/gdal-2.1.3.tar.gz", 
-                  "tar zxf gdal-2.1.3.tar.gz","cd gdal-2.1.3", 
-                  "./configure","make",
-                  "make install",
-                  "ldconfig",
-                  "rm -r /tmp/gdal"))
-      
-      #### or system.file("template_source_install_GDAL_PROJ",package ="containeRit"), 
-      
-      # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from ubuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
-    }
-  }
-  
-  # TODO: we may add some some more no-apt or analogue no-package exceptions here, but at the moment it won't be necessary
-  if(image_name == "rocker/geospatial")
-    #these packages are pre-installed
-    no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
-
-  run_instructions <- .create_run_install(pkgs, platform = platform, soft = soft, add_self = add_self, no_apt = no_apt)
-  addInstruction(.dockerfile) <- run_instructions
+  .dockerfile <- .create_run_install(.dockerfile = .dockerfile, pkgs = pkgs, platform = platform, soft = soft)
 
   return(.dockerfile)
 }

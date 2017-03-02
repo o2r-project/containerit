@@ -131,7 +131,7 @@ CMD_Render <- function(path, options = character(0), output_format = rmarkdown::
   render_call[[3]] <- substitute(output_format)
   render_call[[4]] <- substitute(output_dir)
   render_call <- deparse(render_call,width.cutoff = 500)
-  render_call <- deparse(render_call,width.cutoff = 500) #yes, twice!
+  render_call <- deparse(render_call,width.cutoff = 500) #yes, twice! (command line expects R commands as strings)
   render_call <- stringr::str_replace_all(render_call,"^\\\"|\\\"$","")
   expr <- c("-e", render_call)
   params <- append(params , expr)

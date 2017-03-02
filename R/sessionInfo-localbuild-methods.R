@@ -26,20 +26,22 @@ docker_build <-
     #TODO: This method may be enhanced with random image name as default (?)
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(dir.exists(dockerfolder))
-    docker_opts <- append(docker_opts, paste("-t", new_image))
+    docker_opts <- append(docker_opts, c("-t", new_image))
     if(length(dockerfile) > 0){
       stopifnot(file.exists(dockerfile))
-      docker_opts <- append(docker_opts, paste("-f", normalizePath(dockerfile)))
+      docker_opts <- append(docker_opts, c("-f", normalizePath(dockerfile)))
     }
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
 
+    message("EXEC: docker build ", paste(docker_opts, collapse = " ")," ",dockerfolder)
     harbor::docker_cmd(
       host,
       "build",
       args = dockerfolder,
       docker_opts = docker_opts,
-      wait = wait,
+      wait = wait, 
+      capture_text = TRUE,
       ...
     )
 
@@ -110,21 +112,23 @@ create_localDockerImage <- function(x, host = harbor::localhost,
   e1 <- quote(info <- sessionInfo())
   e2 <- quote(save(list = "info", file = tempfile))
   e2[[3]] <- tempfile
-
-  return(c(e1, e2))
+  e3 <- quote(file.exists(tempfile))
+  e3[[2]] <- tempfile
+  return(c(e1, e2, e3))
 }
 
 #converts an vector or list of R expression into command line parmaeters for R (batch mode)
-.exprToParam <- function(expr, e_append = paste) {
+.exprToParam <- function(expr, e_append = append, to_string = FALSE) {
   #convert from expressions to enquoted strings
-  expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
+  if(to_string) #for command line execution, the commands have to be deparsed once more to strings
+    expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)})
   expr <- sapply(expr, function(x){deparse(x, width.cutoff = 500)}, simplify = TRUE, USE.NAMES = FALSE)
   
   if(!is.null(e_append))
     expr <- sapply(expr, function(x) {
       e_append("-e", x)
     })
-  return(expr)
+  return(unlist(as.character(expr)))
 }
 
 
@@ -180,7 +184,7 @@ obtain_localSessionInfo <-
     }
     
     expr <- append(expr, .writeSessionInfoExp(local_tempfile))
-    args <- .exprToParam(expr)
+    args <- .exprToParam(expr, to_string = TRUE)
     if (vanilla)
       args <- append("--vanilla", args)
     
@@ -224,7 +228,7 @@ obtain_dockerSessionInfo <-
       stop("Unable to locate temporary directory: ", local_tempdir)
 
     #mount option
-    volume_opt = paste0("-v ", local_tempdir, ":", docker_tempdir)
+    volume_opt = c("-v", paste0(local_tempdir, ":", docker_tempdir))
 
     #rdata file to which session info shall be written
     docker_tempfile =  paste0(docker_tempdir, "/", "rdata")
@@ -240,7 +244,8 @@ obtain_dockerSessionInfo <-
     }
     cmd <- append(cmd, expr)
     message("Creating R session in Docker with the following arguments:\n\t",
-            cmd)
+            "docker run ", paste(volume_opt, collapse = " ")," ",docker_image," ",paste(cmd, collapse = " "))
+    
     container <- harbor::docker_run(
       harbor::localhost,
       image = docker_image,
