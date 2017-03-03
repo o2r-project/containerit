@@ -1,3 +1,5 @@
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+
 #' Build a Docker image from a local Dockerfile
 #'
 #' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.

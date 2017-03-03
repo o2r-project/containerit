@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #pkgs list of packages as returned by sessionInfo
 .create_run_install <- function(.dockerfile, pkgs, platform, soft) {

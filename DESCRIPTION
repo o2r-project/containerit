@@ -41,7 +41,7 @@ Suggests:
     sf,
     dplyr
 RoxygenNote: 6.0.1
-Collate:
+Collate: 
     'Class-Instruction.R'
     'Class-Add.R'
     'Class-Cmd.R'
@@ -60,5 +60,4 @@ Collate:
     'defaults.R'
     'dockerfile.R'
     'package-installation-methods.R'
-    'session.R'
     'sessionInfo-localbuild-methods.R'

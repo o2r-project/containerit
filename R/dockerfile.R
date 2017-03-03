@@ -1,11 +1,13 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' dockerfile-method
 #'
 #' Create a Dockerfile based on either a sessionInfo, a workspace or a file
 #'
 #' @param from (sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile
-#' @param objects character vector naming all R objects to be included in the docker image / R session. Can be character(0) (default), ls() or a fraction of ls()
+#' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
+#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
+#' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
 #' @param maintainer optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}
 #' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance
 #' @param image (From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
@@ -24,10 +26,11 @@
 #' @import futile.logger
 #' @examples
 #' dockerfile()
+#' 
 #'
 dockerfile <-
   function(from = utils::sessionInfo(),
-           objects = character(0),
+           save_image = FALSE,
            maintainer = Maintainer(name = Sys.info()[["user"]]),
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
@@ -108,6 +111,20 @@ dockerfile <-
       #Creates a basic dockerfile without the 'from'-argument
     } else {
       stop("Unsupported 'from': ", class(from)," ", from)
+    }
+    # copy any additional files / objects into the working directory from here:
+    if(isTRUE(save_image)){
+      save.image()
+      addInstruction(.dockerfile) <- Copy(src = "./.RData", dest = "./")
+    }else if(is.list(save_image)){
+      do.call(.save_objects, save_image)
+      if("file" %in% names(save_image)){
+        file <- save_image$file
+        # try to assure unix-compatibility..
+        file <- stringr::str_replace_all(file,"\\\\","/")
+      } else
+        file = "./.RData"
+      addInstruction(.dockerfile) <- Copy(src = file, dest = file)
     }
 
     flog.info("Created Dockerfile-Object based on %s", .originalFrom)
@@ -413,4 +430,10 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
   })
   as.character(out)
 }
+
+# helper function for saving lists of objects
+.save_objects <- function(... , file = ".RData", envir = .GlobalEnv){
+  save(..., file = file, envir = envir) 
+}
+
 

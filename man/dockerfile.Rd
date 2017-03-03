@@ -4,7 +4,7 @@
 \alias{dockerfile}
 \title{dockerfile-method}
 \usage{
-dockerfile(from = utils::sessionInfo(), objects = character(0),
+dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Maintainer(name = Sys.info()[["user"]]),
   r_version = getRVersionTag(from), image = imagefromRVersion(r_version),
   env = list(generator = paste("containeRit",
@@ -15,7 +15,9 @@ dockerfile(from = utils::sessionInfo(), objects = character(0),
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
 
-\item{objects}{character vector naming all R objects to be included in the docker image / R session. Can be character(0) (default), ls() or a fraction of ls()}
+\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
+ Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
+\code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
 
 \item{maintainer}{optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}}
 
@@ -47,5 +49,6 @@ Create a Dockerfile based on either a sessionInfo, a workspace or a file
 }
 \examples{
 dockerfile()
+
 
 }
