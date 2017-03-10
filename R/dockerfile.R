@@ -20,6 +20,7 @@
 #' @param container_workdir the working directory of the container
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
 #' @param add_self Whether to add the package containeRit itself if loaded/attached to the session
+#' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -40,7 +41,8 @@ dockerfile <-
            copy = "script",
            container_workdir = "/payload",
            cmd = Cmd("R"),
-           add_self = FALSE
+           add_self = FALSE,
+           vanilla = TRUE
            )
       {
     flog.debug("Creating a new Dockerfile from %s", from)
@@ -99,17 +101,23 @@ dockerfile <-
       if (dir.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, copy_destination = container_workdir)
+          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, copy_destination = container_workdir , vanilla = vanilla)
       } else if (file.exists(from)){
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy, add_self = add_self, copy_destination = container_workdir)
-      } else {
+          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, copy = copy, add_self = add_self, copy_destination = container_workdir, vanilla = vanilla)
+      } 
+      else {
         stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
       }
     } else if (is.null(from)) {
       #Creates a basic dockerfile without the 'from'-argument
-    } else {
+      
+    } else if(is.expression(from) || (is.list(from) && all(sapply(from, is.expression)))){
+      #expression or list of expressions
+      .sessionInfo <- obtain_localSessionInfo(expr = from)
+      .dockerfile <-  dockerfileFromSession(session = .sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self, vanilla = vanilla)
+    }else {
       stop("Unsupported 'from': ", class(from)," ", from)
     }
     # copy any additional files / objects into the working directory from here:
@@ -128,7 +136,6 @@ dockerfile <-
     }
 
     flog.info("Created Dockerfile-Object based on %s", .originalFrom)
-    message("Created Dockerfile-Object based on ", .originalFrom, ".")
     return(.dockerfile)
   }
 
@@ -208,7 +215,7 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination) {
+dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination, vanilla) {
   #################################################
   # prepare context and normalize paths:
   #################################################
@@ -231,13 +238,13 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   #####################################################
   if(stringr::str_detect(file, ".R$")){
     message("Executing R script file in ", rel_path," locally.")
-    sessionInfo <- obtain_localSessionInfo(file = file)
+    sessionInfo <- obtain_localSessionInfo(file = file, vanilla = vanilla)
   } else if(stringr::str_detect(file, ".Rnw$")){
     message("Processing the given file ", rel_path," locally using knitr::knit2pdf(..., clean = TRUE)")
-    sessionInfo <- obtain_localSessionInfo(rnw_file = file)
+    sessionInfo <- obtain_localSessionInfo(rnw_file = file, vanilla = vanilla)
   }else if(stringr::str_detect(file, ".Rmd$")){
     message("Processing the given file ", rel_path," locally using rmarkdown::render(...)")
-    sessionInfo <- obtain_localSessionInfo(rmd_file = file)
+    sessionInfo <- obtain_localSessionInfo(rmd_file = file, vanilla = vanilla)
   } else
     message("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
 
@@ -288,7 +295,7 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
 
 
 dockerfileFromWorkspace <-
-  function(path, .dockerfile, soft, add_self, copy_destination) {
+  function(path, .dockerfile, soft, add_self, copy_destination, vanilla) {
     .rFiles <-
       dir(
         path = path,
@@ -326,7 +333,8 @@ dockerfileFromWorkspace <-
           soft = soft,
           copy = "script_dir",
           add_self = add_self,
-          copy_destination = copy_destination
+          copy_destination = copy_destination,
+          vanilla = vanilla
         )
       )
     } else if (length(.md_Files) > 0) {
@@ -343,14 +351,15 @@ dockerfileFromWorkspace <-
           .md_Files[1]
         )
       
-      return(
+      return(#TODO : Simplify redundant code
         dockerfileFromFile(
           .md_Files[1],
           .dockerfile = .dockerfile,
           soft = soft,
           copy = "script_dir",
           add_self = add_self,
-          copy_destination = copy_destination
+          copy_destination = copy_destination,
+          vanilla = vanilla
         )
       )
       
@@ -416,6 +425,22 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
     r_version <- default
 
   return(paste(r_version$major, r_version$minor, sep = "."))
+}
+
+
+#' Creates an empty R session via system commands and captures the session information
+#'
+#' @param expr optional list of expressions to be executed in the session
+#' @param file optional R script to be executed in the session (uses source-function)
+#' @param vanilla indicate wheter the session should be a vanilla R session
+#' @param slave whether to run R silentely (here: in slave mode)
+#' @param echo wheter to print out detailed information from R
+#'
+#' @return An object of class session info (Can be used as an input to the dockerfile-method)
+#' @export
+#'
+clean_session <- function(expr = list(), file = NULL, vanilla = TRUE, slave = FALSE, echo = FALSE){
+  obtain_localSessionInfo(expr = expr, file = file, slave = slave, echo = echo, vanilla = vanilla)
 }
 
 .makeRelative <- function(files, from) {

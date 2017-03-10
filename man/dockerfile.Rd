@@ -10,7 +10,7 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   env = list(generator = paste("containeRit",
   utils::packageVersion("containeRit"))), context = "workdir", soft = FALSE,
   copy = "script", container_workdir = "/payload", cmd = Cmd("R"),
-  add_self = FALSE)
+  add_self = FALSE, vanilla = true)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -40,6 +40,8 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
 
 \item{add_self}{Whether to add the package containeRit itself if loaded/attached to the session}
+
+\item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)}
 }
 \value{
 An object of class Dockerfile

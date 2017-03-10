@@ -114,9 +114,10 @@ create_localDockerImage <- function(x, host = harbor::localhost,
   e1 <- quote(info <- sessionInfo())
   e2 <- quote(save(list = "info", file = tempfile))
   e2[[3]] <- tempfile
-  e3 <- quote(file.exists(tempfile))
-  e3[[2]] <- tempfile
-  return(c(e1, e2, e3))
+  #for debugging:
+  #e3 <- quote(file.exists(tempfile))
+  #e3[[2]] <- tempfile
+  return(c(e1, e2))
 }
 
 #converts an vector or list of R expression into command line parmaeters for R (batch mode)
@@ -147,6 +148,7 @@ obtain_localSessionInfo <-
            rnw_file = NULL, # a sweave file or anything that can be compiled with knitr::knit(...)
            vanilla = TRUE,
            silent = TRUE,
+           slave = FALSE,
            echo = TRUE, #whether R scripts should be 'echoed'
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
     
@@ -193,9 +195,11 @@ obtain_localSessionInfo <-
     if (silent)
       args <- append("--silent", args)
     
-    message(
-      "Creating an R session with the following arguments:\n\t R ",
-      paste(args, collapse = " ")
+    if (slave)
+      args <- append("--slave", args)
+    
+    flog.info(
+      paste("Creating an R session with the following arguments:\n\t R ", paste(args, collapse = " "))
     )
     
     system2("R", args)

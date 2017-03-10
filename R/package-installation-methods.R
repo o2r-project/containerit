@@ -46,7 +46,7 @@
          })
   
   image_name <- .dockerfile@image@image
-  
+
   #installing github packages requires devtools
   if(length(github_packages) > 0 && !"devtools" %in% cran_packages && 
      !image_name %in% c("rocker/tidyverse", "rocker/geospatial", "rocker/verse")){
