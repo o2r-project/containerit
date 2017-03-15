@@ -43,7 +43,9 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
   #let containerIt find the markdownfile by itself
   df <- dockerfile("package_markdown/markdowntainer-units/",  
                    maintainer = Maintainer("matthiashinz"),
-                   r_version = "3.3.2", cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
+                   r_version = "3.3.2",
+                   copy = "script_dir",
+                   cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
   #for overwriting:
   #write(df,"package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
@@ -66,7 +68,9 @@ test_that("A sf markdown file can be packaged", {
   #let containerIt find the markdownfile by itself
   df <- dockerfile("package_markdown/sf",
                    maintainer = Maintainer("matthiashinz"),
-                   image = "rocker/geospatial", cmd = CMD_Render("package_markdown/sf/", output_dir = "/output"))
+                   image = "rocker/geospatial",
+                   copy = "script_dir",
+                   cmd = CMD_Render("package_markdown/sf/", output_dir = "/output"))
   #for overwriting:
   #write(df,"package_markdown/sf_vignette_Dockerfile")
   expected_file = readLines("package_markdown/sf_vignette_Dockerfile")

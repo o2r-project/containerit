@@ -36,7 +36,7 @@ docker_build <-
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
 
-    message("EXEC: docker build ", paste(docker_opts, collapse = " ")," ",dockerfolder)
+    futile.logger::flog.info(paste0("EXEC: docker build ", paste(docker_opts, collapse = " ")," ",dockerfolder))
     harbor::docker_cmd(
       host,
       "build",
@@ -71,11 +71,13 @@ create_localDockerImage <- function(x, host = harbor::localhost,
     
     if(use_context){
       context = .contextPath(x)
-      message("Building Docker image from temporary Dockerfile in context directory:\n\t",
+      message <- paste0("Building Docker image from temporary Dockerfile in context directory:\n\t",
               context)
+      futile.logger::flog.info(message)
       dockerfile_path = tempfile(pattern = "Dockerfile",tmpdir = context)
     } else{
-      message("Building docker image from temporary docker file and directory...")
+      message <- "Building docker image from temporary docker file and directory..."
+      futile.logger::flog.info(message)
       context = tempdir
       dir.create(tempdir)
       #write dockerfile into temp dir
@@ -97,10 +99,12 @@ create_localDockerImage <- function(x, host = harbor::localhost,
     )
 
     if(use_context){
-      message("Deleting temporary Dockerfile...")
+      message <- "Deleting temporary Dockerfile..."
+      futile.logger::flog.info(message)
       unlink(dockerfile_path, recursive = TRUE)
     }else{
-      message("Deleting temporary Dockerfile and directory...")
+      message <- "Deleting temporary Dockerfile and directory..."
+      futile.logger::flog.info(message)
       unlink(tempdir, recursive = TRUE)
     }
 
@@ -149,12 +153,13 @@ obtain_localSessionInfo <-
            vanilla = TRUE,
            silent = TRUE,
            slave = FALSE,
-           echo = TRUE, #whether R scripts should be 'echoed'
+           echo = FALSE, #whether R scripts should be 'echoed'
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"), local_temp_script = tempfile(pattern = "r-script")) {
     
     #append commands to create a local sessionInfo
     
     if(!is.null(file) && file.exists(file)){
+      
       expr <- append(expr, call("source", file = file, echo = echo))
 
       #if a script file is given, create modified temporary script with commands appended for writing the sessioninfo
@@ -192,16 +197,16 @@ obtain_localSessionInfo <-
     if (vanilla)
       args <- append("--vanilla", args)
     
-    if (silent)
-      args <- append("--silent", args)
-    
     if (slave)
       args <- append("--slave", args)
+    
+    if (silent)
+      args <- append("--silent", args)
     
     flog.info(
       paste("Creating an R session with the following arguments:\n\t R ", paste(args, collapse = " "))
     )
-    
+
     system2("R", args)
     
     if(!file.exists(local_tempfile))
@@ -249,8 +254,9 @@ obtain_dockerSessionInfo <-
       cmd <- append(cmd, "--vanilla")
     }
     cmd <- append(cmd, expr)
-    message("Creating R session in Docker with the following arguments:\n\t",
+    message <- paste0("Creating R session in Docker with the following arguments:\n\t",
             "docker run ", paste(volume_opt, collapse = " ")," ",docker_image," ",paste(cmd, collapse = " "))
+    futile.logger::flog.info(message)
     
     container <- harbor::docker_run(
       harbor::localhost,
@@ -268,8 +274,9 @@ obtain_dockerSessionInfo <-
       stop("Sessioninfo was not written to file (it does not exist): ",
            local_docker_tempfile)
 
-    message("Wrote sessioninfo from Docker to this tempfile:",
+    message <- paste("Wrote sessioninfo from Docker to this tempfile:",
             local_docker_tempfile)
+    futile.logger::flog.info(message)
     load(local_docker_tempfile)
     #clean up
     if (deleteTempfiles)
