@@ -2,18 +2,20 @@
 % Please edit documentation in R/Class-Label.R
 \name{Label}
 \alias{Label}
-\title{Constructor yet to be implemented}
+\title{Creates a label of arbitrary content}
 \usage{
-Label(...)
+Label(..., multi_line = FALSE)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{...}{One or more named arguments (key-value pairs), that the Instruction should consist of}
+
+\item{multi_line}{Whether to print labels with multiple values in one single line or to put each key-value pair in a new line.}
 }
 \value{
 the object
 }
 \description{
-Constructor yet to be implemented
+See https://docs.docker.com/engine/reference/builder/#label
 }
 \examples{
 #no example yet

@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 
+#See related project issue at https://github.com/o2r-project/containerit/issues/12
+
 "container_it.R is a command-line interface to the R package containeRit. 
 It packages R sessions, scripts, workspaces and vignettes together with all dependencies to execute them in Docker containers.
 
@@ -49,7 +51,6 @@ Other:
   --version -v        print version and exit
 
 Examples:
-
   # runs the first r-script / r-script file locally and prints the corresponding dockerfile
   container_it.R dir -p --no-write  
   

@@ -295,6 +295,7 @@ obtain_dockerSessionInfo <-
   else return(normalizePath(path))
 }
 
+
 addInstruction <- function(dockerfileObject, value){
   instructions <- slot(dockerfileObject,"instructions")
   instructions <- append(instructions, value)
@@ -302,4 +303,20 @@ addInstruction <- function(dockerfileObject, value){
   return(dockerfileObject)
 }
 
+#' Add one or more instructions to a Dockerfile
+#'
+#' @param dockerfileObject An object of class 'Dockerfile'
+#' @param value An object that inherits from class 'instruction' or a list of instructions
+#'
+#' @return Returns the modified Dockerfile object (replacement method)
+#' @export
+#'
+#' @examples
+#' df <- dockerfile(clean_session())
+#' addInstruction(df) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
+
+#setMethod("addInstruction<-", signature = signature(dockerfileObject = "Dockerfile", value = "Instruction"), addInstruction)
+#setMethod("addInstruction<-", signature = signature(dockerfileObject = "Dockerfile", value = "list"), addInstruction)
+
+

@@ -3,10 +3,11 @@
 \docType{class}
 \name{Label-class}
 \alias{Label-class}
-\title{Instruction class yet to be implemented}
+\title{Instruction class representing a LABEL}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+See Dockerfile reference at https://docs.docker.com/engine/reference/builder/#label
+See project issue at https://github.com/o2r-project/containerit/issues/42
 }
