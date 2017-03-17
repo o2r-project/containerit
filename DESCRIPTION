@@ -40,7 +40,9 @@ Suggests:
     sp,
     gstat,
     sf,
-    dplyr
+    dplyr,
+    units,
+    proj4
 RoxygenNote: 6.0.1
 Collate: 
     'Class-Instruction.R'

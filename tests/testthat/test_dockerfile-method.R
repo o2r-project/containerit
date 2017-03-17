@@ -14,6 +14,12 @@ test_that("a simple dockerfile object can be saved to file", {
   write(dfile, file = gen_file)
   control_file <- "./dockerfile-method-resources/simple_dockerfile"
   control_instructions <- readLines(control_file)
+  #update control-file to current version
+  current_version <- paste(R.version$major, R.version$minor, sep = ".")
+  control_instructions[1] <- stringr::str_replace(control_instructions[1], 
+                                                  "rocker/r-ver:\\d.\\d.\\d",
+                                                  replacement = paste0("rocker/r-ver:",current_version))
+  
   generated_instructions <- readLines(gen_file)
   #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)

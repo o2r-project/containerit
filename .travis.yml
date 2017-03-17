@@ -37,6 +37,8 @@ r_packages:
   - gstat
   - proj4
   - devtools
+  - units
+  - sf
 
 r_github_packages:
   - r-hub/sysreqs
