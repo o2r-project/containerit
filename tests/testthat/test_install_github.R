@@ -6,7 +6,7 @@ context("install_github")
 
 test_that("github_packages can be installed", {
   
-  #get sessioninfo from previous installation
+  #get session information from previous installation
   load("./github-package-resources/sessioninfo_github.RData")
   
   #set github references 
@@ -17,7 +17,7 @@ test_that("github_packages can be installed", {
   .addGitHubRef("sf","ropensci/geojsonio@2e15e21")
 
   df = dockerfile(containerit_info, maintainer = Maintainer("matthiashinz"), r_version = "3.3.2")
-  #write(df, "./github-package-resources/Dockerfile")
+  write(df, "./github-package-resources/Dockerfile2")
 
   .githubRefs <- new.env()
   

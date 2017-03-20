@@ -47,13 +47,15 @@
   
   image_name <- .dockerfile@image@image
 
-  #installing github packages requires devtools
-  if(length(github_packages) > 0 && !"devtools" %in% cran_packages && 
-     !image_name %in% c("rocker/tidyverse", "rocker/geospatial", "rocker/verse")){
-    cran_packages <- append(cran_packages, "devtools")
-    pkg_names <- append(pkg_names, "devtools")
-    if(requireNamespace("devtools"))
-      package_versions <- append(package_versions, utils::packageVersion("devtools"))
+  # installing github packages requires the package 'remotse' (former 'devtools' dependency)
+  # see https://github.com/rocker-org/rocker-versioned/issues/26
+  # Actually, we must reconsider this if we want to support R versions < 3.0.0 (?).
+  if(length(github_packages) > 0 && !"remotes" %in% cran_packages && 
+     !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")){
+    cran_packages <- append(cran_packages, "remotes")
+    pkg_names <- append(pkg_names, "remotes")
+    if(requireNamespace("remotes"))
+      package_versions <- append(package_versions, utils::packageVersion("remotes"))
     else
       #NOTE (TODO): the 'version' field is not yet evaluated or handled
       package_versions <- append(package_versions, "latest") 

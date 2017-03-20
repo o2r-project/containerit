@@ -51,6 +51,37 @@ docker_build <-
   }
 
 
+#' Read labels from images and containers
+#' 
+#' See https://docs.docker.com/engine/reference/commandline/inspect/
+#' 
+#' The imlementation is based on \link[harbor]{docker_cmd} in the harbor package
+#' @seealso \link[harbor]{docker_cmd}
+#'
+#' @param host A host object, as specified by the harbor package
+#' @param name Name or id of the docker object (can also be a list of multiple names/ids)
+#' @param docker_opts Options to docker. These are things that come before the docker command, when run on the command line. (as in harbor::docker:cmd)
+#' @param ... Other arguments passed to the SSH command for the host
+#'
+#' @return A named list of labels for each name or id given. (So, if there are multiple names/ids a list of named lists is returned)
+#'
+#' @examples 
+#' \dontrun{
+#'  docker_inspect(name="rocker/r-ver:3.3.2")
+#' }
+#' 
+docker_inspect <- function(host = harbor::localhost, 
+                            name,
+                            docker_opts = character(0),
+                            ...){
+  output <- harbor::docker_cmd(host, "inspect", args=name, docker_opts, capture_text = TRUE, ...)
+  output <- rjson::fromJSON(output)
+  if(is.list(output) && length(output) ==1)
+    output <- output[[1]]
+  return(output)
+}
+
+
 # Shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
 # When a Dockerfile object is written, a temporary file is written in the context directory and deleted after build 
 # Currently used for testing only. 

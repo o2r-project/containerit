@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 # This script may take a few minutes. Disable this test, e.g. by renaming the file, in order to speed-up the testing
 
@@ -16,8 +16,8 @@ context("session-reproduction")
 expressions <- list(quote(library(rgdal)),
                     quote(library(proj4)),
                     quote(library(sp)),
-                   # quote(library(sysreqs)), # test for github package 
-                   # TODO: uncomment line above after resolving https://github.com/o2r-project/containerit/issues/56
+                    quote(library(sysreqs)), # test for github package 
+                   #TODO: uncomment line above after resolving https://github.com/o2r-project/containerit/issues/56
                     quote(codetools::showTree(quote(-3)))) # test for attached package
 
 local_sessionInfo <- NULL
