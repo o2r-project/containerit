@@ -13,7 +13,7 @@ or alternatively a class 'session_info' as returned by devtools::session_info()}
 \item{as_json}{Determines whether to parse the session information to a json-string instead of a plain string}
 }
 \value{
-A label with key R_session_info and the deparsed session information in one line
+A label with key 'R.session-info' and the deparsed session information in one line
 }
 \description{
 See https://docs.docker.com/engine/reference/builder/#label

@@ -40,7 +40,7 @@ Label <- function(..., multi_line = FALSE){
 #' or alternatively a class 'session_info' as returned by devtools::session_info()
 #' @param as_json Determines whether to parse the session information to a json-string instead of a plain string
 #'
-#' @return A label with key R_session_info and the deparsed session information in one line
+#' @return A label with key 'R.session-info' and the deparsed session information in one line
 #' @export
 #'
 #' @examples
@@ -48,13 +48,13 @@ Label <- function(..., multi_line = FALSE){
 #' df <- dockerfile(session)
 #' addInstruction(df) <- Label_SessionInfo(session)
 Label_SessionInfo <- function(session = sessionInfo(), as_json = FALSE){
-  if(as_json){
+  if (as_json){
     session_string <- rjson::toJSON(session)
   }else{
     session_string <- utils::capture.output(session)
     session_string <- paste(session_string, collapse = "\n")
   }
-  data <- list(R_session_info = session_string)
+  data <- list("R.session-info" = session_string)
   new("Label", data = data, multi_line = FALSE)
 }
 
@@ -68,7 +68,7 @@ setMethod("docker_arguments",
           #  values <- sprintf("\"%s\"",as.character(args))
             values <- sapply(as.character(args), deparse)
             output <- paste(names, values, sep = "=")
-            if(slot(obj, "multi_line"))
+            if (slot(obj, "multi_line"))
               collapse <- " \\\n\t"
             else
               collapse <- " "
@@ -76,3 +76,25 @@ setMethod("docker_arguments",
             return(output)
           }
 )
+
+
+
+#' Create Label corresponding to the maintainer field
+#' 
+#' See https://docs.docker.com/engine/reference/builder/#maintainer-deprecated
+#'
+#' @param value Name or email of the maintainer, see specification
+#'
+#' @return An object of class 'maintainer'
+#' @export
+#'
+#' @examples
+#' Label_Maintainer("SvenDowideit@home.org.au")
+#' 
+Label_Maintainer <- function(value){
+  data <- list(maintainer = value)
+  new("Label", data = data, multi_line = FALSE)
+}
+
+
+

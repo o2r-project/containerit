@@ -8,7 +8,7 @@
 #' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
 #'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
 #' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
-#' @param maintainer optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}
+#' @param maintainer optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}
 #' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance
 #' @param image (From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
@@ -33,7 +33,7 @@
 dockerfile <-
   function(from = utils::sessionInfo(),
            save_image = FALSE,
-           maintainer = Maintainer(name = Sys.info()[["user"]]),
+           maintainer = Sys.info()[["user"]],
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containeRit", utils::packageVersion("containeRit"))),
@@ -58,6 +58,10 @@ dockerfile <-
     if (is.character(image)) {
       image <- parseFrom(image)
     }
+    
+    if (is.character(maintainer)) {
+      maintainer <- Label_Maintainer(maintainer)
+    }
 
     instructions <- list()
     ### check CMD-instruction
@@ -65,7 +69,7 @@ dockerfile <-
       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(cmd))
     }
     
-    if(!inherits(x=context, "character") || (!isTRUE(context == "workdir")) && !dir.exists(context)){
+    if (!inherits(x=context, "character") || (!isTRUE(context == "workdir")) && !dir.exists(context)){
       stop("Unsupported parameter for 'context', expected an existing directory path or the the key 'workdir', given was :", class(context)," ",context)
     }
     
@@ -420,43 +424,7 @@ tagsfromRemoteImage <- function(image) {
   return(tags)
 }
 
-#' Get R version from a variety of sources in a string format used for image tags
-#'
-#' Returns either a version extracted from a given object or the default version.
-#'
-#' @param from the source to extract an R version: a `sessionInfo()` object
-#' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
-#' 
-#' @export
-#'
-#' @examples
-#' getRVersionTag(from = sessionInfo())
-#' getRVersionTag()
-getRVersionTag <- function(from = NULL, default = R.Version()) {
-  r_version <- NULL
-  if (inherits(from, "sessionInfo")) {
-    r_version <- from$R.version
-  } else
-    r_version <- default
 
-  return(paste(r_version$major, r_version$minor, sep = "."))
-}
-
-
-#' Creates an empty R session via system commands and captures the session information
-#'
-#' @param expr optional list of expressions to be executed in the session
-#' @param file optional R script to be executed in the session (uses source-function)
-#' @param vanilla indicate wheter the session should be a vanilla R session
-#' @param slave whether to run R silentely (here: in slave mode)
-#' @param echo wheter to print out detailed information from R
-#'
-#' @return An object of class session info (Can be used as an input to the dockerfile-method)
-#' @export
-#'
-clean_session <- function(expr = list(), file = NULL, vanilla = TRUE, slave = FALSE, echo = FALSE){
-  obtain_localSessionInfo(expr = expr, file = file, slave = slave, echo = echo, vanilla = vanilla)
-}
 
 .makeRelative <- function(files, from) {
   out = sapply(files, function(file) {

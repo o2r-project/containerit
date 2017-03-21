@@ -94,16 +94,16 @@ setValidity("Run",
               exec <- slot(object, "exec")
               params <- slot(object, "params")
               
-              if(is.na(exec) || stringr::str_length(exec) == 0)
+              if (is.na(exec) || stringr::str_length(exec) == 0)
                 return(paste("Exec must be a non-empty string, given was: ", exec))
               else
                 if (length(params) == 1 && is.na(params))
                   return(TRUE)
               else
-                if ((length(params) > 1 && any(is.na(params))) ||
+                if ( (length(params) > 1 && any(is.na(params))) ||
                    any(stringr::str_length(params) == 0))
                   return("If parameters are given for RUN (optional), they cannot be empty strings or NA")
-              else  
+              else
                 return(TRUE)
             }
 )

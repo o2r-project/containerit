@@ -46,11 +46,11 @@ setValidity("Copy",
               src <- slot(object, "src")
               dest <- slot(object, "dest")
               
-              if(length(src) < 1){
+              if (length(src) < 1){
                 return("Invalid RUN instruction: There must be at least one file / directory given by 'src'")
               }
               
-              if(length(dest) != 1){
+              if (length(dest) != 1){
                 return("Invalid RUN instruction: There must be exactly one destination folder given by 'dest'")
               }
             }

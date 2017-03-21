@@ -16,7 +16,7 @@ An S4 class to represent a Dockerfile
 \describe{
 \item{\code{image}}{the base image, used in the FROM statement (character)}
 
-\item{\code{maintainer}}{the MAINTAINER (object of class maintainer)}
+\item{\code{maintainer}}{a maintainer label or an object of class maintainer (the latter is debrecated)}
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 

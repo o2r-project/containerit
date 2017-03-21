@@ -22,8 +22,7 @@ Options (for all modes):
                       By default, the image is determinded from the given r_version, 
                       while the version is matched with tags from the base image rocker/r-ver
                       see details about the rocker/r-ver at https://hub.docker.com/r/rocker/r-ver/'
-  --maintainer-name -n <ARG>   Name of the dockerfile's maintainer (will be read from environment variables if not given)
-  --maintainer-email -@ <ARG>  Email address of the dockerfile's maintainer
+  --maintainer -m <ARG>   Name / email of the dockerfile's maintainer (will be read from environment variables if not given)
   --no-write          Don't write dockerfile to output file
   --no-vanilla        Package a session / file without using the vanilla flag 
                       (warning: site and environment files currently cannot be included in the container)
@@ -86,26 +85,23 @@ if(length(commandArgs(trailingOnly=TRUE))== 0){
          "\t Re-run with option -f / --force in order to overwride the file or use the flag --no-write.")
 
     
-  if(is.null(opts[["maintainer-name"]])){
+  if (is.null(opts[["maintainer"]])){
     #use default argument from dockerfile-method
     this_maintainer <- eval(formals(dockerfile)$maintainer)
   }else
-    this_maintainer <- Maintainer(name = opts[["maintainer-name"]])
+    this_maintainer <- opts[["maintainer"]]
   
-  if(!is.null(opts[["maintainer-email"]])){
-    slot(this_maintainer,"email") <- opts[["maintainer-email"]]
-  }
   
   save_image <- opts[["save-image"]]
   #save image may be overwritten by save:
-  if(!is.null(opts[["save"]])){
+  if (!is.null(opts[["save"]])){
     save_image <- opts[["save"]]
   }
   
   #mode-specific handling:
-  if(opts$session == TRUE){
+  if (opts$session == TRUE){
     expr <- list()
-    if(!is.null(opts[["-e"]])){
+    if (!is.null(opts[["-e"]])){
       expr <- parse(text = unlist(opts[["-e"]]))
     }
     invisible(futile.logger::flog.info("Packaging a new R session..."))
@@ -113,15 +109,15 @@ if(length(commandArgs(trailingOnly=TRUE))== 0){
     this_cmd <- eval(formals(dockerfile)$cmd)
   }else{
     
-    if(opts$dir == TRUE){
+    if (opts$dir == TRUE){
       from <- unlist(opts[["d"]])
-    }else if(opts$file == TRUE){
+    }else if (opts$file == TRUE){
       from <- unlist(opts[["<FILE>"]])
     }else{
-      stop("Invalid arguments!")  
+      stop("Invalid arguments!")
     }
-    
-    if(!is.null(opts[["cmd-render"]]) &&
+
+    if (!is.null(opts[["cmd-render"]]) &&
        opts$file == TRUE) {
       if (opts[["cmd-render"]] == "all")
         this_cmd <- CMD_Render(from, output_format = rmarkdown::all_output_formats())
@@ -129,38 +125,38 @@ if(length(commandArgs(trailingOnly=TRUE))== 0){
         this_cmd <- CMD_Render(from, output_format = rmarkdown::pdf_document())
       else  if (opts[["cmd-render"]] == "html")
         this_cmd <- CMD_Render(from, output_format = rmarkdown::html_document())
-      
+
     } else if (opts[["cmd-R-file"]] && opts$file == TRUE) {
       this_cmd <- CMD_Rscript(from)
     } else
       this_cmd <- eval(formals(dockerfile)$cmd
       )
   }
-  
-  dockerfile_args <- list(from = from, 
-                          copy = opts$copy, 
-                          silent = opts$quiet, 
-                          save_image = save_image, 
-                          maintainer = this_maintainer, 
-                          cmd = this_cmd, 
+
+  dockerfile_args <- list(from = from,
+                          copy = opts$copy,
+                          silent = opts$quiet,
+                          save_image = save_image,
+                          maintainer = this_maintainer,
+                          cmd = this_cmd,
                           soft = opts$soft)
   
   #some arguments should be left to method-default if not explicitely given:
-  if(!is.null(opts[["image"]]))
+  if (!is.null(opts[["image"]]))
     dockerfile_args$image <- opts$image
-    
-  if(!is.null(opts[["r_version"]]))
+  
+  if (!is.null(opts[["r_version"]]))
     dockerfile_args$r_version <- opts$r_version
-  
+
   df_obj <- do.call("dockerfile", dockerfile_args)
-  
-   if(!opts[["no-write"]]){
+
+   if (!opts[["no-write"]]){
       write(df_obj, file = output_file)
   }
-    
-  if(opts[["print"]]){
+  
+  if (opts[["print"]]){
     futile.logger::flog.info("Dockerfile printout: \n")
     cat(format(df_obj), sep = "\n")
   }
-  
+
 }
