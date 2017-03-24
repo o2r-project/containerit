@@ -1,7 +1,7 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #pkgs list of packages as returned by sessionInfo
-.create_run_install <- function(.dockerfile, pkgs, platform, soft) {
+.create_run_install <- function(.dockerfile, pkgs, platform, soft, versioned_libs) {
 
   #create RUN expressions
   package_reqs <- character(0)
@@ -75,11 +75,27 @@
     # additional instructions that shall be appended -after- installing system requirements
     add_inst <- list()
     
-    if("sf" %in% pkg_names){
+    if ("sf" %in% pkg_names){
       # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated. 
+      sf_installed <- requireNamespace("sf")
       
-      # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
-      if(!image_name == "rocker/geospatial"){
+      if(sf_installed && versioned_libs){
+          ext_soft <- sf::sf_extSoftVersion()
+          mapply(function(lib, version){
+              if (!.isVersionSupported(lib, version, .package_config)) {
+                msg <- paste("No explicit for support for the version", version,"of the linked external software", lib)
+                futile.logger::flog.warn(msg)
+                return()
+              }
+            add_apt <<- append(add_apt, .get_lib_apt_requirements(lib, version, .package_config))
+            no_apt <<- append(add_apt, .get_lib_pkgs_names(lib = lib, platform = .debian_platform, config = .package_config))
+            add_inst <<- append(add_inst, .get_lib_install_instructions(lib = lib, version = version,config = .package_config))
+            return(invisible())
+          }, lib = names(ext_soft), version = as.character(ext_soft))
+        
+     
+      #NOTE: The following is the "old" way to do it. Getting sf to work only requires a more current version gdal, while all other dependencies can be installed from APT 
+      }else if(!image_name == "rocker/geospatial"){  # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
         message("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.",
                 "We recommend using the base image rocker/geospatial.")
         message("Docker will try to install GDAL 2.1.3 from source")

@@ -23,3 +23,8 @@ session <- clean_session()
 df <- dockerfile(session)
 addInstruction(df) <- Label_SessionInfo(session)
 }
+\seealso{
+Other label: \code{\link{Label-class}},
+  \code{\link{LabelSchemaFactory}},
+  \code{\link{Label_Maintainer}}, \code{\link{Label}}
+}

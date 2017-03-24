@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 
 #' Instruction class yet to be implemented
@@ -8,6 +8,7 @@
 #' 
 #' @return the object
 #' @export
+#' @family instruction classes
 #'
 #' @examples
 #' #no example yet

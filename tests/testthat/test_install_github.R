@@ -17,7 +17,7 @@ test_that("github_packages can be installed", {
   .addGitHubRef("sf","ropensci/geojsonio@2e15e21")
 
   df = dockerfile(containerit_info, maintainer = Maintainer("matthiashinz"), r_version = "3.3.2")
-  write(df, "./github-package-resources/Dockerfile2")
+  #write(df, "./github-package-resources/Dockerfile")
 
   .githubRefs <- new.env()
   

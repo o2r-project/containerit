@@ -9,6 +9,7 @@
 #' @slot params character.
 #'
 #' @return object of class cmd
+#' @family instruction classes
 #' @export
 #'
 setClass(

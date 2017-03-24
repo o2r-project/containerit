@@ -12,6 +12,8 @@ setClassUnion("Postfix", c("Tag", "Digest", "NULL"))
 #'
 #' @slot image image-id or image name
 #' @slot postfix tag or digest
+#' 
+#' @family instruction classes
 #'
 #' @return an object of class \code{Docker From}
 #' @export

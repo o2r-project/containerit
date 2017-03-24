@@ -10,7 +10,7 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   paste("containeRit", utils::packageVersion("containeRit"))),
   context = "workdir", soft = FALSE, copy = "script",
   container_workdir = "/payload", cmd = Cmd("R"), add_self = FALSE,
-  vanilla = TRUE, silent = FALSE)
+  vanilla = TRUE, silent = FALSE, versioned_libs = FALSE)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
@@ -44,6 +44,8 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 \item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)}
 
 \item{silent}{Whether or not to print information during execution}
+
+\item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
 }
 \value{
 An object of class Dockerfile

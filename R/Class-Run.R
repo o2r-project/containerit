@@ -5,7 +5,9 @@
 #' 
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#run}.
 #'
-#' @slot commands  
+#' @slot commands  One or more commands to be included in the label
+#' @family instruction classes
+#' @family Run instruction
 #'
 #' @return object of class Run
 #' @export
@@ -51,7 +53,7 @@ setValidity("Run_shell",
 #' Create objects representing a RUN instruction in shell form
 #'
 #' @param commands character vector of commands (will be concatenated with && and linebreaks)
-#'
+#' @family Run instruction
 #' @return An S4 object of class Run_shell
 #' @export
 Run_shell <- function(commands){
@@ -65,8 +67,9 @@ Run_shell <- function(commands){
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#run}.
 #'
 #' @slot exec character. 
-#' @slot params character. 
-#'
+#' @slot params character.
+#' @family instruction classes
+#' @family Run instruction
 #' @return object of class Run
 #' @export
 setClass("Run",
@@ -77,7 +80,7 @@ setClass("Run",
 #'
 #' @param exec character argument naming the executable
 #' @param params paramterer arguments
-#'
+#' @family Run instruction
 #' @return An S4 object of class Run
 #' @export
 Run <- function(exec, params = NA_character_){

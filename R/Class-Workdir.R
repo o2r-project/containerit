@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' S4 Class representing a WORKDIR instruction
 #' @include Class-Instruction.R
@@ -7,9 +7,10 @@
 #'
 #' @return object
 #' @export
-#'
+#' @family instruction classes
 #' @examples
-#' #no example yet
+#' instruction <- Workdir("/myDir/subdir/")
+#' toString(instruction)
 setClass("Workdir", slots = list(path = "character"), contains = "Instruction")
 
 

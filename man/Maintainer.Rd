@@ -17,3 +17,7 @@ Maintainer object
 \description{
 TODO: The Maintainer field is deprecated, use Label_Maintainer instead
 }
+\seealso{
+Other maintainer: \code{\link{Label_Maintainer}},
+  \code{\link{Maintainer-class}}
+}

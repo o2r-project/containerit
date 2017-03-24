@@ -16,7 +16,8 @@
 #' docker.cmd.test, docker.debug, docker.cmd.help, docker.params, rkt.cmd, rkt.cmd.devel, rkt.cmd.test, rkt.debug, rkt.cmd.help, rkt.params
 #' 
 #' @export
-#'
+#' @family label
+#' 
 #' @examples
 #' df <- dockerfile(clean_session())
 #' factory <- LabelSchemaFactory()
@@ -25,7 +26,7 @@
 #'   build_date = Sys.time()
 #'  )
 #' addInstruction(df) <- label
-#' format(df)
+#' cat(format(df))
 #' 
 #' 
 LabelSchemaFactory <- function(){

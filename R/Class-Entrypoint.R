@@ -6,6 +6,8 @@
 #' 
 #' @return object
 #' @export
+#' 
+#' @family instruction classes
 #'
 #' @examples
 #' #no example yet

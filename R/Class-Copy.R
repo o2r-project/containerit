@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' S4 Class representing a COPY-instruction
 #' @include Class-Instruction.R
@@ -10,6 +10,8 @@
 #' 
 #' @return object
 #' @export
+#' 
+#' @family instruction classes
 #'
 #' @examples
 #' #no example yet

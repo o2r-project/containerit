@@ -15,3 +15,7 @@ An S4 object of class Run_shell
 \description{
 Create objects representing a RUN instruction in shell form
 }
+\seealso{
+Other Run instruction: \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Run}}
+}

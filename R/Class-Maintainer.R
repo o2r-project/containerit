@@ -11,6 +11,8 @@
 #' @slot name The name
 #' @slot email The email
 #'
+#' @family instruction classes
+#' @family maintainer
 #' @return an object of class \code{Maintainer}
 #' @export
 setClass("Maintainer",
@@ -25,7 +27,8 @@ setClass("Maintainer",
 #' 
 #' @param name character name (by convention: "<given name> <last name>", e.g. "Matthias Hinz")
 #' @param email The email
-#'
+#' 
+#' @family maintainer
 #' @return Maintainer object
 #' @export
 #'

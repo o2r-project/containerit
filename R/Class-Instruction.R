@@ -1,10 +1,11 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 # TODO: If necessary, add one of the following unimplemented classes refering to Docker-instructions: Arg, Onbuild, Stopsignal, Heathcheck, Shell
 
 #' The Docker Instruction - Class
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#format}.
+#' @family instruction classes
 #'
 #' @export
 #'
@@ -57,3 +58,8 @@ setMethod("toString",
 setMethod("as.character",
           signature(x = "Instruction"),
           .toString.Instruction)
+
+
+
+
+

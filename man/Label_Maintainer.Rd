@@ -19,3 +19,11 @@ See https://docs.docker.com/engine/reference/builder/#maintainer-deprecated
 Label_Maintainer("SvenDowideit@home.org.au")
 
 }
+\seealso{
+Other label: \code{\link{Label-class}},
+  \code{\link{LabelSchemaFactory}},
+  \code{\link{Label_SessionInfo}}, \code{\link{Label}}
+
+Other maintainer: \code{\link{Maintainer-class}},
+  \code{\link{Maintainer}}
+}

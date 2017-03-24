@@ -28,7 +28,12 @@ label <- factory(name = "ImageName",
   build_date = Sys.time()
  )
 addInstruction(df) <- label
-format(df)
+cat(format(df))
 
 
+}
+\seealso{
+Other label: \code{\link{Label-class}},
+  \code{\link{Label_Maintainer}},
+  \code{\link{Label_SessionInfo}}, \code{\link{Label}}
 }

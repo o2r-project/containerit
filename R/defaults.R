@@ -39,3 +39,23 @@ set_docker_cran_mirror <- function(cran_url){
 ## Enhance method .create_run_install with mappings from system requrirements to system comands
 .supported_platforms <- .debian_platform
 
+
+
+.init_config_file <- function(){
+  tryCatch(
+    .package_config <- .containeRit_read_config(), #see containeRit-config.R
+    error = function(e) {
+      message <-
+        "ContaineRit config file could not be read. Run containeRit_write_config() to re-initialize the config file."
+      message <- paste0(message, "\n\tCaused by: ", e)
+      warning(message)
+    }
+  )
+  return(.package_config)
+}
+
+.package_config <- .init_config_file() 
+
+
+
+

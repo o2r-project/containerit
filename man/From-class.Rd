@@ -18,3 +18,14 @@ An S4 class to represent a FROM instrunction relating to a docker image
 \item{\code{postfix}}{tag or digest}
 }}
 
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+}

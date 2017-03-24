@@ -22,6 +22,7 @@
 #' @param add_self Whether to add the package containeRit itself if loaded/attached to the session
 #' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)
 #' @param silent Whether or not to print information during execution
+#' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries 
 #'
 #' @return An object of class Dockerfile
 #' @export
@@ -44,7 +45,8 @@ dockerfile <-
            cmd = Cmd("R"),
            add_self = FALSE,
            vanilla = TRUE,
-           silent = FALSE
+           silent = FALSE,
+           versioned_libs = FALSE
            )
       {
     if(silent){
@@ -102,19 +104,39 @@ dockerfile <-
       addInstruction(.dockerfile) <- Workdir(container_workdir)
     else if (inherits(x = from, "sessionInfo")) {
       .dockerfile <-
-        dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
+        dockerfileFromSession(session = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, versioned_libs = versioned_libs)
         #set the working directory (If the directory does not exist, Docker will create it)
         addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "character") ) {
       
-      if (dir.exists(from)){
+      if (dir.exists(from)) {
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromWorkspace(path = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, copy = copy, copy_destination = container_workdir , vanilla = vanilla, silent = silent)
-      } else if (file.exists(from)){
+          dockerfileFromWorkspace(
+            path = from,
+            .dockerfile = .dockerfile,
+            soft = soft,
+            add_self = add_self,
+            copy = copy,
+            copy_destination = container_workdir ,
+            vanilla = vanilla,
+            silent = silent,
+            versioned_libs = versioned_libs
+          )
+      } else if (file.exists(from)) {
         .originalFrom <- from
         .dockerfile <-
-          dockerfileFromFile(file = from, .dockerfile = .dockerfile, soft = soft, add_self = add_self, copy = copy, copy_destination = container_workdir, vanilla = vanilla, silent = silent)
+          dockerfileFromFile(
+            file = from,
+            .dockerfile = .dockerfile,
+            soft = soft,
+            add_self = add_self,
+            copy = copy,
+            copy_destination = container_workdir,
+            vanilla = vanilla,
+            silent = silent,
+            versioned_libs = versioned_libs
+          )
       } 
       else {
         stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
@@ -125,7 +147,14 @@ dockerfile <-
     } else if(is.expression(from) || (is.list(from) && all(sapply(from, is.expression)))){
       #expression or list of expressions
       .sessionInfo <- clean_session(expr = from, slave = silent, vanilla = vanilla)
-      .dockerfile <-  dockerfileFromSession(session = .sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
+      .dockerfile <-
+        dockerfileFromSession(
+          session = .sessionInfo,
+          .dockerfile = .dockerfile,
+          soft = soft,
+          add_self = add_self,
+          versioned_libs = versioned_libs
+        )
     }else {
       stop("Unsupported 'from': ", class(from)," ", from)
     }
@@ -204,7 +233,7 @@ setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 
 
-dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
+dockerfileFromSession <- function(session, .dockerfile, soft, add_self, versioned_libs) {
   instructions <- slot(.dockerfile, "instructions")
 
   apks <- session$otherPkgs
@@ -219,12 +248,12 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self) {
   if(image_name %in% .rocker_images)
     platform = .debian_platform
 
-  .dockerfile <- .create_run_install(.dockerfile = .dockerfile, pkgs = pkgs, platform = platform, soft = soft)
+  .dockerfile <- .create_run_install(.dockerfile = .dockerfile, pkgs = pkgs, platform = platform, soft = soft, versioned_libs = versioned_libs)
 
   return(.dockerfile)
 }
 
-dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination, vanilla, silent) {
+dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination, vanilla, silent, versioned_libs) {
   #################################################
   # prepare context and normalize paths:
   #################################################
@@ -263,7 +292,8 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   }
   # append system dependencies and package installation instructions
   ####################################################
-  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self)
+  .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self,
+                                       versioned_libs = versioned_libs)
   
   ## set working directory to the copy destination and add copy instructions
   ####################################################
@@ -308,7 +338,10 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
 
 
 dockerfileFromWorkspace <-
-  function(path, .dockerfile, soft, add_self, copy, copy_destination, vanilla, silent) {
+  function(path, .dockerfile, soft, add_self, copy, copy_destination, vanilla, silent, versioned_libs) {
+    
+    target_file <- NULL #file to be packaged
+    
     .rFiles <-
       dir(
         path = path,
@@ -341,18 +374,8 @@ dockerfileFromWorkspace <-
         futile.logger::flog.info(message)
       }
       
-      return(
-        dockerfileFromFile(
-          .rFiles[1],
-          .dockerfile = .dockerfile,
-          soft = soft,
-          copy = copy,
-          add_self = add_self,
-          copy_destination = copy_destination,
-          vanilla = vanilla,
-          silent = silent
-        )
-      )
+      target_file <- .rFiles[1]
+
     } else if (length(.md_Files) > 0) {
       if (length(.md_Files) > 1)
         warning(
@@ -368,22 +391,23 @@ dockerfileFromWorkspace <-
         )
         futile.logger::flog.info(message)
       }
-      
-      return(#TODO : Simplify redundant code
-        dockerfileFromFile(
-          .md_Files[1],
-          .dockerfile = .dockerfile,
-          soft = soft,
-          copy = copy,
-          add_self = add_self,
-          copy_destination = copy_destination,
-          vanilla = vanilla,
-          silent = silent
-        )
-      )
-      
+      target_file <- .md_Files[1]
     } else
       stop("The Workspace does not contain any R file that can be packaged.")
+    
+    return(
+      dockerfileFromFile(
+        target_file,
+        .dockerfile = .dockerfile,
+        soft = soft,
+        copy = copy,
+        add_self = add_self,
+        copy_destination = copy_destination,
+        vanilla = vanilla,
+        silent = silent,
+        versioned_libs = versioned_libs
+      )
+    )
   }
 
 

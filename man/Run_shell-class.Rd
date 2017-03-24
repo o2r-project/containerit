@@ -13,6 +13,19 @@ An S4 class to represent a RUN instruction in shell form
 \section{Slots}{
 
 \describe{
-\item{\code{commands}}{}
+\item{\code{commands}}{One or more commands to be included in the label}
 }}
 
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+
+Other Run instruction: \code{\link{Run-class}},
+  \code{\link{Run_shell}}, \code{\link{Run}}
+}

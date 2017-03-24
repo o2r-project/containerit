@@ -11,6 +11,7 @@ Imports:
     methods,
     utils,
     rjson,
+    jsonlite,
     stringr,
     sysreqs,
     futile.logger,
@@ -61,6 +62,7 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
+    'containeRit-config.R'
     'containeRit.R'
     'defaults.R'
     'dockerfile.R'
