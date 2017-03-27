@@ -5,7 +5,7 @@
 
   #create RUN expressions
   package_reqs <- character(0)
-  cran_packages <-  github_packages <- local_packages <- other_packages <- pkg_names <- package_versions <- character(0)
+  cran_packages <- github_packages <- local_packages <- other_packages <- pkg_names <- package_versions <- character(0)
 
   sapply(pkgs,
          function(pkg) {
@@ -63,11 +63,11 @@
 
   #install those system dependencies  which are necessary
   if(!isTRUE(platform %in% .supported_platforms)){
-    warning("The determined platform '", platform, "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containerit.")
+    warning("The determined platform '", platform, "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containeRit.")
   }else if(length(pkg_names) > 0){
 
     
-    #--- handle dependency exceptions (TODO: maybe handle with json config file?)--------------------
+    #--- handle dependency exceptions--------------------
     
     # dependencies that can be left out
     # additional dependencies
@@ -79,7 +79,7 @@
       # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated. 
       sf_installed <- requireNamespace("sf")
       
-      if(sf_installed && versioned_libs){
+      if(sf_installed && versioned_libs){ # Exceptions are handled by json config here:
           ext_soft <- sf::sf_extSoftVersion()
           mapply(function(lib, version){
               if (!.isVersionSupported(lib, version, .package_config)) {
@@ -96,9 +96,11 @@
      
       #NOTE: The following is the "old" way to do it. Getting sf to work only requires a more current version gdal, while all other dependencies can be installed from APT 
       }else if(!image_name == "rocker/geospatial"){  # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
-        message("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.",
+        message <- paste0("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\n",
                 "We recommend using the base image rocker/geospatial.")
-        message("Docker will try to install GDAL 2.1.3 from source")
+        futile.logger::flog.info(message)
+        message <- "Docker will try to install GDAL 2.1.3 from source"
+        futile.logger::flog.info(message)
         
         add_apt <- append(add_apt, c("wget", "make"))
         add_inst <- append(add_inst, Workdir("/tmp/gdal"))
@@ -110,13 +112,14 @@
                                                    "rm -r /tmp/gdal"))
                            )
         
-        #### or system.file("template_source_install_GDAL_PROJ",package ="containeRit"), 
         
         # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from ubuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
       }
     }
     
-    # TODO: we may add some some more no-apt or analogue no-package exceptions here, but at the moment it won't be necessary
+    # TODO: we may ad more no-apt or analogue no-package exceptions here and handle them with the json config - 
+    # as far as we know that certain images have sertain dependencies pre-installed,
+    # but at the moment it won't be necessary
     if(image_name == "rocker/geospatial")
       #these packages are pre-installed
       no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
@@ -276,9 +279,11 @@
     if(length(package)> 0){
       package = paste(package, collapse = ",")
     }
-     
-    flog.info("Trying to determine system requirements for the package(s) '%s' from sysreq online DB", package)
-
+    
+    
+    package_msg <- stringr::str_replace_all(package, ",",", ") 
+    futile.logger::flog.info("Trying to determine system requirements for the package(s) '%s' from sysreq online DB", package_msg)
+    
     con <-
       url(paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform))
     success <- TRUE

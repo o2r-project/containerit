@@ -1,0 +1,187 @@
+---
+title: "Generating Dockerfiles for reproducible research with R"
+author: "Daniel Nüst, Matthias Hinz"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- Copyright 2017 Opening Reproducible Research (http://o2r.info) -->
+
+## 1. Introduction
+
+Even though R is designed for open and reproducible research, users who want to share their work with others are facing unexpecting challanges: sharing the R script by itself is warant for reproducibility, as many analyses rely on external resources and software as well. An R script may produce unexpected results or errors when executed under a different version of R, dependend software or even platform. Reproduciblility is only assured by providing complete setup instructions and resources. Long-term reproducibility can be achieved by either regular maintainance of code or by providing the runtime environment in it's original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
+
+The intention of the R extension package `containerit` is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](http://o2r.info)). `containerit` relies on [Docker](http://docker.com/) and seeks automatically generate setup instructions from a given R session, script, r-markdown file or workspace directory. The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine so that it creates a software container that contains all the R packages and their system dependencies required by an R workflow to be packaged. 
+
+The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Using the stack of version-stable Rocker images, it is possible to match the container's R version with the local R installation or any R version the user requires. `containerit` requires any input to execute locally first in order to detect all dependencies from the workspace. For determining external software dependencies of attached packages, `containerit` relies on the [sysreqs database](https://sysreqs.r-hub.io/) and makes use of the corresponding web API and R package.
+
+To build images and run containers, the package integrates with the [harbor](https://github.com/wch/harbor) package and adds a few convenience functions for interacting with Docker images and containers. For nitty gritty things like reading / loading / installing the _exact_ versions, including system dependencies, internal and external libraries etc., this project is focused on the geospatial domain.
+
+
+## 2. Creating a Dockerfile
+
+- from the current session (from an external session)
+- from a script --> use CMD_Script
+- from a markdown --> use RCMD_Render
+- search directory (give dir)
+
+--print/write results
+
+## 3. Including Resources
+
+- save workspace
+- COPY input file / dir / dirs, files...
+
+
+## 4. Metadata
+
+- Maintainer Label
+- [Label Schema](http://label-schema.org/) for built
+- Add any label
+
+## 5. Costumization 
+
+Add any Instruction
+User 
+
+
+## 6. Challenges
+
+
+
+## 7. Conclusions and Further Work
+Match ex
+Eventually it should/could be possible to create images from scratch?
+
+## tl;dr
+
+Load the package, do your analysis, and create a Dockerfile.
+
+```{r}
+library("containeRit")
+
+# do stuff, based on demo("krige")
+library("gstat")
+library("sp")
+
+data(meuse)
+coordinates(meuse) = ~x+y
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+v <- variogram(log(zinc)~1, meuse)
+m <- fit.variogram(v, vgm(1, "Sph", 300, 1))
+plot(v, model = m)
+
+container <- dockerfile(from = sessionInfo())
+```
+
+The Dockerfile object can be saved to a file or printed out.
+
+```{r,results='markup'}
+cat(as.character(format(container)), sep = "\n")
+```
+
+```{r}
+write(container, file = tempfile())
+```
+
+```{r,results='hide',echo=FALSE}
+# https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
+clear_all <- function() {
+  # objects
+  rm(list = ls(all = TRUE))
+  
+  # packages
+  .kept.packages <- c("stats","graphics","grDevices","utils","datasets",
+                      "methods","base", "tools", "stringr", "stringi",
+                      "containeRit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
+  .package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+  .package.list <- setdiff(.package.list, paste("package:", .kept.packages, sep = ""))
+  if (length(.package.list)>0)
+    for (package in .package.list) detach(package, character.only=TRUE)
+  
+  # packages loaded via namespaces
+  # .tounload <- setdiff(loadedNamespaces(), .kept.packages)
+  # while( ! length(.tounload) == 0 ){
+  #   for(i in seq_along(.tounload)){
+  #     cat("unloading ", .tounload[i], "\n")
+  #     suppressWarnings(tryCatch(unloadNamespace(.tounload[i]), error = function(x) return(NA)))
+  #   }
+  #   .nowloaded <- setdiff(loadedNamespaces(), .kept.packages)
+  #   .tounload <- sample(.nowloaded); # randomimze list order
+  # }
+  
+  cat("cleaned up!\n")
+}
+
+clear_all()
+```
+
+## Dockerfile examples
+
+The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
+
+Here is some regular R code loading a file and plotting it.
+
+```{r, message=FALSE}
+library("rgdal")
+library("maptools")
+
+nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)
+proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
+plot(nc)
+```
+
+```{r,results='hide',echo=FALSE}
+clear_all()
+```
+
+### Create Dockerfile from session
+
+```{r}
+class(sessionInfo())
+containeRit::dockerfile(from = sessionInfo(), env = ls())
+```
+
+```{r,results='hide',echo=FALSE}
+clear_all()
+```
+
+### Script
+
+```{r}
+scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
+file <- file(scriptFile)
+writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
+             'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
+             'plot(nc)'), file)
+close(file)
+class(file)
+
+#containerit::dockerfile(from = file)
+```
+
+### Workspace
+
+Go through all `.R` files in a directory and create a Dockerfile with a runtime environment which can run all of them.
+
+```{r, }
+workspace <- getwd()
+class(workspace)
+dir.exists(workspace)
+
+#containerit::dockerfile(from = workspace)
+```
+
+## sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
+
+
