@@ -24,6 +24,64 @@ To build images and run containers, the package integrates with the [harbor](htt
 
 ## 2. Creating a Dockerfile
 
+The easiest way to way to generate a Dockerfile is to run the analysis in an interactive session where `containerit` is loaded into and to call the `dockerfile()`- method with default parameters. As shown in the example below, the result can be pretty-printed and written to a file. If no file - argument is supplied to `write()`, the Dockerfile is written to the working directory as `./Dockerfile`
+
+- The dockerfile context must always be the same as the R working directory (because file path have to be relative and would be difficult to manage otherwise)
+
+## 2.1 Packaging an interactive session
+```{r}
+library("containeRit")
+
+# do stuff, based on demo("krige")
+library("gstat")
+library("sp")
+
+data(meuse)
+coordinates(meuse) = ~x+y
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+v <- variogram(log(zinc)~1, meuse)
+m <- fit.variogram(v, vgm(1, "Sph", 300, 1))
+plot(v, model = m)
+
+dockerfile_object <- dockerfile()
+```
+
+The printout shows the general structure of a Dockerfile, which follows a pre-defined order: At first, the base image and the maintainer label are defined. They are followed by instructions that install system dependencies and external software. Afterwards, the R packages themselves are installed and the working directory is set. Not included in this example are copy instructions and metadata labels, which are included after the workdir-instructions. The final line always declares a CMD instruction, which defines the default command executed when running the container. Note that the maintainer label as well as the R version of the base image are detected from the runtime environment, if not set otherwise.
+
+```{r,results='markup'}
+print(dockerfile_object)
+```
+
+```{r}
+write(dockerfile_object, file = tempfile())
+```
+
+
+## 2.1 Packaging an external session
+
+Packaging an interactive session has the disadvantage that unnecessary dependencies might be drawn in, for instance the package `futile.logger` is a depency of `containerit`, but it will be installed because it was loaded into the same session were the analyses was executed. It cannot be ruled out, because some of the methods in the analyses _might_ have used it as well (even unintentionally in case of generic methods). Therefore, it is safer to run the analysis in an isolated _vanilla_ session. If only few commands need to be executed, they can be passed as a list of expressions either to the `dockerfile` method or to the convenience method `clean_session()`. The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`, which can be inspected and set as an input to `dockerfile()`. This is also how `dockerfile()` works internally when packaging either expressions, scripts or markdown files.
+
+```{r}
+exp <- c(expression(data(meuse, package = "sp"), 
+            expression(mean(meuse$zinc))))
+dockerfile_object <- dockerfile(exp)
+print(dockerfile_obj)
+```
+
+
+## 2.2 Packaging an R script
+
+
+
+## 2.4 Packaging an R markdown file
+
+
+
+## 2.5 Packaging a workspace directory
+
+cannot be ruled out because it was loaded into the same session were the analyses was 
+
 - from the current session (from an external session)
 - from a script --> use CMD_Script
 - from a markdown --> use RCMD_Render
@@ -32,6 +90,37 @@ To build images and run containers, the package integrates with the [harbor](htt
 --print/write results
 
 ## 3. Including Resources
+
+Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of of files and directories inside the current working directory
+
+
+Examples:
+dockerfile("abc", copy = "script_dir")
+
+
+
+(Taken from the tests:)
+  df <- dockerfile("simple_test_script_resources/",
+                copy = "script_dir",
+                cmd = CMD_Rscript("simple_test_script_resources/simple_test.R")
+
+ print(df)
+  df <- dockerfile("simple_test_script_resources/simple_test.R", 
+                copy = c("simple_test_script_resources/simple_test.R",
+                         "simple_test_script_resources/test_table.csv",
+                         "simple_test_script_resources/test_subfolder/testresource")
+  print(df)                       
+                         
+Including R objects works similar using the argument `save_image`. The argument can be set TRUE/FALSE so that it saves all objects of the current workspace to an .RData file, which then copied to the container's working directory and loaded on startup (calls save.image()). Alternatively, a list of object names as well as other arguments can be passed as a list, which then will be passed to the save() function.
+  
+  df <- dockerfile(save_image = TRUE)
+   print(df)
+  
+   original_sessionInfo <- sessionInfo() #the object to be saved
+  df <- dockerfile(save_image = list("original_sessionInfo"))
+  print(df)
+
+dockerfile()
 
 - save workspace
 - COPY input file / dir / dirs, files...
@@ -59,35 +148,6 @@ Eventually it should/could be possible to create images from scratch?
 
 ## tl;dr
 
-Load the package, do your analysis, and create a Dockerfile.
-
-```{r}
-library("containeRit")
-
-# do stuff, based on demo("krige")
-library("gstat")
-library("sp")
-
-data(meuse)
-coordinates(meuse) = ~x+y
-data(meuse.grid)
-gridded(meuse.grid) = ~x+y
-v <- variogram(log(zinc)~1, meuse)
-m <- fit.variogram(v, vgm(1, "Sph", 300, 1))
-plot(v, model = m)
-
-container <- dockerfile(from = sessionInfo())
-```
-
-The Dockerfile object can be saved to a file or printed out.
-
-```{r,results='markup'}
-cat(as.character(format(container)), sep = "\n")
-```
-
-```{r}
-write(container, file = tempfile())
-```
 
 ```{r,results='hide',echo=FALSE}
 # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r

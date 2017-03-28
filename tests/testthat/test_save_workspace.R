@@ -46,15 +46,15 @@ test_that("A workspace image can be containerized given an object list and save-
 
   test_folder <- basename(tempfile(pattern = "safe_image_test"))
   dir.create(test_folder)
-  targetfile <- paste0(test_folder,"/testworkspace.RData")
-  message("Workspace here: ",ls(all.names = TRUE, envir = .GlobalEnv))
+  targetfile <- paste0(test_folder, "/testworkspace.RData")
+  message("Workspace here: ", ls(all.names = TRUE, envir = .GlobalEnv))
   df <- dockerfile(original_sessionInfo, save_image = list("original_sessionInfo", file = targetfile))
   
   save_image = list("original_sessionInfo", file = targetfile)
   
   expect_true(file.exists(targetfile), paste("The expected workspace image ",targetfile ,", was not written in working directory."))
   attach(targetfile)
-  expect_true("original_sessionInfo" %in% ls(pos = 2) ," R object was not savet to RData file.")
+  expect_true("original_sessionInfo" %in% ls(pos = 2) ," R object was not saved to RData file.")
   detach(pos = 2)
   
   inst <- slot(df, "instructions")

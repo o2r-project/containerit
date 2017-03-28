@@ -177,19 +177,11 @@ dockerfile <-
     return(.dockerfile)
   }
 
-#' Format a Dockerfile object to a series of instructions
-#'
-#' @param x An object of class Dockerfile
-#' @param ... Arguments to be passed down to format.default
-#'
-#' @return The content of the Dockerfile represented by the Dockerfile object, by default formatted as a list of strings where each string represent a new line
+
 #' @export
-#'
-#' @examples
-#' format(dockerfile())
-format.Dockerfile <- function(x, ...) {
+toString.Dockerfile <- function(x, ...) {
   #initialize dockerfile with from
-  output <- list()
+  output <- c()
   from <- toString(slot(x, "image"))
   output <- append(output, from)
   maintainer <- slot(x, "maintainer")
@@ -203,15 +195,41 @@ format.Dockerfile <- function(x, ...) {
   cmd <- slot(x, "cmd")
   if (!is.null(cmd))
     output <- append(output, toString(cmd))
-  return(format(output, ...))
+  return(output)
 }
 
+
+#' @export
+print.Dockerfile <- function(x, ...) {
+  cat(toString.Dockerfile(x, ...), sep="\n")
+  invisible(x)
+}
+
+#' @export
+format.Dockerfile <- function(x, ...) format(toString(x), ...)
+
+
+setMethod("format", signature(x = "Dockerfile"), format.Dockerfile)
+
+
+setMethod("toString",
+          signature(x = "Dockerfile"),
+          toString.Dockerfile)
+
+
+setMethod("as.character",
+          signature(x = "Dockerfile"),
+          toString.Dockerfile)
+
+setMethod("print",
+          signature(x = "Dockerfile"),
+          print.Dockerfile)
 
 
 .write.Dockerfile <-
   function(x, file = file.path(.contextPath(x), "Dockerfile")) {
     flog.info("Writing dockerfile to %s", file)
-    return(write(as.character(format(x)), file))
+    return(write(toString(x), file))
   }
 
 
