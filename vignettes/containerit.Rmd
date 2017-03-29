@@ -15,7 +15,7 @@ vignette: >
 
 Even though R is designed for open and reproducible research, users who want to share their work with others are facing unexpecting challanges: sharing the R script by itself is warant for reproducibility, as many analyses rely on external resources and software as well. An R script may produce unexpected results or errors when executed under a different version of R, dependend software or even platform. Reproduciblility is only assured by providing complete setup instructions and resources. Long-term reproducibility can be achieved by either regular maintainance of code or by providing the runtime environment in it's original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
 
-The intention of the R extension package `containerit` is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](http://o2r.info)). `containerit` relies on [Docker](http://docker.com/) and seeks automatically generate setup instructions from a given R session, script, r-markdown file or workspace directory. The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine so that it creates a software container that contains all the R packages and their system dependencies required by an R workflow to be packaged. 
+The intention of the R extension package `containerit` is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research (O2R, [http://o2r.info](http://o2r.info)). `containerit` relies on [Docker](http://docker.com/) and seeks automatically generate setup instructions from a given R session, script, r-markdown file or workspace directory. The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine so that it creates a software container that contains all the R packages and their system dependencies required by an R workflow to be packaged. 
 
 The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Using the stack of version-stable Rocker images, it is possible to match the container's R version with the local R installation or any R version the user requires. `containerit` requires any input to execute locally first in order to detect all dependencies from the workspace. For determining external software dependencies of attached packages, `containerit` relies on the [sysreqs database](https://sysreqs.r-hub.io/) and makes use of the corresponding web API and R package.
 
@@ -26,7 +26,7 @@ To build images and run containers, the package integrates with the [harbor](htt
 
 The easiest way to way to generate a Dockerfile is to run the analysis in an interactive session where `containerit` is loaded into and to call the `dockerfile()`- method with default parameters. As shown in the example below, the result can be pretty-printed and written to a file. If no file - argument is supplied to `write()`, the Dockerfile is written to the working directory as `./Dockerfile`
 
-- The dockerfile context must always be the same as the R working directory (because file path have to be relative and would be difficult to manage otherwise)
+When packaging any resources, it is essential that the R working directory is the same as the build context, to which the Dockerfile refers. All resources musst located below this directory so that they can be refered to by relative paths (e.g. for copy instructions). This must also be considered whewn packaging R scripts that use relative paths, e.g. for reading a table or another R script.
 
 ## 2.1 Packaging an interactive session
 ```{r}
@@ -63,93 +63,217 @@ write(dockerfile_object, file = tempfile())
 Packaging an interactive session has the disadvantage that unnecessary dependencies might be drawn in, for instance the package `futile.logger` is a depency of `containerit`, but it will be installed because it was loaded into the same session were the analyses was executed. It cannot be ruled out, because some of the methods in the analyses _might_ have used it as well (even unintentionally in case of generic methods). Therefore, it is safer to run the analysis in an isolated _vanilla_ session. If only few commands need to be executed, they can be passed as a list of expressions either to the `dockerfile` method or to the convenience method `clean_session()`. The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`, which can be inspected and set as an input to `dockerfile()`. This is also how `dockerfile()` works internally when packaging either expressions, scripts or markdown files.
 
 ```{r}
-exp <- c(expression(data(meuse, package = "sp"), 
-            expression(mean(meuse$zinc))))
-dockerfile_object <- dockerfile(exp)
-print(dockerfile_obj)
+exp <- c(expression(library(sp)),
+         expression(data(meuse)), 
+         expression(mean(meuse[["zinc"]])))
+session <- clean_session(exp, echo = TRUE)
+dockerfile_object <- dockerfile(from = session)
+```
+
+```{r}
+print(dockerfile_object)
 ```
 
 
 ## 2.2 Packaging an R script
 
+R scripts are packaged by just supplying the file paths as a from-argument. They are automatically copied into the container's working directory. In order to run the R script on start-up, rather than an interactive R session, a CMD instruction can be supplied using `CMD_Rscript` path as an argument to `cmd`.
+
+```{r}
+setwd(tempdir())
+scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
+writeLines(c('library(rgdal)',
+             'nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
+             'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
+             'plot(nc)'), scriptFile)
+
+dockerfile_object <- dockerfile(from = scriptFile, silent = TRUE, cmd = CMD_Rscript(scriptFile))
+unlink(scriptFile)
+print(dockerfile_object)
+```
 
 
 ## 2.4 Packaging an R markdown file
 
+In this example, a vignette from the Simple Features package `sf` is created and rendered on startup, as a `cmd` argument is passed to `dockerfile()` constructed by CMD_Render. Note that, according to the dockerfile, the GDAL library has to be build from source.
 
+
+```{r}
+workspace <- getwd()
+temp_workspace <- tempfile(pattern = "containeRit_temp")
+dir.create(temp_workspace)
+setwd(temp_workspace)
+
+response <- file.copy(from = system.file("doc/sf3.Rmd",package = "sf"),
+                        to = temp_workspace, recursive = TRUE)
+vignette <- "sf3.Rmd"
+
+dockerfile_object <- dockerfile(from = vignette, silent = TRUE, cmd = CMD_Render(vignette))
+unlink(temp_workspace)
+print(dockerfile_object)
+```
 
 ## 2.5 Packaging a workspace directory
 
-cannot be ruled out because it was loaded into the same session were the analyses was 
 
-- from the current session (from an external session)
-- from a script --> use CMD_Script
-- from a markdown --> use RCMD_Render
-- search directory (give dir)
-
---print/write results
+- searches a directory path for the first occurence of an R script, or otherwise the firsto occurence of an R markdown file
+- (actually, we won't need an example other than that in the next section session)
 
 ## 3. Including Resources
 
 Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of of files and directories inside the current working directory
 
-
-Examples:
-dockerfile("abc", copy = "script_dir")
-
-
-
-(Taken from the tests:)
-  df <- dockerfile("simple_test_script_resources/",
+```{r}
+  workspace <- getwd()
+  temp_workspace <- tempfile(pattern = "containeRit_temp")
+  dir.create(temp_workspace)
+  setwd(temp_workspace)
+  response <- file.copy(from = system.file("simple_test_script_resources/", 
+                                           package = "containeRit"),
+                        to = temp_workspace, recursive = TRUE)
+  
+  
+  dockerfile_object <- dockerfile("simple_test_script_resources/",
                 copy = "script_dir",
                 cmd = CMD_Rscript("simple_test_script_resources/simple_test.R")
+                )
 
- print(df)
-  df <- dockerfile("simple_test_script_resources/simple_test.R", 
-                copy = c("simple_test_script_resources/simple_test.R",
-                         "simple_test_script_resources/test_table.csv",
-                         "simple_test_script_resources/test_subfolder/testresource")
-  print(df)                       
+  print(dockerfile_object)
+  setwd(workspace)
+  unlink(temp_workspace, recursive = TRUE)
+  
+  
+```
                          
-Including R objects works similar using the argument `save_image`. The argument can be set TRUE/FALSE so that it saves all objects of the current workspace to an .RData file, which then copied to the container's working directory and loaded on startup (calls save.image()). Alternatively, a list of object names as well as other arguments can be passed as a list, which then will be passed to the save() function.
+Including R objects works similar to resources, using the argument `save_image`. The argument can be set TRUE/FALSE so that it saves all objects of the current workspace to an .RData file, which then copied to the container's working directory and loaded on startup (calls save.image()). Alternatively, a list of object names as well as other arguments can be passed as a list, which then will be passed to the save() function.
   
+```{r}
   df <- dockerfile(save_image = TRUE)
-   print(df)
-  
-   original_sessionInfo <- sessionInfo() #the object to be saved
+  print(df)
+```
+
+``` {r}
+  original_sessionInfo <- sessionInfo() #the object to be saved
   df <- dockerfile(save_image = list("original_sessionInfo"))
   print(df)
-
-dockerfile()
-
-- save workspace
-- COPY input file / dir / dirs, files...
+```
 
 
 ## 4. Metadata
 
-- Maintainer Label
-- [Label Schema](http://label-schema.org/) for built
-- Add any label
+Metadata can be added to Docker images using [Label instructions](https://docs.docker.com/engine/reference/builder/#label). Label instructions are pairs keys and values of arbitrary content, but dublicate key-names are overwriting each other. Although it is up to the user how many labels are created, it is recommended to bundle many key-value pairs into one Label.
 
-## 5. Costumization 
+As shown in section 2, the maintainer label is set by default to the top as the dockerfile and contains the username of the current host system. It can be costumized using the maintainer-argument of the docker() function, as the following:
 
-Add any Instruction
-User 
+```{r}
+dockerfile_object <- dockerfile(from = clean_session(), maintainer = "Jon_Doe@example.com")
+```
+
+Other labels can be applied to the existing Dockerfile object using the `addInstructions()` function, which adds any newly created instructions to the end of the Dockerfile (before the CMD statement, in any case). The `Label()` constructor can be used for creating labels of arbitrary content and works similar to creating named lists in R.
+
+```{r}
+# A simple label that occupies one line:
+label1 <- Label(key1 = "this", key2 = "that", otherKey = "content")
+#label with fixed namespace for all keys
+label2 <- Label("name"="A name", "description" = "A description", label_ns = "my.label.ns.")
+# A multiline label with one key/value pair per line
+label3 <- Label("info.o2r.name" = "myProject_ImageName", "org.label-schema.name"="ImageName", "yet.another_labelname"="true", multi_line = TRUE)
+addInstruction(dockerfile_object) <- list(label1, label2, label3)
+```
+
+
+- [Label Schema](http://label-schema.org/rc1/) 
+Metadata according to the Label Schema can now be created as follows
+
+```{r}
+factory <- LabelSchemaFactory()
+label <- factory(name = "ImageName", description = "Description of the image", build_date = Sys.time())
+addInstruction(dockerfile_object) <- label
+```
+
+Put session info output into a label as plain text (optional use as_json = TRUE):
+
+```{r}
+addInstruction(dockerfile_object) <- Label_SessionInfo(clean_session())
+```
+
+
+Result:
+
+```{r}
+print(dockerfile_object)
+```
+
+## 5. Further costumization 
+
+
+- Use costum base image (rocker-stack) and costum R version
+
+```{r}
+dockerfile_object <- dockerfile(from = NULL, r_version = "3.1.0", silent = TRUE)
+print(dockerfile_object@image)
+dockerfile_object <- dockerfile(from = NULL, image = "rocker/geospatial", silent = TRUE)
+print(dockerfile_object@image)
+dockerfile_object <- dockerfile(from = NULL, image = "rocker/verse:3.0.0", silent = TRUE)
+print(dockerfile_object@image)
+```
+
+
+CLI
+installation on Linux via `ln -s $(Rscript -e "cat(system.file(\"cli/container_it.R\", package=\"containeRit\"))") /usr/local/bin/container_it.R`
+
+CLI Examples:
+```
+  # runs the first R markdown or R script file locally 
+  # prints Dockerfile without writing a file
+  container_it.R dir -p --no-write  
+  
+  # Packages R-script 
+  # saves a workspace image (-i parameter)
+  # Writes Dockerfile (overwrite with -f)
+  # execute the script on start-up
+  container_it.R file -ifp --cmd-R-file path/example.R
+
+  # Creates an empty R session with the given R commands
+  # Set R version of the container to 3.3.0
+  container_it.R session -p -e "library(sp)" -e "demo(meuse, ask=FALSE)" --r_version 3.3.0
+```
 
 
 ## 6. Challenges
 
+- R packages don't define system dependencies and no version of dependencies
+- install specific versions of external libraries (see \link(https://github.com/o2r-project/containerit/issues/46))
+
+sysreqs lists apt-packages, but no package versions
+
+
+Users may do things that we cannot capture from a session, e.g. (???)
+--> side-effects, ....
+
+
+- All software is presumed to be installed and run on the host system. Althought it is possible to use deviating versions of R or package even sessionInfo-objects that were created on a different host, it may lead to uexpected errors because the setup cannot be tested locally. 
+
 
 
 ## 7. Conclusions and Further Work
-Match ex
-Eventually it should/could be possible to create images from scratch?
 
-## tl;dr
+`containerit` alows to create and costumize Dockerfiles with minimal effort, which are suitable for packaging R analyses in the persistant runtime environment of a software container. So far, we were able to reproduce compete R sessions regarding loaded and attached packages. Although we are able to package different versions of R, we still do not fully support the installation of specific versions of R packages and external software libraries. This will improve when adding support for version-stable package repositories like MRAN and GRAN. For now, it is recommended that users have all software up-to-date when building a software container. All Dockerfiles an instructions are adjusted to the Rocker image stack and presume that the operating system is Debian / Linux. As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
+
+The prototype of `containerit` was developed and testet on Ubuntu / Linux. Before releasing a stable version on CRAN, we will also test it on Mac OS X and Windows operating systems.
+
+As part of the O2R project, it is planned to inegrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
+
+- Graphical User interface
+- install packages from other repositories (see remotes-packages), e.g.  bioconductor (!) git, bit bucket, local files
+
+
+Not supported yet are country locales. We may want to support other container OS (e.g. windows container, Ubuntu, other linux distributions)
+
 
 
 ```{r,results='hide',echo=FALSE}
+
 # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
 clear_all <- function() {
   # objects
@@ -181,7 +305,7 @@ clear_all <- function() {
 clear_all()
 ```
 
-## Dockerfile examples
+## Dockerfile examples (MAYBE WE COULD USE THIS SOMEWHERE)
 
 The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
 
@@ -199,49 +323,5 @@ plot(nc)
 ```{r,results='hide',echo=FALSE}
 clear_all()
 ```
-
-### Create Dockerfile from session
-
-```{r}
-class(sessionInfo())
-containeRit::dockerfile(from = sessionInfo(), env = ls())
-```
-
-```{r,results='hide',echo=FALSE}
-clear_all()
-```
-
-### Script
-
-```{r}
-scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
-file <- file(scriptFile)
-writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
-             'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
-             'plot(nc)'), file)
-close(file)
-class(file)
-
-#containerit::dockerfile(from = file)
-```
-
-### Workspace
-
-Go through all `.R` files in a directory and create a Dockerfile with a runtime environment which can run all of them.
-
-```{r, }
-workspace <- getwd()
-class(workspace)
-dir.exists(workspace)
-
-#containerit::dockerfile(from = workspace)
-```
-
-## sessionInfo()
-
-```{r}
-sessionInfo()
-```
-
 
 

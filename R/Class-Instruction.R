@@ -38,7 +38,7 @@ setMethod("docker_arguments",
           })
 
 #Convert an Instruction-object to a string holding a Docker instruction
-.toString.Instruction <- function(x) {
+.toString.Instruction <- function(x, ...) {
   return(paste(docker_key(x), docker_arguments(x)))
 }
 
@@ -58,6 +58,17 @@ setMethod("toString",
 setMethod("as.character",
           signature(x = "Instruction"),
           .toString.Instruction)
+
+
+#' @export
+print.Instruction <- function(x, ...) {
+  cat(.toString.Instruction(x, ...), sep="\n")
+  invisible(x)
+}
+
+setMethod("print",
+          signature(x = "Instruction"),
+          print.Instruction)
 
 
 

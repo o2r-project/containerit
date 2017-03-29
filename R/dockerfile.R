@@ -295,15 +295,15 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   if(stringr::str_detect(file, ".R$")){
     message <- paste0("Executing R script file in ", rel_path," locally.")
     futile.logger::flog.info(message)
-    sessionInfo <- obtain_localSessionInfo(file = file, vanilla = vanilla, slave = silent)
+    sessionInfo <- obtain_localSessionInfo(file = file, vanilla = vanilla, slave = silent, echo = !silent)
   } else if(stringr::str_detect(file, ".Rnw$")){
     message <- paste0("Processing the given file ", rel_path," locally using knitr::knit2pdf(..., clean = TRUE)")
     futile.logger::flog.info(message)
-    sessionInfo <- obtain_localSessionInfo(rnw_file = file, vanilla = vanilla , slave = silent)
+    sessionInfo <- obtain_localSessionInfo(rnw_file = file, vanilla = vanilla , slave = silent, echo = !silent)
   }else if(stringr::str_detect(file, ".Rmd$")){
     message <- paste0("Processing the given file ", rel_path," locally using rmarkdown::render(...)")
     futile.logger::flog.info(message)
-    sessionInfo <- obtain_localSessionInfo(rmd_file = file, vanilla = vanilla, slave = silent)
+    sessionInfo <- obtain_localSessionInfo(rmd_file = file, vanilla = vanilla, slave = silent, echo = !silent)
   } else{
     message <- paste0("The supplied file ", rel_path, " has no known extension. ContaineRit will handle it as an R script for packaging.")
     futile.logger::flog.info(message)
