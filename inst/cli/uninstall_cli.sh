@@ -1,1 +1,1 @@
-rm /usr/local/bin/container_it.R
+rm /usr/local/bin/containerit
