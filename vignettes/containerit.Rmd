@@ -119,7 +119,6 @@ Packaging an interactive session has the disadvantage that unnecessary dependenc
 For instance the package `futile.logger` is a dependency of `containerit`, and it will be added to the container because it was loaded into the same session were the analyses was executed.
 It cannot be removed by default, because other packages in the session _might_ use it as well (even unintentionally in case of generic methods).
 Therefore, it is safer not to tamper with the current session, but to run the analysis in an isolated _vanilla_ session, which does not have `containerit` in it.
-If only few commands need to be executed, they can be passed as a list of expressions either to the `dockerfile()` method or to the convenience method `clean_session()`.
 The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`.
 The session info is then used as input to `dockerfile()`.
 This is also how `dockerfile()` works internally when packaging either expressions, scripts or R markdown files.
@@ -242,7 +241,7 @@ Although it is up to the user how many labels are created, it is recommended to 
 Each use of the `Label()` function creates a seperate instruction in the Dockerfile.
 
 As shown in section 2, the maintainer label is set by default to the top as the dockerfile and contains the username of the current host system.
-The maintainer can be changed with the `maintainer` argument:
+The maintainer can be changed with the `maintainer` argument of `dockerfile()`:
 
 ```{r}
 labeled_dockerfile <- dockerfile(from = clean_session(), maintainer = "Jon_Doe@example.com")
@@ -331,27 +330,41 @@ CLI Examples:
 
 ## 7. Challenges
 
-- R packages don't define system dependencies and no version of dependencies
-- install specific versions of external libraries (see \link(https://github.com/o2r-project/containerit/issues/46))
+We encountered several challenges during `containerit`'s development.
+First and foremost, a well known limitation is that R packages don't define system dependencies and do not provide explicit versions for R package dependencies.
+The `sysreqs` package is a promising approach towards handling system requirements, but so far lists package names but does not provide version information.
+The shinyapps-package-dependencies demonstrate a (currently system dependent) alternative.
+The high value of R might well lie in the fact that "packages currently on CRAN" should work well with each other.
 
-sysreqs lists apt-packages, but no package versions
+An unmet challenge so far is the installation of specific versions of external libraries (see [issue](https://github.com/o2r-project/containerit/issues/46)).
+A package like `sf` relies on well-tested and powerful system libraries, see `sf::sf_extSoftVersion()`, which ideally should be matched in the created container.
 
+And of course users may do things that `containerit` cannot capture from the session state "after the analysis is completed", such as detaching packages or removing relevant files, and unknown side-effects might occur.
 
-Users may do things that we cannot capture from a session, e.g. (???)
---> side-effects, ....
-
-
-- All software is presumed to be installed and run on the host system. Althought it is possible to use deviating versions of R or package even sessionInfo-objects that were created on a different host, it may lead to uexpected errors because the setup cannot be tested locally. 
+All software is presumed to be installed and run on the host system.
+Although it is possible to use deviating versions of R or even create Dockerfiles using sessionInfo-objects created on a different host, this may lead to unexpected errors because the setup cannot be tested locally.
 
 ## 8. Conclusions and future work
 
-`containerit` alows to create and costumize Dockerfiles with minimal effort, which are suitable for packaging R analyses in the persistant runtime environment of a software container. So far, we were able to reproduce compete R sessions regarding loaded and attached packages. Although we are able to package different versions of R, we still do not fully support the installation of specific versions of R packages and external software libraries. This will improve when adding support for version-stable package repositories like MRAN and GRAN. For now, it is recommended that users have all software up-to-date when building a software container. All Dockerfiles an instructions are adjusted to the Rocker image stack and presume that the operating system is Debian / Linux. As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
+`containerit` alows to create and costumize Dockerfiles with minimal effort, which are suitable for packaging R analyses in the persistant runtime environment of a software container.
+So far, we were able to reproduce compete R sessions regarding loaded and attached packages and mitigate some challenges towards reproducible computational research.
 
-The prototype of `containerit` was developed and testet on Ubuntu / Linux. Before releasing a stable version on CRAN, we will also test it on Mac OS X and Windows operating systems.
+Although we are able to package different versions of R, we still do not fully support the installation of specific versions of R packages and external software libraries, which R itself does not support.
+This should be tested in the future by evaluating version-stable package repositories like MRAN and GRAN or utility packages such as packrat -- see the [GitHub issues](https://github.com/o2r-project/containerit/issues/new) for the status of these plans or provide your own ideas there.
+Related to specific versions is support for more package repositories, such as Bioconductor, git, BitBucket, or even local files.
+For now, it is recommended that users have all software up-to-date when building a software container, as the latest version are installed from CRAN during the image build, to have matching package versions between the creation runtime environment and the container.
 
-As part of the o2r project, it is planned to inegrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
+All Dockerfiles and instructions are adjusted to the Rocker image stack and assume a Debian/Linux operating system.
+As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
 
-- Graphical User interface
-- install packages from other repositories (see remotes-packages), e.g.  bioconductor (!) git, bit bucket, local files
+At the time of writing this vignette, the package is a first prototype available via GitHub.
+While a publication on CRAN is a goal, it should be preceeded by feedback from the useR community and ideally be accompanied by related packages, such as [harbor](https://github.com/wch/harbor/issues/5), being available on CRAN, too.
+The prototype of `containerit` was developed and testet only on Ubuntu/Linux.
+Before releasing a stable version on CRAN, it should be tested on Mac OS X and Windows.
 
-Not supported yet are country locales. We may want to support other container OS (e.g. windows container, Ubuntu, other linux distributions)
+As part of the o2r project, it is planned to integrate `containerit` in a [web service](http://o2r.info/architecture) for creating archivable research in form of [Executable Research Compendia (ERC)](https://doi.org/10.1045/january2017-nuest).
+Making `containerit` itself easier to use for endusers is a secondary goal, for example by building a graphical user interface for metadata creation.
+Country locales are also not supported yet.
+We may want to support other container OS (e.g. windows container or other Linux distributions).
+
+Feedback and contributions are highly welcome [on GitHub](https://github.com/o2r-project/containerit/issues) or [@o2r_project](https://twitter.com/o2r_project) on Twitter.
