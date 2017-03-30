@@ -290,7 +290,9 @@ print(labeled_dockerfile)
 The `dockerfile()` function allows further customization regarding the R version or the used base image (cf. Rocker stack).
 Note that while choosing an R version for the Dockerfile explicitly is possible, the session to generate the required information (i.e. which packages are attached etc.) is still running the R version of the generating machine.
 
-```{r}
+The following examples show usage of these options and the respective `FROM` statements in the Dockerfile.
+
+```{r, comment=NA}
 df_custom <- dockerfile(from = NULL, r_version = "3.1.0", silent = TRUE)
 print(df_custom@image)
 df_custom <- dockerfile(from = NULL, image = "rocker/geospatial", silent = TRUE)
@@ -333,7 +335,7 @@ CLI Examples:
 We encountered several challenges during `containerit`'s development.
 First and foremost, a well known limitation is that R packages don't define system dependencies and do not provide explicit versions for R package dependencies.
 The `sysreqs` package is a promising approach towards handling system requirements, but so far lists package names but does not provide version information.
-The shinyapps-package-dependencies demonstrate a (currently system dependent) alternative.
+The [shinyapps-package-dependencies](https://github.com/rstudio/shinyapps-package-dependencies) demonstrate a (currently system dependent) alternative.
 The high value of R might well lie in the fact that "packages currently on CRAN" should work well with each other.
 
 An unmet challenge so far is the installation of specific versions of external libraries (see [issue](https://github.com/o2r-project/containerit/issues/46)).
@@ -367,4 +369,4 @@ Making `containerit` itself easier to use for endusers is a secondary goal, for 
 Country locales are also not supported yet.
 We may want to support other container OS (e.g. windows container or other Linux distributions).
 
-Feedback and contributions are highly welcome [on GitHub](https://github.com/o2r-project/containerit/issues) or [@o2r_project](https://twitter.com/o2r_project) on Twitter.
+Feedback and contributions are highly welcome [on GitHub](https://github.com/o2r-project/containerit/issues) or [o2r_project](https://twitter.com/o2r_project) on Twitter.
