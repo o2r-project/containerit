@@ -13,14 +13,27 @@ vignette: >
 
 ## 1. Introduction
 
-Even though R is designed for open and reproducible research, users who want to share their work with others are facing unexpecting challanges: sharing the R script by itself is warant for reproducibility, as many analyses rely on external resources and software as well. An R script may produce unexpected results or errors when executed under a different version of R, dependend software or even platform. Reproduciblility is only assured by providing complete setup instructions and resources. Long-term reproducibility can be achieved by either regular maintainance of code or by providing the runtime environment in it's original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
+Even though R is designed for open and reproducible research, users who want to share their work with others are facing challenges.
+Sharing merely the R script or R Markdown document should warrant reproducibility, but many analyses rely on additional resources and specific third party software as well.
+An R script may produce unexpected results or errors when executed under a different version of R or another platform. 
+Reproduciblility is only assured by providing complete setup instructions and resources.
+Long-term reproducibility can be achieved by either regular maintainance of the code, i.e. keeping it always working with the latest package versions from CRAN.
+It can be supported by packages such as [packrat](https://rstudio.github.io/packrat/) and platforms such as [MRAN](https://mran.microsoft.com/), which provide means to capture a specific combination of R packages.
+An alternative to updating or managing packages explicitly is providing the full runtime environment in it's original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
 
-The intention of the R extension package `containerit` is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research (O2R, [http://o2r.info](http://o2r.info)). `containerit` relies on [Docker](http://docker.com/) and seeks automatically generate setup instructions from a given R session, script, r-markdown file or workspace directory. The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine so that it creates a software container that contains all the R packages and their system dependencies required by an R workflow to be packaged. 
+The R extension package `containerit` aims to facilitate the latter approach by providung a building block to support reproducible and archivable research with containers.
+The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](http://o2r.info)).
+`containerit` relies on [Docker](http://docker.com/) and automatically generates a container manifest, or "recipe", with setup instructions to recreate a runtime environment based on a given R session, R script, R Markdown file or workspace directory.
+The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine to create a software container containing all the R packages and their system dependencies.
+This way all requirements by an R workflow are packaged in an executable format.
 
-The Dockerfiles are based on [rocker](https://github.com/rocker-org/rocker) (on [Docker Hub](https://hub.docker.com/u/rocker/)). Using the stack of version-stable Rocker images, it is possible to match the container's R version with the local R installation or any R version the user requires. `containerit` requires any input to execute locally first in order to detect all dependencies from the workspace. For determining external software dependencies of attached packages, `containerit` relies on the [sysreqs database](https://sysreqs.r-hub.io/) and makes use of the corresponding web API and R package.
+The created Dockerfiles are based on the [Rocker](https://github.com/rocker-org/rocker) project ([Rocker on Docker Hub](https://hub.docker.com/u/rocker/), [introduction](http://dirk.eddelbuettel.com/blog/2014/10/23/#introducing_rocker)).
+Using the stack of version-stable Rocker images, it is possible to match the container's R version with the local R installation or any R version the user requires.
+`containerit` executes the provided input workspace or file first locally on the host machine in order to detect all dependencies.
+For determining external software dependencies of attached packages, `containerit` relies (a) on the [sysreqs database](https://sysreqs.r-hub.io/) and makes use of the corresponding web API and R package, and (b) on internally defined rulesets for challenging configurations.
 
-To build images and run containers, the package integrates with the [harbor](https://github.com/wch/harbor) package and adds a few convenience functions for interacting with Docker images and containers. For nitty gritty things like reading / loading / installing the _exact_ versions, including system dependencies, internal and external libraries etc., this project is focused on the geospatial domain.
-
+To build images and run containers, the package integrates with the [harbor](https://github.com/wch/harbor) package and adds a few convenience functions for interacting with Docker images and containers.
+For nitty gritty things like reading / loading / installing the _exact_ versions, including system dependencies, internal and external libraries etc., this project focuses on the geospatial domain.
 
 ## 2. Creating a Dockerfile
 
@@ -262,7 +275,7 @@ Users may do things that we cannot capture from a session, e.g. (???)
 
 The prototype of `containerit` was developed and testet on Ubuntu / Linux. Before releasing a stable version on CRAN, we will also test it on Mac OS X and Windows operating systems.
 
-As part of the O2R project, it is planned to inegrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
+As part of the o2r project, it is planned to inegrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
 
 - Graphical User interface
 - install packages from other repositories (see remotes-packages), e.g.  bioconductor (!) git, bit bucket, local files
