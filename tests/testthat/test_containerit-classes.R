@@ -95,7 +95,7 @@ test_that("Labels of arbitrary content can be added to a Dockerfile",{
   
   df <- dockerfile(clean_session())
   addInstruction(df) <- list(label1, label2)
-  df_str <- format(df)
+  df_str <- toString(df)
   expect_true(str1 %in% df_str)
   expect_true(str2 %in% df_str)
 })

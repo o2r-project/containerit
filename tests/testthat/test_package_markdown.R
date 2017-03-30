@@ -21,7 +21,7 @@ test_that("A simple Sweave file can be packaged", {
   
   #write(df, "package_markdown/knitr_minimal_Dockerfile")
   expected_file <- readLines("package_markdown/knitr_minimal_Dockerfile")
-  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
   
   expect_true(file.exists("knitr-minimal.tex"))
@@ -49,7 +49,7 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
   #for overwriting:
   #write(df,"package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
-  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
   
   expect_true(all(file.exists(expected_output)))
@@ -74,7 +74,7 @@ test_that("A sf markdown file can be packaged", {
   #for overwriting:
   #write(df,"package_markdown/sf_vignette_Dockerfile")
   expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
-  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 
   expect_true(file.exists("package_markdown/sf/sf3.html"))
