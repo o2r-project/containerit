@@ -152,7 +152,7 @@ writeLines(c('library(rgdal)',
              'plot(nc)'), scriptFile)
 
 # use a custom startup command
-scriptCmd <- CMD_Rscript(scriptFile)
+scriptCmd <- CMD_Rscript(basename(scriptFile))
 
 # create Dockerfile for the script
 dockerfile_object <- dockerfile(from = scriptFile, silent = TRUE, cmd = scriptCmd)
