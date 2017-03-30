@@ -14,7 +14,6 @@
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
-#' @param context [TODO: CONSIDER REMOVE] (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
@@ -38,7 +37,6 @@ dockerfile <-
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containeRit", utils::packageVersion("containeRit"))),
-           context = "workdir", 
            soft = FALSE,
            copy = "script",
            container_workdir = "/payload",
@@ -51,6 +49,8 @@ dockerfile <-
       {
     if(silent){
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
+    }else{
+      invisible(futile.logger::flog.threshold(futile.logger::INFO))
     }
     flog.debug("Creating a new Dockerfile from %s", from)
     .dockerfile <- NA
@@ -69,10 +69,6 @@ dockerfile <-
     ### check CMD-instruction
     if(!inherits(x=cmd, "Cmd")){
       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(cmd))
-    }
-    
-    if (!inherits(x=context, "character") || (!isTRUE(context == "workdir")) && !dir.exists(context)){
-      stop("Unsupported parameter for 'context', expected an existing directory path or the the key 'workdir', given was :", class(context)," ",context)
     }
     
     # whether image is supported
@@ -95,7 +91,6 @@ dockerfile <-
         instructions = instructions,
         maintainer = maintainer,
         image = image,
-        context = context,
         cmd = cmd
       )
     
@@ -203,9 +198,9 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self, versione
 
 dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination, vanilla, silent, versioned_libs) {
   #################################################
-  # prepare context and normalize paths:
+  # prepare context ( = working directory) and normalize paths:
   #################################################
-  context = .contextPath(.dockerfile)
+  context = normalizePath(getwd())
   file = normalizePath(file)
 
   #Is the file within the context?
@@ -214,9 +209,6 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   if(context != substr)
     stop("The given file is not inside the context directory!")
 
-  #If context directory and work directory are not the same, there might occur problems with relative paths
-  if(context != getwd())
-    warning("The context directory is not the same as the current R working directory! Code/workspace may not be reproducible.")
   # make sure that the path is relative to context
   rel_path <- .makeRelative(file, context)
   ####################################################

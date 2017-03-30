@@ -15,7 +15,7 @@ test_that("an R script can be created with resources of the same folder ",{
                 maintainer = Maintainer("matthiashinz"),
                 r_version = "3.3.2")
   #test run (shoud be fast:)
-  image = create_localDockerImage(df, use_context = TRUE)
+  image = create_localDockerImage(df, use_workdir = TRUE)
   print("Script reproduced with Docker: ")
   harbor::docker_run(image = image, rm = TRUE)
   harbor::docker_cmd(harbor::localhost, "rmi", image)

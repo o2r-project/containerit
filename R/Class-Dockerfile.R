@@ -12,7 +12,6 @@
 #' @slot image the base image, used in the FROM statement (character)
 #' @slot maintainer a maintainer label or an object of class maintainer (the latter is debrecated)
 #' @slot instructions an ordered list of instructions in the Dockerfile (list of character)
-#' @slot context Directories that shall be included in the context when Dockerfile is build
 #' @slot cmd the default cmd instruction applied to the container
 #'
 #' @return an object of class \code{Dockerfile}
@@ -21,7 +20,6 @@ Dockerfile <- setClass("Dockerfile",
                     slots = list(image = "From",
                                  maintainer = "NullOrLabelOrMaintainer",
                                  instructions = "list",
-                                 context = "character",
                                  cmd = "Cmd")
 )
 
@@ -59,7 +57,7 @@ format.Dockerfile <- function(x, ...) {
 }
 
 .write.Dockerfile <-
-  function(x, file = file.path(.contextPath(x), "Dockerfile")) {
+  function(x, file = file.path(getwd(), "Dockerfile")) {
     flog.info("Writing dockerfile to %s", file)
     return(write(toString(x), file))
   }

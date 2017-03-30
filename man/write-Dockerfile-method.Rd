@@ -5,8 +5,7 @@
 \alias{write,Dockerfile-method}
 \title{Write a Dockerfile object to a dockerfile}
 \usage{
-\S4method{write}{Dockerfile}(x, file = file.path(.contextPath(x),
-  "Dockerfile"))
+\S4method{write}{Dockerfile}(x, file = file.path(getwd(), "Dockerfile"))
 }
 \arguments{
 \item{x}{Dockerfile object to be serialized}
