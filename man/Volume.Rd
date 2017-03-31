@@ -18,4 +18,3 @@ Constructor yet to be implemented
 \examples{
 #no example yet
 }
-

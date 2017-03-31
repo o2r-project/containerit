@@ -19,4 +19,3 @@ From-object
 \description{
 create objects of class From
 }
-

@@ -1,0 +1,10 @@
+FROM rocker/r-ver:3.3.2
+MAINTAINER "matthiashinz"
+RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+ && apt-get install -y libudunits2-dev \
+	pandoc \
+	pandoc-citeproc
+RUN ["install2.r", "-r 'https://cloud.r-project.org'", "ggplot2", "units", "Rcpp", "assertthat", "digest", "rprojroot", "plyr", "gtable", "backports", "magrittr", "scales", "evaluate", "stringi", "lazyeval", "rmarkdown", "labeling", "stringr", "udunits2", "munsell", "yaml", "colorspace", "htmltools", "knitr", "tibble"]
+WORKDIR /payload/
+COPY ["package_markdown/markdowntainer-units", "package_markdown/markdowntainer-units/"]
+CMD ["R", "--vanilla", "-e", "rmarkdown::render(\"package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd\", output_format = rmarkdown::html_document())"]

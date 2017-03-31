@@ -6,6 +6,8 @@
 #' 
 #' @return object
 #' @export
+#' 
+#' @family instruction classes
 #'
 #' @examples
 #' #no example yet
@@ -27,7 +29,8 @@ Entrypoint <- function(...){
 
 setMethod("docker_arguments",
           signature(obj = "Entrypoint"),
-          function(obj){
-            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          function(obj) {
+            stop("The generic function docker_arguments is not implemented for class ",
+                 class(obj))
           }
 )

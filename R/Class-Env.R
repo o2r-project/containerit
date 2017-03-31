@@ -1,4 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 
 #' Instruction class yet to be implemented
@@ -8,6 +8,7 @@
 #' 
 #' @return the object
 #' @export
+#' @family instruction classes
 #'
 #' @examples
 #' #no example yet
@@ -29,7 +30,8 @@ Env <- function(...){
 
 setMethod("docker_arguments",
           signature(obj = "Env"),
-          function(obj){
-            stop("The generic function docker_arguments is not implemented for class ",class(obj))
+          function(obj) {
+            stop("The generic function docker_arguments is not implemented for class ",
+                 class(obj))
           }
 )

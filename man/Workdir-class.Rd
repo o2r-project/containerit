@@ -3,14 +3,24 @@
 \docType{class}
 \name{Workdir-class}
 \alias{Workdir-class}
-\title{Instruction class yet to be implemented}
+\title{S4 Class representing a WORKDIR instruction}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+S4 Class representing a WORKDIR instruction
 }
 \examples{
-#no example yet
+instruction <- Workdir("/myDir/subdir/")
+toString(instruction)
 }
-
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Volume-class}}
+}

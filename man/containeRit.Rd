@@ -3,15 +3,15 @@
 \docType{package}
 \name{containeRit}
 \alias{containeRit}
-\alias{containeRit-package}
-\alias{containerization}
 \alias{containers,}
+\alias{containerization}
+\alias{containeRit-package}
 \title{containeRit: A package for packaging R objects and their dependencies in software containers}
 \description{
 The containeRit package provides two core functions:
-dockerfile, and container.
+Dockerfile, and container.
 }
-\section{dockerfile functions}{
+\section{Dockerfile functions}{
 
 The dockerfile functions create a recipee for a Docker container based on R scripts or objects.
 }

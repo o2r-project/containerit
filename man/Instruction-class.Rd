@@ -2,10 +2,19 @@
 % Please edit documentation in R/Class-Instruction.R
 \docType{class}
 \name{Instruction-class}
-\alias{Instruction}
 \alias{Instruction-class}
+\alias{Instruction}
 \title{The Docker Instruction - Class}
 \description{
 See official documentation at \url{https://docs.docker.com/engine/reference/builder/#format}.
 }
-
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+}

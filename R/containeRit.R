@@ -3,9 +3,9 @@
 #' containeRit: A package for packaging R objects and their dependencies in software containers
 #'
 #' The containeRit package provides two core functions:
-#' dockerfile, and container.
+#' Dockerfile, and container.
 #'
-#' @section dockerfile functions:
+#' @section Dockerfile functions:
 #' The dockerfile functions create a recipee for a Docker container based on R scripts or objects.
 #'
 #' @section container functions:
@@ -16,6 +16,7 @@
 #' @aliases containers, containerization
 #' @importFrom methods new
 #' @importFrom methods slot
+#' @importFrom methods slot<-
 #' @importFrom utils sessionInfo
 
 NULL

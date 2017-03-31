@@ -1,92 +1,55 @@
-# Based on https://docs.travis-ci.com/user/languages/r and https://github.com/hadley/devtools/blob/master/.travis.yml
+# Based on https://github.com/edzer/sfr/blob/master/.travis.yml and https://docs.travis-ci.com/user/languages/r/
+#
+# See also https://docs.travis-ci.com/user/languages/r and https://github.com/hadley/devtools/blob/master/.travis.yml
 # For a potential alternative configuration see https://github.com/metacran/r-builder
 
 language: r
-cache: packages
-
-# use explicit matrix below to configure specific build args
-#r:
-#  - oldrel
-#  - release
-#  - devel
-#os:
-#- linux
-#- osx
-
-matrix:
-  include:
-    - os: linux
-      r: release
-      sudo: required
-      before_install:
-        - pwd
-        - export CURWD=`pwd`
-        - cd
-        - sudo apt-get install libproj-dev
-        - wget http://download.osgeo.org/gdal/2.0.1/gdal-2.0.1.tar.gz
-        - tar zxf gdal-2.0.1.tar.gz
-        - cd gdal-2.0.1
-        - ./configure
-        - make
-        - sudo make install
-        - sudo ldconfig
-        - cd $CURWD
-    - os: linux
-      r: devel
-      sudo: required
-      before_install:
-        - pwd
-        - export CURWD=`pwd`
-        - cd
-        - sudo apt-get install libproj-dev
-        - wget http://download.osgeo.org/gdal/2.0.1/gdal-2.0.1.tar.gz
-        - tar zxf gdal-2.0.1.tar.gz
-        - cd gdal-2.0.1
-        - ./configure
-        - make
-        - sudo make install
-        - sudo ldconfig
-        - cd $CURWD
-    - os: linux
-      r: oldrel
-      sudo: required
-      before_install:
-        - pwd
-        - export CURWD=`pwd`
-        - cd
-        - sudo apt-get install libproj-dev
-        - wget http://download.osgeo.org/gdal/2.0.1/gdal-2.0.1.tar.gz
-        - tar zxf gdal-2.0.1.tar.gz
-        - cd gdal-2.0.1
-        - ./configure
-        - make
-        - sudo make install
-        - sudo ldconfig
-        - cd $CURWD
-    - os: osx
-      osx_image: xcode8
-      before_install:
-        - brew install gdal
-        - brew install proj
-      latex: false
-      r_build_args: '--no-build-vignettes'
-      r_check_args: '--ignore-vignettes --no-examples'
-
-warnings_are_errors: true
-
-r_packages:
-  - roxygen2
-  - covr
-
 repos:
   CRAN: https://cloud.r-project.org
   ropensci: http://packages.ropensci.org
 
-before_script:
-  - git config --global user.name "travis"
-  - git config --global user.email "travis@example.org"
+cache: packages
+sudo: required
+dist: trusty
+
+before_install:
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
+  - sudo apt-get --yes --force-yes update -qq
+  - sudo apt-get install --yes libudunits2-dev libproj-dev libgeos-dev libgdal-dev
+  - Rscript -e 'update.packages(ask = FALSE)' # https://github.com/travis-ci/travis-ci/issues/6850
+
+warnings_are_errors: true
+
+services:
+  - docker
+
+r_packages:
+  - rgdal
+  - roxygen2
+  - covr
+  - rjson
+  - stringr
+  - futile.logger
+  - lintr
+  - testthat
+  - codetools
+  - sp
+  - gstat
+  - proj4
+  - devtools
+  - units
+  - sf
+  - fortunes
+
+r_github_packages:
+  - r-hub/sysreqs
+  - wch/harbor
+
+after_failure:
+  - Rscript -e 'library(methods)' -e 'devtools::test()'
 
 after_success:
 #  - Rscript -e 'covr::codecov()'
+  - Rscript -e 'lintr::lint_package()'
   - echo $TRAVIS_R_VERSION
   - echo $TRAVIS_OS_NAME

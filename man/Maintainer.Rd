@@ -15,6 +15,9 @@ Maintainer(name, email = NA_character_)
 Maintainer object
 }
 \description{
-create objects of class Maintainer
+TODO: The Maintainer field is deprecated, use Label_Maintainer instead
 }
-
+\seealso{
+Other maintainer: \code{\link{Label_Maintainer}},
+  \code{\link{Maintainer-class}}
+}

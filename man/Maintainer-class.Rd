@@ -18,3 +18,16 @@ An S4 class to represent a Dockerfile's maintainer
 \item{\code{email}}{The email}
 }}
 
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+
+Other maintainer: \code{\link{Label_Maintainer}},
+  \code{\link{Maintainer}}
+}
