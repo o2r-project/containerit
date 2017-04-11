@@ -1,8 +1,8 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-#' containeRit: A package for packaging R objects and their dependencies in software containers
+#' containerit: A package for packaging R objects and their dependencies in software containers
 #'
-#' The containeRit package provides two core functions:
+#' The containerit package provides two core functions:
 #' Dockerfile, and container.
 #'
 #' @section Dockerfile functions:
@@ -12,7 +12,7 @@
 #' The container functions create the actual container wrapping calls to a local Docker CLI.
 #'
 #' @docType package
-#' @name containeRit
+#' @name containerit
 #' @aliases containers, containerization
 #' @importFrom methods new
 #' @importFrom methods slot

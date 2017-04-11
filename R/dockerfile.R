@@ -19,7 +19,7 @@
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
-#' @param add_self Whether to add the package containeRit itself if loaded/attached to the session
+#' @param add_self Whether to add the package containerit itself if loaded/attached to the session
 #' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)
 #' @param silent Whether or not to print information during execution
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries 
@@ -37,7 +37,7 @@ dockerfile <-
            maintainer = Sys.info()[["user"]],
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
-           env = list(generator = paste("containeRit", utils::packageVersion("containeRit"))),
+           env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
            context = "workdir", 
            soft = FALSE,
            copy = "script",
@@ -258,7 +258,7 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self, versione
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) ##packages to be installed
   if(!add_self)
-    pkgs <- pkgs[names(pkgs) != "containeRit"]
+    pkgs <- pkgs[names(pkgs) != "containerit"]
 
   # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms
   platform = NULL

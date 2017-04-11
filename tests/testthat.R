@@ -1,7 +1,7 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 library(testthat)
-library(containeRit)
+library(containerit)
 
 #for testing manually:
 if(FALSE){
@@ -19,4 +19,4 @@ if(FALSE){
 # See https://github.com/hadley/testthat/issues/144
 Sys.setenv("R_TESTS" = "")
 
-test_check("containeRit")
+test_check("containerit")

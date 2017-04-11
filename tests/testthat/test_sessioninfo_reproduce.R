@@ -2,7 +2,7 @@
 
 # This script may take a few minutes. Disable this test, e.g. by renaming the file, in order to speed-up the testing
 
-library(containeRit)
+library(containerit)
 
 requireNamespace("rgdal")
 requireNamespace("proj4")
@@ -16,7 +16,7 @@ context("session-reproduction")
 expressions <- list(quote(library(rgdal)),
                     quote(library(proj4)),
                     quote(library(sp)),
-                    quote(library(sysreqs)), # test for github package 
+                    quote(library(sysreqs)), # test for github package
                    #TODO: uncomment line above after resolving https://github.com/o2r-project/containerit/issues/56
                     quote(codetools::showTree(quote(-3)))) # test for attached package
 
@@ -37,7 +37,7 @@ test_that("a sessionInfo can be reproduced with docker", {
   dockerfile_object <<- dockerfile(local_sessionInfo)
   docker_tempimage <-
     create_localDockerImage(dockerfile_object, no_cache = FALSE)
-  
+
   #expect that image was created:
   expect_match(
     harbor::docker_cmd(
@@ -46,7 +46,7 @@ test_that("a sessionInfo can be reproduced with docker", {
       docker_tempimage,
       capture_text = TRUE
     ), docker_tempimage)
-  
+
   docker_sessionInfo <<-
     obtain_dockerSessionInfo(docker_tempimage, expressions, vanilla = TRUE)
   #clean up
@@ -68,7 +68,7 @@ test_that("the same base packages are attached locally and in Docker ", {
 test_that("the same other packages are attached locally and in Docker ", {
   if(is.null(docker_sessionInfo))
     return()  #don't continue if previous test failed
-  
+
   #expect that non-base packages are attached
   local_attached <- names(local_sessionInfo$otherPkgs)
   docker_attached <- names(docker_sessionInfo$otherPkgs)
@@ -87,13 +87,13 @@ test_that("the same other packages are attached locally and in Docker ", {
 test_that("the packages are loaded via Namespace locally and in Docker ", {
   if(is.null(docker_sessionInfo))
     return()  #don't continue if previous test failed
-  
+
   #expect that same base and non-base packages loaded via namespace
   local_loaded <- names(local_sessionInfo$loadedOnly)
   docker_loaded <- names(docker_sessionInfo$loadedOnly)
   expect_true(all(local_loaded %in% docker_loaded))
   expect_true(all(docker_loaded %in% local_loaded))
-  
+
   local_versions <-
     sapply(local_sessionInfo$loadedOnly, function(x)
       x$Version)
@@ -106,7 +106,7 @@ test_that("the packages are loaded via Namespace locally and in Docker ", {
 test_that("the R versions are the same ", {
   if(is.null(docker_sessionInfo))
     return()  #don't continue if previous test failed
-  
+
   #expect that same base and non-base packages loaded via namespace
   expect_equal(local_sessionInfo$R.version$major,
                docker_sessionInfo$R.version$major)
@@ -118,7 +118,7 @@ test_that("the R versions are the same ", {
 test_that("the locales are the same ", {
   if(is.null(docker_sessionInfo))
     return()  #don't continue if previous test failed
-  
+
   message("TODO: session locales are currently not reproduced.")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
 })

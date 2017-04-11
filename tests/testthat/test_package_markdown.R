@@ -1,7 +1,7 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 library(testthat)
-library(containeRit)
+library(containerit)
 context("Package R markdown files")
 
 test_that("A simple Sweave file can be packaged", {

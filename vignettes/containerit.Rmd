@@ -13,7 +13,7 @@ vignette: >
 
 ```{r "setup", include=FALSE}
 require("knitr")
-temp_workspace <- tempfile(pattern = "containeRit_temp")
+temp_workspace <- tempfile(pattern = "containerit_temp")
 dir.create(temp_workspace)
 opts_knit$set(root.dir = temp_workspace)
 ```
@@ -65,7 +65,7 @@ This must also be considered when packaging R scripts that use relative paths, e
 ### 2.2 Packaging an interactive session
 
 ```{r, fig.show='hide'}
-library("containeRit")
+library("containerit")
 
 # do stuff, based on demo("krige")
 library("gstat")
@@ -195,7 +195,7 @@ Analyses in R often rely on external files and resources that are located locate
 
 ```{r}
 response <- file.copy(from = system.file("simple_test_script_resources/", 
-                                         package = "containeRit"),
+                                         package = "containerit"),
                       to = temp_workspace, recursive = TRUE)
 
 
@@ -219,6 +219,7 @@ print(df)
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
 
 ```{r}
+require(fortune)
 rm(list = ls())
 calculation <- 41 + 1
 frtn <- fortunes::fortune()
@@ -308,7 +309,7 @@ This allows integration into workflows and tools written in other programming la
 
 You can make the command `containerit` available on your maching by linking the R script file delivered with the package as follows:
 
-`ln -s $(Rscript -e "cat(system.file(\"cli/container_it.R\", package=\"containeRit\"))") /usr/local/bin/containerit`
+`ln -s $(Rscript -e "cat(system.file(\"cli/container_it.R\", package=\"containerit\"))") /usr/local/bin/containerit`
 
 CLI Examples:
 

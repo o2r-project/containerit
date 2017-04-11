@@ -1,36 +1,36 @@
 if(FALSE){
   #to inpect config manually
-  library(containeRit)
-  source("R/containeRit-config.R")
-  
-  current_config <- .containeRit_read_config()
-  
+  library(containerit)
+  source("R/containerit-config.R")
+
+  current_config <- .containerit_read_config()
+
   default_config <- .getDefaultConfig()
-  
+
   rjson::toJSON(default_config)
   jsonlite::toJSON(default_config, pretty = TRUE)
-  
+
   .get_lib_install_instructions("gdal","2.1.0", current_config)
   lib <- "GDAL"
   version <- "2.1.0"
   config <- default_config
-  
+
   .get_lib_config(lib, default_config)
   .get_lib_install_config(lib, version, default_config)
   .isVersionSupported(lib, version, default_config)
   .get_lib_install_instructions(lib, version, default_config)
   .get_lib_apt_requirements(lib, version, default_config)
-  .containeRit_read_config()
-  
-  
-  
+  .containerit_read_config()
+
+
+
   .get_lib_config(lib, current_config)
   .get_lib_install_config(lib, version, current_config)
   .isVersionSupported(lib, version, current_config)
   .get_lib_install_instructions(lib,version, current_config)
   .get_lib_apt_requirements(lib,version, current_config)
-  #.containeRit_read_config()
-  containeRit_write_config(output = "inst/containeRit_config.json")
+  #.containerit_read_config()
+  containerit_write_config(output = "inst/containerit_config.json")
 }
 
 
@@ -43,14 +43,14 @@ if(FALSE){
 #' @export
 #'
 #' @examples
-#' containeRit_write_config(output = stdout())
+#' containerit_write_config(output = stdout())
 #' \dontrun{
 #' #developers may want to initialize the default config with:
-#' containeRit_write_config(output = "inst/containeRit_config.json")
+#' containerit_write_config(output = "inst/containerit_config.json")
 #' }
-containeRit_write_config <-
-  function(config = .getDefaultConfig(), output = file.path(find.package("containeRit"), "containeRit_config.json")) {
-    
+containerit_write_config <-
+  function(config = .getDefaultConfig(), output = file.path(find.package("containerit"), "inst/containerit_config.json")) {
+
     # see https://sysreqs.r-hub.io/map/PROJ.4
     #config_json <- rjson::toJSON(config)
     config_json <- jsonlite::toJSON(config, pretty = TRUE)
@@ -61,7 +61,7 @@ containeRit_write_config <-
 
 
 
-.containeRit_read_config <- function(input = system.file("containeRit_config.json", package = "containeRit", mustWork = TRUE)){
+.containerit_read_config <- function(input = system.file("containerit_config.json", package = "containerit", mustWork = TRUE)){
   txt <- readLines(input)
   config <- jsonlite::fromJSON(txt)
   return(config)
@@ -124,8 +124,8 @@ containeRit_write_config <-
       "2.1.2",
       "2.1.3"
     )
-  
-  # The commands creating the required instructions have to be deparsed to a string, 
+
+  # The commands creating the required instructions have to be deparsed to a string,
   # as long as we don't support parsing/deparsing of the instructions themselves
   instructions <- quote(
     list(
@@ -143,9 +143,9 @@ containeRit_write_config <-
     )
   )))
   instructions <- deparse(instructions)
-  
+
   installation <- .createInstallationConfig(versions, instructions, require_apt = c("make","wget"))
-  
+
   libSupportObj <- .createLibSupport("gdal", "gdal-bin", list(installation))
   return(libSupportObj)
 }
@@ -158,49 +158,49 @@ containeRit_write_config <-
 
 
 .createPROJSupport <- function() {
-  
+
   versions <-
     c(
-      "4.4.0", 
-      "4.4.1", 
-      "4.4.2", 
-      "4.4.3", 
-      "4.4.4", 
-      "4.4.5", 
-      "4.4.6", 
-      "4.4.7", 
-      "4.4.8", 
-      "4.4.9", 
-      "4.5.0", 
-      "4.6.0", 
-      "4.6.1", 
-      "4.7.0", 
-      "4.8.0", 
-      "4.9.0RC1", 
-      "4.9.0RC2", 
-      "4.9.0b2", 
-      "4.9.1", 
-      "4.9.1RC1", 
-      "4.9.1RC2", 
-      "4.9.1RC3", 
-      "4.9.1RC4", 
-      "4.9.2", 
-      "4.9.2", 
-      "4.9.2RC1", 
-      "4.9.2RC1", 
-      "4.9.2RC2", 
-      "4.9.2RC2", 
-      "4.9.3", 
-      "4.9.3", 
-      "4.9.3RC1", 
-      "4.9.3RC1", 
-      "4.9.3RC2", 
-      "4.9.3RC2", 
-      "4.9.3RC3", 
+      "4.4.0",
+      "4.4.1",
+      "4.4.2",
+      "4.4.3",
+      "4.4.4",
+      "4.4.5",
+      "4.4.6",
+      "4.4.7",
+      "4.4.8",
+      "4.4.9",
+      "4.5.0",
+      "4.6.0",
+      "4.6.1",
+      "4.7.0",
+      "4.8.0",
+      "4.9.0RC1",
+      "4.9.0RC2",
+      "4.9.0b2",
+      "4.9.1",
+      "4.9.1RC1",
+      "4.9.1RC2",
+      "4.9.1RC3",
+      "4.9.1RC4",
+      "4.9.2",
+      "4.9.2",
+      "4.9.2RC1",
+      "4.9.2RC1",
+      "4.9.2RC2",
+      "4.9.2RC2",
+      "4.9.3",
+      "4.9.3",
+      "4.9.3RC1",
+      "4.9.3RC1",
+      "4.9.3RC2",
+      "4.9.3RC2",
+      "4.9.3RC3",
       "4.9.3RC3")
-  
-  
-  # The commands creating the required instructions have to be deparsed to a string, 
+
+
+  # The commands creating the required instructions have to be deparsed to a string,
   # as long as we don't support parsing/deparsing of the instructions themselves
   instructions <- quote(
     list(
@@ -218,9 +218,9 @@ containeRit_write_config <-
         )
       )))
   instructions <- deparse(instructions)
-  
+
   installation <- .createInstallationConfig(versions, instructions, require_apt = c("make","wget"))
-  
+
   libSupportObj <- .createLibSupport("proj.4", "libproj-dev", list(installation))
   return(libSupportObj)
 }
@@ -245,12 +245,12 @@ containeRit_write_config <-
   output <- NULL
   if (!is.null(libconfig)){
     config_list <- libconfig$installation_config
-    # a profane way to check whether the list of installations 
-    # has been simplifyed to one single item: 
+    # a profane way to check whether the list of installations
+    # has been simplifyed to one single item:
     if ("supported_versions" %in% names(config_list)){
       config_list <- list()
       config_list[[1]] <- libconfig$installation_config
-    } 
+    }
       sapply(config_list, function(installation){
 
         if(version %in% unlist(installation$supported_versions) )

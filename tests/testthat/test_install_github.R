@@ -1,6 +1,6 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-library(containeRit)
+library(containerit)
 context("install_github")
 
 
@@ -12,7 +12,7 @@ test_that("github_packages can be installed", {
   #set github references 
   # (cannot be determined exactly determined standard-sessionInfo 
   # TODO: consider reading this information from 'containerit_info_devtools', a devtools - session_info
-  unlockBinding(as.name(".githubRefs"), env = getNamespace("containeRit"))
+  unlockBinding(as.name(".githubRefs"), env = getNamespace("containerit"))
   .addGitHubRef("geojsonio","edzer/sfr@7057e42")
   .addGitHubRef("sf","ropensci/geojsonio@2e15e21")
 

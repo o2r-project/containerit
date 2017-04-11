@@ -1,4 +1,4 @@
-Package: containeRit
+Package: containerit
 Type: Package
 Title: Package R in Docker Containers
 Version: 0.1.0
@@ -23,8 +23,8 @@ Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
     by the project Opening Reproducible Research (http://o2r.info).
 License: GPL-3 + file LICENSE
-URL: https://github.com/o2r/containeRit/
-BugReports: https://github.com/o2r/containeRit/issues
+URL: https://github.com/o2r/containerit/
+BugReports: https://github.com/o2r/containerit/issues
 Encoding: UTF-8
 LazyData: TRUE
 Suggests:
@@ -62,8 +62,8 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
-    'containeRit-config.R'
-    'containeRit.R'
+    'containerit-config.R'
+    'containerit.R'
     'defaults.R'
     'dockerfile.R'
     'package-installation-methods.R'

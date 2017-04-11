@@ -31,7 +31,7 @@
 #' 
 LabelSchemaFactory <- function(){
   schema_version = "1.0.0-rc.1"
-  keys <- readLines(system.file(paste0("label-schema_",schema_version,".txt"), package = "containeRit"))
+  keys <- readLines(system.file(paste0("label-schema_",schema_version,".txt"), package = "containerit"))
   names <- stringr::str_replace(keys,"^org.label-schema.","")
   names <- stringr::str_replace(names,"-","_")
   keyMap <- keys

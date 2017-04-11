@@ -63,7 +63,7 @@
 
   #install those system dependencies  which are necessary
   if(!isTRUE(platform %in% .supported_platforms)){
-    warning("The determined platform '", platform, "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containeRit.")
+    warning("The determined platform '", platform, "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containerit.")
   }else if(length(pkg_names) > 0){
 
     

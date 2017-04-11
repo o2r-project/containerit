@@ -43,10 +43,10 @@ set_docker_cran_mirror <- function(cran_url){
 
 .init_config_file <- function(){
   tryCatch(
-    .package_config <- .containeRit_read_config(), #see containeRit-config.R
+    .package_config <- .containerit_read_config(), #see containerit-config.R
     error = function(e) {
       message <-
-        "ContaineRit config file could not be read. Run containeRit_write_config() to re-initialize the config file."
+        "containerit config file could not be read. Run containerit_write_config() to re-initialize the config file."
       message <- paste0(message, "\n\tCaused by: ", e)
       warning(message)
     }
@@ -54,8 +54,4 @@ set_docker_cran_mirror <- function(cran_url){
   return(.package_config)
 }
 
-.package_config <- .init_config_file() 
-
-
-
-
+.package_config <- .init_config_file()

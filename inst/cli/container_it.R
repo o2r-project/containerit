@@ -2,7 +2,7 @@
 
 #See related project issue at https://github.com/o2r-project/containerit/issues/12
 
-"container_it.R is a command-line interface to the R package containeRit. 
+"container_it.R is a command-line interface to the R package containerit. 
 It packages R sessions, scripts, workspaces and vignettes together with all dependencies to execute them in Docker containers.
 
 Usage:  container_it.R dir [options] [--copy arg] [-d <DIR>]
@@ -33,12 +33,12 @@ Options (for all modes):
   --save -s <objects> ...    Save a list of objects from the workspace to an .RData file (overwrites --save-image)
   --save-image -i     Save the current workspace to an .RData file
   --soft              Whether to include soft dependencies among the system dependencies of R packages. [default: FALSE]
-  --quiet -q          Run containeRit as silent as possible (print only errors and warnings) [default: FALSE]
+  --quiet -q          Run containerit as silent as possible (print only errors and warnings) [default: FALSE]
 
 Other:
   --copy -c script | script_dir | <copy_file> ...     
                       Indicates whether and how a workspace should be copied. 
-                      For the modes 'dir' and 'file' containeRit copies either the given input file, the complete directory 
+                      For the modes 'dir' and 'file' containerit copies either the given input file, the complete directory 
                       or a list of individual files and directories that should be located below the current directory. 
                       [default: script]
   -d <DIR>            Directory to be used for packaging in mode 'dir'. Use either current dir or a folder below. [default: ./]
@@ -65,14 +65,14 @@ Examples:
 " -> doc
   
 library(methods)
-library(containeRit)
+library(containerit)
 
 if(length(commandArgs(trailingOnly=TRUE))== 0){
   # the line below creates an error within R sessions (bug?)
   # opts <- docopt::docopt(doc, "--help")
   cat(doc)
 } else {
-  opts <- docopt::docopt(doc , version = paste0("containeRit ", utils::packageVersion("containeRit"),"\n"))
+  opts <- docopt::docopt(doc , version = paste0("containerit ", utils::packageVersion("containerit"),"\n"))
   futile.logger::flog.debug(opts)
  
 

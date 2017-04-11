@@ -1,6 +1,6 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-library(containeRit)
+library(containerit)
 context("dockerfile-generation")
 
 test_that("a simple dockerfile object can be saved to file", {
@@ -35,7 +35,7 @@ test_that("users can specify the maintainer", {
   #check maintainer slot content and class
   expect_is(slot(dfile, "maintainer"), "Maintainer")
   mslot = slot(dfile, "maintainer")
-  expect_equal(attr(class(mslot), "package"), "containeRit")
+  expect_equal(attr(class(mslot), "package"), "containerit")
   expect_equal(slot(mslot, "name"), "Matthias Hinz")
   expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
   #expect Maintainer instruction
@@ -81,10 +81,10 @@ test_that("R version is the current version if not specified otherwise", {
 
 
 test_that("The package containerIt is not packaged by default (add_self = FALSE)", {
-  sessionInfo = obtain_localSessionInfo(expr = quote(library(containeRit)))
+  sessionInfo = obtain_localSessionInfo(expr = quote(library(containerit)))
   df = dockerfile(sessionInfo)
   #test should have sufficient accuracy. Optionally test also with add_self = TRUE later on
-  expect_false(any(stringr::str_detect(format(df), "^RUN.*containeRit")))
+  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
   
 })
 
