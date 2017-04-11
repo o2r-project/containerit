@@ -219,7 +219,7 @@ print(df)
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
 
 ```{r}
-require(fortune)
+require(fortunes)
 rm(list = ls())
 calculation <- 41 + 1
 frtn <- fortunes::fortune()

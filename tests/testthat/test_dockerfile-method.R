@@ -16,14 +16,14 @@ test_that("a simple dockerfile object can be saved to file", {
   control_instructions <- readLines(control_file)
   #update control-file to current version
   current_version <- paste(R.version$major, R.version$minor, sep = ".")
-  control_instructions[1] <- stringr::str_replace(control_instructions[1], 
+  control_instructions[1] <- stringr::str_replace(control_instructions[1],
                                                   "rocker/r-ver:\\d.\\d.\\d",
                                                   replacement = paste0("rocker/r-ver:",current_version))
-  
+
   generated_instructions <- readLines(gen_file)
   #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
-  #  
+  #
   unlink(t_dir, recursive = TRUE)
 })
 
@@ -31,7 +31,7 @@ test_that("users can specify the maintainer", {
   maintainer <-
     new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(NULL, maintainer = maintainer)
-  
+
   #check maintainer slot content and class
   expect_is(slot(dfile, "maintainer"), "Maintainer")
   mslot = slot(dfile, "maintainer")
@@ -50,15 +50,15 @@ test_that("users can specify the base image", {
   dfile1 <- dockerfile(from = NULL, image = imagestr)
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
   #check if from - instruction is the first (may be necessary to ignore comments in later tests)
-  expect_length(which(format(dfile1) == fromstr), 1)
-  
+  expect_length(which(toString(dfile1) == fromstr), 1)
+
   #expect that custom image is preferred over R version argument
   dfile2 <-
     dockerfile(from = NULL,
                image = imagestr,
                r_version = "3.1.0")
   expect_equal(as.character(slot(dfile2, "image")), fromstr)
-  expect_length(which(format(dfile2) == fromstr), 1)
+  expect_length(which(toString(dfile2) == fromstr), 1)
 })
 
 test_that("users can specify the R version", {
@@ -85,7 +85,7 @@ test_that("The package containerIt is not packaged by default (add_self = FALSE)
   df = dockerfile(sessionInfo)
   #test should have sufficient accuracy. Optionally test also with add_self = TRUE later on
   expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
-  
+
 })
 
 
