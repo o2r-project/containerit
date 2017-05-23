@@ -1,6 +1,6 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-#' Instruction class yet to be implemented
+#' Volume class yet to be implemented
 #' @include Class-Instruction.R
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#volume}.
@@ -13,8 +13,7 @@
 #' #no example yet
 setClass("Volume", contains = "Instruction")
 
-
-#' Constructor yet to be implemented
+#' Constructor for Volume yet to be implemented
 #'
 #' @param ... fields yet to be implemented
 #'

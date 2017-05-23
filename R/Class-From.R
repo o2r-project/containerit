@@ -1,6 +1,5 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-
 setClass("Tag", contains = "character")
 setClass("Digest", contains = "character")
 setClassUnion("Postfix", c("Tag", "Digest", "NULL"))
@@ -12,7 +11,7 @@ setClassUnion("Postfix", c("Tag", "Digest", "NULL"))
 #'
 #' @slot image image-id or image name
 #' @slot postfix tag or digest
-#' 
+#'
 #' @family instruction classes
 #'
 #' @return an object of class \code{Docker From}
@@ -23,7 +22,6 @@ setClass(
                postfix = "Postfix"),
   contains = "Instruction"
 )
-
 
 #' create objects of class From
 #'
@@ -50,7 +48,6 @@ From <- function(image, tag = NULL, digest = NULL) {
   else
     return(new("From", image = image))
 }
-
 
 #' Parse a From-instruction from an image-argument
 #'

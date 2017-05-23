@@ -1,8 +1,8 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-#' Instruction class yet to be implemented
+#' Expose class yet to be implemented
 #' @include Class-Instruction.R
-#' 
+#'
 #' @family instruction classes
 #' @return object
 #' @export
@@ -10,7 +10,7 @@
 setClass("Expose", contains = "Instruction")
 
 
-#' Constructor yet to be implemented
+#' Constructor for Expose yet to be implemented
 #'
 #' @param ... fields yet to be implemented
 #'
@@ -19,7 +19,7 @@ setClass("Expose", contains = "Instruction")
 #'
 #' @examples
 #' #no example yet
-Expose <- function(...){
+Expose <- function(...) {
   stop("Constructor not yet implemented for this class.")
 }
 
@@ -28,5 +28,4 @@ setMethod("docker_arguments",
           function(obj) {
             stop("The generic function docker_arguments is not implemented for class ",
                  class(obj))
-          }
-)
+          })

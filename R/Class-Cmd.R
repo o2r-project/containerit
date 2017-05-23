@@ -38,7 +38,7 @@ setValidity(
   method = function(object) {
     exec <- slot(object, "exec")
     params <- slot(object, "params")
-    
+
     if (!is.na(exec) &&
         length(exec) == 1 && stringr::str_length(exec) > 0)
       return(TRUE)
@@ -52,7 +52,7 @@ setValidity(
     if ((length(params) > 1 && any(is.na(params))) ||
         any(stringr::str_length(params) == 0))
       return("If parameters are given for CMD, they cannot be empty strings or NA")
-    
+
     return(
       "A Cmd instruction must at least have one non-empty exec-argument or one or more parameters given (i.e. as default for an entrypoint)."
     )
@@ -63,7 +63,7 @@ setValidity(
   # create arcuments in exec form, i.e.
   # ["executable","param1","param2"]
   # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
-  
+
   exec <- slot(obj, "exec")
   params <- slot(obj, "params")
   string <- "["
@@ -72,14 +72,14 @@ setValidity(
     if (!any(is.na(params)))
       string <- paste0(string, ", ")
   }
-  
+
   if (!any(is.na(params))) {
     paramstr <- sprintf('"%s"', params)
     paramstr <- paste(paramstr, collapse = ", ")
     string <- paste0(string, paramstr)
   }
   string <- paste0(string, "]")
-  
+
   return(string)
 }
 
@@ -89,28 +89,32 @@ setMethod("docker_arguments",
 
 
 #' Create CMD instruction for running an R script
-#' 
+#'
 #' Schema: R [--options] [file] [args]
 #'
 #' @param path The name of the R script that should run on startup or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
 #' @param args (otional) Argumands to be passed to the R script
 #' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
-#' 
+#'
 #' @return A CMD instruction
 #' @export
-CMD_Rscript <- function(path, options = character(0), args = character(0), vanilla = TRUE){
-  if(vanilla)
-    options <- append(options, "--vanilla")
-  params <- append(options, c("-f", path))
-  params <- append(params, args)
-  Cmd("R", params = params)
-}
+CMD_Rscript <-
+  function(path,
+           options = character(0),
+           args = character(0),
+           vanilla = TRUE) {
+    if (vanilla)
+      options <- append(options, "--vanilla")
+    params <- append(options, c("-f", path))
+    params <- append(params, args)
+    Cmd("R", params = params)
+  }
 
 
 
 #' Create CMD instruction for rendering a markdown file
-#' 
+#'
 #' Schema: R [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
 #'
 #' @param path The name of the R markdown file that should run on startup or a path relative to the working directory
@@ -118,24 +122,31 @@ CMD_Rscript <- function(path, options = character(0), args = character(0), vanil
 #' @param output_format The output format as in \code{rmakdown::render(...)}
 #' @param output_dir The output dir as in \code{rmakdown::render(...)}
 #' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
-#' 
+#'
 #' @seealso \link[rmarkdown]{render}
-#' 
+#'
 #' @return A CMD instruction
 #' @export
-CMD_Render <- function(path, options = character(0), output_format = rmarkdown::html_document(), output_dir = NULL, vanilla = TRUE){
-  if(vanilla)
-    options <- append(options, "--vanilla")
-  params <- options
-  render_call <- quote(rmarkdown::render("file", output_format = "format", output_dir = NULL))
-  render_call[[2]] <- path
-  render_call[[3]] <- substitute(output_format)
-  render_call[[4]] <- substitute(output_dir)
-  render_call <- deparse(render_call,width.cutoff = 500)
-  render_call <- deparse(render_call,width.cutoff = 500) #yes, twice! (command line expects R commands as strings)
-  render_call <- stringr::str_replace_all(render_call,"^\\\"|\\\"$","")
-  expr <- c("-e", render_call)
-  params <- append(params , expr)
-  Cmd("R", params = as.character(params))
-}
-
+CMD_Render <-
+  function(path,
+           options = character(0),
+           output_format = rmarkdown::html_document(),
+           output_dir = NULL,
+           vanilla = TRUE) {
+    if (vanilla)
+      options <- append(options, "--vanilla")
+    params <- options
+    render_call <-
+      quote(rmarkdown::render("file", output_format = "format", output_dir = NULL))
+    render_call[[2]] <- path
+    render_call[[3]] <- substitute(output_format)
+    render_call[[4]] <- substitute(output_dir)
+    render_call <- deparse(render_call, width.cutoff = 500)
+    render_call <-
+      deparse(render_call, width.cutoff = 500) #yes, twice! (command line expects R commands as strings)
+    render_call <-
+      stringr::str_replace_all(render_call, "^\\\"|\\\"$", "")
+    expr <- c("-e", render_call)
+    params <- append(params , expr)
+    Cmd("R", params = as.character(params))
+  }

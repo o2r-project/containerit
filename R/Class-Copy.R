@@ -2,21 +2,22 @@
 
 #' S4 Class representing a COPY-instruction
 #' @include Class-Instruction.R
-#' 
+#'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#copy}.
 #
 #' @param src (character vector) list of files or directories to be copied
 #' @param dest (character string) destination directory on the docker image (either absolute or relative to working directory)
-#' 
+#'
 #' @return object
 #' @export
-#' 
+#'
 #' @family instruction classes
 #'
 #' @examples
 #' #no example yet
-setClass("Copy", slots=list(src = "character", dest="character"), contains = "Instruction")
-
+setClass("Copy",
+         slots = list(src = "character", dest = "character"),
+         contains = "Instruction")
 
 #' Copy one or more files or directories to a Docker image
 #'
@@ -28,32 +29,34 @@ setClass("Copy", slots=list(src = "character", dest="character"), contains = "In
 #'
 #' @examples
 #' #no example yet
-Copy <- function(src, dest){
-  new("Copy",  src = src, dest=dest)
+Copy <- function(src, dest) {
+  new("Copy",  src = src, dest = dest)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Copy"),
           function(obj) {
-            out=sprintf('"%s"', slot(obj, "src"))
-            out=append(out, sprintf('"%s"', slot(obj, "dest")))
-            out=paste(out, collapse = ", ")
-            out=sprintf("[%s]", out)
-          }
-)
+            out = sprintf('"%s"', slot(obj, "src"))
+            out = append(out, sprintf('"%s"', slot(obj, "dest")))
+            out = paste(out, collapse = ", ")
+            out = sprintf("[%s]", out)
+          })
 
 
-setValidity("Copy",
-            method = function(object) {
-              src <- slot(object, "src")
-              dest <- slot(object, "dest")
-              
-              if (length(src) < 1){
-                return("Invalid RUN instruction: There must be at least one file / directory given by 'src'")
-              }
-              
-              if (length(dest) != 1){
-                return("Invalid RUN instruction: There must be exactly one destination folder given by 'dest'")
-              }
-            }
+setValidity(
+  "Copy",
+  method = function(object) {
+    src <- slot(object, "src")
+    dest <- slot(object, "dest")
+
+    if (length(src) < 1) {
+      return("Invalid RUN instruction: There must be at least one file / directory given by 'src'")
+    }
+
+    if (length(dest) != 1) {
+      return(
+        "Invalid RUN instruction: There must be exactly one destination folder given by 'dest'"
+      )
+    }
+  }
 )
