@@ -37,7 +37,7 @@ The R extension package `containerit` aims to facilitate the latter approach by 
 The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](http://o2r.info)).
 `containerit` relies on [Docker](http://docker.com/) and automatically generates a container manifest, or "recipe", with setup instructions to recreate a runtime environment based on a given R session, R script, R Markdown file or workspace directory.
 The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine to create a software container containing all the R packages and their system dependencies.
-This way all requirements by an R workflow are packaged in an executable format.
+This way all requirements of an R workflow are packaged in an executable format.
 
 The created Dockerfiles are based on the [Rocker](https://github.com/rocker-org/rocker) project ([Rocker on Docker Hub](https://hub.docker.com/u/rocker/), [introduction](http://dirk.eddelbuettel.com/blog/2014/10/23/#introducing_rocker)).
 Using the stack of version-stable Rocker images, it is possible to match the container's R version with the local R installation or any R version the user requires.
@@ -128,7 +128,7 @@ The latter will batch-execute the commands in a seperate instance of R and retri
 The session info is then used as input to `dockerfile()`.
 This is also how `dockerfile()` works internally when packaging either expressions, scripts or R markdown files.
 
-THe following code creates a Dockerfile for a list of expressions in a vanilla session.
+The following code creates a Dockerfile for a list of expressions in a vanilla session.
 
 ```{r}
 exp <- c(expression(library(sp)),
@@ -196,7 +196,7 @@ It then proceeds to package this file along with all other resources in the dire
 
 ## 3. Including resources
 
-Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of of files and directories inside the current working directory
+Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
 ```{r}
 response <- file.copy(from = system.file("simple_test_script_resources/", 
@@ -291,7 +291,7 @@ The resulting Dockerfile with all the labels:
 print(labeled_dockerfile)
 ```
 
-## 5. Further costumization 
+## 5. Further customization 
 
 The `dockerfile()` function allows further customization regarding the R version or the used base image (cf. Rocker stack).
 Note that while choosing an R version for the Dockerfile explicitly is possible, the session to generate the required information (i.e. which packages are attached etc.) is still running the R version of the generating machine.
@@ -362,13 +362,14 @@ This should be tested in the future by evaluating version-stable package reposit
 
 Related to installing specific versions is support for other package repositories, such as Bioconductor, git, BitBucket, or even local files.
 For now, it is recommended that users have all software up-to-date when building a software container, as the latest version are installed from CRAN during the image build, to have matching package versions between the creation runtime environment and the container.
-
 All Dockerfiles and instructions are adjusted to the Rocker image stack and assume a Debian/Linux operating system.
 As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
 
 The package is a first prototype available via GitHub.
 While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as [harbor](https://github.com/wch/harbor/issues/5), being available on CRAN, too.
 The prototype of `containerit` was developed and tested only on Ubuntu/Linux, which should be extended before releasing a stable version on CRAN.
+
+As part of the o2r project, it is planned to integrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
 
 As part of the o2r project, it is planned to integrate `containerit` in a [web service](http://o2r.info/architecture) for creating archivable research in form of [Executable Research Compendia (ERC)](https://doi.org/10.1045/january2017-nuest).
 Making `containerit` itself easier to use for end-users is a secondary goal, for example by building a graphical user interface for metadata creation.

@@ -22,7 +22,7 @@ test_that("github_packages can be installed", {
   .githubRefs <- new.env()
   
   expected_file <- readLines("./github-package-resources/Dockerfile")
-  generated_file <- unlist(stringr::str_split(format(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 
 })

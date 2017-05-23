@@ -5,7 +5,7 @@
 #' Create a Dockerfile based on either a sessionInfo, a workspace or a file
 #'
 #' @param from (sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile
-#' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
+#' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
 #'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
 #' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
 #' @param maintainer optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}
@@ -14,7 +14,6 @@
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
-#' @param context [TODO: CONSIDER REMOVE] (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
@@ -22,14 +21,14 @@
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
 #' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)
 #' @param silent Whether or not to print information during execution
-#' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries 
+#' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #'
 #' @return An object of class Dockerfile
 #' @export
 #' @import futile.logger
 #' @examples
 #' dockerfile()
-#' 
+#'
 #'
 dockerfile <-
   function(from = utils::sessionInfo(),
@@ -38,7 +37,6 @@ dockerfile <-
            r_version = getRVersionTag(from),
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
-           context = "workdir", 
            soft = FALSE,
            copy = "script",
            container_workdir = "/payload",
@@ -51,6 +49,8 @@ dockerfile <-
       {
     if(silent){
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
+    }else{
+      invisible(futile.logger::flog.threshold(futile.logger::INFO))
     }
     flog.debug("Creating a new Dockerfile from %s", from)
     .dockerfile <- NA
@@ -60,7 +60,7 @@ dockerfile <-
     if (is.character(image)) {
       image <- parseFrom(image)
     }
-    
+
     if (is.character(maintainer)) {
       maintainer <- Label_Maintainer(maintainer)
     }
@@ -70,11 +70,7 @@ dockerfile <-
     if(!inherits(x=cmd, "Cmd")){
       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(cmd))
     }
-    
-    if (!inherits(x=context, "character") || (!isTRUE(context == "workdir")) && !dir.exists(context)){
-      stop("Unsupported parameter for 'context', expected an existing directory path or the the key 'workdir', given was :", class(context)," ",context)
-    }
-    
+
     # whether image is supported
     image_name <- image@image
     if (!image_name %in% .supported_images) {
@@ -83,8 +79,8 @@ dockerfile <-
         paste(.supported_images, collapse = "\n")
       )
     }
-    
-    
+
+
     if (!stringr::str_detect(container_workdir, "/$"))
       # directories given as destination must have a trailing slash in dockerfiles
       container_workdir <- paste0(container_workdir, "/")
@@ -95,10 +91,9 @@ dockerfile <-
         instructions = instructions,
         maintainer = maintainer,
         image = image,
-        context = context,
         cmd = cmd
       )
-    
+
     if(is.null(from))
       #very simple case
       addInstruction(.dockerfile) <- Workdir(container_workdir)
@@ -108,7 +103,7 @@ dockerfile <-
         #set the working directory (If the directory does not exist, Docker will create it)
         addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "character") ) {
-      
+
       if (dir.exists(from)) {
         .originalFrom <- from
         .dockerfile <-
@@ -137,13 +132,13 @@ dockerfile <-
             silent = silent,
             versioned_libs = versioned_libs
           )
-      } 
+      }
       else {
         stop("Unsupported from. Failed to determine an existing file or directory given the following string: ", from)
       }
     } else if (is.null(from)) {
       #Creates a basic dockerfile without the 'from'-argument
-      
+
     } else if(is.expression(from) || (is.list(from) && all(sapply(from, is.expression)))){
       #expression or list of expressions
       .sessionInfo <- clean_session(expr = from, slave = silent, vanilla = vanilla)
@@ -178,76 +173,6 @@ dockerfile <-
   }
 
 
-#' @export
-toString.Dockerfile <- function(x, ...) {
-  #initialize dockerfile with from
-  output <- c()
-  from <- toString(slot(x, "image"))
-  output <- append(output, from)
-  maintainer <- slot(x, "maintainer")
-  if (!is.null(maintainer))
-    output <- append(output, toString(maintainer))
-  instructions <- slot(x, "instructions")
-  if (!is.null(instructions) && length(instructions) > 0) {
-    instructions <- sapply(instructions, toString)
-    output <- append(output, unlist(instructions))
-  }
-  cmd <- slot(x, "cmd")
-  if (!is.null(cmd))
-    output <- append(output, toString(cmd))
-  return(output)
-}
-
-
-#' @export
-print.Dockerfile <- function(x, ...) {
-  cat(toString.Dockerfile(x, ...), sep="\n")
-  invisible(x)
-}
-
-#' @export
-format.Dockerfile <- function(x, ...) format(toString(x), ...)
-
-
-setMethod("format", signature(x = "Dockerfile"), format.Dockerfile)
-
-
-setMethod("toString",
-          signature(x = "Dockerfile"),
-          toString.Dockerfile)
-
-
-setMethod("as.character",
-          signature(x = "Dockerfile"),
-          toString.Dockerfile)
-
-setMethod("print",
-          signature(x = "Dockerfile"),
-          print.Dockerfile)
-
-
-.write.Dockerfile <-
-  function(x, file = file.path(.contextPath(x), "Dockerfile")) {
-    flog.info("Writing dockerfile to %s", file)
-    return(write(toString(x), file))
-  }
-
-
-#' Write a Dockerfile object to a dockerfile
-#'
-#' @param x Dockerfile object to be serialized
-#' @param file optional argument specifying a costum file path
-#'
-#' @export
-#'
-#' @examples
-#' # write a dockerfile with default parameters to temporary file and show content:
-#' temp = tempfile()
-#' write(dockerfile(), file=temp)
-#' print(readLines(temp))
-#' unlink(temp)
-#' 
-setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)
 
 
 
@@ -273,9 +198,9 @@ dockerfileFromSession <- function(session, .dockerfile, soft, add_self, versione
 
 dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_destination, vanilla, silent, versioned_libs) {
   #################################################
-  # prepare context and normalize paths:
+  # prepare context ( = working directory) and normalize paths:
   #################################################
-  context = .contextPath(.dockerfile)
+  context = normalizePath(getwd())
   file = normalizePath(file)
 
   #Is the file within the context?
@@ -284,9 +209,6 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   if(context != substr)
     stop("The given file is not inside the context directory!")
 
-  #If context directory and work directory are not the same, there might occur problems with relative paths
-  if(context != getwd())
-    warning("The context directory is not the same as the current R working directory! Code/workspace may not be reproducible.")
   # make sure that the path is relative to context
   rel_path <- .makeRelative(file, context)
   ####################################################
@@ -312,7 +234,7 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
   ####################################################
   .dockerfile <- dockerfileFromSession(session = sessionInfo, .dockerfile = .dockerfile, soft = soft, add_self = add_self,
                                        versioned_libs = versioned_libs)
-  
+
   ## set working directory to the copy destination and add copy instructions
   ####################################################
   addInstruction(.dockerfile) <- Workdir(copy_destination)
@@ -349,7 +271,7 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
     }
     )
   }
-  
+
 
   return(.dockerfile)
 }
@@ -357,9 +279,9 @@ dockerfileFromFile <- function(file, .dockerfile, soft, copy, add_self, copy_des
 
 dockerfileFromWorkspace <-
   function(path, .dockerfile, soft, add_self, copy, copy_destination, vanilla, silent, versioned_libs) {
-    
+
     target_file <- NULL #file to be packaged
-    
+
     .rFiles <-
       dir(
         path = path,
@@ -368,7 +290,7 @@ dockerfileFromWorkspace <-
         include.dirs = FALSE,
         recursive = TRUE
       )
-    
+
     .md_Files <-
       dir(
         path = path,
@@ -377,7 +299,7 @@ dockerfileFromWorkspace <-
         include.dirs = FALSE,
         recursive = TRUE
       )
-    
+
     if (length(.rFiles) > 0) {
       if (length(.rFiles) > 1)
         warning(
@@ -391,7 +313,7 @@ dockerfileFromWorkspace <-
                 .rFiles[1])
         futile.logger::flog.info(message)
       }
-      
+
       target_file <- .rFiles[1]
 
     } else if (length(.md_Files) > 0) {
@@ -412,7 +334,7 @@ dockerfileFromWorkspace <-
       target_file <- .md_Files[1]
     } else
       stop("The Workspace does not contain any R file that can be packaged.")
-    
+
     return(
       dockerfileFromFile(
         target_file,
@@ -451,7 +373,7 @@ tagsfromRemoteImage <- function(image) {
     paste0("https://registry.hub.docker.com/v2/repositories/",
            image,
            "/tags/")
-  
+
   tryCatch({
     con <- url(urlstr)
     str <- readLines(con, warn = FALSE)
@@ -483,7 +405,7 @@ tagsfromRemoteImage <- function(image) {
 
 # helper function for saving lists of objects
 .save_objects <- function(... , file = ".RData", envir = .GlobalEnv){
-  save(..., file = file, envir = envir) 
+  save(..., file = file, envir = envir)
 }
 
 

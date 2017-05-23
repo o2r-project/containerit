@@ -6,7 +6,7 @@
 # Currently used for testing only. 
 create_localDockerImage <- function(x, host = harbor::localhost,
                                    image_name = strsplit(tempfile(pattern = "containerit_test", tmpdir = ""), "/")[[1]][2],
-                                   no_cache = FALSE, use_context = FALSE) {
+                                   no_cache = FALSE, use_workdir = FALSE) {
   if (is.character(x))
     docker_build(
       harbor::localhost,
@@ -19,8 +19,8 @@ create_localDockerImage <- function(x, host = harbor::localhost,
 
     tempdir <- tempfile(pattern = "dir")
     
-    if(use_context){
-      context = .contextPath(x)
+    if(use_workdir){
+      context = getwd()
       message <- paste0("Building Docker image from temporary Dockerfile in context directory:\n\t",
               context)
       futile.logger::flog.info(message)
@@ -48,7 +48,7 @@ create_localDockerImage <- function(x, host = harbor::localhost,
       
     )
 
-    if(use_context){
+    if(use_workdir){
       message <- "Deleting temporary Dockerfile..."
       futile.logger::flog.info(message)
       unlink(dockerfile_path, recursive = TRUE)
@@ -234,16 +234,6 @@ obtain_dockerSessionInfo <-
     return(get("info"))
   }
 
-
-
-#dynamically evaluates the 'context' slot of a dockerfile object and returns the normalized path if possible (see base::normalizePath(...))
-.contextPath <- function(dockerfile){
-  path = slot(dockerfile, "context")
-  if(path == "workdir"){
-    return(normalizePath(getwd()))
-  }
-  else return(normalizePath(path))
-}
 
 
 

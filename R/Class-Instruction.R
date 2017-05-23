@@ -43,6 +43,14 @@ setMethod("docker_arguments",
 }
 
 
+#' Convert an Instruction-object to a string holding a Docker instruction
+#'
+#' @param x Instruction object (of class Run, Cmd, From ...)
+#' @param ... Arguments to be passed down to toString
+#'
+#' @return A single character string in Dockerfile syntax
+#' @export
+#'
 setMethod("toString",
           signature(x = "Instruction"),
           .toString.Instruction)
@@ -51,6 +59,7 @@ setMethod("toString",
 #' Convert an Instruction-object to a string holding a Docker instruction
 #'
 #' @param x Instruction object (of class Run, Cmd, From ...)
+#' @param ... Arguments to be passed down to toString
 #'
 #' @return A single character string in Dockerfile syntax
 #' @export
@@ -60,12 +69,20 @@ setMethod("as.character",
           .toString.Instruction)
 
 
-#' @export
+
 print.Instruction <- function(x, ...) {
   cat(.toString.Instruction(x, ...), sep="\n")
   invisible(x)
 }
 
+
+#' Print an Instruction
+#'
+#' @param x Instruction.
+#' @param ... Arguments to be passed down to toString
+#'
+#' @export
+#'
 setMethod("print",
           signature(x = "Instruction"),
           print.Instruction)

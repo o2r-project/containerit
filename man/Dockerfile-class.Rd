@@ -20,8 +20,6 @@ An S4 class to represent a Dockerfile
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 
-\item{\code{context}}{Directories that shall be included in the context when Dockerfile is build}
-
 \item{\code{cmd}}{the default cmd instruction applied to the container}
 }}
 

@@ -7,15 +7,15 @@
 dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Sys.info()[["user"]], r_version = getRVersionTag(from),
   image = imagefromRVersion(r_version), env = list(generator =
-  paste("containerit", utils::packageVersion("containerit"))),
-  context = "workdir", soft = FALSE, copy = "script",
-  container_workdir = "/payload", cmd = Cmd("R"), add_self = FALSE,
-  vanilla = TRUE, silent = FALSE, versioned_libs = FALSE)
+  paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
+  copy = "script", container_workdir = "/payload", cmd = Cmd("R"),
+  add_self = FALSE, vanilla = TRUE, silent = FALSE,
+  versioned_libs = FALSE)
 }
 \arguments{
 \item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
 
-\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
+\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
 \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
 
@@ -28,8 +28,6 @@ By default, the image is determinded from the given r_version, while the version
 see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}}
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
-
-\item{context}{[TODO: CONSIDER REMOVE] (character) optionally specify a build context (path /url); the default key "workdir", assuming that the image will be build from the current working directory as returned by getwd()}
 
 \item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
 

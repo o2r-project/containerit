@@ -39,6 +39,7 @@ r_packages:
   - devtools
   - units
   - sf
+  - fortunes
 
 r_github_packages:
   - r-hub/sysreqs
