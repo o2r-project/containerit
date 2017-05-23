@@ -16,5 +16,6 @@ the object
 Constructor for a WORKDIR instruction
 }
 \examples{
-#no example yet
+instruction <- Workdir("~/myDir/subdir/")
+toString(instruction)
 }

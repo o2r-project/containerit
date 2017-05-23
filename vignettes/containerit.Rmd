@@ -2,19 +2,18 @@
 title: "Generating Dockerfiles for reproducible research with R"
 author: "Daniel Nüst, Matthias Hinz"
 date: "`r Sys.Date()`"
-#output: rmarkdown::html_vignette
-output: # use for blog post
-  md_document:
-    toc: true
-    toc_depth: 2
-    variant: markdown_mmd
+output: rmarkdown::html_vignette
+#output: # use for blog post
+#  md_document:
+#    toc: true
+#    toc_depth: 2
+#    variant: markdown_mmd
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Generating Dockerfiles for reproducible research with R}
   %\VignetteEncoding{UTF-8}
 ---
 
-<!-- Copyright 2017 Opening Reproducible Research (http://o2r.info) -->
 
 ```{r "setup", include=FALSE}
 require("knitr")

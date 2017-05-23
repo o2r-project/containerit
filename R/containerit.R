@@ -2,14 +2,12 @@
 
 #' containerit: A package for packaging R objects and their dependencies in software containers
 #'
-#' The containerit package provides two core functions:
-#' Dockerfile, and container.
+#' The containerit package provides one core function: \code{dockerfile}.
 #'
-#' @section Dockerfile functions:
-#' The dockerfile functions create a recipee for a Docker container based on R scripts or objects.
-#'
-#' @section container functions:
-#' The container functions create the actual container wrapping calls to a local Docker CLI.
+#' @section Create Dockerfiles:
+#' The \code{dockerfile} method create an R representation of a Dockerfile, which is a recipee
+#' for a Docker container. The object can be serialized to a Dockerfile, which can be used to build
+#' a runnable Docker image. \code{dockerfile} objects can be created based on R scripts and sessions.
 #'
 #' @docType package
 #' @name containerit

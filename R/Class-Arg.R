@@ -27,7 +27,7 @@ Arg <- function(...) {
 }
 
 setMethod("docker_arguments",
-          signature(obj = "ARg"),
+          signature(obj = "Arg"),
           function(obj) {
             stop("The generic function docker_arguments is not implemented for class ",
                  class(obj))

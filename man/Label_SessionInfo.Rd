@@ -7,7 +7,7 @@
 Label_SessionInfo(session = sessionInfo(), as_json = FALSE)
 }
 \arguments{
-\item{session}{An object of class 'sessionInfo' as returned by utils::sessionInfo(), 
+\item{session}{An object of class 'sessionInfo' as returned by utils::sessionInfo(),
 or alternatively a class 'session_info' as returned by devtools::session_info()}
 
 \item{as_json}{Determines whether to parse the session information to a json-string instead of a plain string}

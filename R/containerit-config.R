@@ -1,5 +1,7 @@
-if(FALSE){
-  #to inpect config manually
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+
+# You can use the following code to manually inspect and manipulate the configuration file.
+if (FALSE) {
   library(containerit)
   source("R/containerit-config.R")
 
@@ -10,7 +12,7 @@ if(FALSE){
   rjson::toJSON(default_config)
   jsonlite::toJSON(default_config, pretty = TRUE)
 
-  .get_lib_install_instructions("gdal","2.1.0", current_config)
+  .get_lib_install_instructions("gdal", "2.1.0", current_config)
   lib <- "GDAL"
   version <- "2.1.0"
   config <- default_config
@@ -22,13 +24,11 @@ if(FALSE){
   .get_lib_apt_requirements(lib, version, default_config)
   .containerit_read_config()
 
-
-
   .get_lib_config(lib, current_config)
   .get_lib_install_config(lib, version, current_config)
   .isVersionSupported(lib, version, current_config)
-  .get_lib_install_instructions(lib,version, current_config)
-  .get_lib_apt_requirements(lib,version, current_config)
+  .get_lib_install_instructions(lib, version, current_config)
+  .get_lib_apt_requirements(lib, version, current_config)
   #.containerit_read_config()
   containerit_write_config(output = "inst/containerit_config.json")
 }
@@ -49,25 +49,28 @@ if(FALSE){
 #' containerit_write_config(output = "inst/containerit_config.json")
 #' }
 containerit_write_config <-
-  function(config = .getDefaultConfig(), output = file.path(find.package("containerit"), "inst/containerit_config.json")) {
-
+  function(config = .getDefaultConfig(),
+           output = file.path(find.package("containerit"), "inst/containerit_config.json")) {
     # see https://sysreqs.r-hub.io/map/PROJ.4
-    #config_json <- rjson::toJSON(config)
     config_json <- jsonlite::toJSON(config, pretty = TRUE)
     writeLines(config_json, output)
-    futile.logger::flog.info(paste("Config file written to", output,". Please reload package or restart session."))
+    futile.logger::flog.info(paste(
+      "Config file written to",
+      output,
+      ". Please reload package or restart session."
+    ))
     return(invisible())
   }
 
 
-
-.containerit_read_config <- function(input = system.file("containerit_config.json", package = "containerit", mustWork = TRUE)){
-  txt <- readLines(input)
-  config <- jsonlite::fromJSON(txt)
-  return(config)
-}
-
-
+.containerit_read_config <-
+  function(input = system.file("containerit_config.json",
+                               package = "containerit",
+                               mustWork = TRUE)) {
+    txt <- readLines(input)
+    config <- jsonlite::fromJSON(txt)
+    return(config)
+  }
 
 .addLibSupport <- function(config, value) {
   #use only lower-case names for indices
@@ -78,7 +81,7 @@ containerit_write_config <-
 
 ".addLibSupport<-" <- .addLibSupport
 
-.getDefaultConfig <- function(){
+.getDefaultConfig <- function() {
   config <- list()
   config$external_libs <- list()
   .addLibSupport(config) <- .createGDALSupport()
@@ -86,25 +89,29 @@ containerit_write_config <-
   return(config)
 }
 
+.createLibSupport <-
+  function(name,
+           apt_pkgs = "",
+           installation_config = list()) {
+    out = list(name = name,
+               apt_pkgs = apt_pkgs,
+               installation_config = installation_config)
+    return(out)
+  }
 
-
-
-
-
-
-.createLibSupport <- function(name, apt_pkgs ="", installation_config = list()){
-  out = list(name = name, apt_pkgs = apt_pkgs, installation_config = installation_config)
-  return(out)
-}
-
-
-.createInstallationConfig <- function(supported_versions, instructions_template, require_apt = ""){
-  out = list(supported_versions = supported_versions, instructions_template = instructions_template, require_apt = require_apt)
-  return(out)
-}
+.createInstallationConfig <-
+  function(supported_versions,
+           instructions_template,
+           require_apt = "") {
+    out = list(
+      supported_versions = supported_versions,
+      instructions_template = instructions_template,
+      require_apt = require_apt
+    )
+    return(out)
+  }
 
 .createGDALSupport <- function() {
-
   versions <-
     c(
       "1.10.0",
@@ -127,38 +134,35 @@ containerit_write_config <-
 
   # The commands creating the required instructions have to be deparsed to a string,
   # as long as we don't support parsing/deparsing of the instructions themselves
-  instructions <- quote(
-    list(
-    Workdir("/tmp/gdal"),
-    Run_shell(
-    c(
-      "wget http://download.osgeo.org/gdal/[VERSION]/gdal-[VERSION].tar.gz",
-      "tar zxf gdal-[VERSION].tar.gz",
-      "cd gdal-[VERSION]",
-      "./configure",
-      "make",
-      "make install",
-      "ldconfig",
-      "rm -r /tmp/gdal"
-    )
-  )))
+  instructions <- quote(list(Workdir("/tmp/gdal"),
+                             Run_shell(
+                               c(
+                                 "wget http://download.osgeo.org/gdal/[VERSION]/gdal-[VERSION].tar.gz",
+                                 "tar zxf gdal-[VERSION].tar.gz",
+                                 "cd gdal-[VERSION]",
+                                 "./configure",
+                                 "make",
+                                 "make install",
+                                 "ldconfig",
+                                 "rm -r /tmp/gdal"
+                               )
+                             )))
   instructions <- deparse(instructions)
 
-  installation <- .createInstallationConfig(versions, instructions, require_apt = c("make","wget"))
+  installation <-
+    .createInstallationConfig(versions, instructions, require_apt = c("make", "wget"))
 
-  libSupportObj <- .createLibSupport("gdal", "gdal-bin", list(installation))
+  libSupportObj <-
+    .createLibSupport("gdal", "gdal-bin", list(installation))
   return(libSupportObj)
 }
 
-.get_lib_config <- function(lib, config){
+.get_lib_config <- function(lib, config) {
   lib <- stringr::str_to_lower(lib)
   config$external_libs[[lib]]
 }
 
-
-
 .createPROJSupport <- function() {
-
   versions <-
     c(
       "4.4.0",
@@ -197,90 +201,88 @@ containerit_write_config <-
       "4.9.3RC2",
       "4.9.3RC2",
       "4.9.3RC3",
-      "4.9.3RC3")
-
+      "4.9.3RC3"
+    )
 
   # The commands creating the required instructions have to be deparsed to a string,
   # as long as we don't support parsing/deparsing of the instructions themselves
-  instructions <- quote(
-    list(
-      Workdir("/tmp/proj"),
-      Run_shell(
-        c(
-          "wget http://download.osgeo.org/proj/proj-[VERSION].tar.gz",
-          "tar zxf proj-[VERSION].tar.gz",
-          "cd proj-[VERSION]",
-          "./configure",
-          "make",
-          "make install",
-          "ldconfig",
-          "rm -r /tmp/proj"
-        )
-      )))
+  instructions <- quote(list(Workdir("/tmp/proj"),
+                             Run_shell(
+                               c(
+                                 "wget http://download.osgeo.org/proj/proj-[VERSION].tar.gz",
+                                 "tar zxf proj-[VERSION].tar.gz",
+                                 "cd proj-[VERSION]",
+                                 "./configure",
+                                 "make",
+                                 "make install",
+                                 "ldconfig",
+                                 "rm -r /tmp/proj"
+                               )
+                             )))
   instructions <- deparse(instructions)
 
-  installation <- .createInstallationConfig(versions, instructions, require_apt = c("make","wget"))
+  installation <-
+    .createInstallationConfig(versions, instructions, require_apt = c("make", "wget"))
 
-  libSupportObj <- .createLibSupport("proj.4", "libproj-dev", list(installation))
+  libSupportObj <-
+    .createLibSupport("proj.4", "libproj-dev", list(installation))
   return(libSupportObj)
 }
 
-.get_lib_config <- function(lib, config){
+.get_lib_config <- function(lib, config) {
   lib <- stringr::str_to_lower(lib)
   config$external_libs[[lib]]
 }
 
-
 #get platform dependend package names (i.e. apt packages), as far as known
-.get_lib_pkgs_names <- function(lib, platform, config = .package_config){
-  if ( !(platform %in% c(.debian_platform, .ubuntu_platform)))
-    #may use also sysreqs db for this query, e.g. https://sysreqs.r-hub.io/map/GDAL
-    return(NULL)
-  return(unlist(.get_lib_config(lib, config)[["apt_pkgs"]]))
-}
+.get_lib_pkgs_names <-
+  function(lib, platform, config = .package_config) {
+    if (!(platform %in% c(.debian_platform, .ubuntu_platform)))
+      #may use also sysreqs db for this query, e.g. https://sysreqs.r-hub.io/map/GDAL
+      return(NULL)
+    return(unlist(.get_lib_config(lib, config)[["apt_pkgs"]]))
+  }
 
-
-.get_lib_install_config <-function(lib, version, config){
+.get_lib_install_config <- function(lib, version, config) {
   libconfig <- .get_lib_config(lib, config)
   output <- NULL
-  if (!is.null(libconfig)){
+  if (!is.null(libconfig)) {
     config_list <- libconfig$installation_config
     # a profane way to check whether the list of installations
     # has been simplifyed to one single item:
-    if ("supported_versions" %in% names(config_list)){
+    if ("supported_versions" %in% names(config_list)) {
       config_list <- list()
       config_list[[1]] <- libconfig$installation_config
     }
-      sapply(config_list, function(installation){
-
-        if(version %in% unlist(installation$supported_versions) )
-            output <<- installation
-      },simplify = TRUE)
+    sapply(config_list, function(installation) {
+      if (version %in% unlist(installation$supported_versions))
+        output <<- installation
+    }, simplify = TRUE)
   }
   return(output)
 }
 
 #test if versioned installation for a lib is configured
-.isVersionSupported <-function(lib, version, config){
+.isVersionSupported <- function(lib, version, config) {
   return(!is.null(.get_lib_install_config(lib, version, config)))
 }
 
-.get_lib_install_instructions <- function(lib, version, config){
+.get_lib_install_instructions <- function(lib, version, config) {
   install_config <- .get_lib_install_config(lib, version, config)
-  if(is.null(install_config))
+  if (is.null(install_config))
     return(NULL)
   else{
     template <- unlist(install_config$instructions_template)
-    instructions_string <- stringr::str_replace_all(template, pattern = "\\[VERSION\\]", replacement = version)
+    instructions_string <-
+      stringr::str_replace_all(template, pattern = "\\[VERSION\\]", replacement = version)
     instructions <- eval(parse(text = instructions_string))
     return(instructions)
   }
 }
 
-
-.get_lib_apt_requirements <- function(lib, version, config){
+.get_lib_apt_requirements <- function(lib, version, config) {
   install_config <- .get_lib_install_config(lib, version, config)
-  if(is.null(install_config))
+  if (is.null(install_config))
     return(NULL)
   else{
     return(unlist(install_config[["require_apt"]]))

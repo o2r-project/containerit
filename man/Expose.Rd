@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Expose.R
 \name{Expose}
 \alias{Expose}
-\title{Constructor yet to be implemented}
+\title{Constructor for Expose yet to be implemented}
 \usage{
 Expose(...)
 }
@@ -13,7 +13,7 @@ Expose(...)
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for Expose yet to be implemented
 }
 \examples{
 #no example yet

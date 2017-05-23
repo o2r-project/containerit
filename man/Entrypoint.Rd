@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Entrypoint.R
 \name{Entrypoint}
 \alias{Entrypoint}
-\title{Constructor yet to be implemented}
+\title{Constructor for Entrypoint yet to be implemented}
 \usage{
 Entrypoint(...)
 }
@@ -13,7 +13,7 @@ Entrypoint(...)
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for Entrypoint yet to be implemented
 }
 \examples{
 #no example yet

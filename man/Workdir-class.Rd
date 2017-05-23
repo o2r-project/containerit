@@ -11,16 +11,21 @@ object
 S4 Class representing a WORKDIR instruction
 }
 \examples{
-instruction <- Workdir("/myDir/subdir/")
+instruction <- Workdir("~/myDir/subdir/")
 toString(instruction)
 }
 \seealso{
 Other instruction classes: \code{\link{Add-class}},
-  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
-  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
-  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Arg-class}}, \code{\link{Cmd-class}},
+  \code{\link{Copy-class}}, \code{\link{Entrypoint-class}},
+  \code{\link{Env-class}}, \code{\link{Expose-class}},
+  \code{\link{From-class}},
+  \code{\link{Healthcheck-class}},
   \code{\link{Instruction-class}},
   \code{\link{Label-class}},
-  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
-  \code{\link{Run_shell-class}}, \code{\link{Volume-class}}
+  \code{\link{Maintainer-class}},
+  \code{\link{Onbuild-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
+  \code{\link{Stopsignal-class}},
+  \code{\link{Volume-class}}
 }

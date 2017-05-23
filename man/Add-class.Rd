@@ -3,24 +3,27 @@
 \docType{class}
 \name{Add-class}
 \alias{Add-class}
-\title{Instruction class yet to be implemented}
+\title{Add-instruction class yet to be implemented}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+Add-instruction class yet to be implemented
 }
 \examples{
 #no example yet
 }
 \seealso{
-Other instruction classes: \code{\link{Cmd-class}},
-  \code{\link{Copy-class}}, \code{\link{Entrypoint-class}},
-  \code{\link{Env-class}}, \code{\link{Expose-class}},
-  \code{\link{From-class}},
+Other instruction classes: \code{\link{Arg-class}},
+  \code{\link{Cmd-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Healthcheck-class}},
   \code{\link{Instruction-class}},
   \code{\link{Label-class}},
-  \code{\link{Maintainer-class}}, \code{\link{Run-class}},
-  \code{\link{Run_shell-class}},
+  \code{\link{Maintainer-class}},
+  \code{\link{Onbuild-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
+  \code{\link{Stopsignal-class}},
   \code{\link{Volume-class}}, \code{\link{Workdir-class}}
 }
