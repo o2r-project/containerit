@@ -9,13 +9,13 @@ CMD_Render(path, options = character(0),
   vanilla = TRUE)
 }
 \arguments{
-\item{path}{The name of the R markdown file that should run on startup or a path relative to the working directory}
+\item{path}{The name of the R markdown file that should run on startup, or a path relative to the working directory}
 
 \item{options}{(optional) Options or flags to be passed to Rscript}
 
-\item{output_format}{The output format as in \code{rmakdown::render(...)}}
+\item{output_format}{The output format as in \code{rmarkdown::render(...)}}
 
-\item{output_dir}{The output dir as in \code{rmakdown::render(...)}}
+\item{output_dir}{The output dir as in \code{rmarkdown::render(...)}}
 
 \item{vanilla}{Whether R should startup in vanilla mode. Default: TRUE}
 }
