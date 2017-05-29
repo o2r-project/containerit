@@ -16,7 +16,7 @@
 
     sapply(pkgs,
            function(pkg) {
-             #deterine package name
+             #determine package name
              if ("Package" %in% names(pkg))
                name <- pkg$Package
              else
@@ -56,9 +56,8 @@
 
     image_name <- .dockerfile@image@image
 
-    # installing github packages requires the package 'remotse' (former 'devtools' dependency)
+    # installing github packages requires the package 'remotes'
     # see https://github.com/rocker-org/rocker-versioned/issues/26
-    # Actually, we must reconsider this if we want to support R versions < 3.0.0 (?).
     if (length(github_packages) > 0 &&
         !"remotes" %in% cran_packages &&
         !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")) {
@@ -137,16 +136,8 @@
 
           #NOTE: The following is the "old" way to do it. Getting sf to work only requires a more current version gdal, while all other dependencies can be installed from APT
         } else if (!image_name == "rocker/geospatial") {
-          # The preferred way is to use the rocker/geospatial image where gdal and proj are pre-installed
-          message <-
-            paste0(
-              "The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\n",
-              "We recommend using the base image rocker/geospatial."
-            )
-          futile.logger::flog.info(message)
-          message <-
-            "Docker will try to install GDAL 2.1.3 from source"
-          futile.logger::flog.info(message)
+          futile.logger::flog.info("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\nWe recommend using the base image rocker/geospatial.")
+          futile.logger::flog.info("Docker will try to install GDAL 2.1.3 from source")
 
           add_apt <- append(add_apt, c("wget", "make"))
           add_inst <- append(add_inst, Workdir("/tmp/gdal"))
@@ -165,7 +156,7 @@
             ))
 
 
-          # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from ubuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
+          # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from UbuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
         }
       }
 
@@ -337,7 +328,7 @@
       warning(
         "Could not package DESCRIPTION for package '",
         package,
-        ", on CRAN. ContaineRit failed to determine system requriements."
+        ", on CRAN. containerit failed to determine system requirements."
       )
       return(NULL)
     } else {

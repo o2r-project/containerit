@@ -117,10 +117,10 @@ CMD_Rscript <-
 #'
 #' Schema: R [--options] -e \"rmarkdown::render(input = [path], output_format = [output_format]\""
 #'
-#' @param path The name of the R markdown file that should run on startup or a path relative to the working directory
+#' @param path The name of the R markdown file that should run on startup, or a path relative to the working directory
 #' @param options (optional) Options or flags to be passed to Rscript
-#' @param output_format The output format as in \code{rmakdown::render(...)}
-#' @param output_dir The output dir as in \code{rmakdown::render(...)}
+#' @param output_format The output format as in \code{rmarkdown::render(...)}
+#' @param output_dir The output dir as in \code{rmarkdown::render(...)}
 #' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
 #'
 #' @seealso \link[rmarkdown]{render}

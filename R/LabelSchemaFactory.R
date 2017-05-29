@@ -82,15 +82,9 @@ LabelSchemaFactory <- function() {
     return(new("Label", data = label_data, multi_line = TRUE))
   }
   formals(factory) <- namesArgs
-  message <-
-    paste0(
-      "According to Label Schema Convention ",
-      schema_version,
-      " you can use the following arguments for constructing metadata labels:"
-    )
-  #massage <- paste0(message, paste(names, collapse = ", "))
-  futile.logger::flog.info(message)
-  futile.logger::flog.info(paste(names, collapse = ", "))
+
+  futile.logger::flog.info("According to Label Schema Convention %s you can use the following arguments for constructing metadata labels:",
+                           schema_version, paste(names, collapse = ", "))
   return(factory)
 }
 
