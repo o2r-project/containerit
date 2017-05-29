@@ -5,13 +5,13 @@ library(containerit)
 context("Package Sweave files")
 
 test_that("A simple Sweave file can be packaged", {
+  temp_sweave = "package_markdown/knitr-minimal.Rnw"
   unlink("knitr-minimal.tex")
   unlink("knitr-minimal.pdf")
   unlink(temp_sweave)
   unlink("figure", recursive = TRUE)
 
   sweave <- system.file("examples", "knitr-minimal.Rnw", package = "knitr")
-  temp_sweave = "package_markdown/knitr-minimal.Rnw"
   expect_true(file.copy(sweave, temp_sweave))
 
   df <- dockerfile(temp_sweave,

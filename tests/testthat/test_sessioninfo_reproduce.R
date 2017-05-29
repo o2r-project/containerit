@@ -12,12 +12,14 @@ requireNamespace("codetools")
 context("session-reproduction")
 
 #test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it
-#Any library in use needs to be locally installed prior to running this test
-expressions <- list(quote(library(rgdal)),
-                    quote(library(proj4)),
-                    quote(library(sp)),
-                    quote(library(sysreqs)), # test for github package
-                    quote(codetools::showTree(quote(-3)))) # test for attached package
+#Any library in use needs to be locally installed prior to running this test!
+expressions <- list(
+  #quote(library(rgdal)),
+  #quote(library(proj4)),
+  quote(library(sp)),
+  quote(library(sysreqs)), # test for github package
+  quote(codetools::showTree(quote(-3))) # test for attached package
+)
 
 local_sessionInfo <- NULL
 
@@ -30,11 +32,13 @@ test_that("a local sessionInfo() can be created ", {
 })
 
 test_that("a sessionInfo can be reproduced with docker", {
+  skip_on_cran()
+
   if(is.null(local_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
   dockerfile_object <<- dockerfile(local_sessionInfo)
-  docker_tempimage <-
+  # docker_tempimage <-
     create_localDockerImage(dockerfile_object, no_cache = FALSE)
 
   #expect that image was created:
@@ -53,6 +57,8 @@ test_that("a sessionInfo can be reproduced with docker", {
 })
 
 test_that("the same base packages are attached locally and in Docker ", {
+  skip_on_cran()
+
   if(is.null(docker_sessionInfo))
     return()  #don't continue if previous test failed
   #expect that same base packages are attached
@@ -65,6 +71,8 @@ test_that("the same base packages are attached locally and in Docker ", {
 })
 
 test_that("the same other packages are attached locally and in Docker ", {
+  skip_on_cran()
+
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
@@ -84,6 +92,8 @@ test_that("the same other packages are attached locally and in Docker ", {
 })
 
 test_that("the packages are loaded via Namespace locally and in Docker ", {
+  skip_on_cran()
+
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
@@ -103,6 +113,8 @@ test_that("the packages are loaded via Namespace locally and in Docker ", {
 })
 
 test_that("the R versions are the same ", {
+  skip_on_cran()
+
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
@@ -115,6 +127,8 @@ test_that("the R versions are the same ", {
 
 
 test_that("the locales are the same ", {
+  skip_on_cran()
+
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 

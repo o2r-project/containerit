@@ -7,12 +7,15 @@ library(containerit)
 if(FALSE){
   #assuming that workdir is the containerit-folder:
   library(futile.logger)
-  #source("R/sessionInfo-localbuild-methods.R")
-  #source("R/package-installation-methods.R")
-  #source("R/defaults.R")
+  source("R/sessionInfo-localbuild-methods.R")
+  source("R/package-installation-methods.R")
+  source("R/containerit-config.R")
+  source("R/defaults.R")
+
   #test_package("containerit")
   result <- test_file(path = "tests/testthat/test_package_markdown.R")
   result <- test_file(path = "tests/testthat/test_package_sweave.R")
+  result <- test_file(path = "tests/testthat/test_sessioninfo_reproduce.R")
   result; str(result)
 }
 
