@@ -27,12 +27,12 @@ test_that("a simple dockerfile object can be saved to file", {
   unlink(t_dir, recursive = TRUE)
 })
 
+
 test_that("users can specify the maintainer", {
   maintainer <-
     new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(NULL, maintainer = maintainer)
 
-  #check maintainer slot content and class
   expect_is(slot(dfile, "maintainer"), "Maintainer")
   mslot = slot(dfile, "maintainer")
   expect_equal(attr(class(mslot), "package"), "containerit")
@@ -43,6 +43,15 @@ test_that("users can specify the maintainer", {
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 })
 
+
+test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
+  dfile <- dockerfile()
+
+  expect_is(slot(dfile, "maintainer"), "Label")
+  mslot = slot(dfile, "maintainer")
+  expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])
+  expect_equal(toString(mslot), paste0("LABEL maintainer=\"", Sys.info()[["user"]], "\""))
+})
 
 test_that("users can specify the base image", {
   imagestr <- "rocker/r-ver:3.0.0"
@@ -80,11 +89,25 @@ test_that("R version is the current version if not specified otherwise", {
 })
 
 
-test_that("The package containerIt is not packaged by default (add_self = FALSE)", {
-  sessionInfo = obtain_localSessionInfo(expr = quote(library(containerit)))
-  df = dockerfile(sessionInfo)
-  #test should have sufficient accuracy. Optionally test also with add_self = TRUE later on
+test_that("The package containerit is not packaged by default", {
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info)
   expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+})
+
+
+test_that("The package containerit is not packaged (add_self = FALSE)", {
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info, add_self = FALSE)
+  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+})
+
+
+test_that("The package containerit can be packaged (add_self = TRUE)", {
+  skip("containerit not yet available from CRAN")
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info, add_self = TRUE)
+  # expect_true(any(stringr::str_detect(format(df), "^RUN.*containerit")))
 })
 
 

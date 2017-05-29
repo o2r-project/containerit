@@ -1,0 +1,32 @@
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+
+library(testthat)
+library(containerit)
+context("Package Sweave files")
+
+test_that("A simple Sweave file can be packaged", {
+  expect_false(file.exists("knitr-minimal.tex"))
+  expect_false(file.exists("knitr-minimal.pdf"))
+
+  sweave <- system.file("examples", "knitr-minimal.Rnw", package = "knitr")
+  temp_sweave = "package_markdown/knitr-minimal.Rnw"
+  expect_false(file.exists(temp_sweave))
+  #copy file intu build context:
+  expect_true(file.copy(sweave, temp_sweave))
+
+  df <- dockerfile(temp_sweave,
+                   copy = "script",
+                   maintainer = "matthiashinz",
+                   r_version = "3.3.2")
+
+  #write(df, "package_markdown/knitr_minimal_Dockerfile")
+  expected_file <- readLines("package_markdown/knitr_minimal_Dockerfile")
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  expect_equal(generated_file, expected_file)
+
+  unlink("knitr-minimal.tex")
+  unlink("knitr-minimal.pdf")
+  unlink(temp_sweave)
+  unlink("figure", recursive = TRUE)
+})
+

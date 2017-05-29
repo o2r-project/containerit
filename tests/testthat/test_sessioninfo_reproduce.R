@@ -17,7 +17,6 @@ expressions <- list(quote(library(rgdal)),
                     quote(library(proj4)),
                     quote(library(sp)),
                     quote(library(sysreqs)), # test for github package
-                   #TODO: uncomment line above after resolving https://github.com/o2r-project/containerit/issues/56
                     quote(codetools::showTree(quote(-3)))) # test for attached package
 
 local_sessionInfo <- NULL
@@ -26,14 +25,14 @@ docker_sessionInfo <- NULL
 dockerfile_object <- NULL
 
 test_that("a local sessionInfo() can be created ", {
-  local_sessionInfo <<-
-    obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
+  local_sessionInfo <<- obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
 test_that("a sessionInfo can be reproduced with docker", {
   if(is.null(local_sessionInfo))
-    return() #don't continue if previous test failed
+    skip("previous test failed (missing objects to continue)")
+
   dockerfile_object <<- dockerfile(local_sessionInfo)
   docker_tempimage <-
     create_localDockerImage(dockerfile_object, no_cache = FALSE)
@@ -67,7 +66,7 @@ test_that("the same base packages are attached locally and in Docker ", {
 
 test_that("the same other packages are attached locally and in Docker ", {
   if(is.null(docker_sessionInfo))
-    return()  #don't continue if previous test failed
+    skip("previous test failed (missing objects to continue)")
 
   #expect that non-base packages are attached
   local_attached <- names(local_sessionInfo$otherPkgs)
@@ -86,7 +85,7 @@ test_that("the same other packages are attached locally and in Docker ", {
 
 test_that("the packages are loaded via Namespace locally and in Docker ", {
   if(is.null(docker_sessionInfo))
-    return()  #don't continue if previous test failed
+    skip("previous test failed (missing objects to continue)")
 
   #expect that same base and non-base packages loaded via namespace
   local_loaded <- names(local_sessionInfo$loadedOnly)
@@ -105,7 +104,7 @@ test_that("the packages are loaded via Namespace locally and in Docker ", {
 
 test_that("the R versions are the same ", {
   if(is.null(docker_sessionInfo))
-    return()  #don't continue if previous test failed
+    skip("previous test failed (missing objects to continue)")
 
   #expect that same base and non-base packages loaded via namespace
   expect_equal(local_sessionInfo$R.version$major,
@@ -117,7 +116,7 @@ test_that("the R versions are the same ", {
 
 test_that("the locales are the same ", {
   if(is.null(docker_sessionInfo))
-    return()  #don't continue if previous test failed
+    skip("previous test failed (missing objects to continue)")
 
   message("TODO: session locales are currently not reproduced.")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
