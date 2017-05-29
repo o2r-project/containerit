@@ -7,12 +7,13 @@ library(containerit)
 if(FALSE){
   #assuming that workdir is the containerit-folder:
   library(futile.logger)
-  setwd("tests/testthat")
-  source("../../R/sessionInfo-localbuild-methods.R")
-  source("../../R/package-installation-methods.R")
-  source("../../R/defaults.R")
-  #(run tests)
-  setwd("../../")
+  #source("R/sessionInfo-localbuild-methods.R")
+  #source("R/package-installation-methods.R")
+  #source("R/defaults.R")
+  #test_package("containerit")
+  result <- test_file(path = "tests/testthat/test_package_markdown.R")
+  result <- test_file(path = "tests/testthat/test_package_sweave.R")
+  result; str(result)
 }
 
 #R CMD check fails for some test if not setting the environment variable

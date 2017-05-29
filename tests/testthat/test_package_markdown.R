@@ -11,6 +11,7 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
                    r_version = "3.3.2",
                    copy = "script_dir",
                    cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
+  #write(df, "package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
@@ -28,6 +29,7 @@ test_that("A sf markdown file can be packaged", {
                    image = "rocker/geospatial",
                    copy = "script_dir",
                    cmd = CMD_Render(dir, output_dir = "/output"))
+  #write(df, "package_markdown/sf_vignette_Dockerfile")
   expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
