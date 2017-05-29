@@ -1,6 +1,6 @@
 ---
 title: "Generating Dockerfiles for reproducible research with R"
-author: "Daniel Nüst, Matthias Hinz"
+author: "Matthias Hinz, Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 #output: # use for blog post
@@ -376,3 +376,9 @@ Country locales are also not supported yet.
 We may want to support other container OS (e.g. windows container or other Linux distributions) or even containerization solutions such as [Singularity](http://singularity.lbl.gov/) or the [Open Container Initiative](https://www.opencontainers.org/)'s (OCI) [Image Format](https://github.com/opencontainers/image-spec).
 
 Feedback and contributions are highly welcome [on GitHub](https://github.com/o2r-project/containerit/issues) or [o2r_project](https://twitter.com/o2r_project) on Twitter.
+
+## Metadata
+
+```{r}
+sessionInfo()
+```
