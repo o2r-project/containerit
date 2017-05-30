@@ -15,7 +15,9 @@ if(FALSE){
   #test_package("containerit")
   result <- test_file(path = "tests/testthat/test_package_markdown.R")
   result <- test_file(path = "tests/testthat/test_package_sweave.R")
+  result <- test_file(path = "tests/testthat/test_package_Rscript.R")
   result <- test_file(path = "tests/testthat/test_sessioninfo_reproduce.R")
+  result <- test_file(path = "tests/testthat/test_install_github.R")
   result; str(result)
 }
 

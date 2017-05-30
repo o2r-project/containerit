@@ -9,10 +9,12 @@
            versioned_libs) {
     #create RUN expressions
     package_reqs <- character(0)
-    cran_packages <-
-      github_packages <-
-      local_packages <-
-      other_packages <- pkg_names <- package_versions <- character(0)
+    cran_packages <- character(0)
+    github_packages <- character(0)
+    local_packages <- character(0)
+    other_packages <-  character(0)
+    pkg_names <-  character(0)
+    package_versions <- character(0)
 
     sapply(pkgs,
            function(pkg) {
@@ -32,7 +34,7 @@
              package_versions <<-
                append(package_versions, pkg$Version)
 
-             #check if package come from CRAN (alternatively you may use devtools::session_info)
+             #check if package come from CRAN or GitHub
              if ("Repository" %in% names(pkg) &&
                  stringr::str_detect(pkg$Repository, "(?i)CRAN"))
              {
@@ -42,7 +44,7 @@
                         stringr::str_detect(pkg$RemoteType, "(?i)github"))
              {
                github_packages <<-
-                 append(github_packages, .getGitHubRef(pkg$Package))
+                 append(github_packages, getGitHubRef(pkg$Package))
                return()
              }
 
@@ -50,14 +52,13 @@
                warning(
                  "Failed to identify source for package ",
                  pkg$Package,
-                 ". Therefore the package cannot be installed in the docker image.\n"
+                 ". Therefore the package cannot be installed in the Docker image.\n"
                )
            })
 
     image_name <- .dockerfile@image@image
 
     # installing github packages requires the package 'remotes'
-    # see https://github.com/rocker-org/rocker-versioned/issues/26
     if (length(github_packages) > 0 &&
         !"remotes" %in% cran_packages &&
         !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")) {
@@ -67,7 +68,6 @@
         package_versions <-
         append(package_versions, utils::packageVersion("remotes"))
       else
-        #NOTE (TODO): the 'version' field is not yet evaluated or handled
         package_versions <- append(package_versions, "latest")
     }
 
@@ -154,13 +154,10 @@
                 "rm -r /tmp/gdal"
               )
             ))
-
-
-          # TODO: # For Ubuntu images (not yet supported), there is a separate ppa available from UbuntuGIS (see https://github.com/edzer/sfr/blob/master/.travis.yml).
         }
       }
 
-      # TODO: we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
+      # we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
       # as far as we know that certain images have sertain dependencies pre-installed,
       # but at the moment it won't be necessary
       if (image_name == "rocker/geospatial")
@@ -178,7 +175,7 @@
           package_version = package_versions,
           soft = soft
         )
-      #workaround for issue https://github.com/r-hub/sysreqsdb/issues/22 TODO: remove if not needed anymore
+
       pkg_dep <- unlist(stringr::str_split(pkg_dep, pattern = " "))
 
       package_reqs <- append(package_reqs, pkg_dep)
@@ -203,32 +200,23 @@
 
         if (length(add_inst) > 0)
           addInstruction(.dockerfile) <- add_inst
-        # For using the exec form (??):
-        #  Run("/bin/sh", params = c("-c","export","DEBIAN_FRONTEND=noninteractive")))
-        # Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
       }
-
-      # TODO:'mapping plaftorm > installation' command goes here, analogue to rsysreqs > https://github.com/r-hub/sysreqsdb/tree/master/platforms
     }
 
-
-
-    #install cran packages
     if (length(cran_packages) > 0) {
-      params <-
-        append(paste0("-r '", get_container_cran_mirror(), "'"),
+      futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
+      params <- append(paste0("-r '", get_container_cran_mirror(), "'"),
                cran_packages)
       run_install_cran <- Run("install2.r", params)
       addInstruction(.dockerfile) <- run_install_cran
     }
 
     if (length(github_packages) > 0) {
-      message("Github_packages: ", github_packages)
+      futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
       addInstruction(.dockerfile) <-
         Run("installGithub.r", github_packages)
     }
 
-    # TODO: install packages from other sources
     return(.dockerfile)
   }
 
@@ -377,46 +365,47 @@
     return(desc)
   }
 
-
-# a helper method to reference github packages even if they are not installed
-.githubRefs <- new.env()
-
-.addGitHubRef <- function(pkg, ref) {
-  .githubRefs[[pkg]] <<- ref
-}
-
-#try for instance .getGitHubRef("sysrequs")
-.getGitHubRef = function(pkg) {
-  # TODO: this method might be sub-optimal
-  # as it takes additional information from devtools::session_info() instead of the given sessionInfo object
-  # However, the information given by session_info is more precise and there should be no problem as long as the local installation matches the session info
-  if (!is.null(.githubRefs[[pkg]]))
-    return(.githubRefs[[pkg]])
-
+#' Get GitHub reference from package
+#'
+#' If a package is not installed from CRAN, this functions tries to determine if it was installed from GitHub using \code{\link[devtools]{session_info}}.
+#'
+#' @param pkg The name of the package to retrieve the
+#'
+#' @return A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' getGitHubRef(rsysreqs)
+#' }
+#'
+getGitHubRef = function(pkg) {
   if (!requireNamespace(pkg))
-    warning("Package ", pkg, " cannot be loaded.")
+    stop("Package ", pkg, " cannot be loaded.")
 
-  si <- devtools::session_info()
-  sel <- si$packages$package == pkg
-  source1 <- si$packages$source[sel]
+  si_devtools <- devtools::session_info()
+  selected <- si_devtools$packages$package == pkg
+  ref_devtools <- si_devtools$packages$source[selected]
+  futile.logger::flog.debug("Looking for references for package %s", ref_devtools)
+
   #try to determine github reference from devools
-  if (stringr::str_detect(source1, "(?i)^GitHub \\(.*/.*@|#.*\\)$")) {
-    source1 <-
-      stringr::str_replace(source1, "(?i)^GitHub \\(", replacement = "")
-    source1 <- stringr::str_replace(source1, "\\)$", replacement = "")
-    return(source1)
-  } else{
+  if (stringr::str_detect(ref_devtools, "(?i)^GitHub \\(.*/.*@|#.*\\)$")) {
+    ref_devtools <-
+      stringr::str_replace(ref_devtools, "(?i)^GitHub \\(", replacement = "")
+    ref_devtools <- stringr::str_replace(ref_devtools, "\\)$", replacement = "")
+
+    futile.logger::flog.debug("GitHub reference for %s found with devtools: %s", pkg, ref_devtools)
+    return(ref_devtools)
+  } else {
     #alternatively, try with 'normal' sessioninfo (normally does not reference a commit)
-    si <- sessionInfo()
-    pkgs = c(si$otherPkgs, si$loadedOnly)
+    si_regular <- sessionInfo()
+    pkgs = c(si_regular$otherPkgs, si_regular$loadedOnly)
     repo <- pkgs[[pkg]]$GithubRepo
     uname <- pkgs[[pkg]]$GithubUsername
     ghr <- pkgs[[pkg]]$GithubRef
     ref = paste0(uname, "/", repo, "@", ghr)
-    #nomally not so exact:
-    warning("Exact reference of GitHub package ",
-            ref,
-            " could not be determined.")
+
+    futile.logger::flog.warn("Exact reference of GitHub package %s could not be determined: %s", pkg, ref)
     return(ref)
   }
 }

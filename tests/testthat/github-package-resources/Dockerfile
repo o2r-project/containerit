@@ -1,5 +1,5 @@
 FROM rocker/r-ver:3.3.2
-MAINTAINER "matthiashinz"
+LABEL maintainer="matthiashinz"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
  && apt-get install -y gdal-bin \
 	libcurl4-openssl-dev \

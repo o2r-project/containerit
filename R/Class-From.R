@@ -4,7 +4,7 @@ setClass("Tag", contains = "character")
 setClass("Digest", contains = "character")
 setClassUnion("Postfix", c("Tag", "Digest", "NULL"))
 
-#' An S4 class to represent a FROM instrunction relating to a docker image
+#' An S4 class to represent a FROM instrunction relating to a Docker image
 #'
 #' @include Class-Instruction.R
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#from}.
@@ -51,7 +51,7 @@ From <- function(image, tag = NULL, digest = NULL) {
 
 #' Parse a From-instruction from an image-argument
 #'
-#' @param string Single character string that specifies an image in docker-syntax, i.e. <image-id>, <image@digest>, <image:tag>
+#' @param string Single character string that specifies an image in docker-syntax, e.g. \code{image}, \code{image@digest}, \code{image:tag}
 #'
 #' @return From instruction object
 #' @export

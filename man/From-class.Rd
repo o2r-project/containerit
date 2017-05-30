@@ -3,12 +3,12 @@
 \docType{class}
 \name{From-class}
 \alias{From-class}
-\title{An S4 class to represent a FROM instrunction relating to a docker image}
+\title{An S4 class to represent a FROM instrunction relating to a Docker image}
 \value{
 an object of class \code{Docker From}
 }
 \description{
-An S4 class to represent a FROM instrunction relating to a docker image
+An S4 class to represent a FROM instrunction relating to a Docker image
 }
 \section{Slots}{
 

@@ -23,7 +23,7 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
 
 \item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance}
 
-\item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
+\item{image}{(From-object or character) optionally specify the image that shall be used for the Docker container (FROM-statement)
 By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}}
 

@@ -4,7 +4,7 @@
 \alias{docker_build}
 \title{Build a Docker image from a local Dockerfile}
 \usage{
-docker_build(host = harbor::localhost, dockerfolder, new_image,
+docker_build(host = harbor::localhost, dockerfolder, tag,
   dockerfile = character(0), wait = FALSE, no_cache = FALSE,
   docker_opts = character(0), ...)
 }
@@ -13,7 +13,7 @@ docker_build(host = harbor::localhost, dockerfolder, new_image,
 
 \item{dockerfolder}{Local location of build directory including valid Dockerfile}
 
-\item{new_image}{Name of the new image to be created}
+\item{tag}{Name of the new image to be created}
 
 \item{dockerfile}{(optional) set path to the dockerfile (equals to path/to/Dockerfile"))}
 
@@ -21,7 +21,7 @@ docker_build(host = harbor::localhost, dockerfolder, new_image,
 
 \item{no_cache}{Wheter to use cached layers to build the image}
 
-\item{docker_opts}{Additional docker opts}
+\item{docker_opts}{Additional Docker options}
 
 \item{...}{Other arguments passed to the SSH command for the host}
 }
@@ -30,5 +30,5 @@ A table of active images on the instance
 }
 \description{
 Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
-The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
+The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences).
 }

@@ -3,15 +3,15 @@
 #' Build a Docker image from a local Dockerfile
 #'
 #' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
-#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
+#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences).
 #'
 #' @param host A host object (see harbor-package)
 #' @param dockerfolder Local location of build directory including valid Dockerfile
-#' @param new_image Name of the new image to be created
+#' @param tag Name of the new image to be created
 #' @param dockerfile (optional) set path to the dockerfile (equals to path/to/Dockerfile"))
 #' @param wait Whether to block R console until finished build
 #' @param no_cache Wheter to use cached layers to build the image
-#' @param docker_opts Additional docker opts
+#' @param docker_opts Additional Docker options
 #' @param ... Other arguments passed to the SSH command for the host
 #'
 #' @return A table of active images on the instance
@@ -19,30 +19,29 @@
 docker_build <-
   function (host = harbor::localhost,
             dockerfolder,
-            new_image,
+            tag,
             dockerfile = character(0),
             wait = FALSE,
             no_cache = FALSE,
             docker_opts = character(0),
             ...) {
-    #TODO: This method may be enhanced with random image name as default (?)
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(dir.exists(dockerfolder))
-    docker_opts <- append(docker_opts, c("-t", new_image))
+
+    docker_opts <- append(docker_opts, c("-t", tag))
+
     if (length(dockerfile) > 0) {
       stopifnot(file.exists(dockerfile))
       docker_opts <-
         append(docker_opts, c("-f", normalizePath(dockerfile)))
     }
+
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
 
-    futile.logger::flog.info(paste0(
-      "EXEC: docker build ",
-      paste(docker_opts, collapse = " "),
-      " ",
-      dockerfolder
-    ))
+    futile.logger::flog.info("EXEC: docker build %s %s",
+                             paste(docker_opts, collapse = " "),
+                             dockerfolder)
     harbor::docker_cmd(
       host,
       "build",
@@ -61,7 +60,7 @@ docker_build <-
 #' See https://docs.docker.com/engine/reference/commandline/inspect/
 #'
 #' The imlementation is based on \link[harbor]{docker_cmd} in the harbor package
-#' @seealso \link[harbor]{docker_cmd}
+#' @seealso \code{\link[harbor]{docker_cmd}}
 #'
 #' @param host A host object, as specified by the harbor package
 #' @param name Name or id of the docker object (can also be a list of multiple names/ids)

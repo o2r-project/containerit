@@ -30,11 +30,19 @@ test_that("A sf markdown file can be packaged", {
                    copy = "script_dir",
                    cmd = CMD_Render(dir, output_dir = "/output"))
   #write(df, "package_markdown/sf_vignette_Dockerfile")
-  expected_file = readLines("package_markdown/sf_vignette_Dockerfile")
+  expected_file <- readLines("package_markdown/sf_vignette_Dockerfile")
+  expected_file <- stringr::str_replace(string = expected_file, pattern = "###TEMPDIR###", replacement = dir)
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
+
   # here we can build and run the actual container to see if the resulting file is matching
   #expect_true(file.exists(file.path(dir, "sf3.html")))
   unlink(dir,recursive = TRUE)
 })
+
+test_that("A sf markdown file executed with a created image", {
+  # here we can build and run the actual container to see if the resulting file is matching
+  #expect_true(file.exists(file.path(dir, "sf3.html")))
+})
+
 

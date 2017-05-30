@@ -7,7 +7,7 @@
 parseFrom(string)
 }
 \arguments{
-\item{string}{Single character string that specifies an image in docker-syntax, i.e. <image-id>, <image@digest>, <image:tag>}
+\item{string}{Single character string that specifies an image in docker-syntax, e.g. \code{image}, \code{image@digest}, \code{image:tag}}
 }
 \value{
 From instruction object

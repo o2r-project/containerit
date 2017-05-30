@@ -39,8 +39,7 @@ set_container_cran_mirror <- function(cran_url) {
 
 .init_config_file <- function() {
   tryCatch(
-    .package_config <-
-      .containerit_read_config(),
+    .package_config <- .containerit_read_config(),
     error = function(e) {
       warning("containerit config file could not be read. Run containerit_write_config() to re-initialize the config file.", "\n\tCaused by: ", e)
     }

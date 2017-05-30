@@ -26,6 +26,69 @@ local_sessionInfo <- NULL
 docker_sessionInfo <- NULL
 dockerfile_object <- NULL
 
+## optains a session info from an R session executed in docker given expression expr and a docker image with R installed
+#  This method currently supports only expressions as an input (they should not be too long and complex).
+#  If the method should also execute complete scripts and optain the sessionInfo, it would have to be re-written according to optain_localSessionInfo.
+#  A temporary R script must be mounted. And then exectuted inside the container.
+#  As this function was only created for test purposes in order to compare sessionInfos, this feature is out of scope at the moment.
+obtain_dockerSessionInfo <-
+  function(docker_image,
+           expr = c(),
+           vanilla = FALSE,
+           docker_tempdir = "/tmp/containerit_temp",
+           local_tempdir = tempfile(pattern = "dir"),
+           deleteTempfiles = TRUE) {
+    #create local temporary directory
+    dir.create(local_tempdir)
+    if (!dir.exists(local_tempdir))
+      stop("Unable to locate temporary directory: ", local_tempdir)
+
+    #mount option
+    volume_opt = c("-v", paste0(local_tempdir, ":", docker_tempdir))
+
+    #rdata file to which session info shall be written
+    docker_tempfile =  paste0(docker_tempdir, "/", "rdata")
+    local_docker_tempfile = file.path(local_tempdir, "rdata")
+    #cat(writeExp(docker_tempfile))
+    expr <- append(expr, .writeSessionInfoExp(docker_tempfile))
+    #convert to cmd parameters
+    expr <- .exprToParam(expr)
+
+    cmd <- c("R")
+    if (vanilla) {
+      cmd <- append(cmd, "--vanilla")
+    }
+    cmd <- append(cmd, expr)
+    futile.logger::flog.info("Creating R session in Docker with the following arguments:\n\t",
+                             "docker run %s %s %s",
+                             paste(volume_opt, collapse = " "),
+                             docker_image,
+                             paste(cmd, collapse = " "))
+
+    container <- harbor::docker_run(
+      harbor::localhost,
+      image = docker_image,
+      cmd = cmd ,
+      docker_opts = volume_opt
+    )
+
+    if (harbor::container_running(container))
+      stop("Unexpected behavior: The container is still running!")
+
+    harbor::container_rm(container)
+
+    if (!file.exists(local_docker_tempfile))
+      stop("Sessioninfo was not written to file (it does not exist): ",
+           local_docker_tempfile)
+
+    futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
+    load(local_docker_tempfile)
+    #clean up
+    if (deleteTempfiles)
+      unlink(local_tempdir, recursive = TRUE)
+    return(get("info"))
+  }
+
 test_that("a local sessionInfo() can be created ", {
   local_sessionInfo <<- obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
   expect_s3_class(local_sessionInfo, "sessionInfo")
@@ -132,7 +195,7 @@ test_that("the locales are the same ", {
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
-  message("TODO: session locales are currently not reproduced.")
+  skip("not implemented yet")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
 })
 

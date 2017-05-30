@@ -6,7 +6,7 @@
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#copy}.
 #
 #' @param src (character vector) list of files or directories to be copied
-#' @param dest (character string) destination directory on the docker image (either absolute or relative to working directory)
+#' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
 #'
 #' @return object
 #' @export
@@ -22,7 +22,7 @@ setClass("Copy",
 #' Copy one or more files or directories to a Docker image
 #'
 #' @param src (character vector) list of files or directories to be copied
-#' @param dest (character string) destination directory on the docker image (either absolute or relative to working directory)
+#' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
 #'
 #' @return the object
 #' @export

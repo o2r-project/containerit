@@ -7,7 +7,7 @@
 \arguments{
 \item{src}{(character vector) list of files or directories to be copied}
 
-\item{dest}{(character string) destination directory on the docker image (either absolute or relative to working directory)}
+\item{dest}{(character string) destination directory on the Docker image (either absolute or relative to working directory)}
 }
 \value{
 object

@@ -23,7 +23,7 @@ create_localDockerImage <- function(x,
       futile.logger::flog.info("Building Docker image from temporary Dockerfile in context directory:\n\t%s", context)
       dockerfile_path = tempfile(pattern = "Dockerfile", tmpdir = context)
     } else {
-      futile.logger::flog.info("Building docker image from temporary docker file and directory")
+      futile.logger::flog.info("Building Docker image from temporary Dockerfile and directory")
       context = tempdir
       dir.create(tempdir)
       #write dockerfile into temp dir
@@ -102,17 +102,13 @@ create_localDockerImage <- function(x,
 # and for comparing session information (see test/testthat/test_sessioninfo_repoduce.R)
 obtain_localSessionInfo <-
   function(expr = c(),
-           file = NULL,
-           #an R script to be executed
-           rmd_file = NULL,
-           #a markdown file
-           rnw_file = NULL,
-           # a sweave file or anything that can be compiled with knitr::knit(...)
+           file = NULL, #an R script to be executed
+           rmd_file = NULL, #a markdown file
+           rnw_file = NULL, # a sweave file or anything that can be compiled with knitr::knit(...)
            vanilla = TRUE,
            silent = TRUE,
            slave = FALSE,
-           echo = FALSE,
-           #whether R scripts should be 'echoed'
+           echo = FALSE, #whether R scripts should be 'echoed'
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"),
            local_temp_script = tempfile(pattern = "r-script")) {
     #append commands to create a local sessionInfo
@@ -121,7 +117,6 @@ obtain_localSessionInfo <-
     }
 
     if (!is.null(rmd_file) && file.exists(rmd_file)) {
-      #TODO: configure output format?
       render_call <- quote(rmarkdown::render("file"))
       render_call[[2]] <- rmd_file #replace the argument "file
       expr <- append(expr, render_call)
@@ -158,70 +153,5 @@ obtain_localSessionInfo <-
     #clean up:
     unlink(local_tempfile)
     unlink(local_temp_script)
-    return(get("info"))
-  }
-
-## optains a session info from an R session executed in docker given expression expr and a docker image with R installed
-# TODO:
-#  This method currently supports only expressions as an input (they should not be to long and complex).
-#  If the method should also execute complete scripts and optain the sessionInfo, it would have to be re-written according to optain_localSessionInfo.
-#  A temporary R script must be mounted. And then exectuted inside the container.
-#  As this function was only created for test purposes in order to compare sessionInfos
-#  (see test/testtheat/test_sessioninfo_repoduce.R) this feature is out of scope at the moment.
-obtain_dockerSessionInfo <-
-  function(docker_image,
-           expr = c(),
-           vanilla = FALSE,
-           docker_tempdir = "/tmp/containerit_temp",
-           local_tempdir = tempfile(pattern = "dir"),
-           deleteTempfiles = TRUE) {
-    #create local temporary directory
-    dir.create(local_tempdir)
-    if (!dir.exists(local_tempdir))
-      stop("Unable to locate temporary directory: ", local_tempdir)
-
-    #mount option
-    volume_opt = c("-v", paste0(local_tempdir, ":", docker_tempdir))
-
-    #rdata file to which session info shall be written
-    docker_tempfile =  paste0(docker_tempdir, "/", "rdata")
-    local_docker_tempfile = file.path(local_tempdir, "rdata")
-    #cat(writeExp(docker_tempfile))
-    expr <- append(expr, .writeSessionInfoExp(docker_tempfile))
-    #convert to cmd parameters
-    expr <- .exprToParam(expr)
-
-    cmd <- c("R")
-    if (vanilla) {
-      cmd <- append(cmd, "--vanilla")
-    }
-    cmd <- append(cmd, expr)
-    futile.logger::flog.info("Creating R session in Docker with the following arguments:\n\t",
-                             "docker run %s %s %s",
-                             paste(volume_opt, collapse = " "),
-                             docker_image,
-                             paste(cmd, collapse = " "))
-
-    container <- harbor::docker_run(
-      harbor::localhost,
-      image = docker_image,
-      cmd = cmd ,
-      docker_opts = volume_opt
-    )
-
-    if (harbor::container_running(container))
-      stop("Unexpected behavior: The container is still running!")
-
-    harbor::container_rm(container)
-
-    if (!file.exists(local_docker_tempfile))
-      stop("Sessioninfo was not written to file (it does not exist): ",
-           local_docker_tempfile)
-
-    futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
-    load(local_docker_tempfile)
-    #clean up
-    if (deleteTempfiles)
-      unlink(local_tempdir, recursive = TRUE)
     return(get("info"))
   }

@@ -33,7 +33,7 @@
 #' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
 #' @param maintainer optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.
 #' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance
-#' @param image (From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
+#' @param image (From-object or character) optionally specify the image that shall be used for the Docker container (FROM-statement)
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
@@ -325,7 +325,7 @@ dockerfileFromFile <-
     if (!is.character(copy)) {
       stop("Invalid argument given for 'copy'")
     } else if (length(copy) == 1 && copy == "script") {
-      #unless we use some kind of Windows-based docker images, the destination path has to be unix compatible:
+      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
       rel_path_dest <-
         stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
       addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
@@ -333,7 +333,7 @@ dockerfileFromFile <-
       script_dir <- normalizePath(dirname(file))
       rel_dir <- .makeRelative(script_dir, context)
 
-      #unless we use some kind of Windows-based docker images, the destination path has to be unix compatible:
+      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
       rel_dir_dest <-
         stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
       if (!stringr::str_detect(rel_dir_dest, "/$"))

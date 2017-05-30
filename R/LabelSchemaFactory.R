@@ -87,13 +87,3 @@ LabelSchemaFactory <- function() {
                            schema_version, paste(names, collapse = ", "))
   return(factory)
 }
-
-# TODO: maybe create a factory with default values?
-LabelSchemaFactory2 <- function() {
-  factory <- LabelSchemaFactory()
-  formals(factory)[["build_date"]] <- Sys.time()
-  formals(factory)[["name"]] <-
-    Sys.info()[["user"]] ##actually, this should be the image Name
-
-  return(factory)
-}

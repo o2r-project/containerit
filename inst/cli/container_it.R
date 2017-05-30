@@ -1,7 +1,5 @@
 #!/usr/bin/Rscript
 
-#See related project issue at https://github.com/o2r-project/containerit/issues/12
-
 "container_it.R is a command-line interface to the R package containerit.
 It packages R sessions, scripts, workspaces and vignettes together with all dependencies to execute them in Docker containers.
 
@@ -18,7 +16,7 @@ Modes:
 
 Options (for all modes):
   --force -f          Force writing output even if a file of the same name already exists
-  --image <ARG>       Specify the Docker image that shall be used for the docker container (FROM-statement)
+  --image <ARG>       Specify the Docker image that shall be used for the Docker container (FROM-statement)
                       By default, the image is determinded from the given r_version,
                       while the version is matched with tags from the base image rocker/r-ver
                       see details about the rocker/r-ver at https://hub.docker.com/r/rocker/r-ver/'
@@ -58,7 +56,7 @@ Examples:
   # It contains instructions to copy the script and workspace image and to execute the script on start-up
   container_it.R file -ifp --cmd-R-file path/example.R
 
-  # Creates an empty R session and executes the given R commands, which later can be reproduced in the docker container
+  # Creates an empty R session and executes the given R commands, which later can be reproduced in the Docker container
   # The container will opperate with the given R version 3.3.0
   container_it.R session -p -e \"library(sp)\" -e \"demo(meuse, ask=FALSE)\" --r_version 3.3.0
 
