@@ -368,10 +368,8 @@ The package is a first prototype available via GitHub.
 While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as [harbor](https://github.com/wch/harbor/issues/5), being available on CRAN, too.
 The prototype of `containerit` was developed and tested only on Ubuntu/Linux, which should be extended before releasing a stable version on CRAN.
 
-As part of the o2r project, it is planned to integrate `containerit` in a tool chain for publishing and archiving reproducible research in form of Executable Research Compendia (ERC).
-
 As part of the o2r project, it is planned to integrate `containerit` in a [web service](http://o2r.info/architecture) for creating archivable research in form of [Executable Research Compendia (ERC)](https://doi.org/10.1045/january2017-nuest).
-Making `containerit` itself easier to use for end-users is a secondary goal, for example by building a graphical user interface for metadata creation.
+Making `containerit` itself easier to use for end-users is a secondary but worthwhile goal, for example by building a graphical user interface for metadata creation.
 Country locales are also not supported yet.
 We may want to support other container OS (e.g. windows container or other Linux distributions) or even containerization solutions such as [Singularity](http://singularity.lbl.gov/) or the [Open Container Initiative](https://www.opencontainers.org/)'s (OCI) [Image Format](https://github.com/opencontainers/image-spec).
 
