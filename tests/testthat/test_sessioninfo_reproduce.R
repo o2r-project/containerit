@@ -101,7 +101,7 @@ test_that("a sessionInfo can be reproduced with docker", {
     skip("previous test failed (missing objects to continue)")
 
   dockerfile_object <<- dockerfile(local_sessionInfo)
-  # docker_tempimage <-
+  docker_tempimage <-
     create_localDockerImage(dockerfile_object, no_cache = FALSE)
 
   #expect that image was created:

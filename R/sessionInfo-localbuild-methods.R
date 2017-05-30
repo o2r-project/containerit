@@ -12,7 +12,7 @@ create_localDockerImage <- function(x,
     docker_build(
       harbor::localhost,
       dockerfolder = x,
-      new_image = image_name,
+      tag = image_name,
       wait = TRUE
     )
   if (inherits(x, "Dockerfile")) {
@@ -37,7 +37,7 @@ create_localDockerImage <- function(x,
     docker_build(
       host,
       dockerfolder = context,
-      new_image = image_name,
+      tag = image_name,
       wait = TRUE,
       no_cache = no_cache,
       dockerfile = dockerfile_path
