@@ -68,3 +68,4 @@ Collate:
     'package-installation-methods.R'
     'sessionInfo-localbuild-methods.R'
     'utility-functions.R'
+Remotes: wch/harbor
