@@ -7,23 +7,23 @@
 dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Sys.info()[["user"]], r_version = getRVersionTag(from),
   image = imagefromRVersion(r_version), env = list(generator =
-  paste("containeRit", utils::packageVersion("containeRit"))), soft = FALSE,
+  paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
   copy = "script", container_workdir = "/payload", cmd = Cmd("R"),
   add_self = FALSE, vanilla = TRUE, silent = FALSE,
   versioned_libs = FALSE)
 }
 \arguments{
-\item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace).}
 
-\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory. 
+\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
 \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
 
-\item{maintainer}{optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}}
+\item{maintainer}{optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.}
 
 \item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance}
 
-\item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
+\item{image}{(From-object or character) optionally specify the image that shall be used for the Docker container (FROM-statement)
 By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}}
 
@@ -37,7 +37,7 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
 
-\item{add_self}{Whether to add the package containeRit itself if loaded/attached to the session}
+\item{add_self}{Whether to add the package containerit itself if loaded/attached to the session}
 
 \item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)}
 
@@ -49,10 +49,39 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 An object of class Dockerfile
 }
 \description{
-Create a Dockerfile based on either a sessionInfo, a workspace or a file
+Create a Dockerfile based on either a sessionInfo, a workspace or a file.
 }
-\examples{
-dockerfile()
+\section{Based on \code{sessionInfo}}{
 
+
+Use the current \code{\link[utils]{sessionInfo})} to create a Dockerfile.
+}
+
+\section{Based on a workspace/directory}{
+
+
+Given an existing path to a directory, the method tries to automatically find the main \code{R} file within that directory.
+Files are searched recursively. The following types are supported:
+
+\enumerate{
+  \item regular R script files, identified by file names ending in \code{.R}
+  \item weaved documents, identified by file names ending in either \code{.Rmd} or \code{.Rnw}
+}
+
+After identifying the main file, the process continues as described in the section file.
+If both types are found, documents are given priority over scripts.
+If multiple files are found, the first file as returned by \code{\link[base]{dir}} will be used.
+}
+
+\section{Based on a file}{
+
+
+Given an executable \code{R} script or document, create a Dockerfile to execute this file.
+This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
+}
+
+\examples{
+dockerfile <- dockerfile()
+print(dockerfile)
 
 }

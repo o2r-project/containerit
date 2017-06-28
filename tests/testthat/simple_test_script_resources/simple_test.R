@@ -1,4 +1,4 @@
-cat("Hello from containeRit!!\n")
+cat("Hello from containerit!!\n")
 cat("What is 9999 * 1234 ?\n")
 9999 * 1234
 cat("Printing a table:\n")

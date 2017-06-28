@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Env.R
 \name{Env}
 \alias{Env}
-\title{Constructor yet to be implemented}
+\title{Constructor for Env yet to be implemented}
 \usage{
 Env(...)
 }
@@ -13,7 +13,7 @@ Env(...)
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for Env yet to be implemented
 }
 \examples{
 #no example yet

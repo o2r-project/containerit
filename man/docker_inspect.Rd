@@ -34,5 +34,5 @@ The imlementation is based on \link[harbor]{docker_cmd} in the harbor package
 
 }
 \seealso{
-\link[harbor]{docker_cmd}
+\code{\link[harbor]{docker_cmd}}
 }

@@ -7,23 +7,24 @@
 LabelSchemaFactory()
 }
 \value{
-The returned function alows to create labels using the defined label names, e.g. version for org.label-schema.version. 
+The returned function alows to create labels using the defined label names, e.g. version for org.label-schema.version.
 For convenience, dashes are replaced by underscores in argument names. Also, the schema-version is set by default as part of the label.
 
 The names that can be used according to are the following:
 
-schema_version, version, build_date, name, description, usage, url, vcs_url, vcs_ref, vendor, docker.cmd, docker.cmd.devel, 
+schema_version, version, build_date, name, description, usage, url, vcs_url, vcs_ref, vendor, docker.cmd, docker.cmd.devel,
 docker.cmd.test, docker.debug, docker.cmd.help, docker.params, rkt.cmd, rkt.cmd.devel, rkt.cmd.test, rkt.debug, rkt.cmd.help, rkt.params
 }
 \description{
 This is a convenience function that generates method for conveniently creating metadata-labels with arguments according to schema version 1.0.0-rc.1
- 
+}
+\details{
 For details about the Label Schema, see http://label-schema.org/rc1/
 }
 \examples{
 df <- dockerfile(clean_session())
 factory <- LabelSchemaFactory()
-label <- factory(name = "ImageName", 
+label <- factory(name = "ImageName",
   description = "Description of the image",
   build_date = Sys.time()
  )

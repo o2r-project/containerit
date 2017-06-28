@@ -1,7 +1,7 @@
-Package: containeRit
+Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
@@ -23,8 +23,8 @@ Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
     by the project Opening Reproducible Research (http://o2r.info).
 License: GPL-3 + file LICENSE
-URL: https://github.com/o2r/containeRit/
-BugReports: https://github.com/o2r/containeRit/issues
+URL: https://github.com/o2r/containerit/
+BugReports: https://github.com/o2r/containerit/issues
 Encoding: UTF-8
 LazyData: TRUE
 Suggests:
@@ -48,6 +48,7 @@ RoxygenNote: 6.0.1
 Collate: 
     'Class-Instruction.R'
     'Class-Add.R'
+    'Class-Arg.R'
     'Class-Cmd.R'
     'Class-Copy.R'
     'Class-From.R'
@@ -57,12 +58,16 @@ Collate:
     'Class-Entrypoint.R'
     'Class-Env.R'
     'Class-Expose.R'
+    'Class-Healthcheck.R'
+    'Class-Onbuild.R'
     'Class-Run.R'
+    'Class-Shell.R'
+    'Class-Stopsignal.R'
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
-    'containeRit-config.R'
-    'containeRit.R'
+    'containerit-config.R'
+    'containerit.R'
     'defaults.R'
     'dockerfile.R'
     'package-installation-methods.R'

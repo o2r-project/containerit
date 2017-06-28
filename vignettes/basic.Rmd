@@ -1,11 +1,11 @@
 ---
-title: "Introduction to package `containeRit`"
+title: "Introduction to package `containerit`"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
+  %\VignetteIndexEntry{Introduction to package \texttt{containerit}}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -31,7 +31,7 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 Load the package, do your analysis, and create a Dockerfile.
 
 ```{r}
-library("containeRit")
+library("containerit")
 
 # do stuff, based on demo("krige")
 library("gstat")
@@ -67,7 +67,7 @@ clear_all <- function() {
   # packages
   .kept.packages <- c("stats","graphics","grDevices","utils","datasets",
                       "methods","base", "tools", "stringr", "stringi",
-                      "containeRit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
+                      "containerit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
   .package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
   .package.list <- setdiff(.package.list, paste("package:", .kept.packages, sep = ""))
   if (length(.package.list)>0)
@@ -113,7 +113,7 @@ clear_all()
 
 ```{r}
 class(sessionInfo())
-containeRit::dockerfile(from = sessionInfo(), env = ls())
+containerit::dockerfile(from = sessionInfo(), env = ls())
 ```
 
 ```{r,results='hide',echo=FALSE}
@@ -123,7 +123,7 @@ clear_all()
 ### Script
 
 ```{r}
-scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
+scriptFile <- tempfile(pattern = "containerit_", fileext = ".R")
 file <- file(scriptFile)
 writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
              'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',

@@ -2,17 +2,18 @@
 
 #' S4 Class representing a WORKDIR instruction
 #' @include Class-Instruction.R
-#'  
+#'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#workdir}.
 #'
 #' @return object
 #' @export
 #' @family instruction classes
 #' @examples
-#' instruction <- Workdir("/myDir/subdir/")
+#' instruction <- Workdir("~/myDir/subdir/")
 #' toString(instruction)
-setClass("Workdir", slots = list(path = "character"), contains = "Instruction")
-
+setClass("Workdir",
+         slots = list(path = "character"),
+         contains = "Instruction")
 
 #' Constructor for a WORKDIR instruction
 #'
@@ -22,14 +23,14 @@ setClass("Workdir", slots = list(path = "character"), contains = "Instruction")
 #' @export
 #'
 #' @examples
-#' #no example yet
-Workdir <- function(path){
+#' instruction <- Workdir("~/myDir/subdir/")
+#' toString(instruction)
+Workdir <- function(path) {
   new("Workdir", path = path)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Workdir"),
           function(obj) {
-              slot(obj, "path")
-          }
-)
+            slot(obj, "path")
+          })

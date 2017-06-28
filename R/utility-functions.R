@@ -3,15 +3,15 @@
 #' Build a Docker image from a local Dockerfile
 #'
 #' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
-#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences)
+#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences).
 #'
 #' @param host A host object (see harbor-package)
 #' @param dockerfolder Local location of build directory including valid Dockerfile
-#' @param new_image Name of the new image to be created
+#' @param tag Name of the new image to be created
 #' @param dockerfile (optional) set path to the dockerfile (equals to path/to/Dockerfile"))
 #' @param wait Whether to block R console until finished build
 #' @param no_cache Wheter to use cached layers to build the image
-#' @param docker_opts Additional docker opts
+#' @param docker_opts Additional Docker options
 #' @param ... Other arguments passed to the SSH command for the host
 #'
 #' @return A table of active images on the instance
@@ -19,44 +19,49 @@
 docker_build <-
   function (host = harbor::localhost,
             dockerfolder,
-            new_image,
+            tag,
             dockerfile = character(0),
             wait = FALSE,
             no_cache = FALSE,
             docker_opts = character(0),
             ...) {
-    #TODO: This method may be enhanced with random image name as default (?)
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(dir.exists(dockerfolder))
-    docker_opts <- append(docker_opts, c("-t", new_image))
-    if(length(dockerfile) > 0){
+
+    docker_opts <- append(docker_opts, c("-t", tag))
+
+    if (length(dockerfile) > 0) {
       stopifnot(file.exists(dockerfile))
-      docker_opts <- append(docker_opts, c("-f", normalizePath(dockerfile)))
+      docker_opts <-
+        append(docker_opts, c("-f", normalizePath(dockerfile)))
     }
+
     if (no_cache)
       docker_opts <- append(docker_opts, "--no-cache")
-    
-    futile.logger::flog.info(paste0("EXEC: docker build ", paste(docker_opts, collapse = " ")," ",dockerfolder))
-    harbor::docker_cmd(
+
+    futile.logger::flog.info("EXEC: docker build %s %s",
+                             paste(docker_opts, collapse = " "),
+                             dockerfolder)
+    .buildoutput <- harbor::docker_cmd(
       host,
       "build",
       args = dockerfolder,
       docker_opts = docker_opts,
-      wait = wait, 
+      wait = wait,
       capture_text = TRUE,
       ...
     )
-    
+    futile.logger::flog.debug("Build output: %s", .buildoutput)
+
     harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
   }
 
-
 #' Read low-level information from images and containers
-#' 
+#'
 #' See https://docs.docker.com/engine/reference/commandline/inspect/
-#' 
+#'
 #' The imlementation is based on \link[harbor]{docker_cmd} in the harbor package
-#' @seealso \link[harbor]{docker_cmd}
+#' @seealso \code{\link[harbor]{docker_cmd}}
 #'
 #' @param host A host object, as specified by the harbor package
 #' @param name Name or id of the docker object (can also be a list of multiple names/ids)
@@ -65,36 +70,40 @@ docker_build <-
 #' @param ... Other arguments passed to the SSH command for the host
 #'
 #' @return A named list of labels for each name or id given. (So, if there are multiple names/ids a list of named lists is returned)
-#' 
+#'
 #' @export
-#' @examples 
+#' @examples
 #' \dontrun{
 #'  docker_inspect(name="rocker/r-ver:3.3.2")
 #' }
-#' 
-docker_inspect <- function(host = harbor::localhost, 
+#'
+docker_inspect <- function(host = harbor::localhost,
                            name,
                            labelsOnly = FALSE,
                            docker_opts = character(0),
-                           ...){
-  output <- harbor::docker_cmd(host, "inspect", args=name, docker_opts, capture_text = TRUE, ...)
+                           ...) {
+  output <-
+    harbor::docker_cmd(host,
+                       "inspect",
+                       args = name,
+                       docker_opts,
+                       capture_text = TRUE,
+                       ...)
   output <- rjson::fromJSON(output)
-  if(labelsOnly){
-    output <- sapply(output, function(obj){
+  if (labelsOnly) {
+    output <- sapply(output, function(obj) {
       list(obj[["Config"]][["Labels"]])
     })
   }
-  if(is.list(output) && length(output) ==1)
+  if (is.list(output) && length(output) == 1)
     output <- output[[1]]
   return(output)
 }
 
-
-
-addInstruction <- function(dockerfileObject, value){
-  instructions <- slot(dockerfileObject,"instructions")
+addInstruction <- function(dockerfileObject, value) {
+  instructions <- slot(dockerfileObject, "instructions")
   instructions <- append(instructions, value)
-  slot(dockerfileObject,"instructions") <- instructions
+  slot(dockerfileObject, "instructions") <- instructions
   return(dockerfileObject)
 }
 
@@ -111,16 +120,13 @@ addInstruction <- function(dockerfileObject, value){
 #' addInstruction(df) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
 
-
-
-
 #' Get R version from a variety of sources in a string format used for image tags
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
 #' @param from the source to extract an R version: a `sessionInfo()` object
 #' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -132,10 +138,9 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
     r_version <- from$R.version
   } else
     r_version <- default
-  
+
   return(paste(r_version$major, r_version$minor, sep = "."))
 }
-
 
 #' Creates an empty R session via system commands and captures the session information
 #'
@@ -148,6 +153,17 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
 #' @return An object of class session info (Can be used as an input to the dockerfile-method)
 #' @export
 #'
-clean_session <- function(expr = list(), file = NULL, vanilla = TRUE, slave = FALSE, echo = FALSE){
-  obtain_localSessionInfo(expr = expr, file = file, slave = slave, echo = echo, vanilla = vanilla)
-}
+clean_session <-
+  function(expr = list(),
+           file = NULL,
+           vanilla = TRUE,
+           slave = FALSE,
+           echo = FALSE) {
+    obtain_localSessionInfo(
+      expr = expr,
+      file = file,
+      slave = slave,
+      echo = echo,
+      vanilla = vanilla
+    )
+  }

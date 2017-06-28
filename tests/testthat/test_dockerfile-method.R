@@ -1,6 +1,6 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-library(containeRit)
+library(containerit)
 context("dockerfile-generation")
 
 test_that("a simple dockerfile object can be saved to file", {
@@ -16,26 +16,26 @@ test_that("a simple dockerfile object can be saved to file", {
   control_instructions <- readLines(control_file)
   #update control-file to current version
   current_version <- paste(R.version$major, R.version$minor, sep = ".")
-  control_instructions[1] <- stringr::str_replace(control_instructions[1], 
+  control_instructions[1] <- stringr::str_replace(control_instructions[1],
                                                   "rocker/r-ver:\\d.\\d.\\d",
                                                   replacement = paste0("rocker/r-ver:",current_version))
-  
+
   generated_instructions <- readLines(gen_file)
   #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
-  #  
+  #
   unlink(t_dir, recursive = TRUE)
 })
+
 
 test_that("users can specify the maintainer", {
   maintainer <-
     new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(NULL, maintainer = maintainer)
-  
-  #check maintainer slot content and class
+
   expect_is(slot(dfile, "maintainer"), "Maintainer")
   mslot = slot(dfile, "maintainer")
-  expect_equal(attr(class(mslot), "package"), "containeRit")
+  expect_equal(attr(class(mslot), "package"), "containerit")
   expect_equal(slot(mslot, "name"), "Matthias Hinz")
   expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
   #expect Maintainer instruction
@@ -44,6 +44,15 @@ test_that("users can specify the maintainer", {
 })
 
 
+test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
+  dfile <- dockerfile()
+
+  expect_is(slot(dfile, "maintainer"), "Label")
+  mslot = slot(dfile, "maintainer")
+  expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])
+  expect_equal(toString(mslot), paste0("LABEL maintainer=\"", Sys.info()[["user"]], "\""))
+})
+
 test_that("users can specify the base image", {
   imagestr <- "rocker/r-ver:3.0.0"
   fromstr <- paste("FROM", imagestr)
@@ -51,13 +60,13 @@ test_that("users can specify the base image", {
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
   #check if from - instruction is the first (may be necessary to ignore comments in later tests)
   expect_length(which(toString(dfile1) == fromstr), 1)
-  
   #expect that custom image is preferred over R version argument
   dfile2 <-
     dockerfile(from = NULL,
                image = imagestr,
                r_version = "3.1.0")
-  expect_equal(toString(slot(dfile2, "image")), fromstr)
+  expect_equal(as.character(slot(dfile2, "image")), fromstr)
+  #expect_equal(toString(slot(dfile2, "image")), fromstr)
   expect_length(which(toString(dfile2) == fromstr), 1)
 })
 
@@ -80,12 +89,25 @@ test_that("R version is the current version if not specified otherwise", {
 })
 
 
-test_that("The package containerIt is not packaged by default (add_self = FALSE)", {
-  sessionInfo = obtain_localSessionInfo(expr = quote(library(containeRit)))
-  df = dockerfile(sessionInfo)
-  #test should have sufficient accuracy. Optionally test also with add_self = TRUE later on
-  expect_false(any(stringr::str_detect(toString(df), "^RUN.*containeRit")))
-  
+test_that("The package containerit is not packaged by default", {
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info)
+  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+})
+
+
+test_that("The package containerit is not packaged (add_self = FALSE)", {
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info, add_self = FALSE)
+  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+})
+
+
+test_that("The package containerit can be packaged (add_self = TRUE)", {
+  skip("containerit not yet available from CRAN")
+  info = obtain_localSessionInfo(expr = quote(library(containerit)))
+  df = dockerfile(info, add_self = TRUE)
+  # expect_true(any(stringr::str_detect(format(df), "^RUN.*containerit")))
 })
 
 

@@ -1,9 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-containeRit
+containerit
 ===========
 
-`containeRit` packages R script/session/workspace and all dependencies as a Docker container.
+`containerit` packages R script/session/workspace and all dependencies as a Docker container.
 
 [![Build Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 
@@ -33,6 +33,6 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 ### License
 
-containeRit is licensed under GNU General Public License, version 3, see file LICENSE.
+containerit is licensed under GNU General Public License, version 3, see file LICENSE.
 
 Copyright (C) 2016 - o2r project.

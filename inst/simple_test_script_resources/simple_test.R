@@ -1,4 +1,4 @@
-#Hello from containeRit!!
+#Hello from containerit!!
 #What is 9999 * 1234 ?
 9999 * 1234
 # Printing a table:
