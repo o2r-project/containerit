@@ -156,6 +156,52 @@
             ))
         }
       }
+    }
+
+    # TODO: we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
+    # as far as we know that certain images have sertain dependencies pre-installed,
+    # but at the moment it won't be necessary
+    if(image_name == "rocker/geospatial")
+      #these packages are pre-installed
+      no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
+
+    #------------------------------------------------------------------------(end of section)
+
+    # determine package dependencies (if applicable by given platform)
+    pkg_dep <- .find_system_dependencies(pkg_names,
+                                         platform = platform,
+                                         package_version = package_versions,
+                                         soft = soft)
+
+    # fix duplicates and parsing https://github.com/o2r-project/containerit/issues/79
+    pkg_dep_deduped <- unique(unlist(pkg_dep, use.names = FALSE))
+
+    # fix if depends come back with a space https://github.com/r-hub/sysreqsdb/issues/22
+    pkg_dep <- unlist(lapply(pkg_dep_deduped, function(x) unlist(strsplit(x, split=" "))))
+
+    package_reqs <- append(package_reqs, pkg_dep)
+
+    #some packages may not need to be installed, e.g. because they are pre-installed for a certain image
+    package_reqs <- package_reqs[!package_reqs %in% no_apt]
+    package_reqs <- append(package_reqs, add_apt)
+
+    #remove dublicate system requirements
+    package_reqs <- levels(as.factor(package_reqs))
+
+
+    # if platform is debian and system dependencies need to be installed
+    if(platform ==.debian_platform && length(package_reqs) > 0){
+      commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
+      install_command <- paste("apt-get install -y", paste(package_reqs, collapse = " \\\n\t"))
+      commands <- append(commands, install_command)
+      addInstruction(.dockerfile)  <- Run_shell(commands)
+
+      if(length(add_inst)> 0)
+        addInstruction(.dockerfile) <- add_inst
+      # For using the exec form (??):
+      #  Run("/bin/sh", params = c("-c","export","DEBIAN_FRONTEND=noninteractive")))
+      # Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
+    }
 
       # we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
       # as far as we know that certain images have sertain dependencies pre-installed,
