@@ -18,7 +18,7 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
 })
 
 
-test_that("A sf markdown file can be packaged", {
+test_that("The sf3 markdown file can be packaged", {
   md_file <- system.file("doc/sf3.Rmd", package = "sf")
   dir <- file.path(tempdir(), "sf")
   dir.create(dir)
@@ -40,9 +40,7 @@ test_that("A sf markdown file can be packaged", {
   unlink(dir,recursive = TRUE)
 })
 
-test_that("A sf markdown file executed with a created image", {
-  # here we can build and run the actual container to see if the resulting file is matching
-  #expect_true(file.exists(file.path(dir, "sf3.html")))
-})
-
-
+#test_that("A sf markdown file executed with a created image", {
+#  # here we can build and run the actual container to see if the resulting file is matching
+#  #expect_true(file.exists(file.path(dir, "sf3.html")))
+#})

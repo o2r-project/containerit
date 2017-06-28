@@ -28,21 +28,20 @@ create_localDockerImage <- function(x,
       dir.create(tempdir)
       #write dockerfile into temp dir
       dockerfile_path = file.path(tempdir, "Dockerfile")
-
     }
 
     write(x, file = dockerfile_path)
     dockerfile_path = normalizePath(dockerfile_path)
 
-    docker_build(
+    .built <- docker_build(
       host,
       dockerfolder = context,
       tag = image_name,
       wait = TRUE,
       no_cache = no_cache,
       dockerfile = dockerfile_path
-
     )
+    futile.logger::flog.debug("Build output: %s\n", .built)
 
     if (use_workdir) {
       futile.logger::flog.info("Deleting temporary Dockerfile...")

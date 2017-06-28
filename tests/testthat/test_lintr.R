@@ -2,7 +2,7 @@
 
 context("linter")
 
-test_that("Package Style", {
+test_that("package style is good", {
   skip_if_not_installed("lintr")
   skip("do not lint")
 

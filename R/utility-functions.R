@@ -42,7 +42,7 @@ docker_build <-
     futile.logger::flog.info("EXEC: docker build %s %s",
                              paste(docker_opts, collapse = " "),
                              dockerfolder)
-    harbor::docker_cmd(
+    .buildoutput <- harbor::docker_cmd(
       host,
       "build",
       args = dockerfolder,
@@ -51,6 +51,7 @@ docker_build <-
       capture_text = TRUE,
       ...
     )
+    futile.logger::flog.debug("Build output: %s", .buildoutput)
 
     harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
   }

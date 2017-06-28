@@ -115,7 +115,7 @@ test_that("a sessionInfo can be reproduced with docker", {
 
   docker_sessionInfo <<-
     obtain_dockerSessionInfo(docker_tempimage, expressions, vanilla = TRUE)
-  #clean up
+  #clean up: remove image
   harbor::docker_cmd(harbor::localhost, "rmi", docker_tempimage)
 })
 
@@ -154,7 +154,7 @@ test_that("the same other packages are attached locally and in Docker ", {
   expect_equal(local_versions, docker_versions)
 })
 
-test_that("the packages are loaded via Namespace locally and in Docker ", {
+test_that("the packages are loaded via Namespace locally and in Docker (requires updated local packages)", {
   skip_on_cran()
 
   if(is.null(docker_sessionInfo))

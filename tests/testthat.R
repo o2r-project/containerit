@@ -3,10 +3,11 @@
 library(testthat)
 library(containerit)
 
-#for testing manually:
+#for testing whole files manually:
 if(FALSE){
   #assuming that workdir is the containerit-folder:
   library(futile.logger)
+  futile.logger::flog.threshold(DEBUG)
   source("R/sessionInfo-localbuild-methods.R")
   source("R/package-installation-methods.R")
   source("R/containerit-config.R")
@@ -20,6 +21,12 @@ if(FALSE){
   result <- test_file(path = "tests/testthat/test_install_github.R")
   result; str(result)
 }
+
+# for manually executing code within tests:
+if(FALSE) {
+  setwd(file.path(getwd(), "tests", "testthat"))
+}
+
 
 #R CMD check fails for some test if not setting the environment variable
 # See https://github.com/hadley/testthat/issues/144
