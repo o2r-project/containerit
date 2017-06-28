@@ -136,7 +136,9 @@
 
           #NOTE: The following is the "old" way to do it. Getting sf to work only requires a more current version gdal, while all other dependencies can be installed from APT
         } else if (!image_name == "rocker/geospatial") {
-          futile.logger::flog.info("The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\nWe recommend using the base image rocker/geospatial.")
+          futile.logger::flog.info(
+            "The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\nWe recommend using the base image rocker/geospatial."
+          )
           futile.logger::flog.info("Docker will try to install GDAL 2.1.3 from source")
 
           add_apt <- append(add_apt, c("wget", "make"))
@@ -161,23 +163,28 @@
     # TODO: we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
     # as far as we know that certain images have sertain dependencies pre-installed,
     # but at the moment it won't be necessary
-    if(image_name == "rocker/geospatial")
+    if (image_name == "rocker/geospatial")
       #these packages are pre-installed
-      no_apt <- append(no_apt, c("libproj-dev","libgeos-dev","gdal-bin"))
+      no_apt <-
+      append(no_apt, c("libproj-dev", "libgeos-dev", "gdal-bin"))
 
     #------------------------------------------------------------------------(end of section)
 
     # determine package dependencies (if applicable by given platform)
-    pkg_dep <- .find_system_dependencies(pkg_names,
-                                         platform = platform,
-                                         package_version = package_versions,
-                                         soft = soft)
+    pkg_dep <- .find_system_dependencies(
+      pkg_names,
+      platform = platform,
+      package_version = package_versions,
+      soft = soft
+    )
 
     # fix duplicates and parsing https://github.com/o2r-project/containerit/issues/79
     pkg_dep_deduped <- unique(unlist(pkg_dep, use.names = FALSE))
 
     # fix if depends come back with a space https://github.com/r-hub/sysreqsdb/issues/22
-    pkg_dep <- unlist(lapply(pkg_dep_deduped, function(x) unlist(strsplit(x, split=" "))))
+    pkg_dep <-
+      unlist(lapply(pkg_dep_deduped, function(x)
+        unlist(strsplit(x, split = " "))))
 
     package_reqs <- append(package_reqs, pkg_dep)
 
@@ -190,81 +197,84 @@
 
 
     # if platform is debian and system dependencies need to be installed
-    if(platform ==.debian_platform && length(package_reqs) > 0){
-      commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
-      install_command <- paste("apt-get install -y", paste(package_reqs, collapse = " \\\n\t"))
+    if (platform == .debian_platform && length(package_reqs) > 0) {
+      commands <-
+        "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
+      install_command <-
+        paste("apt-get install -y",
+              paste(package_reqs, collapse = " \\\n\t"))
       commands <- append(commands, install_command)
       addInstruction(.dockerfile)  <- Run_shell(commands)
 
-      if(length(add_inst)> 0)
+      if (length(add_inst) > 0)
         addInstruction(.dockerfile) <- add_inst
       # For using the exec form (??):
       #  Run("/bin/sh", params = c("-c","export","DEBIAN_FRONTEND=noninteractive")))
       # Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
     }
 
-      # we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
-      # as far as we know that certain images have sertain dependencies pre-installed,
-      # but at the moment it won't be necessary
-      if (image_name == "rocker/geospatial")
-        #these packages are pre-installed
-        no_apt <-
-        append(no_apt, c("libproj-dev", "libgeos-dev", "gdal-bin"))
+    # we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
+    # as far as we know that certain images have sertain dependencies pre-installed,
+    # but at the moment it won't be necessary
+    if (image_name == "rocker/geospatial")
+      #these packages are pre-installed
+      no_apt <-
+      append(no_apt, c("libproj-dev", "libgeos-dev", "gdal-bin"))
 
-      #------------------------------------------------------------------------(end of section)
+    #------------------------------------------------------------------------(end of section)
 
-      # determine package dependencies (if applicable by given platform)
-      pkg_dep <-
-        .find_system_dependencies(
-          pkg_names,
-          platform = platform,
-          package_version = package_versions,
-          soft = soft
-        )
+    # determine package dependencies (if applicable by given platform)
+    pkg_dep <-
+      .find_system_dependencies(
+        pkg_names,
+        platform = platform,
+        package_version = package_versions,
+        soft = soft
+      )
 
-      pkg_dep <- unlist(stringr::str_split(pkg_dep, pattern = " "))
+    pkg_dep <- unlist(stringr::str_split(pkg_dep, pattern = " "))
 
-      package_reqs <- append(package_reqs, pkg_dep)
+    package_reqs <- append(package_reqs, pkg_dep)
 
-      #some packages may not need to be installed, e.g. because they are pre-installed for a certain image
-      package_reqs <- package_reqs[!package_reqs %in% no_apt]
-      package_reqs <- append(package_reqs, add_apt)
+    #some packages may not need to be installed, e.g. because they are pre-installed for a certain image
+    package_reqs <- package_reqs[!package_reqs %in% no_apt]
+    package_reqs <- append(package_reqs, add_apt)
 
-      #remove dublicate system requirements
-      package_reqs <- levels(as.factor(package_reqs))
+    #remove dublicate system requirements
+    package_reqs <- levels(as.factor(package_reqs))
 
 
-      # if platform is debian and system dependencies need to be installed
-      if (platform == .debian_platform && length(package_reqs) > 0) {
-        commands <-
-          "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
-        install_command <-
-          paste("apt-get install -y",
-                paste(package_reqs, collapse = " \\\n\t"))
-        commands <- append(commands, install_command)
-        addInstruction(.dockerfile)  <- Run_shell(commands)
+    # if platform is debian and system dependencies need to be installed
+    if (platform == .debian_platform && length(package_reqs) > 0) {
+      commands <-
+        "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
+      install_command <-
+        paste("apt-get install -y",
+              paste(package_reqs, collapse = " \\\n\t"))
+      commands <- append(commands, install_command)
+      addInstruction(.dockerfile)  <- Run_shell(commands)
 
-        if (length(add_inst) > 0)
-          addInstruction(.dockerfile) <- add_inst
-      }
+      if (length(add_inst) > 0)
+        addInstruction(.dockerfile) <- add_inst
     }
-
-    if (length(cran_packages) > 0) {
-      futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-      params <- append(paste0("-r '", get_container_cran_mirror(), "'"),
-               cran_packages)
-      run_install_cran <- Run("install2.r", params)
-      addInstruction(.dockerfile) <- run_install_cran
-    }
-
-    if (length(github_packages) > 0) {
-      futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
-      addInstruction(.dockerfile) <-
-        Run("installGithub.r", github_packages)
-    }
-
-    return(.dockerfile)
   }
+
+if (length(cran_packages) > 0) {
+  futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
+  params <- append(paste0("-r '", get_container_cran_mirror(), "'"),
+                   cran_packages)
+  run_install_cran <- Run("install2.r", params)
+  addInstruction(.dockerfile) <- run_install_cran
+}
+
+if (length(github_packages) > 0) {
+  futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
+  addInstruction(.dockerfile) <-
+    Run("installGithub.r", github_packages)
+}
+
+return(.dockerfile)
+}
 
 .find_system_dependencies <-
   function(package,
@@ -438,9 +448,12 @@ getGitHubRef = function(pkg) {
   if (stringr::str_detect(ref_devtools, "(?i)^GitHub \\(.*/.*@|#.*\\)$")) {
     ref_devtools <-
       stringr::str_replace(ref_devtools, "(?i)^GitHub \\(", replacement = "")
-    ref_devtools <- stringr::str_replace(ref_devtools, "\\)$", replacement = "")
+    ref_devtools <-
+      stringr::str_replace(ref_devtools, "\\)$", replacement = "")
 
-    futile.logger::flog.debug("GitHub reference for %s found with devtools: %s", pkg, ref_devtools)
+    futile.logger::flog.debug("GitHub reference for %s found with devtools: %s",
+                              pkg,
+                              ref_devtools)
     return(ref_devtools)
   } else {
     #alternatively, try with 'normal' sessioninfo (normally does not reference a commit)
@@ -451,7 +464,9 @@ getGitHubRef = function(pkg) {
     ghr <- pkgs[[pkg]]$GithubRef
     ref = paste0(uname, "/", repo, "@", ghr)
 
-    futile.logger::flog.warn("Exact reference of GitHub package %s could not be determined: %s", pkg, ref)
+    futile.logger::flog.warn("Exact reference of GitHub package %s could not be determined: %s",
+                             pkg,
+                             ref)
     return(ref)
   }
 }
