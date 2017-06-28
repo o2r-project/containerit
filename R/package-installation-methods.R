@@ -127,9 +127,16 @@
     #------------------------------------------------------------------------(end of section)
     
     # determine package dependencies (if applicable by given platform)
-    pkg_dep <- .find_system_dependencies(pkg_names, platform = platform, package_version = package_versions, soft = soft)
-    #workaround for issue https://github.com/r-hub/sysreqsdb/issues/22 TODO: remove if not needed anymore
-    pkg_dep <- unlist(stringr::str_split(pkg_dep, pattern = " "))
+    pkg_dep <- .find_system_dependencies(pkg_names, 
+                                         platform = platform, 
+                                         package_version = package_versions, 
+                                         soft = soft)
+    
+    # fix duplicates and parsing https://github.com/o2r-project/containerit/issues/79
+    pkg_dep_deduped <- unique(unlist(pkg_dep, use.names = FALSE))
+
+    # fix if depends come back with a space https://github.com/r-hub/sysreqsdb/issues/22
+    pkg_dep <- unlist(lapply(pkg_dep_deduped, function(x) unlist(strsplit(x, split=" "))))
     
     package_reqs <- append(package_reqs, pkg_dep)
     
