@@ -71,18 +71,17 @@
         package_versions <- append(package_versions, "latest")
     }
 
-    #install those system dependencies  which are necessary
-    if (!isTRUE(platform %in% .supported_platforms)) {
-      stop(
+    if(is.null(platform)) {
+      warning("Platform could not be detected, proceed at own risk.")
+    } else if (!isTRUE(platform %in% .supported_platforms)) {
+      warning(
         "The determined platform '",
         platform,
-        "' is currently not supported for handling system dependencies. Therefore, they  cannot be installed by containerit."
+        "' is currently not supported for handling system dependencies. Therefore, the created manifests migh not work."
       )
     }
 
     if (length(pkg_names) > 0) {
-      #--- handle dependency exceptions--------------------
-
       # dependencies that can be left out
       no_apt <- character(0)
 

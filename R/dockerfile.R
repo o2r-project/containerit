@@ -100,8 +100,8 @@ dockerfile <-
     # whether image is supported
     image_name <- image@image
     if (!image_name %in% .supported_images) {
-      stop(
-        "Invalid base image. Currently, only the following base images are supported: ",
+      warning(
+        "Unsupported base image. Proceed at your own risk. The following base images are supported:\n",
         paste(.supported_images, collapse = "\n")
       )
     }
