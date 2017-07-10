@@ -31,7 +31,11 @@ set_container_cran_mirror <- function(cran_url) {
   geospatial = "rocker/geospatial"
 )
 
-.supported_images <- .rocker_images
+.debian_images <- c(.rocker_images,
+  plumber = "trestletech/plumber" # extends rocker/r-base https://hub.docker.com/r/trestletech/plumber/~/dockerfile
+)
+
+.supported_images <- c(.debian_images)
 
 .debian_platform = "linux-x86_64-debian-gcc"
 .ubuntu_platform = "linux-x86_64-ubuntu-gcc"

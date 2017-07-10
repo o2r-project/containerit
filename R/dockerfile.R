@@ -37,7 +37,8 @@
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
 #'      see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
-#' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed
+#' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
+#' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
 #' @param container_workdir the working directory of the container
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
@@ -61,6 +62,7 @@ dockerfile <-
            image = imagefromRVersion(r_version),
            env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
            soft = FALSE,
+           offline = FALSE,
            copy = "script",
            container_workdir = "/payload",
            cmd = Cmd("R"),
@@ -129,6 +131,7 @@ dockerfile <-
           session = from,
           .dockerfile = .dockerfile,
           soft = soft,
+          offline = offline,
           add_self = add_self,
           versioned_libs = versioned_libs
         )
@@ -144,6 +147,7 @@ dockerfile <-
             path = from,
             .dockerfile = .dockerfile,
             soft = soft,
+            offline = offline,
             add_self = add_self,
             copy = copy,
             copy_destination = container_workdir ,
@@ -158,6 +162,7 @@ dockerfile <-
             file = from,
             .dockerfile = .dockerfile,
             soft = soft,
+            offline = offline,
             add_self = add_self,
             copy = copy,
             copy_destination = container_workdir,
@@ -186,6 +191,7 @@ dockerfile <-
           session = .sessionInfo,
           .dockerfile = .dockerfile,
           soft = soft,
+          offline = offline,
           add_self = add_self,
           versioned_libs = versioned_libs
         )
@@ -217,6 +223,7 @@ dockerfileFromSession <-
   function(session,
            .dockerfile,
            soft,
+           offline,
            add_self,
            versioned_libs) {
     futile.logger::flog.debug("Creating from sessionInfo")
@@ -231,8 +238,11 @@ dockerfileFromSession <-
     # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms
     platform = NULL
     image_name = .dockerfile@image@image
-    if (image_name %in% .rocker_images)
+    if (image_name %in% .debian_images) {
       platform = .debian_platform
+      futile.logger::flog.debug("Found image %s in list of debian images.")
+    }
+    futile.logger::flog.debug("Detected platform %s", platform)
 
     .dockerfile <-
       .create_run_install(
@@ -240,6 +250,7 @@ dockerfileFromSession <-
         pkgs = pkgs,
         platform = platform,
         soft = soft,
+        offline = offline,
         versioned_libs = versioned_libs
       )
 
@@ -251,6 +262,7 @@ dockerfileFromFile <-
            .dockerfile,
            soft,
            copy,
+           offline,
            add_self,
            copy_destination,
            vanilla,
@@ -314,6 +326,7 @@ dockerfileFromFile <-
         session = sessionInfo,
         .dockerfile = .dockerfile,
         soft = soft,
+        offline = offline,
         add_self = add_self,
         versioned_libs = versioned_libs
       )
@@ -369,6 +382,7 @@ dockerfileFromWorkspace <-
   function(path,
            .dockerfile,
            soft,
+           offline,
            add_self,
            copy,
            copy_destination,
@@ -421,6 +435,7 @@ dockerfileFromWorkspace <-
       target_file,
       .dockerfile = .dockerfile,
       soft = soft,
+      offline = offline,
       copy = copy,
       add_self = add_self,
       copy_destination = copy_destination,

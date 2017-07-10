@@ -8,8 +8,8 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Sys.info()[["user"]], r_version = getRVersionTag(from),
   image = imagefromRVersion(r_version), env = list(generator =
   paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
-  copy = "script", container_workdir = "/payload", cmd = Cmd("R"),
-  add_self = FALSE, vanilla = TRUE, silent = FALSE,
+  offline = FALSE, copy = "script", container_workdir = "/payload",
+  cmd = Cmd("R"), add_self = FALSE, vanilla = TRUE, silent = FALSE,
   versioned_libs = FALSE)
 }
 \arguments{
@@ -29,7 +29,9 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 
-\item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
+\item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed, default is no.}
+
+\item{offline}{(boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.}
 
 \item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied}
 

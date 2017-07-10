@@ -6,6 +6,7 @@
            pkgs,
            platform,
            soft,
+           offline,
            versioned_libs) {
     #create RUN expressions
     package_reqs <- character(0)
@@ -77,7 +78,7 @@
       warning(
         "The determined platform '",
         platform,
-        "' is currently not supported for handling system dependencies. Therefore, the created manifests migh not work."
+        "' is currently not supported for handling system dependencies. Therefore, the created manifests might not work."
       )
     }
 
@@ -176,8 +177,9 @@
       pkg_dep <- .find_system_dependencies(
         pkg_names,
         platform = platform,
-        package_version = package_versions,
-        soft = soft
+        soft = soft,
+        offline = offline,
+        package_version = package_versions
       )
 
       # fix duplicates and parsing https://github.com/o2r-project/containerit/issues/79
@@ -240,26 +242,34 @@
   function(package,
            platform,
            soft,
-           method = if (soft == TRUE)
-             method = "sysreq-package"
-           else
-             method = "sysreq-api",
+           offline,
            package_version = utils::packageVersion(package)) {
+    method = if (offline == TRUE)
+      method = "sysreq-package"
+    else
+      method = "sysreq-api"
+    .dependencies <- NA
+
+    futile.logger::flog.info("Going online? %s  ... to retrieve system dependencies (%s)", !offline, method)
+    futile.logger::flog.debug("Retrieving sysreqs for %s packages and platform %s:\n%s", length(package), platform, toString(package))
+
     # slower, because it analyzes all package DESCRIPTION files of attached / loaded packages.
     # That causes an overhead of database-requests, because dependent packages appear in the sessionInfo as well as in the DESCRIPTION files
+
     if (method == "sysreq-package")
-      return(
-        .find_by_sysreqs_pkg(
+      .dependencies <- .find_by_sysreqs_pkg(
           package = package,
           package_version = package_version,
           platform = platform,
           soft = soft
         )
-      )
 
     # faster, but only finds direct package dependencies from all attached / loaded packages
     if (method == "sysreq-api")
-      return(.find_by_sysreqs_api(package = package, platform = platform))
+      .dependencies <- .find_by_sysreqs_api(package = package, platform = platform)
+
+    futile.logger::flog.debug("Found system %s dependencies:\n%s", length(.dependencies), toString(.dependencies))
+    return(.dependencies)
   }
 
 .find_by_sysreqs_pkg <-
@@ -294,10 +304,18 @@
           "' ."
         )
       } else{
-        sysreqs <-
-          sysreqs::sysreqs(file.path(path, "DESCRIPTION"),
-                           platform = platform,
-                           soft = soft)
+        sysreqs <- NA
+        if(is.null(platform)) {
+          flog.warn("Platform could not be determined, possibly because of unknown base image. Using '%s'", sysreqs::current_platform())
+          sysreqs <-
+            sysreqs::sysreqs(file.path(path, "DESCRIPTION"),
+                             soft = soft)
+        } else {
+          sysreqs <-
+            sysreqs::sysreqs(file.path(path, "DESCRIPTION"),
+                             platform = platform,
+                             soft = soft)
+        }
         return(sysreqs)
       }
     }
@@ -349,27 +367,27 @@
       package = paste(package, collapse = ",")
     }
 
-
     package_msg <- stringr::str_replace_all(package, ",", ", ")
     futile.logger::flog.info(
       "Trying to determine system requirements for the package(s) '%s' from sysreq online DB",
       package_msg
     )
 
-    con <-
-      url(paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform))
+    .url <- paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform)
+    con <- url(.url)
+    futile.logger::flog.debug("Accessing '%s'", .url)
     success <- TRUE
     desc <- NULL
     tryCatch({
       desc <- readLines(con, warn = FALSE)
+      futile.logger::flog.debug("Response:\n%s", toString(desc))
       parser <- rjson::newJSONParser()
       parser$addData(desc)
       desc <- as.character(parser$getObject())
-
     }, error = function(e)
       success <- FALSE,
     finally = {
-      close(con)
+      # close(con)
     })
     if (!success) {
       warning(
@@ -378,6 +396,8 @@
         "using sysreq online API"
       )
     }
+
+    futile.logger::flog.debug("Dependencies info from sysreqs online DB:\n%s", toString(desc))
     return(desc)
   }
 
