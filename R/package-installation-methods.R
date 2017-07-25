@@ -1,6 +1,6 @@
 # Copyright 2016 Opening Reproducible Research (http://o2r.info)
 
-#pkgs list of packages as returned by sessionInfo
+# pkgs list of packages as returned by sessionInfo
 .create_run_install <- function(pkgs, platform, soft) {
 
   #create RUN expressions
@@ -14,7 +14,7 @@
            if ("Package" %in% names(pkg))
              name <- pkg$Package
            else
-             stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
+             stop("Package name cannot be determined for ", pkg) # should hopefully never occur
            
            if ("Priority" %in% names(pkg) &&
                stringr::str_detect(pkg$Priority, "(?i)base")) {
@@ -44,7 +44,7 @@
   
   run_instructions <- list()
   package_reqs <-
-    levels(as.factor(package_reqs)) #remove dublicate system requirements
+    levels(as.factor(package_reqs)) #remove duplicate system requirements
   
   #install system dependencies
   if(!isTRUE(platform %in% .supported_platforms)){
@@ -156,7 +156,7 @@
       warning(
         "Could not package DESCRIPTION for package '",
         package,
-        ", on CRAN. Containerit failed to determine system requriements."
+        ", on CRAN. Containerit failed to determine system requirements."
       )
     }
     
@@ -189,7 +189,7 @@
     })
     if (!success) {
       warning(
-        "Containerit failed to determine system requriements for package ",
+        "Containerit failed to determine system requirements for package ",
         package,
         "using sysreq online API"
       )
