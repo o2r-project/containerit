@@ -237,7 +237,9 @@ df <- dockerfile(silent = TRUE,
 print(df)
 ```
 
-## 4. Image metadata
+## 4. Advanced Dockerfile instructions
+
+### 4.1 Image metadata
 
 Metadata can be added to Docker images using [Label instructions](https://docs.docker.com/engine/reference/builder/#label).
 Label instructions are key-value pairs of arbitrary content.
@@ -288,6 +290,20 @@ The resulting Dockerfile with all the labels:
 
 ```{r, comment=NA}
 print(labeled_dockerfile)
+```
+
+### 4.2 Exposing ports
+
+If a Dockerfile contains a web service, specific ports of a running container might need to be exposed.
+
+> The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. [..] It functions as a type of documentation between the person who builds the image and the person who runs the container, [..] To actually publish the port when running the container, use the -p flag on docker run to publish and map one or more ports [..] ([Docker docs](https://docs.docker.com/engine/reference/builder/#expose))
+
+```{r, comment=NA}
+dockerfile_with_expose <- dockerfile()
+my_port_1 <- Expose(8000)
+my_port_2 <- Expose(port = "80/tcp", host = 8080)
+addInstruction(dockerfile_with_expose) <- list(my_port_1, my_port_2)
+print(dockerfile_with_expose)
 ```
 
 ## 5. Further customization 

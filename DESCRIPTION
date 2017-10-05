@@ -48,6 +48,7 @@ RoxygenNote: 6.0.1
 Collate: 
     'Class-Instruction.R'
     'Class-Add.R'
+    'Class-All.R'
     'Class-Arg.R'
     'Class-Cmd.R'
     'Class-Copy.R'

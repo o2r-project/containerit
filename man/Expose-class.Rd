@@ -3,12 +3,20 @@
 \docType{class}
 \name{Expose-class}
 \alias{Expose-class}
-\title{Expose class yet to be implemented}
+\title{S4 Class representing an EXPOSE-instruction}
+\arguments{
+\item{port}{(character or numeric, required) the port of the container to be exposed}
+
+\item{host}{(numeric, optional) port of the host, if missing the same port as in the container is exposed}
+}
 \value{
 object
 }
 \description{
-Expose class yet to be implemented
+S4 Class representing an EXPOSE-instruction
+}
+\examples{
+#no example yet
 }
 \seealso{
 Other instruction classes: \code{\link{Add-class}},

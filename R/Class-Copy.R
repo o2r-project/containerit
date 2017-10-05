@@ -1,6 +1,7 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' S4 Class representing a COPY-instruction
+#'
 #' @include Class-Instruction.R
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#copy}.
