@@ -1,16 +1,18 @@
-FROM rocker/verse:latest
+FROM rocker/r-ver:latest
 LABEL maintainer="o2r project <http://o2r.info>"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
 
-# use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
-RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]
+RUN ["install2.r", "-r 'https://cloud.r-project.org'", "rjson", "futile.logger", "debugme"]
+
+RUN ["installGithub.r", "r-hub/sysreqs", "o2r-project/containerit"]
 
 RUN echo "library(containerit);" >> /usr/local/lib/R/etc/Rprofile.site
 
-USER rstudio
+RUN useradd o2r
+USER o2r
 
 WORKDIR /containerit
 CMD ["R"]
