@@ -121,6 +121,7 @@ CMD_Rscript <-
 #' @param options (optional) Options or flags to be passed to Rscript
 #' @param output_format The output format as in \code{rmarkdown::render(...)}
 #' @param output_dir The output dir as in \code{rmarkdown::render(...)}
+#' @param output_file The output file name as in \code{rmarkdown::render(...)}
 #' @param vanilla Whether R should startup in vanilla mode. Default: TRUE
 #'
 #' @seealso \link[rmarkdown]{render}
@@ -132,21 +133,38 @@ CMD_Render <-
            options = character(0),
            output_format = rmarkdown::html_document(),
            output_dir = NULL,
+           output_file = NULL,
            vanilla = TRUE) {
-    if (vanilla)
-      options <- append(options, "--vanilla")
     params <- options
+    if (vanilla)
+      params <- append(params, "--vanilla")
+
+    # http://adv-r.had.co.nz/Expressions.html#calls
+
     render_call <-
-      quote(rmarkdown::render("file", output_format = "format", output_dir = NULL))
+      quote(rmarkdown::render(path = "path",
+                              output_format = "format",
+                              output_dir = NULL,
+                              output_file = NULL))
+    futile.logger::flog.debug(paste("Unprocessed render call:", toString(render_call)))
+
     render_call[[2]] <- path
     render_call[[3]] <- substitute(output_format)
-    render_call[[4]] <- substitute(output_dir)
+
+    the_next = 4
+    render_call[[the_next]] <- substitute(output_dir)
+    if(!is.null(output_dir))
+      the_next = the_next +1
+    render_call[[the_next]] <- substitute(output_file)
+
     render_call <- deparse(render_call, width.cutoff = 500)
-    render_call <-
-      deparse(render_call, width.cutoff = 500) #yes, twice! (command line expects R commands as strings)
-    render_call <-
-      stringr::str_replace_all(render_call, "^\\\"|\\\"$", "")
+    render_call <- deparse(render_call, width.cutoff = 500) #yes, twice! (command line expects R commands as strings)
+    render_call <- stringr::str_replace_all(render_call, "^\\\"|\\\"$", "")
+
     expr <- c("-e", render_call)
     params <- append(params , expr)
-    Cmd("R", params = as.character(params))
+    params <- as.character(params)
+
+    futile.logger::flog.debug(paste("Created render call parameter string:", toString(params)))
+    Cmd("R", params = params)
   }

@@ -4,7 +4,6 @@ library(testthat)
 library(containerit)
 context("Package R markdown files")
 
-
 test_that("A markdown file can be packaged (using markdowntainer-units-expample)", {
   df <- dockerfile(from = "package_markdown/markdowntainer-units/",
                    maintainer = "Ted Tester",
@@ -40,7 +39,20 @@ test_that("The sf3 markdown file can be packaged", {
   unlink(dir,recursive = TRUE)
 })
 
-#test_that("A sf markdown file executed with a created image", {
-#  # here we can build and run the actual container to see if the resulting file is matching
-#  #expect_true(file.exists(file.path(dir, "sf3.html")))
-#})
+test_that("The render command supports output directory", {
+  cmd = CMD_Render(path = tempdir(), output_dir = "/the_directory")
+  expect_equal(stringr::str_count(toString(cmd), 'output_dir = \\\\\\"/the_directory\\\\\\"'), 1)
+  expect_equal(stringr::str_count(toString(cmd), 'output_file'), 0)
+})
+
+test_that("The render command supports output file", {
+  cmd = CMD_Render(path = tempdir(), output_file = "myfile.html")
+  expect_equal(stringr::str_count(toString(cmd), 'output_file = \\\\\\"myfile.html\\\\\\"'), 1)
+  expect_equal(stringr::str_count(toString(cmd), 'output_dir'), 0)
+})
+
+test_that("The render command supports output directory and output file at the same time", {
+  cmd = CMD_Render(path = tempdir(), output_dir = "/the_directory", output_file = "myfile.html")
+  expect_equal(stringr::str_count(toString(cmd), 'output_dir = \\\\\\"/the_directory\\\\\\"'), 1)
+  expect_equal(stringr::str_count(toString(cmd), 'output_file = \\\\\\"myfile.html\\\\\\"'), 1)
+})

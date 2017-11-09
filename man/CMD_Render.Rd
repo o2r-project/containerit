@@ -6,7 +6,7 @@
 \usage{
 CMD_Render(path, options = character(0),
   output_format = rmarkdown::html_document(), output_dir = NULL,
-  vanilla = TRUE)
+  output_file = NULL, vanilla = TRUE)
 }
 \arguments{
 \item{path}{The name of the R markdown file that should run on startup, or a path relative to the working directory}
@@ -16,6 +16,8 @@ CMD_Render(path, options = character(0),
 \item{output_format}{The output format as in \code{rmarkdown::render(...)}}
 
 \item{output_dir}{The output dir as in \code{rmarkdown::render(...)}}
+
+\item{output_file}{The output file name as in \code{rmarkdown::render(...)}}
 
 \item{vanilla}{Whether R should startup in vanilla mode. Default: TRUE}
 }

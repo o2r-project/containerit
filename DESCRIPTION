@@ -1,7 +1,7 @@
 Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
@@ -74,4 +74,4 @@ Collate:
     'package-installation-methods.R'
     'sessionInfo-localbuild-methods.R'
     'utility-functions.R'
-Remotes: wch/harbor
+Remotes: wch/harbor, r-hub/sysreqs
