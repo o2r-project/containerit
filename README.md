@@ -14,7 +14,6 @@ Quick start
 
 Development version from GitHub.
 
-    devtools::install_github("r-hub/sysreqs")
     devtools::install_github("o2r-project/containerit")
 
 ### Use
