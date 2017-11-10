@@ -142,7 +142,7 @@ CMD_Render <-
     # http://adv-r.had.co.nz/Expressions.html#calls
 
     render_call <-
-      quote(rmarkdown::render(path = "path",
+      quote(rmarkdown::render(input = "path",
                               output_format = "format",
                               output_dir = NULL,
                               output_file = NULL))
