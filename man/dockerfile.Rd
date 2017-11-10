@@ -6,7 +6,7 @@
 \usage{
 dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Sys.info()[["user"]], r_version = getRVersionTag(from),
-  image = imagefromRVersion(r_version), env = list(generator =
+  image = getImageForVersion(r_version), env = list(generator =
   paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
   offline = FALSE, copy = "script", container_workdir = "/payload",
   cmd = Cmd("R"), add_self = FALSE, vanilla = TRUE, silent = FALSE,

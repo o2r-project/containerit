@@ -1,5 +1,4 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
-
+# Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' An S4 class to represent a RUN instruction in shell form
 #' @include Class-Instruction.R
