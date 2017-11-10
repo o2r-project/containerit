@@ -59,7 +59,7 @@ dockerfile <-
            save_image = FALSE,
            maintainer = Sys.info()[["user"]],
            r_version = getRVersionTag(from),
-           image = imagefromRVersion(r_version),
+           image = getImageForVersion(r_version),
            env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
            soft = FALSE,
            offline = FALSE,
@@ -446,9 +446,23 @@ dockerfileFromWorkspace <-
     return(.df)
   }
 
-imagefromRVersion <- function(r_version) {
+
+
+#' getImageForVersion-method
+#'
+#' Get a suitable Rocker image based on the R version.
+#'
+#' @param r_version A string representation of the R version, e.g. "3.4.2"
+#'
+#' @return A string with the name of the Docker image
+#' @export
+#' @examples
+#' getImageForVersion(getRVersionTag(utils::sessionInfo()))
+#' getImageForVersion("3.4.2")
+#'
+getImageForVersion <- function(r_version) {
   #check if dockerized R version is available (maybe check other repositories too?)
-  tags <- tagsfromRemoteImage(.rocker_images[["versioned"]])
+  tags <- .tagsfromRemoteImage(.rocker_images[["versioned"]])
   if (!r_version %in% tags) {
     warning(
       "No Docker image found for the given R version. ",
@@ -463,7 +477,7 @@ imagefromRVersion <- function(r_version) {
   return(image)
 }
 
-tagsfromRemoteImage <- function(image) {
+.tagsfromRemoteImage <- function(image) {
   urlstr <-
     paste0("https://registry.hub.docker.com/v2/repositories/",
            image,
