@@ -16,7 +16,6 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
   expect_equal(generated_file, expected_file)
 })
 
-
 test_that("The sf3 markdown file can be packaged", {
   md_file <- system.file("doc/sf3.Rmd", package = "sf")
   dir <- file.path(tempdir(), "sf")
@@ -55,4 +54,25 @@ test_that("The render command supports output directory and output file at the s
   cmd = CMD_Render(path = tempdir(), output_dir = "/the_directory", output_file = "myfile.html")
   expect_equal(stringr::str_count(toString(cmd), 'output_dir = \\\\\\"/the_directory\\\\\\"'), 1)
   expect_equal(stringr::str_count(toString(cmd), 'output_file = \\\\\\"myfile.html\\\\\\"'), 1)
+})
+
+test_that("The file is automatically copied", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/")
+  expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
+  expect_s4_class(df@instructions[[5]], "Copy")
+})
+
+test_that("File copying can be disabled with NA", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA)
+  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
+})
+
+test_that("File copying can be disabled with NA_character", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA_character_)
+  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
+})
+
+test_that("File copying can be disabled with NULL", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NULL)
+  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })

@@ -33,7 +33,7 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{offline}{(boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.}
 
-\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied}
+\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files}
 
 \item{container_workdir}{the working directory of the container}
 

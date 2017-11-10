@@ -39,7 +39,7 @@
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
-#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied
+#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
 #' @param container_workdir the working directory of the container
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
@@ -334,46 +334,48 @@ dockerfileFromFile <-
     ## set working directory to the copy destination and add copy instructions
     ####################################################
     addInstruction(.dockerfile) <- Workdir(copy_destination)
-    copy = unlist(copy)
-    if (!is.character(copy)) {
-      stop("Invalid argument given for 'copy'")
-    } else if (length(copy) == 1 && copy == "script") {
-      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-      rel_path_dest <-
-        stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-      addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
-    } else if (length(copy) == 1 && copy == "script_dir") {
-      script_dir <- normalizePath(dirname(file))
-      rel_dir <- .makeRelative(script_dir, context)
 
-      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-      rel_dir_dest <-
-        stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
-      if (!stringr::str_detect(rel_dir_dest, "/$"))
-        # directories given as destination must have a trailing slash in dockerfiles
-        rel_dir_dest <- paste0(rel_dir_dest, "/")
+    if (!is.na(copy) && !is.null(copy)) {
+      copy = unlist(copy)
+      if (!is.character(copy)) {
+        stop("Invalid argument given for 'copy'")
+      } else if (length(copy) == 1 && copy == "script") {
+        #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
+        rel_path_dest <-
+          stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+        addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
+      } else if (length(copy) == 1 && copy == "script_dir") {
+        script_dir <- normalizePath(dirname(file))
+        rel_dir <- .makeRelative(script_dir, context)
 
-      addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
-    } else {
-      ## assume that a list or vector of paths is given
-      sapply(copy, function(file) {
-        if (file.exists(file)) {
-          rel_path <- .makeRelative(normalizePath(file), context)
-          rel_path_dest <-
-            stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-          if (dir.exists(file) &&
-              !stringr::str_detect(rel_path_dest, "/$"))
-            rel_path_dest <- paste0(rel_dir_dest, "/")
-          addInstruction(.dockerfile) <<-
-            Copy(rel_path, rel_path_dest)
-        } else {
-          stop("The file ",
-               file,
-               ", given by 'copy', does not exist! Invalid argument.")
-        }
-      })
+        #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
+        rel_dir_dest <-
+          stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
+        if (!stringr::str_detect(rel_dir_dest, "/$"))
+          # directories given as destination must have a trailing slash in dockerfiles
+          rel_dir_dest <- paste0(rel_dir_dest, "/")
+
+        addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
+      } else {
+        ## assume that a list or vector of paths is given
+        sapply(copy, function(file) {
+          if (file.exists(file)) {
+            rel_path <- .makeRelative(normalizePath(file), context)
+            rel_path_dest <-
+              stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+            if (dir.exists(file) &&
+                !stringr::str_detect(rel_path_dest, "/$"))
+              rel_path_dest <- paste0(rel_dir_dest, "/")
+            addInstruction(.dockerfile) <<-
+              Copy(rel_path, rel_path_dest)
+          } else {
+            stop("The file ",
+                 file,
+                 ", given by 'copy', does not exist! Invalid argument.")
+          }
+        })
+      }
     }
-
 
     return(.dockerfile)
   }
