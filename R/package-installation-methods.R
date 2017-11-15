@@ -320,10 +320,8 @@
       }
     }
 
-    flog.info(
-      "Trying to determine system requirements for the package '%s' from the latest DESCRIPTION file on CRAN",
-      package
-    )
+    flog.info("Trying to determine system requirements for the package '%s' from the latest DESCRIPTION file on CRAN",
+      package)
 
     con <-
       url(paste0(
@@ -340,6 +338,7 @@
         sysreqs::sysreqs(temp, platform = platform, soft = soft)
     }, error = function(e) {
       success <- FALSE
+      futile.logger::flog.debug("Error requesting system requirements from DESCRIPTION file on CRAN: %s", toString(e))
     },
     finally = {
       unlink(temp)
@@ -347,11 +346,9 @@
     })
 
     if (!success) {
-      warning(
-        "Could not package DESCRIPTION for package '",
+      warning("Could not package DESCRIPTION for package '",
         package,
-        ", on CRAN. containerit failed to determine system requirements."
-      )
+        ", on CRAN. containerit failed to determine system requirements.")
       return(NULL)
     } else {
       return(sysreqs)
@@ -378,23 +375,21 @@
     futile.logger::flog.debug("Accessing '%s'", .url)
     success <- TRUE
     desc <- NULL
+
     tryCatch({
       desc <- readLines(con, warn = FALSE)
       futile.logger::flog.debug("Response:\n%s", toString(desc))
       parser <- rjson::newJSONParser()
       parser$addData(desc)
       desc <- as.character(parser$getObject())
-    }, error = function(e)
-      success <- FALSE,
-    finally = {
-      # close(con)
-    })
+    }, error = function(e) {
+      success <- FALSE
+      futile.logger::flog.debug("Error requesting package info from sysreqs online DB: %s", toString(e))
+    }, finally = close(con))
+
     if (!success) {
-      warning(
-        "Containerit failed to determine system requriements for package ",
-        package,
-        "using sysreq online API"
-      )
+      warning("Containerit failed to determine system requriements for package ",
+        package, "using sysreq online API")
     }
 
     futile.logger::flog.debug("Dependencies info from sysreqs online DB:\n%s", toString(desc))
