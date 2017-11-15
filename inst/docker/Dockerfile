@@ -7,7 +7,17 @@ RUN apt-get update \
 # use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
 RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]
 
-RUN echo "library(containerit);" >> /usr/local/lib/R/etc/Rprofile.site
+RUN echo 'old <- getOption("defaultPackages");\n \
+options(defaultPackages = c(old, "containerit"));\n \
+.First <- function() {\n \
+  level <- Sys.getenv(x = "CONTAINERIT_FLOG_THRESHOLD", unset = "INFO", names = NA)\n \
+  library(futile.logger)\n \
+  futile.logger::flog.threshold(level, name = "containerit")\n \
+}\n \
+.Last <- function() {\n \
+  if(!as.logical(Sys.getenv(x = "CONTAINERIT_SILENT", unset = "FALSE", names = NA))) {\n \
+    cat("\n"); print(sessionInfo()); }\n \
+}' >> /usr/local/lib/R/etc/Rprofile.site
 
 USER rstudio
 

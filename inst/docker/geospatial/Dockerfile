@@ -9,7 +9,17 @@ RUN ["install2.r", "-r 'https://cloud.r-project.org'", "rjson", "futile.logger",
 
 RUN ["installGithub.r", "r-hub/sysreqs", "o2r-project/containerit"]
 
-RUN echo "library(containerit);" >> /usr/local/lib/R/etc/Rprofile.site
+RUN echo 'old <- getOption("defaultPackages");\n \
+options(defaultPackages = c(old, "containerit"));\n \
+.First <- function() {\n \
+  level <- Sys.getenv(x = "CONTAINERIT_FLOG_THRESHOLD", unset = "INFO", names = NA)\n \
+  library(futile.logger)\n \
+  futile.logger::flog.threshold(level, name = "containerit")\n \
+}\n \
+.Last <- function() {\n \
+  if(!as.logical(Sys.getenv(x = "CONTAINERIT_SILENT", unset = "FALSE", names = NA))) {\n \
+    cat("\n"); print(sessionInfo()); }\n \
+}' >> /usr/local/lib/R/etc/Rprofile.site
 
 WORKDIR /containerit
 

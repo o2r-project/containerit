@@ -29,12 +29,11 @@ devtools::install_github("o2r-project/containerit")
 
 ### Use
 
-See the vignette at `vignettes/basic.Rmd`.
+See the vignettes at `vignettes/basic.Rmd` and `vignettes/container.Rmd`.
 
 ## Documentation
 
 See vignette `vignettes/basic.Rmd`.
-
 
 ## Contribute
 
