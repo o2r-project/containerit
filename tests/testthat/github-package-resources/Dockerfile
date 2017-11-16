@@ -19,7 +19,7 @@ RUN wget http://download.osgeo.org/gdal/2.1.3/gdal-2.1.3.tar.gz \
  && make install \
  && ldconfig \
  && rm -r /tmp/gdal
-RUN ["install2.r", "-r 'https://cloud.r-project.org'", "Rcpp", "lattice", "V8", "R6", "jsonlite", "DBI", "magrittr", "units", "httr", "curl", "sp", "rgdal", "udunits2", "foreign", "maptools", "rgeos", "remotes"]
+RUN ["install2.r", "Rcpp", "lattice", "V8", "R6", "jsonlite", "DBI", "magrittr", "units", "httr", "curl", "sp", "rgdal", "udunits2", "foreign", "maptools", "rgeos", "remotes"]
 RUN ["installGithub.r", "ropensci/geojsonio@2e15e21", "edzer/sfr@7057e42"]
 WORKDIR /payload/
 CMD ["R"]

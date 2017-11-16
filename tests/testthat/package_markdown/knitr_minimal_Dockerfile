@@ -3,7 +3,7 @@ LABEL maintainer="matthiashinz"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
  && apt-get install -y pandoc \
 	pandoc-citeproc
-RUN ["install2.r", "-r 'https://cloud.r-project.org'", "knitr", "magrittr", "stringi", "highr", "stringr", "evaluate"]
+RUN ["install2.r", "knitr", "magrittr", "stringi", "highr", "stringr", "evaluate"]
 WORKDIR /payload/
 COPY ["package_markdown/knitr-minimal.Rnw", "package_markdown/knitr-minimal.Rnw"]
 CMD ["R"]

@@ -219,20 +219,16 @@
 
     } # length(package_names)
 
-
     if (length(cran_packages) > 0) {
+      cran_packages <- sort(cran_packages) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-      params <-
-        append(paste0("-r '", get_container_cran_mirror(), "'"),
-               cran_packages)
-      run_install_cran <- Run("install2.r", params)
-      addInstruction(.dockerfile) <- run_install_cran
+      addInstruction(.dockerfile) <- Run("install2.r", cran_packages)
     }
 
-    if (length(github_packages) > 0) {
+    if (length(github_packages) > 0) { # sort, to increase own reproducibility
+      github_packages <- sort(github_packages)
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
-      addInstruction(.dockerfile) <-
-        Run("installGithub.r", github_packages)
+      addInstruction(.dockerfile) <- Run("installGithub.r", github_packages)
     }
 
     return(.dockerfile)

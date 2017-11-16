@@ -27,7 +27,6 @@ test_that("a simple dockerfile object can be saved to file", {
   unlink(t_dir, recursive = TRUE)
 })
 
-
 test_that("users can specify the maintainer", {
   maintainer <-
     new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
@@ -42,7 +41,6 @@ test_that("users can specify the maintainer", {
   expect_equal(toString(mslot),
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 })
-
 
 test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
   dfile <- dockerfile()
@@ -80,7 +78,6 @@ test_that("users can specify the R version", {
   expect_warning(dockerfile(from = NULL, r_version = "2.0"))
 })
 
-
 test_that("R version is the current version if not specified otherwise", {
   dfile <- dockerfile(NULL)
   #expect that image string contains the current R version
@@ -88,13 +85,11 @@ test_that("R version is the current version if not specified otherwise", {
                paste(R.Version()$major, R.Version()$minor, sep = "."))
 })
 
-
 test_that("The package containerit is not packaged by default", {
   info = obtain_localSessionInfo(expr = quote(library(containerit)))
   df = dockerfile(info)
   expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
 })
-
 
 test_that("The package containerit is not packaged (add_self = FALSE)", {
   info = obtain_localSessionInfo(expr = quote(library(containerit)))
@@ -102,13 +97,9 @@ test_that("The package containerit is not packaged (add_self = FALSE)", {
   expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
 })
 
-
 test_that("The package containerit can be packaged (add_self = TRUE)", {
   skip("containerit not yet available from CRAN")
   info = obtain_localSessionInfo(expr = quote(library(containerit)))
   df = dockerfile(info, add_self = TRUE)
   # expect_true(any(stringr::str_detect(format(df), "^RUN.*containerit")))
 })
-
-
-

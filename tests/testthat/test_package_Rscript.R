@@ -94,3 +94,8 @@ test_that("File copying can be disabled with NULL", {
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
+test_that("the installation order of packages is alphabetical (= reproducible)", {
+  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", r_version = "3.4.2")
+  expected_file = readLines("simple_test_script_packages/Dockerfile")
+  expect_equal(toString(df), expected_file)
+})

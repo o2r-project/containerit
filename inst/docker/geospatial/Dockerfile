@@ -5,7 +5,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
 
-RUN ["install2.r", "-r 'https://cloud.r-project.org'", "rjson", "futile.logger", "debugme"]
+RUN ["install2.r", "rjson", "futile.logger", "debugme"]
 
 RUN ["installGithub.r", "r-hub/sysreqs", "o2r-project/containerit"]
 
