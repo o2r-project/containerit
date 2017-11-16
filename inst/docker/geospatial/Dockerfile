@@ -1,4 +1,4 @@
-FROM rocker/geospatial:latest
+FROM rocker/geospatial:3.4.2
 LABEL maintainer="o2r project <http://o2r.info>"
 
 RUN apt-get update \
@@ -18,7 +18,9 @@ options(defaultPackages = c(old, "containerit"));\n \
 }\n \
 .Last <- function() {\n \
   if(!as.logical(Sys.getenv(x = "CONTAINERIT_SILENT", unset = "FALSE", names = NA))) {\n \
-    cat("\n"); print(sessionInfo()); }\n \
+    cat("\n"); print(sessionInfo());\n \
+    cat("\n"); print(options()$repos);\n \
+  }\n \
 }' >> /usr/local/lib/R/etc/Rprofile.site
 
 WORKDIR /containerit

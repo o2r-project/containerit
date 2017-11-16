@@ -1,4 +1,4 @@
-FROM rocker/verse:latest
+FROM rocker/verse:3.4.2
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -16,7 +16,9 @@ options(defaultPackages = c(old, "containerit"));\n \
 }\n \
 .Last <- function() {\n \
   if(!as.logical(Sys.getenv(x = "CONTAINERIT_SILENT", unset = "FALSE", names = NA))) {\n \
-    cat("\n"); print(sessionInfo()); }\n \
+    cat("\n"); print(sessionInfo());\n \
+    cat("\n"); print(options()$repos);\n \
+  }\n \
 }' >> /usr/local/lib/R/etc/Rprofile.site
 
 USER rstudio
