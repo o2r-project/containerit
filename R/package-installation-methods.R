@@ -237,8 +237,8 @@
 .find_system_dependencies <-
   function(package,
            platform,
-           soft,
-           offline,
+           soft = TRUE,
+           offline = FALSE,
            package_version = utils::packageVersion(package)) {
     method = if (offline == TRUE)
       method = "sysreq-package"
@@ -271,7 +271,7 @@
 .find_by_sysreqs_pkg <-
   function(package,
            platform,
-           soft,
+           soft = TRUE,
            package_version,
            localFirst = TRUE) {
     #for more than one package:

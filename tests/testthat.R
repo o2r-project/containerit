@@ -14,6 +14,7 @@ if(FALSE){
   source("R/defaults.R")
 
   #test_package("containerit")
+  result <- test_file(path = "tests/testthat/test_find_systemrequirements.R")
   result <- test_file(path = "tests/testthat/test_package_markdown.R")
   result <- test_file(path = "tests/testthat/test_package_sweave.R")
   result <- test_file(path = "tests/testthat/test_package_Rscript.R")
