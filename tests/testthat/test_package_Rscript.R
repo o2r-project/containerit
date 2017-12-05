@@ -14,7 +14,7 @@ test_that("an R script can be created with resources of the same folder ",{
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
   #test run (shoud be fast:)
-  image = create_localDockerImage(df, use_workdir = TRUE)
+  image <- create_localDockerImage(df, use_workdir = TRUE)
   print("Script reproduced with Docker: ")
   harbor::docker_run(image = image, rm = TRUE)
   harbor::docker_cmd(harbor::localhost, "rmi", image)
@@ -33,12 +33,12 @@ test_that("a workspace with one R script can be packaged ",{
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
 
-  expected_file = readLines("simple_test_script_resources/Dockerfile")
+  expected_file <- readLines("simple_test_script_resources/Dockerfile")
   expect_equal(toString(df), expected_file)
 })
 
 test_that("a list of resources can be packaged ",{
-  df=dockerfile("simple_test_script_resources/simple_test.R",
+  df <- dockerfile("simple_test_script_resources/simple_test.R",
                 copy = c("simple_test_script_resources/simple_test.R",
                          "simple_test_script_resources/test_table.csv",
                          "simple_test_script_resources/test_subfolder/testresource"),
@@ -46,7 +46,7 @@ test_that("a list of resources can be packaged ",{
                 r_version = "3.3.2")
   #for overwriting
   #write(df, "simple_test_script_resources/Dockerfile2")
-  expected_file = readLines("simple_test_script_resources/Dockerfile2")
+  expected_file <- readLines("simple_test_script_resources/Dockerfile2")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
@@ -60,7 +60,7 @@ test_that("The gstat demo 'zonal' can be packaged ",{
   expect_true(requireNamespace("sp"))
   expect_true(requireNamespace("gstat"))
 
-  df=dockerfile("test_script_gstat/zonal.R",
+  df <- dockerfile("test_script_gstat/zonal.R",
                 cmd = CMD_Rscript("test_script_gstat/zonal.R"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
@@ -75,8 +75,9 @@ test_that("The gstat demo 'zonal' can be packaged ",{
 
 test_that("The file is automatically copied", {
   df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R")
-  expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
-  expect_s4_class(df@instructions[[5]], "Copy")
+  expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
+              info = "at least one Copy instruction")
+  expect_s4_class(df@instructions[[length(df@instructions)]], "Copy")
 })
 
 test_that("File copying can be disabled with NA", {

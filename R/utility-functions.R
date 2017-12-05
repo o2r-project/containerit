@@ -16,6 +16,7 @@
 #'
 #' @return A table of active images on the instance
 #' @export
+#@importFrom harbor localhost docker_cmd
 docker_build <-
   function (host = harbor::localhost,
             dockerfolder,

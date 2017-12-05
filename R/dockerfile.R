@@ -470,7 +470,7 @@ getImageForVersion <- function(r_version) {
       "No Docker image found for the given R version. ",
       "You might want to specify a custom Docker image or \n",
       "  use one of the following supported version tags ",
-      "(maybe check the internet connection if no suggestions appear). \n\t",
+      "(only available when online): \n\t",
       paste(tags, collapse = " ")
     )
   }

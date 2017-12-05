@@ -15,7 +15,7 @@ vignette: >
 ---
 
 
-```{r "setup", include=FALSE}
+```{r "setup"}
 require("knitr")
 temp_workspace <- tempfile(pattern = "containerit_temp")
 dir.create(temp_workspace)
@@ -175,12 +175,11 @@ To do this, the `cmd` argument passed to `dockerfile()` is constructed using the
 Note that, as shown in the Dockerfile, the GDAL library has to be build from source for `sf` to work properly, because a quite recent version of GDAL is required.
 This adaptation of the installation instruction is based on an internal ruleset for the package `sf`.
 
-```{r, results='hide'}
-response <- file.copy(from = system.file("doc/sf3.Rmd",package = "sf"),
+```{r sf-vignette, results='hide', eval=FALSE}
+file.copy(from = system.file("doc/sf1.Rmd",package = "sf"),
                         to = temp_workspace, recursive = TRUE)
-vignette <- "sf3.Rmd"
-
-dockerfile_object <- dockerfile(from = vignette, silent = TRUE, cmd = CMD_Render(vignette))
+dockerfile_object <- dockerfile(from = "sf1.Rmd", silent = TRUE, 
+                                cmd = CMD_Render("sf1.Rmd"))
 ```
 
 ```{r, comment=NA}
