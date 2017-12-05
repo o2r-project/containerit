@@ -197,8 +197,9 @@
       package_reqs <- package_reqs[!package_reqs %in% no_apt]
       package_reqs <- append(package_reqs, add_apt)
 
-      #remove dublicate system requirements
+      #remove dublicate system requirements and sort (to increase own reproducibility)
       package_reqs <- levels(as.factor(package_reqs))
+      package_reqs <- sort(package_reqs)
 
       # if platform is debian and system dependencies need to be installed
       if (platform == .debian_platform && length(package_reqs) > 0) {

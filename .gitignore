@@ -29,3 +29,5 @@ inst/doc
 
 tests/testthat/package_markdown/markdowntainer-units/images/
 tests/testthat/package_markdown/markdowntainer-units/*\.html
+
+tests/testthat/Rplots\.pdf
