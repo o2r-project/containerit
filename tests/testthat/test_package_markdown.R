@@ -1,7 +1,5 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-library(testthat)
-library(containerit)
 context("Package R markdown files")
 
 test_that("A markdown file can be packaged (using markdowntainer-units-expample)", {
@@ -60,7 +58,6 @@ test_that("The render command supports output directory and output file at the s
 test_that("The file is automatically copied", {
   df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
-  expect_s4_class(df@instructions[[length(df@instructions)]], "Copy")
 })
 
 test_that("File copying can be disabled with NA", {
