@@ -4,16 +4,22 @@
 \alias{getImageForVersion}
 \title{getImageForVersion-method}
 \usage{
-getImageForVersion(r_version)
+getImageForVersion(r_version, nearest = TRUE)
 }
 \arguments{
 \item{r_version}{A string representation of the R version, e.g. "3.4.2"}
+
+\item{nearest}{A boolean, should the closest version be returned if there is no match?}
 }
 \value{
 A string with the name of the Docker image
 }
 \description{
 Get a suitable Rocker image based on the R version.
+Needs network access to retrieve the available images.
+}
+\details{
+If there was no matching image found, a warning is issued.
 }
 \examples{
 getImageForVersion(getRVersionTag(utils::sessionInfo()))

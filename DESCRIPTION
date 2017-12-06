@@ -18,7 +18,8 @@ Imports:
     futile.logger,
     devtools,
     docopt,
-    remotes
+    remotes,
+    semver
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
@@ -46,7 +47,7 @@ Suggests:
     proj4,
     fortunes
 RoxygenNote: 6.0.1
-Collate: 
+Collate:
     'Class-Instruction.R'
     'Class-Add.R'
     'Class-All.R'

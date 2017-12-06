@@ -77,7 +77,6 @@ test_that("The file is automatically copied", {
   df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
               info = "at least one Copy instruction")
-  expect_s4_class(df@instructions[[length(df@instructions)]], "Copy")
 })
 
 test_that("File copying can be disabled with NA", {
@@ -96,7 +95,7 @@ test_that("File copying can be disabled with NULL", {
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", r_version = "3.4.2")
+  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.2", nearest = FALSE))
   expected_file = readLines("simple_test_script_packages/Dockerfile")
   expect_equal(toString(df), expected_file)
 })

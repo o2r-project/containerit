@@ -74,8 +74,10 @@ test_that("users can specify the R version", {
   #check content of image and instructions slots
   expect_equal(toString(slot(slot(dfile, "image"), "postfix")), versionstr)
   expect_match(toString(dfile), versionstr, all = FALSE)
-  #expect am warning if the user specifies an unsupported R version
-  expect_warning(dockerfile(from = NULL, r_version = "2.0"))
+})
+
+test_that("users are warned if an unsupported R version is set", {
+  expect_warning(dockerfile(from = NULL, r_version = "2.0.0"), "closest")
 })
 
 test_that("R version is the current version if not specified otherwise", {

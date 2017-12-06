@@ -335,7 +335,7 @@ dockerfileFromFile <-
     ####################################################
     addInstruction(.dockerfile) <- Workdir(copy_destination)
 
-    if (!is.na(copy) && !is.null(copy)) {
+    if (!is.null(copy) && !is.na(copy)) {
       copy = unlist(copy)
       if (!is.character(copy)) {
         stop("Invalid argument given for 'copy'")
@@ -453,8 +453,12 @@ dockerfileFromWorkspace <-
 #' getImageForVersion-method
 #'
 #' Get a suitable Rocker image based on the R version.
+#' Needs network access to retrieve the available images.
+#'
+#' If there was no matching image found, a warning is issued.
 #'
 #' @param r_version A string representation of the R version, e.g. "3.4.2"
+#' @param nearest A boolean, should the closest version be returned if there is no match?
 #'
 #' @return A string with the name of the Docker image
 #' @export
@@ -462,20 +466,57 @@ dockerfileFromWorkspace <-
 #' getImageForVersion(getRVersionTag(utils::sessionInfo()))
 #' getImageForVersion("3.4.2")
 #'
-getImageForVersion <- function(r_version) {
+#' @importFrom semver parse_version
+getImageForVersion <- function(r_version, nearest = TRUE) {
   #check if dockerized R version is available (maybe check other repositories too?)
   tags <- .tagsfromRemoteImage(.rocker_images[["versioned"]])
-  if (!r_version %in% tags) {
-    warning(
-      "No Docker image found for the given R version. ",
-      "You might want to specify a custom Docker image or \n",
-      "  use one of the following supported version tags ",
-      "(only available when online): \n\t",
-      paste(tags, collapse = " ")
-    )
+  image <- From(.rocker_images[["versioned"]], tag = r_version)
+
+  closestMatch <- function(version, versions) {
+    if(version %in% versions) return(version);
+
+    factors <- list(major = 1000000, minor = 1000, patch = 1)
+
+    semver <- semver::parse_version(version)[[1]]
+    semver_num <- semver$major * factors[["major"]] +
+      semver$minor * factors[["minor"]] +
+      semver$patch * factors[["patch"]]
+
+    sorted_semvers <- sort(semver::parse_version(versions))
+
+    offsets <- sapply(X = sorted_semvers, FUN = function(v) {
+      v_num <- v$major * factors[["major"]] +
+        v$minor * factors[["minor"]] +
+        v$patch * factors[["patch"]]
+      return(abs(semver_num - v_num))
+    })
+
+    min_offset = min(offsets)
+    return(sorted_semvers[which(offsets == min_offset)])
   }
 
-  image <- From(.rocker_images[["versioned"]], tag = r_version)
+  if (!r_version %in% tags) {
+    if(nearest) {
+      # get numeric versions with all parts (maj.min.minor), i.e. two dots
+      numeric_tags <- tags[which(grepl("\\d.\\d.\\d", tags))]
+      closest <- as.character(closestMatch(r_version, numeric_tags))
+      image <- From(.rocker_images[["versioned"]], tag = closest)
+
+      warning(
+        "No Docker image found for the given R version, returning closest match: ",
+        closest,
+        " Existing tags (list only available when online): ",
+        paste(tags, collapse = " ")
+      )
+    } else {
+      warning(
+        "No Docker image found for the given R version, returning input. ",
+        "Existing tags (list only available when online): ",
+        paste(tags, collapse = " ")
+      )
+    }
+  }
+
   return(image)
 }
 
@@ -489,13 +530,13 @@ getImageForVersion <- function(r_version) {
     con <- url(urlstr)
     str <- readLines(con, warn = FALSE)
   },
-  finally = close(con))
+    finally = close(con))
 
-  parser <- rjson::newJSONParser()
-  parser$addData(str)
-  tags <- sapply(parser$getObject()$results, function(x) {
-    x$name
-  })
+    parser <- rjson::newJSONParser()
+    parser$addData(str)
+    tags <- sapply(parser$getObject()$results, function(x) {
+      x$name
+    })
   return(tags)
 }
 
