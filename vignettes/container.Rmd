@@ -64,3 +64,14 @@ ls -l /tmp/containerit
 rm -r /tmp/containerit
 ```
 
+## Example: package script
+
+```{bash}
+mkdir /tmp/containerit
+echo "install.packages('fortunes', repos = 'http://cran.r-project.org'); fortunes::fortune();" >> /tmp/containerit/script.R
+
+docker run --rm -v /tmp/containerit:/data o2rproject/containerit R -q -e "setwd('/data'); scriptFile <- 'script.R'; write(dockerfile(from = scriptFile, cmd = CMD_Rscript(basename(scriptFile))));"
+
+cat /tmp/containerit/Dockerfile
+rm -r /tmp/containerit
+```
