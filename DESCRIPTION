@@ -76,4 +76,4 @@ Collate:
     'package-installation-methods.R'
     'sessionInfo-localbuild-methods.R'
     'utility-functions.R'
-Remotes: wch/harbor, r-hub/sysreqs
+Remotes: wch/harbor, r-hub/sysreqs, johndharrison/semver
