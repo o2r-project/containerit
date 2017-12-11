@@ -102,10 +102,8 @@ dockerfile <-
     # whether image is supported
     image_name <- image@image
     if (!image_name %in% .supported_images) {
-      warning(
-        "Unsupported base image. Proceed at your own risk. The following base images are supported:\n",
-        paste(.supported_images, collapse = "\n")
-      )
+      warning("Unsupported base image. Proceed at your own risk. The following base images are supported:\n",
+        paste(.supported_images, collapse = "\n"))
     }
 
     if (!stringr::str_detect(container_workdir, "/$")) {
@@ -124,8 +122,11 @@ dockerfile <-
       )
 
     if (is.null(from)) {
+      futile.logger::flog.debug("from is NULL, falling back to container_workdir '%s'", container_workdir)
       addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "sessionInfo")) {
+      futile.logger::flog.debug("Creating from sessionInfo object")
+
       .dockerfile <-
         dockerfileFromSession(
           session = from,
@@ -138,9 +139,10 @@ dockerfile <-
       #set the working directory (If the directory does not exist, Docker will create it)
       addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "character")) {
-      futile.logger::flog.debug("Creating from character string")
+      futile.logger::flog.debug("Creating from character string '%s'", from)
 
       if (dir.exists(from)) {
+        futile.logger::flog.debug("'%s' is a directory")
         .originalFrom <- from
         .dockerfile <-
           dockerfileFromWorkspace(
@@ -156,6 +158,7 @@ dockerfile <-
             versioned_libs = versioned_libs
           )
       } else if (file.exists(from)) {
+        futile.logger::flog.debug("'%s' is a file")
         .originalFrom <- from
         .dockerfile <-
           dockerfileFromFile(
@@ -171,17 +174,12 @@ dockerfile <-
             versioned_libs = versioned_libs
           )
       } else {
-        stop(
-          "Unsupported argument 'from'. Failed to determine an existing file or directory given the string: ",
-          from
-        )
+        stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
       }
-    } else if (is.null(from)) {
-      #Creates a basic dockerfile without the 'from'-argument
-
     } else if (is.expression(from) ||
                (is.list(from) && all(sapply(from, is.expression)))) {
-      #expression or list of expressions
+      futile.logger::flog.debug("Creating from expession: %s", toString(from))
+
       .sessionInfo <-
         clean_session(expr = from,
                       slave = silent,
@@ -215,7 +213,7 @@ dockerfile <-
       addInstruction(.dockerfile) <- Copy(src = file, dest = file)
     }
 
-    flog.info("Created Dockerfile-Object based on %s", .originalFrom)
+    futile.logger::flog.info("Created Dockerfile-Object based on %s", .originalFrom)
     return(.dockerfile)
   }
 

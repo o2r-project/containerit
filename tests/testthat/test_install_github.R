@@ -7,8 +7,9 @@ test_that("github_packages can be installed", {
   skip_if_not_installed("harbor")
   skip_if_not_installed("sysreqs")
 
-  #get session information from previous installation
-  load("./github/.RData")
+  #get session information from previous installation, created with these commands and moved to the desired location afterwards:
+  #library(c("harbor", "sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "sessionInfo.Rdata")
+  load("./github/sessionInfo.Rdata")
 
   df = dockerfile(github_test_sessionInfo, maintainer = "matthiashinz", r_version = "3.3.2")
   write(df, "./github/Dockerfile")
