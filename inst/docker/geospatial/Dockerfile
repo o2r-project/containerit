@@ -1,4 +1,4 @@
-FROM rocker/geospatial:3.4.2
+FROM rocker/geospatial:3.4.3
 LABEL maintainer="o2r project <http://o2r.info>"
 
 RUN apt-get update \
