@@ -45,7 +45,8 @@ Suggests:
     dplyr,
     units,
     proj4,
-    fortunes
+    fortunes,
+    ggplot2
 RoxygenNote: 6.0.1
 Collate:
     'Class-Instruction.R'

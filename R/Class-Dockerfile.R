@@ -1,6 +1,5 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-
 #' An S4 class to represent a Dockerfile
 #' @include Class-Maintainer.R
 #' @include Class-Cmd.R
@@ -24,7 +23,6 @@ Dockerfile <- setClass("Dockerfile",
 )
 
 
-
 toString.Dockerfile <- function(x, ...) {
   #initialize dockerfile with from
   output <- c()
@@ -45,7 +43,6 @@ toString.Dockerfile <- function(x, ...) {
 }
 
 
-
 print.Dockerfile <- function(x, ...) {
   cat(toString.Dockerfile(x, ...), sep="\n")
   invisible(x)
@@ -61,6 +58,7 @@ format.Dockerfile <- function(x, ...) {
     flog.info("Writing dockerfile to %s", file)
     return(write(toString(x), file))
   }
+
 
 #' Format a Dockerfile
 #'
@@ -95,6 +93,7 @@ setMethod("as.character",
           signature(x = "Dockerfile"),
           toString.Dockerfile)
 
+
 #' Print a Dockerfile
 #'
 #' @param x The Dockerfile to be printed
@@ -104,7 +103,6 @@ setMethod("as.character",
 setMethod("print",
           signature(x = "Dockerfile"),
           print.Dockerfile)
-
 
 
 #' Write a Dockerfile object to a dockerfile
