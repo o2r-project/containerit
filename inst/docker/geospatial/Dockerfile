@@ -7,7 +7,8 @@ RUN apt-get update \
 
 RUN ["install2.r", "rjson", "futile.logger", "debugme"]
 
-RUN ["installGithub.r", "r-hub/sysreqs", "o2r-project/containerit"]
+# use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
+RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]
 
 RUN echo 'old <- getOption("defaultPackages");\n \
 options(defaultPackages = c(old, "containerit"));\n \
