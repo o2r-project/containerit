@@ -95,7 +95,7 @@ test_that("File copying can be disabled with NULL", {
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.2", nearest = FALSE))
+  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.3", nearest = FALSE))
   expected_file = readLines("simple_test_script_packages/Dockerfile")
   expect_equal(toString(df), expected_file)
 })

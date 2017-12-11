@@ -462,7 +462,7 @@ dockerfileFromWorkspace <-
 #' @export
 #' @examples
 #' getImageForVersion(getRVersionTag(utils::sessionInfo()))
-#' getImageForVersion("3.4.2")
+#' getImageForVersion("3.4.3")
 #'
 #' @importFrom semver parse_version
 getImageForVersion <- function(r_version, nearest = TRUE) {

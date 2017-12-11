@@ -74,9 +74,9 @@ setMethod("format", signature(x = "Dockerfile"), format.Dockerfile)
 
 #' Convert a Dockerfile to String
 #'
-#' @param x Dockerfile. 
+#' @param x Dockerfile.
 #' @param ... Other params (not in use currently)
-#' 
+#'
 #' @export
 #'
 setMethod("toString",
@@ -86,9 +86,9 @@ setMethod("toString",
 
 #' Convert a Dockerfile to String
 #'
-#' @param x Dockerfile. 
+#' @param x Dockerfile.
 #' @param ... Arguments to be passed down to toString
-#' 
+#'
 #' @export
 #'
 setMethod("as.character",
@@ -96,7 +96,7 @@ setMethod("as.character",
           toString.Dockerfile)
 
 #' Print a Dockerfile
-#' 
+#'
 #' @param x The Dockerfile to be printed
 #'
 #' @param ... Parameters to be passed down to toString
@@ -116,9 +116,10 @@ setMethod("print",
 #'
 #' @examples
 #' # write a dockerfile with default parameters to temporary file and show content:
+#' dontrun{
 #' temp = tempfile()
 #' write(dockerfile(), file=temp)
 #' print(readLines(temp))
-#' unlink(temp)
-#' 
+#' }
+#'
 setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)

@@ -1,4 +1,4 @@
-FROM rocker/r-ver:3.4.2
+FROM rocker/r-ver:3.4.3
 LABEL maintainer="o2r"
 RUN ["install2.r", "docopt", "magrittr", "rjson", "stringi", "stringr"]
 WORKDIR /payload/
