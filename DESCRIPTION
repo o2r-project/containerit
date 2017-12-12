@@ -17,8 +17,6 @@ Imports:
     sysreqs,
     futile.logger,
     devtools,
-    docopt,
-    remotes,
     semver
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
@@ -31,6 +29,7 @@ Encoding: UTF-8
 LazyData: TRUE
 Suggests:
     knitr,
+    docopt,
     rmarkdown,
     testthat,
     covr,
@@ -46,6 +45,7 @@ Suggests:
     units,
     proj4,
     fortunes,
+    remotes,
     ggplot2
 RoxygenNote: 6.0.1
 Collate:
