@@ -138,7 +138,7 @@ obtain_localSessionInfo <-
     if (silent)
       args <- append("--silent", args)
 
-    flog.info(paste(
+    futile.logger::flog.info(paste(
       "Creating an R session with the following arguments:\n\t R ",
       paste(args, collapse = " ")
     ))

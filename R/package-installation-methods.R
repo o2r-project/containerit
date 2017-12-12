@@ -214,8 +214,8 @@
         if (length(add_inst) > 0)
           addInstruction(.dockerfile) <- add_inst
         # For using the exec form (??):
-        #  Run("/bin/sh", params = c("-c","export","DEBIAN_FRONTEND=noninteractive")))
-        # Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
+        #  Run("/bin/sh", params = c("-c", "export", "DEBIAN_FRONTEND=noninteractive")))
+        #  Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
       }
 
     } # length(package_names)
@@ -277,7 +277,7 @@
            localFirst = TRUE) {
     #for more than one package:
     if (length(package) > 1) {
-      out = mapply(function(pkg, version) {
+      out <- mapply(function(pkg, version) {
         .find_by_sysreqs_pkg(pkg, platform, soft, version, localFirst)
       }, pkg = package, version = package_version)
       return(out) #there might be dublicate dependencies here but they are removed by the invoking method
@@ -285,7 +285,7 @@
 
     sysreqs <- character(0)
     if (localFirst) {
-      flog.info(
+      futile.logger::flog.info(
         "Trying to determine system requirements for package '%s' from the local DESCRIPTION file",
         package
       )
@@ -293,7 +293,7 @@
       if (is.null(path) ||
           length(path) == 0 ||
           utils::packageVersion(package) != package_version) {
-        flog.warn(
+        futile.logger::flog.warn(
           "No matching package DESCRIPTION found locally for package '",
           package,
           "', version '",
@@ -303,7 +303,8 @@
       } else{
         sysreqs <- NA
         if(is.null(platform)) {
-          flog.warn("Platform could not be determined, possibly because of unknown base image. Using '%s'", sysreqs::current_platform())
+          futile.logger::flog.warn("Platform could not be determined, possibly because of unknown base image.",
+                                   " Using '%s'", sysreqs::current_platform())
           sysreqs <-
             sysreqs::sysreqs(file.path(path, "DESCRIPTION"),
                              soft = soft)
@@ -317,7 +318,7 @@
       }
     }
 
-    flog.info("Trying to determine system requirements for the package '%s' from the latest DESCRIPTION file on CRAN",
+    futile.logger::flog.info("Trying to determine system requirements for '%s' from the DESCRIPTION file on CRAN",
       package)
 
     con <-

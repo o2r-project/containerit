@@ -26,11 +26,11 @@ setClass("Workdir",
 #' instruction <- Workdir("~/myDir/subdir/")
 #' toString(instruction)
 Workdir <- function(path) {
-  new("Workdir", path = path)
+  methods::new("Workdir", path = path)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Workdir"),
           function(obj) {
-            slot(obj, "path")
+            methods::slot(obj, "path")
           })

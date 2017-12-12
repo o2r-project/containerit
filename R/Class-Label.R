@@ -51,7 +51,7 @@ Label <-
     data <- eval(substitute(alist(...)))
     if (!is.na(label_ns))
       names(data) <- paste0(label_ns, names(data))
-    new("Label", data = data, multi_line = multi_line)
+    methods::new("Label", data = data, multi_line = multi_line)
   }
 
 #' Creates a label holding R session information
@@ -80,13 +80,13 @@ Label_SessionInfo <-
       session_string <- paste(session_string, collapse = "\n")
     }
     data <- list("R.session-info" = session_string)
-    new("Label", data = data, multi_line = FALSE)
+    methods::new("Label", data = data, multi_line = FALSE)
   }
 
 setMethod("docker_arguments",
           signature(obj = "Label"),
           function(obj) {
-            args <- slot(obj, "data")
+            args <- methods::slot(obj, "data")
             names <- names(args)
             #  values <- sprintf("\"%s\"",as.character(args))
             values <- sapply(as.character(args), deparse)
@@ -115,5 +115,5 @@ setMethod("docker_arguments",
 #'
 Label_Maintainer <- function(value) {
   data <- list(maintainer = value)
-  new("Label", data = data, multi_line = FALSE)
+  methods::new("Label", data = data, multi_line = FALSE)
 }

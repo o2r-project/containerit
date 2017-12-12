@@ -4,4 +4,4 @@
 #'
 #' @return object
 #' @export
-setClassUnion("characterOrInteger", c("character","integer"))
+setClassUnion("characterOrInteger", c("character", "integer"))

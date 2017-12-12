@@ -39,10 +39,10 @@ From <- function(image, tag = NULL, digest = NULL) {
     return(new(
       "From",
       image = image,
-      postfix = new("Digest", digest)
+      postfix = methods::new("Digest", digest)
     ))
   } else if (!is.null(tag)) {
-    tag <- new("Tag", tag)
+    tag <- methods::new("Tag", tag)
     return(new("From", image = image, postfix = tag))
   }
   else
@@ -73,8 +73,8 @@ parseFrom <- function(string) {
 setMethod("docker_arguments",
           signature(obj = "From"),
           function(obj) {
-            postfix <- slot(obj, "postfix")
-            image <- slot(obj, "image")
+            postfix <- methods::slot(obj, "postfix")
+            image <- methods::slot(obj, "image")
             if (is.null(postfix)) {
               return(image)
             } else if (inherits(postfix, "Tag")) {

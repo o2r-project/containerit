@@ -62,11 +62,11 @@ write(container, file = tempfile())
 # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
 clear_all <- function() {
   # objects
-  rm(list = ls(all = TRUE))
+  rm(list = ls(all.names = TRUE))
   
   # packages
-  .kept.packages <- c("stats","graphics","grDevices","utils","datasets",
-                      "methods","base", "tools", "stringr", "stringi",
+  .kept.packages <- c("stats", "graphics", "grDevices", "utils", "datasets",
+                      "methods", "base", "tools", "stringr", "stringi",
                       "containerit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
   .package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
   .package.list <- setdiff(.package.list, paste("package:", .kept.packages, sep = ""))

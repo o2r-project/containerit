@@ -20,6 +20,5 @@ Write a Dockerfile object to a dockerfile
 temp = tempfile()
 write(dockerfile(), file=temp)
 print(readLines(temp))
-unlink(temp)
 
 }

@@ -6,12 +6,13 @@ context("dockerfile-generation")
 test_that("a simple dockerfile object can be saved to file", {
   t_dir <- tempfile(pattern = "dir")
   dir.create(t_dir)
-  #one dockerfile is generated, one is fixed for comparism
+
   gen_file <- paste(t_dir, "Dockerfile", sep = "/")
   maintainer <-
-    new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
+    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(from = NULL, maintainer = maintainer)
   write(dfile, file = gen_file)
+
   control_file <- "./dockerfile-method-resources/simple_dockerfile"
   control_instructions <- readLines(control_file)
   #update control-file to current version
@@ -23,17 +24,17 @@ test_that("a simple dockerfile object can be saved to file", {
   generated_instructions <- readLines(gen_file)
   #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
-  #
+
   unlink(t_dir, recursive = TRUE)
 })
 
 test_that("users can specify the maintainer", {
   maintainer <-
-    new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
+    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(NULL, maintainer = maintainer)
 
   expect_is(slot(dfile, "maintainer"), "Maintainer")
-  mslot = slot(dfile, "maintainer")
+  mslot = methods::slot(dfile, "maintainer")
   expect_equal(attr(class(mslot), "package"), "containerit")
   expect_equal(slot(mslot, "name"), "Matthias Hinz")
   expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
@@ -46,7 +47,7 @@ test_that("the default of maintainer is the current system user, and the default
   dfile <- dockerfile()
 
   expect_is(slot(dfile, "maintainer"), "Label")
-  mslot = slot(dfile, "maintainer")
+  mslot = methods::slot(dfile, "maintainer")
   expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])
   expect_equal(toString(mslot), paste0("LABEL maintainer=\"", Sys.info()[["user"]], "\""))
 })

@@ -6,7 +6,7 @@ context("Instructions")
 
 test_that("a Maintainer instruction can be created", {
   obj <-
-    new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
+    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   instruction <- toString(obj)
   expect_equal(instruction,
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
@@ -15,7 +15,7 @@ test_that("a Maintainer instruction can be created", {
 
 
 test_that("A From instruction can be created", {
-  obj <- new("From", image = "myimage")
+  obj <- methods::new("From", image = "myimage")
   instruction <- toString(obj)
   expect_equal(instruction, "FROM myimage")
   expect_equal(instruction, as.character(obj))
@@ -23,14 +23,14 @@ test_that("A From instruction can be created", {
   instruction <- toString(new(
     "From",
     image = "myimage",
-    postfix = new("Digest", "digest")
+    postfix = methods::new("Digest", "digest")
   ))
   expect_equal(instruction, "FROM myimage@digest")
 
   instruction <- toString(new(
     "From",
     image = "myimage",
-    postfix = new("Tag", "mytag")
+    postfix = methods::new("Tag", "mytag")
   ))
   expect_equal(instruction, "FROM myimage:mytag")
 })
@@ -76,7 +76,7 @@ test_that("A valid Run instruction can be created" , {
 
 
 test_that("A valid Copy instruction can be created" , {
-  obj <- Copy(c("script.R","exampleFolder"),"path/to/destination")
+  obj <- Copy(c("script.R","exampleFolder"), "path/to/destination")
   expect_equal(toString(obj), "COPY [\"script.R\", \"exampleFolder\", \"path/to/destination\"]")
 
   expect_error(Copy())

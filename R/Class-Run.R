@@ -20,7 +20,7 @@ setClass("Run_shell",
   # ["executable","param1","param2"]
   # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
 
-  commands <- slot(obj, "commands")
+  commands <- methods::slot(obj, "commands")
   string <- paste(commands, collapse = " \\\n && ")
   return(string)
 }
@@ -41,10 +41,11 @@ setMethod(
 
 setValidity("Run_shell",
             method = function(object) {
-              commands <- slot(object, "commands")
+              commands <- methods::slot(object, "commands")
 
-              if(is.na(commands) || length(commands) == 0 || any(stringr::str_length(commands) == 0))
-                return(paste("Commands must have at least one string and empty strings are not alowed. Given was: \n\t", paste(commands,collapse = "\n\t")))
+              if (is.na(commands) || length(commands) == 0 || any(stringr::str_length(commands) == 0))
+                return(paste("Commands must have at least one string and empty strings are not alowed.",
+                             "Given was: \n\t", paste(commands, collapse = "\n\t")))
               else
                 return(TRUE)
             }
@@ -57,7 +58,7 @@ setValidity("Run_shell",
 #' @return An S4 object of class Run_shell
 #' @export
 Run_shell <- function(commands){
-  new("Run_shell",  commands = commands)
+  methods::new("Run_shell",  commands = commands)
 }
 
 #' An S4 class to represent a RUN instruction
@@ -83,18 +84,18 @@ setClass("Run",
 #' @return An S4 object of class Run
 #' @export
 Run <- function(exec, params = NA_character_){
-  new("Run",  exec = exec, params = params)
+  methods::new("Run",  exec = exec, params = params)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Run"),
-          .arguments.Cmd_Run #uses the same function as Cmd for now
+          .arguments_Cmd_Run
 )
 
 setValidity("Run",
             method = function(object) {
-              exec <- slot(object, "exec")
-              params <- slot(object, "params")
+              exec <- methods::slot(object, "exec")
+              params <- methods::slot(object, "params")
 
               if (is.na(exec) || stringr::str_length(exec) == 0)
                 return(paste("Exec must be a non-empty string, given was: ", exec))

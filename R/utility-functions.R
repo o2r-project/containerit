@@ -102,9 +102,9 @@ docker_inspect <- function(host = harbor::localhost,
 }
 
 addInstruction <- function(dockerfileObject, value) {
-  instructions <- slot(dockerfileObject, "instructions")
+  instructions <- methods::slot(dockerfileObject, "instructions")
   instructions <- append(instructions, value)
-  slot(dockerfileObject, "instructions") <- instructions
+  methods::slot(dockerfileObject, "instructions") <- instructions
   return(dockerfileObject)
 }
 

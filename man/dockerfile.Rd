@@ -16,7 +16,7 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace).}
 
 \item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
- Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
+ Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
 \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
 
 \item{maintainer}{optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.}

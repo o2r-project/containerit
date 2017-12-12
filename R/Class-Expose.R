@@ -33,9 +33,9 @@ setClass("Expose",
 #' #no example yet
 Expose <- function(port, host = NA_integer_) {
   if(is.numeric(port))
-    new("Expose", port = as.integer(port), host = as.integer(host))
+    methods::new("Expose", port = as.integer(port), host = as.integer(host))
   else
-    new("Expose", port = as.character(port), host = as.integer(host))
+    methods::new("Expose", port = as.character(port), host = as.integer(host))
 }
 
 setMethod("docker_arguments",
@@ -48,20 +48,20 @@ setMethod("docker_arguments",
 setMethod("docker_arguments",
           signature(obj = "Expose"),
           function(obj) {
-            out = sprintf("%s", slot(obj, "port"))
+            out <- sprintf("%s", methods::slot(obj, "port"))
             if(!is.na(obj@host)) {
-              out = append(sprintf('%s', slot(obj, "host")), out)
+              out <- append(sprintf('%s', methods::slot(obj, "host")), out)
             }
-            out = paste(out, collapse = " ")
-            out = sprintf("%s", out)
+            out <- paste(out, collapse = " ")
+            out <- sprintf("%s", out)
             out
           })
 
 setValidity(
   "Expose",
   method = function(object) {
-    port <- slot(object, "port")
-    host <- slot(object, "host")
+    port <- methods::slot(object, "port")
+    host <- methods::slot(object, "host")
 
     if (length(port) != 1) {
       return("Invalid EXPOSE instruction: exactly one 'port' is required.")

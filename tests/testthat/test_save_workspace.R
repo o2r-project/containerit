@@ -26,7 +26,7 @@ test_that("A workspace image can be containerized", {
               " R object was not saved to RData file.")
   detach(pos = 2)
 
-  inst <- slot(df, "instructions")
+  inst <- methods::slot(df, "instructions")
   inst_types <- sapply(inst, class)
   #select last occurence of a Workdir instruction
   last_wd_sel <- max(which(inst_types == "Workdir"))
@@ -74,7 +74,7 @@ test_that("A workspace image can be containerized given an object list and save-
                         " R object was not saved to RData file.")
             detach(pos = 2)
 
-            inst <- slot(df, "instructions")
+            inst <- methods::slot(df, "instructions")
             inst_types <- sapply(inst, class)
             #select last occurence of a Workdir instruction
             last_wd_sel <- max(which(inst_types == "Workdir"))

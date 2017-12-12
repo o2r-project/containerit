@@ -26,9 +26,9 @@ Dockerfile <- setClass("Dockerfile",
 toString.Dockerfile <- function(x, ...) {
   #initialize dockerfile with from
   output <- c()
-  from <- toString(slot(x, "image"))
+  from <- toString(methods::slot(x, "image"))
   output <- append(output, from)
-  maintainer <- slot(x, "maintainer")
+  maintainer <- methods::slot(x, "maintainer")
   if (!is.null(maintainer))
     output <- append(output, toString(maintainer))
   instructions <- slot(x, "instructions")
@@ -36,7 +36,7 @@ toString.Dockerfile <- function(x, ...) {
     instructions <- sapply(instructions, toString)
     output <- append(output, unlist(instructions))
   }
-  cmd <- slot(x, "cmd")
+  cmd <- methods::slot(x, "cmd")
   if (!is.null(cmd))
     output <- append(output, toString(cmd))
   return(output)
@@ -44,7 +44,7 @@ toString.Dockerfile <- function(x, ...) {
 
 
 print.Dockerfile <- function(x, ...) {
-  cat(toString.Dockerfile(x, ...), sep="\n")
+  cat(toString.Dockerfile(x, ...), sep = "\n")
   invisible(x)
 }
 
@@ -55,7 +55,7 @@ format.Dockerfile <- function(x, ...) {
 
 .write.Dockerfile <-
   function(x, file = file.path(getwd(), "Dockerfile")) {
-    flog.info("Writing dockerfile to %s", file)
+    futile.logger::flog.info("Writing dockerfile to %s", file)
     return(write(toString(x), file))
   }
 
@@ -114,10 +114,8 @@ setMethod("print",
 #'
 #' @examples
 #' # write a dockerfile with default parameters to temporary file and show content:
-#' dontrun{
 #' temp = tempfile()
 #' write(dockerfile(), file=temp)
 #' print(readLines(temp))
-#' }
 #'
 setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)

@@ -29,7 +29,7 @@
 #'
 #' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace).
 #' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
-#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1","object2", file = "path/in/wd/filename.RData").
+#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
 #' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
 #' @param maintainer optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.
 #' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance
@@ -64,13 +64,14 @@ dockerfile <-
            soft = FALSE,
            offline = FALSE,
            copy = "script",
+           # nolint start
            container_workdir = "/payload",
+           # nolint end
            cmd = Cmd("R"),
            add_self = FALSE,
            vanilla = TRUE,
            silent = FALSE,
-           versioned_libs = FALSE)
-  {
+           versioned_libs = FALSE) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -106,14 +107,16 @@ dockerfile <-
         paste(.supported_images, collapse = "\n"))
     }
 
+    # nolint start
     if (!stringr::str_detect(container_workdir, "/$")) {
+    # nolint end
       # directories given as destination must have a trailing slash in dockerfiles
       container_workdir <- paste0(container_workdir, "/")
       futile.logger::flog.debug("Appended trailing slash, workdir is '%s'", container_workdir)
     }
 
     .dockerfile <-
-      new(
+      methods::new(
         "Dockerfile",
         instructions = instructions,
         maintainer = maintainer,
@@ -225,7 +228,6 @@ dockerfileFromSession <-
            add_self,
            versioned_libs) {
     futile.logger::flog.debug("Creating from sessionInfo")
-    instructions <- slot(.dockerfile, "instructions")
 
     apks <- session$otherPkgs
     lpks <- session$loadedOnly
@@ -539,7 +541,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
 }
 
 .makeRelative <- function(files, from) {
-  out = sapply(files, function(file) {
+  out <- sapply(files, function(file) {
     len = stringr::str_length(from)
     rel_path = stringr::str_sub(file, start = len + 1)
     if (stringr::str_detect(rel_path, "^[\\/]"))

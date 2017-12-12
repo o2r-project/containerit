@@ -29,10 +29,9 @@ if (FALSE) {
   .isVersionSupported(lib, version, current_config)
   .get_lib_install_instructions(lib, version, current_config)
   .get_lib_apt_requirements(lib, version, current_config)
-  #.containerit_read_config()
+
   containerit_write_config(output = "inst/containerit_config.json")
 }
-
 
 
 #' Re - init (overwrite) current package configuration
@@ -93,7 +92,7 @@ containerit_write_config <-
   function(name,
            apt_pkgs = "",
            installation_config = list()) {
-    out = list(name = name,
+    out <- list(name = name,
                apt_pkgs = apt_pkgs,
                installation_config = installation_config)
     return(out)
@@ -103,7 +102,7 @@ containerit_write_config <-
   function(supported_versions,
            instructions_template,
            require_apt = "") {
-    out = list(
+    out <- list(
       supported_versions = supported_versions,
       instructions_template = instructions_template,
       require_apt = require_apt
@@ -254,10 +253,12 @@ containerit_write_config <-
       config_list <- list()
       config_list[[1]] <- libconfig$installation_config
     }
-    sapply(config_list, function(installation) {
-      if (version %in% unlist(installation$supported_versions))
-        output <<- installation
-    }, simplify = TRUE)
+    sapply(config_list,
+           function(installation) {
+             if (version %in% unlist(installation$supported_versions))
+               output <<- installation
+             }
+           , simplify = TRUE)
   }
   return(output)
 }

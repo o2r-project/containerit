@@ -13,12 +13,12 @@ test_that("system requirements for CRAN packages can be determinded OFFLINE", {
   expect_equal(deps, character(0)) #no direct dependencies
 
   deps <- .find_system_dependencies("rgdal", platform = .debian_platform, soft = TRUE, offline = TRUE)
-  deps_expected <- c("libgdal-dev", "gdal-bin","libproj-dev")
+  deps_expected <- c("libgdal-dev", "gdal-bin", "libproj-dev")
   expect_true(all(deps %in% deps_expected))
   expect_true(all(deps_expected %in% deps))
 
   deps <- .find_system_dependencies("rgdal", platform = .debian_platform, offline = TRUE)
-  deps_expected <- c("libgdal-dev", "gdal-bin","libproj-dev")
+  deps_expected <- c("libgdal-dev", "gdal-bin", "libproj-dev")
   expect_true(all(deps %in% deps_expected))
   expect_true(all(deps_expected %in% deps))
 })
@@ -28,7 +28,7 @@ test_that("system requirements for CRAN packages can be determinded ONLINE", {
   expect_equal(deps, character(0)) #no direct dependencies
 
   deps <- .find_system_dependencies("rgdal", platform = .debian_platform)
-  deps_expected <- c("libgdal-dev", "gdal-bin","libproj-dev")
+  deps_expected <- c("libgdal-dev", "gdal-bin", "libproj-dev")
   expect_true(all(deps %in% deps_expected))
   expect_true(all(deps_expected %in% deps))
 

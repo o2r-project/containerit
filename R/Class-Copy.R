@@ -31,24 +31,24 @@ setClass("Copy",
 #' @examples
 #' #no example yet
 Copy <- function(src, dest) {
-  new("Copy",  src = src, dest = dest)
+  methods::new("Copy",  src = src, dest = dest)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Copy"),
           function(obj) {
-            out = sprintf('"%s"', slot(obj, "src"))
-            out = append(out, sprintf('"%s"', slot(obj, "dest")))
-            out = paste(out, collapse = ", ")
-            out = sprintf("[%s]", out)
+            out <- sprintf('"%s"', methods::slot(obj, "src"))
+            out <- append(out, sprintf('"%s"', methods::slot(obj, "dest")))
+            out <- paste(out, collapse = ", ")
+            out <- sprintf("[%s]", out)
           })
 
 
 setValidity(
   "Copy",
   method = function(object) {
-    src <- slot(object, "src")
-    dest <- slot(object, "dest")
+    src <- methods::slot(object, "src")
+    dest <- methods::slot(object, "dest")
 
     if (length(src) < 1) {
       return("Invalid RUN instruction: There must be at least one file / directory given by 'src'")

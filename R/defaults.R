@@ -14,8 +14,8 @@
 
 .supported_images <- c(.debian_images)
 
-.debian_platform = "linux-x86_64-debian-gcc"
-.ubuntu_platform = "linux-x86_64-ubuntu-gcc"
+.debian_platform <- "linux-x86_64-debian-gcc"
+.ubuntu_platform <- "linux-x86_64-ubuntu-gcc"
 .supported_platforms <- .debian_platform
 
 .init_config_file <- function() {

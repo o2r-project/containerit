@@ -31,7 +31,7 @@ setClass(
 #'
 Maintainer <- function(name, email = NA_character_) {
   .Deprecated("Label_Maintainer")
-  new("Maintainer", name = name, email = email)
+  methods::new("Maintainer", name = name, email = email)
 }
 
 # The maintainer is optional in a dockerfile

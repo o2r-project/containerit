@@ -1,7 +1,8 @@
 #!/usr/bin/Rscript
 
 "container_it.R is a command-line interface to the R package containerit.
-It packages R sessions, scripts, workspaces and vignettes together with all dependencies to execute them in Docker containers.
+It packages R sessions, scripts, workspaces and vignettes together with all dependencies
+to execute them in Docker containers.
 
 Usage:  container_it.R dir [options] [--copy arg] [-d <DIR>]
         container_it.R file [options] [--copy arg] [--cmd-render <FORMAT> | --cmd-R-file] <FILE>
@@ -10,8 +11,8 @@ Usage:  container_it.R dir [options] [--copy arg] [-d <DIR>]
 
 Modes:
     dir       Searches the given directory for R / Rmarkdown files and uses the first encounter for packaging
-    file      Packages a given R script or R markdown file.
-              Optionally, the container can run a batch execution or rendering of the given file instead of an interactive R session.
+    file      Packages a given R script or R markdown file. Optionally, the container can run a batch execution
+              or rendering of the given file instead of an interactive R session.
     session   Packages an empty R session in which a series of R commands may be executed (see option -e)
 
 Options (for all modes):
@@ -20,7 +21,8 @@ Options (for all modes):
                       By default, the image is determinded from the given r_version,
                       while the version is matched with tags from the base image rocker/r-ver
                       see details about the rocker/r-ver at https://hub.docker.com/r/rocker/r-ver/'
-  --maintainer -m <ARG>   Name / email of the dockerfile's maintainer (will be read from environment variables if not given)
+  --maintainer -m <ARG>   Name / email of the dockerfile's maintainer
+                          (will be read from environment variables if not given)
   --no-write          Don't write dockerfile to output file
   --no-vanilla        Package a session / file without using the vanilla flag
                       (warning: site and environment files currently cannot be included in the container)
@@ -30,20 +32,23 @@ Options (for all modes):
                       By default, the version of the currently linked R instance is used.
   --save -s <objects> ...    Save a list of objects from the workspace to an .RData file (overwrites --save-image)
   --save-image -i     Save the current workspace to an .RData file
-  --soft              Whether to include soft dependencies among the system dependencies of R packages. [default: FALSE]
+  --soft              Whether to include soft dependencies among the system dependencies of R packages.
+                      [default: FALSE]
   --quiet -q          Run containerit as silent as possible (print only errors and warnings) [default: FALSE]
 
 Other:
   --copy -c script | script_dir | <copy_file> ...
                       Indicates whether and how a workspace should be copied.
-                      For the modes 'dir' and 'file' containerit copies either the given input file, the complete directory
-                      or a list of individual files and directories that should be located below the current directory.
-                      [default: script]
-  -d <DIR>            Directory to be used for packaging in mode 'dir'. Use either current dir or a folder below. [default: ./]
+                      For the modes 'dir' and 'file' containerit copies either the given input file,
+                      the complete directory or a list of individual files and directories that should
+                      be located below the current directory. [default: script]
+  -d <DIR>            Directory to be used for packaging in mode 'dir'.
+                      Use either current dir or a folder below. [default: ./]
   -e <EXPR>           Expression do be executed within the R session that shall be packaged ('session' mode).
   --cmd-render all | pdf | html
                       Indicates that the given R markdown file should be rendered when running the container
-  --cmd-R-file        Indicates that the give R script should be executed on container startup (uses R -f example.R)
+  --cmd-R-file        Indicates that the give R script should be executed on container startup
+                      (uses R -f example.R)
   --help -h           print usage and exit
   --version -v        print version and exit
 
@@ -78,7 +83,7 @@ if (length(commandArgs(trailingOnly = TRUE)) == 0) {
   if (opts[["quiet"]])
     invisible(futile.logger::flog.threshold(futile.logger::WARN))
 
-  output_file =  opts[["output"]]
+  output_file <- opts[["output"]]
   if (file.exists(output_file) &&
       !opts[["force"]] && !opts[["--no-write"]])
     stop(
@@ -125,7 +130,7 @@ if (length(commandArgs(trailingOnly = TRUE)) == 0) {
         opts$file == TRUE) {
       if (opts[["cmd-render"]] == "all")
         this_cmd <-
-          CMD_Render(from, output_format = rmarkdown::all_output_formats())
+          CMD_Render(from, output_format = rmarkdown::all_output_formats(input = from))
       else if (opts[["cmd-render"]] == "pdf")
         this_cmd <-
           CMD_Render(from, output_format = rmarkdown::pdf_document())

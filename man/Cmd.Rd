@@ -18,5 +18,5 @@ An S4 object of class Cmd
 create objects representing a CMD instruction
 }
 \examples{
-toString(Cmd("R","--vanilla"))
+toString(Cmd("R", "--vanilla"))
 }

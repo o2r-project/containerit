@@ -12,11 +12,10 @@
 #' @family instruction classes
 #' @export
 #'
-setClass(
-  "Cmd",
-  slots = list(exec = "character",
+setClass("Cmd",
+         slots = list(exec = "character",
                params = "character"),
-  contains = "Instruction"
+         contains = "Instruction"
 )
 
 #' create objects representing a CMD instruction
@@ -28,16 +27,16 @@ setClass(
 #' @export
 #'
 #' @examples
-#' toString(Cmd("R","--vanilla"))
+#' toString(Cmd("R", "--vanilla"))
 Cmd <- function(exec = NA_character_, params = NA_character_) {
-  new("Cmd",  exec = exec, params = params)
+  methods::new("Cmd",  exec = exec, params = params)
 }
 
 setValidity(
   "Cmd",
   method = function(object) {
-    exec <- slot(object, "exec")
-    params <- slot(object, "params")
+    exec <- methods::slot(object, "exec")
+    params <- methods::slot(object, "params")
 
     if (!is.na(exec) &&
         length(exec) == 1 && stringr::str_length(exec) > 0)
@@ -49,7 +48,7 @@ setValidity(
     }
     if (length(exec) > 1)
       return("More than one exec parameter was given: ", paste(exec, sep = ", "))
-    if ((length(params) > 1 && any(is.na(params))) ||
+    if ( (length(params) > 1 && any(is.na(params)) ) ||
         any(stringr::str_length(params) == 0))
       return("If parameters are given for CMD, they cannot be empty strings or NA")
 
@@ -59,13 +58,13 @@ setValidity(
   }
 )
 
-.arguments.Cmd_Run <- function(obj) {
+.arguments_Cmd_Run <- function(obj) {
   # create arcuments in exec form, i.e.
   # ["executable","param1","param2"]
   # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
 
-  exec <- slot(obj, "exec")
-  params <- slot(obj, "params")
+  exec <- methods::slot(obj, "exec")
+  params <- methods::slot(obj, "params")
   string <- "["
   if (!is.na(exec)) {
     string <- paste0(string, sprintf('"%s"', exec))
@@ -85,7 +84,7 @@ setValidity(
 
 setMethod("docker_arguments",
           signature(obj = "Cmd"),
-          .arguments.Cmd_Run)
+          .arguments_Cmd_Run)
 
 
 #' Create CMD instruction for running an R script
@@ -154,7 +153,7 @@ CMD_Render <-
     the_next = 4
     render_call[[the_next]] <- substitute(output_dir)
     if(!is.null(output_dir))
-      the_next = the_next +1
+      the_next <- the_next +1
     render_call[[the_next]] <- substitute(output_file)
 
     render_call <- deparse(render_call, width.cutoff = 500)
