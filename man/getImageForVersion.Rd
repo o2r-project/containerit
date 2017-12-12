@@ -23,6 +23,6 @@ If there was no matching image found, a warning is issued.
 }
 \examples{
 getImageForVersion(getRVersionTag(utils::sessionInfo()))
-getImageForVersion("3.4.2")
+getImageForVersion("3.4.3")
 
 }
