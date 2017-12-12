@@ -524,7 +524,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
   urlstr <-
     paste0("https://registry.hub.docker.com/v2/repositories/",
            image,
-           "/tags/")
+           "/tags/?page_size=9999")
 
   tryCatch({
     con <- url(urlstr)
