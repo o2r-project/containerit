@@ -13,9 +13,11 @@ knitr::opts_chunk$set(
 
 # containerit
 
-`containerit` packages R script/session/workspace and all dependencies as a Docker container.
+`containerit` packages R script/session/workspace and all dependencies as a [Docker](http://docker.com/) container by automagically generating a suitable `Dockerfile`.
 
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Build Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
+[![](http://www.r-pkg.org/badges/version/containerit)](http://www.r-pkg.org/pkg/containerit)
 
 ## Quick start
 
@@ -29,17 +31,23 @@ devtools::install_github("o2r-project/containerit")
 
 ### Use
 
-See the vignettes at `vignettes/basic.Rmd` and `vignettes/container.Rmd`.
-
-## Documentation
-
-See vignette `vignettes/basic.Rmd`.
+See the vignettes at `vignettes/containerit.Rmd` and `vignettes/container.Rmd`.
 
 ## Contribute
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
 
-### License
+## Development
+
+[r-hub builder](https://builder.r-hub.io/) is great for running checks, e.g. before submitting to CRAN and on other operating systems.
+
+```
+library(rhub)
+rhub::check_for_cran()
+rhub::check_on_windows()
+```
+
+## License
 
 containerit is licensed under GNU General Public License, version 3, see file LICENSE.
 
