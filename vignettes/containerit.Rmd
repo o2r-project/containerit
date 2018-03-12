@@ -68,7 +68,7 @@ This must also be considered when packaging R scripts that use relative paths, e
 
 ### 2.2 Packaging an interactive session
 
-```{r, fig.show='hide'}
+```{r interactive_session, fig.show='hide'}
 library("containerit")
 
 # do stuff, based on demo("krige")
@@ -89,7 +89,7 @@ dockerfile_object <- dockerfile()
 
 The representation of a Dockerfile in R is an instance of the S4 class `Dockerfile`.
 
-```{r}
+```{r interactive_session_df}
 dockerfile_object
 ```
 
@@ -106,13 +106,13 @@ Its instructions follow a pre-defined order:
 
 Note that the maintainer label as well as the R version of the base image are detected from the runtime environment, if not set to different values manually.
 
-```{r, results='markup', comment=NA}
+```{r print_df, results='markup', comment=NA}
 print(dockerfile_object)
 ```
 
 Instead of printing out to the console, you can also write to a file:
 
-```{r}
+```{r write_df}
 write(dockerfile_object, file = tempfile(fileext = ".dockerfile"))
 ```
 
@@ -129,7 +129,7 @@ This is also how `dockerfile()` works internally when packaging either expressio
 
 The following code creates a Dockerfile for a list of expressions in a vanilla session.
 
-```{r}
+```{r clean_session}
 exp <- c(expression(library(sp)),
          expression(data(meuse)), 
          expression(mean(meuse[["zinc"]])))
@@ -137,7 +137,7 @@ session <- clean_session(exp, echo = TRUE)
 dockerfile_object <- dockerfile(from = session)
 ```
 
-```{r, results='markup', comment=NA}
+```{r print_clean_df, results='markup', comment=NA}
 print(dockerfile_object)
 ```
 
@@ -147,7 +147,7 @@ R scripts are packaged by just supplying the file path or paths to the arguement
 They are automatically copied into the container's working directory.
 In order to run the R script on start-up, rather than an interactive R session, a CMD instruction can be added by providing the value of the helper function `CMD_Rscript()` as an argument to `cmd`.
 
-```{r}
+```{r script}
 # create simple script file
 scriptFile <- tempfile(pattern = "containerit_", fileext = ".R")
 writeLines(c('library(rgdal)',
@@ -162,7 +162,7 @@ scriptCmd <- CMD_Rscript(basename(scriptFile))
 dockerfile_object <- dockerfile(from = scriptFile, silent = TRUE, cmd = scriptCmd)
 ```
 
-```{r, results='markup', comment=NA}
+```{r print_script_df, results='markup', comment=NA}
 print(dockerfile_object)
 ```
 
@@ -175,14 +175,14 @@ To do this, the `cmd` argument passed to `dockerfile()` is constructed using the
 Note that, as shown in the Dockerfile, the GDAL library has to be build from source for `sf` to work properly, because a quite recent version of GDAL is required.
 This adaptation of the installation instruction is based on an internal ruleset for the package `sf`.
 
-```{r sf-vignette, results='hide', eval=FALSE}
+```{r sf_vignette, results='hide', eval=FALSE}
 file.copy(from = system.file("doc/sf1.Rmd",package = "sf"),
                         to = temp_workspace, recursive = TRUE)
 dockerfile_object <- dockerfile(from = "sf1.Rmd", silent = TRUE, 
                                 cmd = CMD_Render("sf1.Rmd"))
 ```
 
-```{r, comment=NA}
+```{r print_sf_vignette, comment=NA}
 print(dockerfile_object)
 ```
 
@@ -196,7 +196,7 @@ It then proceeds to package this file along with all other resources in the dire
 
 Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
-```{r}
+```{r resources}
 response <- file.copy(from = system.file("simple_test_script_resources/", 
                                          package = "containerit"),
                       to = temp_workspace, recursive = TRUE)
@@ -207,21 +207,21 @@ dockerfile_object <- dockerfile("simple_test_script_resources/",
               cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"))
 ```
 
-```{r, comment=NA}
+```{r print_resources_df, comment=NA}
 print(dockerfile_object)
 ```
                          
 Including R objects works similar to resources, using the argument `save_image`.
 The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .RData file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
 
-```{r, comment=NA}
+```{r save_image, comment=NA}
 df <- dockerfile(save_image = TRUE)
 print(df)
 ```
 
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
 
-```{r}
+```{r save_image_list}
 require(fortunes)
 rm(list = ls())
 calculation <- 41 + 1
@@ -232,7 +232,7 @@ df <- dockerfile(silent = TRUE,
                  save_image = list("original_sessionInfo", "frtn"))
 ```
 
-```{r, comment=NA}
+```{r print_save_image_list_df, comment=NA}
 print(df)
 ```
 
@@ -249,14 +249,14 @@ Each use of the `Label()` function creates a seperate instruction in the Dockerf
 As shown in section 2, the maintainer label is set by default to the top as the dockerfile and contains the username of the current host system.
 The maintainer can be changed with the `maintainer` argument of `dockerfile()`:
 
-```{r}
+```{r maintainer}
 labeled_dockerfile <- dockerfile(from = clean_session(), maintainer = "Jon_Doe@example.com")
 ```
 
 Labels can be applied to the existing Dockerfile object using the `addInstructions()` function, which adds any newly created instructions to the end of the Dockerfile but before the CMD statement.
 The `Label()` constructor can be used for creating labels of arbitrary content and works similar to creating named lists in R.
 
-```{r}
+```{r labels}
 # A simple label that occupies one line:
 label1 <- Label(key1 = "this", key2 = "that", otherKey = "content")
 addInstruction(labeled_dockerfile) <- label1
@@ -272,7 +272,7 @@ addInstruction(labeled_dockerfile) <- list(label2, label3)
 
 Metadata according to the [Label Schema](http://label-schema.org/rc1/) conventions can be created with a function constructed by the helper factory `LabelSchemaFactory()`. 
 
-```{r}
+```{r label_schema}
 Label_LabelSchema <- LabelSchemaFactory()
 label <- Label_LabelSchema(name = "ImageName", description = "Description of the image", build_date = Sys.time())
 addInstruction(labeled_dockerfile) <- label
@@ -280,14 +280,14 @@ addInstruction(labeled_dockerfile) <- label
 
 You can also put session information, using either base R or `devtools`, into a label as plain text or as json:
 
-```{r}
+```{r label_json}
 addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = clean_session())
 addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = devtools::session_info(), as_json = TRUE)
 ```
 
 The resulting Dockerfile with all the labels:
 
-```{r, comment=NA}
+```{r print_label_df, comment=NA}
 print(labeled_dockerfile)
 ```
 
@@ -297,7 +297,7 @@ If a Dockerfile contains a web service, specific ports of a running container mi
 
 > The EXPOSE instruction informs Docker that the container listens on the specified network ports at runtime. [..] It functions as a type of documentation between the person who builds the image and the person who runs the container, [..] To actually publish the port when running the container, use the -p flag on docker run to publish and map one or more ports [..] ([Docker docs](https://docs.docker.com/engine/reference/builder/#expose))
 
-```{r, comment=NA}
+```{r expose}
 dockerfile_with_expose <- dockerfile()
 my_port_1 <- Expose(8000)
 my_port_2 <- Expose(port = "80/tcp", host = 8080)
@@ -324,7 +324,7 @@ dockerfile_with_entrypoint <- dockerfile(from = NULL,
 print(dockerfile_with_entrypoint)
 ```
 
-```{r entrypoint_shell}
+```{r entrypoint_cmd_shell}
 ep_shell <- Entrypoint(program = "R",
                  params = list(
                    "-e",
@@ -333,7 +333,7 @@ ep_shell <- Entrypoint(program = "R",
 dockerfile_with_entrypoint <- dockerfile(from = NULL,
                                          image = "trestletech/plumber",
                                          entrypoint = ep_shell,
-                                         cmd = Cmd("schedule.R"))
+                                         cmd = Cmd("schedule.R", form = "shell"))
 print(dockerfile_with_entrypoint)
 ```
 
@@ -344,7 +344,7 @@ Note that while choosing an R version for the Dockerfile explicitly is possible,
 
 The following examples show usage of these options and the respective `FROM` statements in the Dockerfile.
 
-```{r, comment=NA}
+```{r base_image, comment=NA}
 df_custom <- dockerfile(from = NULL, r_version = "3.1.0", silent = TRUE)
 print(df_custom@image)
 df_custom <- dockerfile(from = NULL, image = "rocker/geospatial", silent = TRUE)
@@ -364,7 +364,7 @@ You can make the command `containerit` available on your maching by linking the 
 
 CLI Examples:
 
-```
+```{bash cli}
   containerit --help
   
   # runs the first R markdown or R script file locally 
@@ -424,6 +424,6 @@ Feedback and contributions are highly welcome [on GitHub](https://github.com/o2r
 
 ## Metadata
 
-```{r}
+```{r sessionInfo}
 sessionInfo()
 ```

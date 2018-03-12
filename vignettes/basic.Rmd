@@ -30,7 +30,7 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 
 Load the package, do your analysis, and create a Dockerfile.
 
-```{r}
+```{r tldr}
 library("containerit")
 
 # do stuff, based on demo("krige")
@@ -50,15 +50,15 @@ container <- dockerfile(from = sessionInfo())
 
 The Dockerfile object can be saved to a file or printed out.
 
-```{r,results='markup'}
+```{r format,results='markup'}
 cat(as.character(format(container)), sep = "\n")
 ```
 
-```{r}
+```{r write}
 write(container, file = tempfile())
 ```
 
-```{r,results='hide',echo=FALSE}
+```{r clear,results='hide',echo=FALSE}
 # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
 clear_all <- function() {
   # objects
@@ -96,7 +96,7 @@ The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgda
 
 Here is some regular R code loading a file and plotting it.
 
-```{r, message=FALSE}
+```{r example_geo, message=FALSE}
 library("rgdal")
 library("maptools")
 
@@ -111,18 +111,18 @@ clear_all()
 
 ### Create Dockerfile from session
 
-```{r}
+```{r example_session}
 class(sessionInfo())
 containerit::dockerfile(from = sessionInfo(), env = ls())
 ```
 
-```{r,results='hide',echo=FALSE}
+```{r clear,results='hide',echo=FALSE}
 clear_all()
 ```
 
 ### Script
 
-```{r}
+```{r example_script}
 scriptFile <- tempfile(pattern = "containerit_", fileext = ".R")
 file <- file(scriptFile)
 writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
@@ -138,7 +138,7 @@ class(file)
 
 Go through all `.R` files in a directory and create a Dockerfile with a runtime environment which can run all of them.
 
-```{r, }
+```{r example_workspace}
 workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
@@ -148,6 +148,6 @@ dir.exists(workspace)
 
 ## sessionInfo()
 
-```{r}
+```{r sessionInfo}
 sessionInfo()
 ```
