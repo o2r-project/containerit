@@ -305,7 +305,39 @@ addInstruction(dockerfile_with_expose) <- list(my_port_1, my_port_2)
 print(dockerfile_with_expose)
 ```
 
-## 5. Further customization 
+### 4.3 Entrypoint and command
+
+The `ENTRYPOINT` instruction allows using a container like a binary executable.
+The actually executed command is constructed from both `ENTRYPOINT` and `CMD` instructions - please check the [Docker docs](https://docs.docker.com/engine/reference/builder/#entrypoint) for details.
+The `entrypoint` parameter of the `dockerfile()` function supports both "forms" as shown below.
+
+```{r entrypoint_exec}
+ep_exec <- Entrypoint(program = "R",
+                 params = list(
+                   "-e",
+                   "pr <- plumber::plumb(commandArgs()[4]); pr$run(host='0.0.0.0', port=8080)"),
+                 form = "exec")
+dockerfile_with_entrypoint <- dockerfile(from = NULL,
+                                         image = "trestletech/plumber",
+                                         entrypoint = ep_exec,
+                                         cmd = Cmd("schedule.R"))
+print(dockerfile_with_entrypoint)
+```
+
+```{r entrypoint_shell}
+ep_shell <- Entrypoint(program = "R",
+                 params = list(
+                   "-e",
+                   "pr <- plumber::plumb(commandArgs()[4]); pr$run(host='0.0.0.0', port=8080)"),
+                 form = "shell")
+dockerfile_with_entrypoint <- dockerfile(from = NULL,
+                                         image = "trestletech/plumber",
+                                         entrypoint = ep_shell,
+                                         cmd = Cmd("schedule.R"))
+print(dockerfile_with_entrypoint)
+```
+
+## 5. Custom base image
 
 The `dockerfile()` function allows further customization regarding the R version or the used base image (cf. Rocker stack).
 Note that while choosing an R version for the Dockerfile explicitly is possible, the session to generate the required information (i.e. which packages are attached etc.) is still running the R version of the generating machine.

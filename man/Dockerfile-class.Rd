@@ -11,6 +11,10 @@ an object of class \code{Dockerfile}
 \description{
 An S4 class to represent a Dockerfile
 }
+\details{
+The entrypoint and cmd are provided outside of instructions, as only one of them takes effect.
+If Cmd or Entrypoint instructions are provided as part of the regular instructions, they appear in the Dockerfile but have no effect.
+}
 \section{Slots}{
 
 \describe{
@@ -19,6 +23,8 @@ An S4 class to represent a Dockerfile
 \item{\code{maintainer}}{a maintainer label or an object of class maintainer (the latter is debrecated)}
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
+
+\item{\code{entrypoint}}{the entrypoint instruction applied to the container}
 
 \item{\code{cmd}}{the default cmd instruction applied to the container}
 }}

@@ -4,17 +4,22 @@
 \alias{Entrypoint}
 \title{Constructor for Entrypoint yet to be implemented}
 \usage{
-Entrypoint(...)
+Entrypoint(program, params = list(), form = "exec")
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{program}{the executable or command}
+
+\item{params}{the parameters provided to the executable or command}
+
+\item{form}{the form how the instruction is rendered, either \code{exec} or \code{shell}}
 }
 \value{
-the object
+an object of class Entrypoint
 }
 \description{
 Constructor for Entrypoint yet to be implemented
 }
 \examples{
-#no example yet
+toString(Entrypoint("Rscript", params = list("sum", "1", "2")))
+toString(Entrypoint("/bin/echo"))
 }

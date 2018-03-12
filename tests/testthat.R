@@ -24,7 +24,7 @@ if(FALSE){
   result; str(result)
 }
 
-# for manually executing code within tests:
+# for manually executing code within the tests directory, use the following wd to resolve the relative paths:
 if(FALSE) {
   setwd(file.path(getwd(), "tests", "testthat"))
 }

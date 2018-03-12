@@ -1,17 +1,23 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 #' An S4 class to represent a Dockerfile
+#'
 #' @include Class-Maintainer.R
 #' @include Class-Cmd.R
 #' @include Class-From.R
 #' @include Class-Instruction.R
+#' @include Class-Entrypoint.R
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/}.
 #'
 #' @slot image the base image, used in the FROM statement (character)
 #' @slot maintainer a maintainer label or an object of class maintainer (the latter is debrecated)
 #' @slot instructions an ordered list of instructions in the Dockerfile (list of character)
+#' @slot entrypoint the entrypoint instruction applied to the container
 #' @slot cmd the default cmd instruction applied to the container
+#'
+#' @details The entrypoint and cmd are provided outside of instructions, as only one of them takes effect.
+#' If Cmd or Entrypoint instructions are provided as part of the regular instructions, they appear in the Dockerfile but have no effect.
 #'
 #' @return an object of class \code{Dockerfile}
 #' @export
@@ -19,6 +25,7 @@ Dockerfile <- setClass("Dockerfile",
                     slots = list(image = "From",
                                  maintainer = "NullOrLabelOrMaintainer",
                                  instructions = "list",
+                                 entrypoint = "NullOrEntrypoint",
                                  cmd = "Cmd")
 )
 
@@ -36,18 +43,19 @@ toString.Dockerfile <- function(x, ...) {
     instructions <- sapply(instructions, toString)
     output <- append(output, unlist(instructions))
   }
+  entrypoint <- methods::slot(x, "entrypoint")
+  if (!is.null(entrypoint))
+    output <- append(output, toString(entrypoint))
   cmd <- methods::slot(x, "cmd")
   if (!is.null(cmd))
     output <- append(output, toString(cmd))
   return(output)
 }
 
-
 print.Dockerfile <- function(x, ...) {
   cat(toString.Dockerfile(x, ...), sep = "\n")
   invisible(x)
 }
-
 
 format.Dockerfile <- function(x, ...) {
   format(toString(x), ...)

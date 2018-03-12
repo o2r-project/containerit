@@ -27,11 +27,11 @@
 #' Given an executable \code{R} script or document, create a Dockerfile to execute this file.
 #' This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
 #'
-#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace).
+#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.
 #' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
 #'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
 #' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
-#' @param maintainer optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.
+#' @param maintainer Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
 #' @param r_version (character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance
 #' @param image (From-object or character) optionally specify the image that shall be used for the Docker container (FROM-statement)
 #'      By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
@@ -40,16 +40,20 @@
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
-#' @param container_workdir the working directory of the container
+#' @param container_workdir the working directory in the container, defaults to \code{/payload}, can be skipped with value \code{NULL}.
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
+#' @param entrypoint the ENTRYPOINT statement for the Dockerfile
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
-#' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)
+#' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})
 #' @param silent Whether or not to print information during execution
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #'
 #' @return An object of class Dockerfile
+#'
 #' @export
+#'
 #' @import futile.logger
+#'
 #' @examples
 #' dockerfile <- dockerfile()
 #' print(dockerfile)
@@ -68,6 +72,7 @@ dockerfile <-
            container_workdir = "/payload",
            # nolint end
            cmd = Cmd("R"),
+           entrypoint = NULL,
            add_self = FALSE,
            vanilla = TRUE,
            silent = FALSE,
@@ -91,13 +96,23 @@ dockerfile <-
       maintainer <- .label
     }
 
-    # check CMD-instruction
     instructions <- list()
+
+    # check CMD instruction
     if (!inherits(x = cmd, "Cmd")) {
-      stop(
-        "Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
-        class(cmd)
-      )
+      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
+        class(cmd))
+    }
+    # check ENTRYPOINT instruction
+    if ( !is.null(entrypoint) && !inherits(x = entrypoint, "Entrypoint")) {
+      stop("Unsupported parameter for 'entrypoint', expected an object of class 'Entrypoint', given was :",
+        class(entrypoint))
+    }
+    # check and add WORKDIR instruction
+    if ( !is.null(container_workdir) && !is.character(container_workdir)) {
+      stop("Unsupported parameter for 'container_workdir', expected a character string or NULL")
+    } else {
+      instructions <- c(instructions, Workdir(container_workdir))
     }
 
     # whether image is supported
@@ -121,12 +136,13 @@ dockerfile <-
         instructions = instructions,
         maintainer = maintainer,
         image = image,
+        workdir =
+        entrypoint = entrypoint,
         cmd = cmd
       )
 
     if (is.null(from)) {
-      futile.logger::flog.debug("from is NULL, falling back to container_workdir '%s'", container_workdir)
-      addInstruction(.dockerfile) <- Workdir(container_workdir)
+      futile.logger::flog.debug("from is NULL, not deriving any information at all")
     } else if (inherits(x = from, "sessionInfo")) {
       futile.logger::flog.debug("Creating from sessionInfo object")
 
@@ -139,8 +155,6 @@ dockerfile <-
           add_self = add_self,
           versioned_libs = versioned_libs
         )
-      #set the working directory (If the directory does not exist, Docker will create it)
-      addInstruction(.dockerfile) <- Workdir(container_workdir)
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
 

@@ -9,17 +9,17 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   image = getImageForVersion(r_version), env = list(generator =
   paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
   offline = FALSE, copy = "script", container_workdir = "/payload",
-  cmd = Cmd("R"), add_self = FALSE, vanilla = TRUE, silent = FALSE,
-  versioned_libs = FALSE)
+  cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE, vanilla = TRUE,
+  silent = FALSE, versioned_libs = FALSE)
 }
 \arguments{
-\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace).}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
 
 \item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
 \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
 
-\item{maintainer}{optionally specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}.}
+\item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
 \item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance}
 
@@ -39,9 +39,11 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
 
+\item{entrypoint}{the ENTRYPOINT statement for the Dockerfile}
+
 \item{add_self}{Whether to add the package containerit itself if loaded/attached to the session}
 
-\item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equal to R --vanilla)}
+\item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})}
 
 \item{silent}{Whether or not to print information during execution}
 
