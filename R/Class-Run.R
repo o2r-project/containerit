@@ -16,7 +16,7 @@ setClass("Run_shell",
          contains = "Instruction")
 
 .arguments.Run_shell <- function(obj) {
-  # create arcuments in exec form, i.e.
+  # create arguments in exec form, i.e.
   # ["executable","param1","param2"]
   # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
 
@@ -79,7 +79,7 @@ setClass("Run",
 #' Create objects representing a RUN instruction
 #'
 #' @param exec character argument naming the executable
-#' @param params paramterer arguments
+#' @param params parameter arguments
 #' @family Run instruction
 #' @return An S4 object of class Run
 #' @export
@@ -89,8 +89,25 @@ Run <- function(exec, params = NA_character_){
 
 setMethod("docker_arguments",
           signature(obj = "Run"),
-          .arguments_Cmd_Run
-)
+          function(obj) {
+            exec <- methods::slot(obj, "exec")
+            params <- methods::slot(obj, "params")
+            string <- "["
+            if (!is.na(exec)) {
+              string <- paste0(string, sprintf('"%s"', exec))
+              if (!any(is.na(params)))
+                string <- paste0(string, ", ")
+            }
+
+            if (!any(is.na(params))) {
+              paramstr <- sprintf('"%s"', params)
+              paramstr <- paste(paramstr, collapse = ", ")
+              string <- paste0(string, paramstr)
+            }
+            string <- paste0(string, "]")
+
+            return(string)
+          })
 
 setValidity("Run",
             method = function(object) {

@@ -6,6 +6,7 @@
 #'
 #' @slot program character, name or path of the executable or command.
 #' @slot params list of parameters.
+#' @slot form form to render the instruction to (exec or shell)
 #' @export
 #'
 #' @family instruction classes
@@ -28,7 +29,7 @@ setClassUnion("NullOrEntrypoint",
 #' @param params the parameters provided to the executable or command
 #' @param form the form how the instruction is rendered, either \code{exec} or \code{shell}
 #'
-#' @return an object of class Entrypoint
+#' @return an object of class \linkS4class{Entrypoint}
 #' @export
 #'
 #' @examples
@@ -40,7 +41,7 @@ Entrypoint <- function(program, params = list(), form = "exec") {
   methods::new("Entrypoint",  program = program, params = params, form = form)
 }
 
-# create arcuments in exec form, i.e. ["executable","param1","param2"]
+# create arguments in exec form, i.e. ["executable","param1","param2"]
 .arguments_entrypoint_exec <- function(obj) {
   program <- methods::slot(obj, "program")
   params <- methods::slot(obj, "params")
@@ -59,7 +60,7 @@ Entrypoint <- function(program, params = list(), form = "exec") {
   return(string)
 }
 
-# create arcuments in shell form, i.e. "executable param1 param2"
+# create arguments in shell form, i.e. "executable param1 param2"
 .arguments_entrypoint_shell <- function(obj) {
   program <- methods::slot(obj, "program")
   params <- methods::slot(obj, "params")
