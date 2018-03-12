@@ -10,6 +10,8 @@ Cmd(exec = NA_character_, params = NA_character_, form = "exec")
 \item{exec}{character argument naming the executable}
 
 \item{params}{paramterer arguments}
+
+\item{form}{form to render the instruction to (exec or shell)}
 }
 \value{
 An S4 object of class \linkS4class{Cmd}
@@ -17,12 +19,6 @@ An S4 object of class \linkS4class{Cmd}
 \description{
 create objects representing a CMD instruction
 }
-\section{Slots}{
-
-\describe{
-\item{\code{form}}{form to render the instruction to (exec or shell)}
-}}
-
 \examples{
 toString(Cmd("R", "--vanilla"))
 }

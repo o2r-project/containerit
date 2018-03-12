@@ -58,7 +58,7 @@ cat(as.character(format(container)), sep = "\n")
 write(container, file = tempfile())
 ```
 
-```{r clear,results='hide',echo=FALSE}
+```{r clear_all,results='hide',echo=FALSE}
 # https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
 clear_all <- function() {
   # objects
@@ -116,7 +116,7 @@ class(sessionInfo())
 containerit::dockerfile(from = sessionInfo(), env = ls())
 ```
 
-```{r clear,results='hide',echo=FALSE}
+```{r clear_again,results='hide',echo=FALSE}
 clear_all()
 ```
 

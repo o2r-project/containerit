@@ -24,7 +24,7 @@ setClass("Cmd",
 #'
 #' @param exec character argument naming the executable
 #' @param params paramterer arguments
-#' @slot form form to render the instruction to (exec or shell)
+#' @param form form to render the instruction to (exec or shell)
 #'
 #' @return An S4 object of class \linkS4class{Cmd}
 #' @export

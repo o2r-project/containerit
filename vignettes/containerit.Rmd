@@ -364,7 +364,7 @@ You can make the command `containerit` available on your maching by linking the 
 
 CLI Examples:
 
-```{bash cli}
+```{bash cli, eval=FALSE}
   containerit --help
   
   # runs the first R markdown or R script file locally 
