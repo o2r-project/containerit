@@ -7,7 +7,8 @@
            platform,
            soft,
            offline,
-           versioned_libs) {
+           versioned_libs,
+           workdir) {
     #create RUN expressions
     package_reqs <- character(0)
     cran_packages <- character(0)
@@ -231,6 +232,9 @@
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
       addInstruction(.dockerfile) <- Run("installGithub.r", github_packages)
     }
+
+    # after all installation is done, set the workdir
+    addInstruction(.dockerfile) <- workdir
 
     return(.dockerfile)
   }

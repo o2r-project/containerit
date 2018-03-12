@@ -37,7 +37,8 @@ setMethod("docker_arguments",
 
 #Convert an Instruction-object to a string holding a Docker instruction
 .toString.Instruction <- function(x, ...) {
-  return(paste(docker_key(x), docker_arguments(x)))
+  instruction <- paste0(docker_key(x), " ", docker_arguments(x))
+  return(stringr::str_trim(instruction))
 }
 
 #' Convert an Instruction-object to a string holding a Docker instruction

@@ -169,18 +169,19 @@ test_that("the packages are loaded via Namespace locally and in Docker (requires
   skip_on_travis()
   skip_if_not(!is.null(docker_sessionInfo))
 
+  # FIXME remove rstudioapi from the local packages
+  local_loaded_packages <- Filter(
+    f = function(x) { return(x$Package != "rstudioapi") },
+    x = local_sessionInfo$loadedOnly)
+
   #expect that same base and non-base packages loaded via namespace
-  local_loaded <- names(local_sessionInfo$loadedOnly)
+  local_loaded <- names(local_loaded_packages)
   docker_loaded <- names(docker_sessionInfo$loadedOnly)
   expect_true(all(local_loaded %in% docker_loaded))
   expect_true(all(docker_loaded %in% local_loaded))
 
-  local_versions <-
-    sapply(local_sessionInfo$loadedOnly, function(x)
-      x$Version)
-  docker_versions <-
-    sapply(docker_sessionInfo$loadedOnly, function(x)
-      x$Version)
+  local_versions <- sapply(local_loaded_packages, function(x) x$Version)
+  docker_versions <- sapply(docker_sessionInfo$loadedOnly, function(x) x$Version)
   expect_equal(local_versions, docker_versions)
 })
 

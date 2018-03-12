@@ -4,15 +4,17 @@
 \alias{Cmd}
 \title{create objects representing a CMD instruction}
 \usage{
-Cmd(exec = NA_character_, params = NA_character_)
+Cmd(exec = NA_character_, params = NA_character_, form = "exec")
 }
 \arguments{
 \item{exec}{character argument naming the executable}
 
 \item{params}{paramterer arguments}
+
+\item{form}{form to render the instruction to (exec or shell)}
 }
 \value{
-An S4 object of class Cmd
+An S4 object of class \linkS4class{Cmd}
 }
 \description{
 create objects representing a CMD instruction

@@ -48,18 +48,18 @@ Suggests:
     remotes,
     ggplot2
 RoxygenNote: 6.0.1
-Collate:
+Collate: 
     'Class-Instruction.R'
     'Class-Add.R'
     'Class-All.R'
     'Class-Arg.R'
     'Class-Cmd.R'
     'Class-Copy.R'
+    'Class-Entrypoint.R'
     'Class-From.R'
     'Class-Label.R'
     'Class-Maintainer.R'
     'Class-Dockerfile.R'
-    'Class-Entrypoint.R'
     'Class-Env.R'
     'Class-Expose.R'
     'Class-Healthcheck.R'

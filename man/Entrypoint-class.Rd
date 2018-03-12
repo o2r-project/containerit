@@ -4,12 +4,19 @@
 \name{Entrypoint-class}
 \alias{Entrypoint-class}
 \title{Entrypoint class yet to be implemented}
-\value{
-object
-}
 \description{
 Entrypoint class yet to be implemented
 }
+\section{Slots}{
+
+\describe{
+\item{\code{program}}{character, name or path of the executable or command.}
+
+\item{\code{params}}{list of parameters.}
+
+\item{\code{form}}{form to render the instruction to (exec or shell)}
+}}
+
 \examples{
 #no example yet
 }

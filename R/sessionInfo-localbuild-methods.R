@@ -101,9 +101,8 @@ create_localDockerImage <- function(x,
 # and for comparing session information (see test/testthat/test_sessioninfo_repoduce.R)
 obtain_localSessionInfo <-
   function(expr = c(),
-           file = NULL, #an R script to be executed
-           rmd_file = NULL, #a markdown file
-           rnw_file = NULL, # a sweave file or anything that can be compiled with knitr::knit(...)
+           file = NULL, # an R script to be executed
+           rmd_file = NULL, # an R Markdown file
            vanilla = TRUE,
            silent = TRUE,
            slave = FALSE,
@@ -118,12 +117,6 @@ obtain_localSessionInfo <-
     if (!is.null(rmd_file) && file.exists(rmd_file)) {
       render_call <- quote(rmarkdown::render("file"))
       render_call[[2]] <- rmd_file #replace the argument "file
-      expr <- append(expr, render_call)
-    }
-
-    if (!is.null(rnw_file) && file.exists(rnw_file)) {
-      render_call <- quote(knitr::knit2pdf("file", clean = TRUE))
-      render_call[[2]] <- rnw_file  #replace the argument "file
       expr <- append(expr, render_call)
     }
 

@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 [![Build Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 [![](http://www.r-pkg.org/badges/version/containerit)](http://www.r-pkg.org/pkg/containerit)
 
+![containerit logo](inst/logo.png)
+
 ## Quick start
 
 ### Install
@@ -54,4 +56,4 @@ rhub::check_on_windows()
 
 containerit is licensed under GNU General Public License, version 3, see file LICENSE.
 
-Copyright (C) 2017 - o2r project.
+Copyright (C) 2018 - o2r project.

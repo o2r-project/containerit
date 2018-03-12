@@ -5,8 +5,9 @@
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#cmd}.
 #'
-#' @slot exec character.
-#' @slot params character.
+#' @slot exec exectuable, character
+#' @slot params parameters, character (vector)
+#' @slot form the form to use for output (exec or shell)
 #'
 #' @return object of class cmd
 #' @family instruction classes
@@ -14,7 +15,8 @@
 #'
 setClass("Cmd",
          slots = list(exec = "character",
-               params = "character"),
+               params = "character",
+               form = "character"),
          contains = "Instruction"
 )
 
@@ -22,14 +24,15 @@ setClass("Cmd",
 #'
 #' @param exec character argument naming the executable
 #' @param params paramterer arguments
+#' @param form form to render the instruction to (exec or shell)
 #'
-#' @return An S4 object of class Cmd
+#' @return An S4 object of class \linkS4class{Cmd}
 #' @export
 #'
 #' @examples
 #' toString(Cmd("R", "--vanilla"))
-Cmd <- function(exec = NA_character_, params = NA_character_) {
-  methods::new("Cmd",  exec = exec, params = params)
+Cmd <- function(exec = NA_character_, params = NA_character_, form = "exec") {
+  methods::new("Cmd",  exec = exec, params = params, form = form)
 }
 
 setValidity(
@@ -37,6 +40,10 @@ setValidity(
   method = function(object) {
     exec <- methods::slot(object, "exec")
     params <- methods::slot(object, "params")
+    form <- methods::slot(object, "form")
+
+    if (form != "shell" && form != "exec")
+      return(paste0("Form must bei either 'exec' or 'shell', '", form, "' not supported"))
 
     if (!is.na(exec) &&
         length(exec) == 1 && stringr::str_length(exec) > 0)
@@ -58,11 +65,9 @@ setValidity(
   }
 )
 
-.arguments_Cmd_Run <- function(obj) {
-  # create arcuments in exec form, i.e.
-  # ["executable","param1","param2"]
-  # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
-
+# create arguments in exec form, i.e. ["executable","param1","param2"]
+# or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
+.arguments_cmd_exec <- function(obj) {
   exec <- methods::slot(obj, "exec")
   params <- methods::slot(obj, "params")
   string <- "["
@@ -82,9 +87,37 @@ setValidity(
   return(string)
 }
 
+# create arguments in shell form, i.e. executable param1 param2
+.arguments_cmd_shell <- function(obj) {
+  exec <- methods::slot(obj, "exec")
+  params <- methods::slot(obj, "params")
+
+  string <- ""
+  if (!is.na(exec)) {
+    string <- sprintf('%s', exec)
+  }
+
+  if (!any(is.na(params))) {
+    paramstr <- sprintf('%s', params)
+    paramstr <- paste(paramstr, collapse = " ")
+    string <- paste0(string, " ", paramstr)
+  }
+
+  return(string)
+}
+
 setMethod("docker_arguments",
           signature(obj = "Cmd"),
-          .arguments_Cmd_Run)
+          function(obj) {
+            form <- methods::slot(obj, "form")
+            if(form == "exec") {
+              return(.arguments_cmd_exec(obj))
+            } else if (form == "shell") {
+              return(.arguments_cmd_shell(obj))
+            } else {
+              stop("The provided 'form' ", form, " is not supported.")
+            }
+          })
 
 
 #' Create CMD instruction for running an R script
