@@ -15,7 +15,7 @@
 #'
 #' \enumerate{
 #'   \item regular R script files, identified by file names ending in \code{.R}
-#'   \item weaved documents, identified by file names ending in either \code{.Rmd} or \code{.Rnw}
+#'   \item weaved documents, identified by file names ending in \href{http://rmarkdown.rstudio.com/}{R Markdown} (\code{.Rmd})
 #' }
 #'
 #' After identifying the main file, the process continues as described in the section file.
@@ -310,15 +310,6 @@ dockerfileFromFile <-
           slave = silent,
           echo = !silent
         )
-    } else if (stringr::str_detect(file, ".Rnw$")) {
-      futile.logger::flog.info("Processing the given file %s locally using knitr::knit2pdf(..., clean = TRUE)", rel_path)
-      sessionInfo <-
-        obtain_localSessionInfo(
-          rnw_file = file,
-          vanilla = vanilla ,
-          slave = silent,
-          echo = !silent
-        )
     } else if (stringr::str_detect(file, ".Rmd$")) {
       futile.logger::flog.info("Processing the given file %s locally using rmarkdown::render(...)", rel_path)
       sessionInfo <-
@@ -429,7 +420,7 @@ dockerfileFromWorkspace <-
 
     if (length(.rFiles) > 0 && length(.md_Files) > 0) {
       target_file <- .md_Files[1]
-      warning("Found both scripts and weaved documents (Rmd, Rnw) in the given directory. Using the first document for packaging: \n\t",
+      warning("Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: \n\t",
               target_file
       )
     } else if (length(.md_Files) > 0) {
