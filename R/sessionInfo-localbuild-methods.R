@@ -101,8 +101,8 @@ create_localDockerImage <- function(x,
 # and for comparing session information (see test/testthat/test_sessioninfo_repoduce.R)
 obtain_localSessionInfo <-
   function(expr = c(),
-           file = NULL, #an R script to be executed
-           rmd_file = NULL, #a markdown file
+           file = NULL, # an R script to be executed
+           rmd_file = NULL, # an R Markdown file
            vanilla = TRUE,
            silent = TRUE,
            slave = FALSE,
