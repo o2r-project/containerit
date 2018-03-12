@@ -8,7 +8,7 @@ dockerfile(from = utils::sessionInfo(), save_image = FALSE,
   maintainer = Sys.info()[["user"]], r_version = getRVersionTag(from),
   image = getImageForVersion(r_version), env = list(generator =
   paste("containerit", utils::packageVersion("containerit"))), soft = FALSE,
-  offline = FALSE, copy = "script", container_workdir = "/payload",
+  offline = FALSE, copy = "script", container_workdir = "/payload/",
   cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE, vanilla = TRUE,
   silent = FALSE, versioned_libs = FALSE)
 }
@@ -35,7 +35,7 @@ see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ve
 
 \item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files}
 
-\item{container_workdir}{the working directory of the container}
+\item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
 
@@ -69,7 +69,7 @@ Files are searched recursively. The following types are supported:
 
 \enumerate{
   \item regular R script files, identified by file names ending in \code{.R}
-  \item weaved documents, identified by file names ending in either \code{.Rmd} or \code{.Rnw}
+  \item weaved documents, identified by file names ending in \href{http://rmarkdown.rstudio.com/}{R Markdown} (\code{.Rmd})
 }
 
 After identifying the main file, the process continues as described in the section file.

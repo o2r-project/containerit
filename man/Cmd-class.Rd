@@ -13,9 +13,11 @@ An S4 class to represent a CMD instruction
 \section{Slots}{
 
 \describe{
-\item{\code{exec}}{character.}
+\item{\code{exec}}{exectuable, character}
 
-\item{\code{params}}{character.}
+\item{\code{params}}{parameters, character (vector)}
+
+\item{\code{form}}{the form to use for output (exec or shell)}
 }}
 
 \seealso{

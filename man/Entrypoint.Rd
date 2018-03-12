@@ -14,7 +14,7 @@ Entrypoint(program, params = list(), form = "exec")
 \item{form}{the form how the instruction is rendered, either \code{exec} or \code{shell}}
 }
 \value{
-an object of class Entrypoint
+an object of class \linkS4class{Entrypoint}
 }
 \description{
 Constructor for Entrypoint yet to be implemented

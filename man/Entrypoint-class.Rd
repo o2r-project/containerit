@@ -13,6 +13,8 @@ Entrypoint class yet to be implemented
 \item{\code{program}}{character, name or path of the executable or command.}
 
 \item{\code{params}}{list of parameters.}
+
+\item{\code{form}}{form to render the instruction to (exec or shell)}
 }}
 
 \examples{
