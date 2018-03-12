@@ -7,19 +7,19 @@ test_that("the R script location is checked ",{
 })
 
 test_that("an R script can be created with resources of the same folder ",{
-  print("Script executed locally: ")
   df <- dockerfile("simple_test_script_resources/simple_test.R",
                 copy = "script_dir",
                 cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
-  #test run (shoud be fast:)
-  image <- create_localDockerImage(df, use_workdir = TRUE)
-  print("Script reproduced with Docker: ")
-  harbor::docker_run(image = image, rm = TRUE)
-  harbor::docker_cmd(harbor::localhost, "rmi", image)
   #for overwriting
   #write(df, "simple_test_script_resources/Dockerfile")
+
+  # test run (shoud be fast and not give any errors)
+  image <- create_localDockerImage(df, use_workdir = TRUE)
+  harbor::docker_run(image = image, rm = TRUE)
+  harbor::docker_cmd(harbor::localhost, "rmi", image)
+
   expected_file <- readLines("simple_test_script_resources/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
@@ -27,7 +27,7 @@ test_that("an R script can be created with resources of the same folder ",{
 
 test_that("a workspace with one R script can be packaged ",{
   #This test should result in the same dockerfile as above:
-  df=dockerfile("simple_test_script_resources/",
+  df <- dockerfile("simple_test_script_resources/",
                 copy = "script_dir",
                 cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"),
                 maintainer = "matthiashinz",

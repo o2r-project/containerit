@@ -40,7 +40,7 @@
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
-#' @param container_workdir the working directory in the container, defaults to \code{/payload}, can be skipped with value \code{NULL}.
+#' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
@@ -58,25 +58,24 @@
 #' dockerfile <- dockerfile()
 #' print(dockerfile)
 #'
-dockerfile <-
-  function(from = utils::sessionInfo(),
-           save_image = FALSE,
-           maintainer = Sys.info()[["user"]],
-           r_version = getRVersionTag(from),
-           image = getImageForVersion(r_version),
-           env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
-           soft = FALSE,
-           offline = FALSE,
-           copy = "script",
-           # nolint start
-           container_workdir = "/payload",
-           # nolint end
-           cmd = Cmd("R"),
-           entrypoint = NULL,
-           add_self = FALSE,
-           vanilla = TRUE,
-           silent = FALSE,
-           versioned_libs = FALSE) {
+dockerfile <- function(from = utils::sessionInfo(),
+                       save_image = FALSE,
+                       maintainer = Sys.info()[["user"]],
+                       r_version = getRVersionTag(from),
+                       image = getImageForVersion(r_version),
+                       env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
+                       soft = FALSE,
+                       offline = FALSE,
+                       copy = "script",
+                       # nolint start
+                       container_workdir = "/payload/",
+                       # nolint end
+                       cmd = Cmd("R"),
+                       entrypoint = NULL,
+                       add_self = FALSE,
+                       vanilla = TRUE,
+                       silent = FALSE,
+                       versioned_libs = FALSE) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -96,23 +95,33 @@ dockerfile <-
       maintainer <- .label
     }
 
-    instructions <- list()
-
     # check CMD instruction
     if (!inherits(x = cmd, "Cmd")) {
       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
         class(cmd))
     }
+
     # check ENTRYPOINT instruction
     if ( !is.null(entrypoint) && !inherits(x = entrypoint, "Entrypoint")) {
       stop("Unsupported parameter for 'entrypoint', expected an object of class 'Entrypoint', given was :",
         class(entrypoint))
     }
-    # check and add WORKDIR instruction
-    if ( !is.null(container_workdir) && !is.character(container_workdir)) {
-      stop("Unsupported parameter for 'container_workdir', expected a character string or NULL")
-    } else {
-      instructions <- c(instructions, Workdir(container_workdir))
+
+    # check and create WORKDIR instruction
+    workdir <- NULL
+    if ( !is.null(container_workdir)) {
+      if ( !is.character(container_workdir)) {
+        stop("Unsupported parameter for 'container_workdir', expected a character string or NULL")
+      } else {
+        # nolint start
+        if (!stringr::str_detect(container_workdir, "/$")) {
+          # nolint end
+          # directories given as destination must have a trailing slash in dockerfiles
+          container_workdir <- paste0(container_workdir, "/")
+          futile.logger::flog.info("Appended trailing slash, workdir is '%s'", container_workdir)
+        }
+        workdir <- Workdir(container_workdir)
+      }
     }
 
     # whether image is supported
@@ -122,30 +131,23 @@ dockerfile <-
         paste(.supported_images, collapse = "\n"))
     }
 
-    # nolint start
-    if (!stringr::str_detect(container_workdir, "/$")) {
-    # nolint end
-      # directories given as destination must have a trailing slash in dockerfiles
-      container_workdir <- paste0(container_workdir, "/")
-      futile.logger::flog.debug("Appended trailing slash, workdir is '%s'", container_workdir)
-    }
-
+    # base dockerfile
     .dockerfile <-
       methods::new(
         "Dockerfile",
-        instructions = instructions,
+        instructions = list(),
         maintainer = maintainer,
         image = image,
-        workdir =
         entrypoint = entrypoint,
         cmd = cmd
       )
-
+    # handle differe "from" cases
     if (is.null(from)) {
       futile.logger::flog.debug("from is NULL, not deriving any information at all")
+      if (!is.null(workdir))
+        addInstruction(.dockerfile) <- workdir
     } else if (inherits(x = from, "sessionInfo")) {
       futile.logger::flog.debug("Creating from sessionInfo object")
-
       .dockerfile <-
         dockerfileFromSession(
           session = from,
@@ -153,7 +155,8 @@ dockerfile <-
           soft = soft,
           offline = offline,
           add_self = add_self,
-          versioned_libs = versioned_libs
+          versioned_libs = versioned_libs,
+          workdir = workdir
         )
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
@@ -169,10 +172,10 @@ dockerfile <-
             offline = offline,
             add_self = add_self,
             copy = copy,
-            copy_destination = container_workdir ,
             vanilla = vanilla,
             silent = silent,
-            versioned_libs = versioned_libs
+            versioned_libs = versioned_libs,
+            workdir = workdir
           )
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file")
@@ -185,10 +188,10 @@ dockerfile <-
             offline = offline,
             add_self = add_self,
             copy = copy,
-            copy_destination = container_workdir,
             vanilla = vanilla,
             silent = silent,
-            versioned_libs = versioned_libs
+            versioned_libs = versioned_libs,
+            workdir = workdir
           )
       } else {
         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
@@ -208,7 +211,8 @@ dockerfile <-
           soft = soft,
           offline = offline,
           add_self = add_self,
-          versioned_libs = versioned_libs
+          versioned_libs = versioned_libs,
+          workdir = workdir
         )
     } else {
       stop("Unsupported 'from': ", class(from), " ", from)
@@ -234,13 +238,13 @@ dockerfile <-
     return(.dockerfile)
   }
 
-dockerfileFromSession <-
-  function(session,
-           .dockerfile,
-           soft,
-           offline,
-           add_self,
-           versioned_libs) {
+dockerfileFromSession <- function(session,
+                                 .dockerfile,
+                                 soft,
+                                 offline,
+                                 add_self,
+                                 versioned_libs,
+                                 workdir) {
     futile.logger::flog.debug("Creating from sessionInfo")
 
     apks <- session$otherPkgs
@@ -249,7 +253,8 @@ dockerfileFromSession <-
     if (!add_self)
       pkgs <- pkgs[names(pkgs) != "containerit"]
 
-    # The platform is determined only from kown images. Alternatively, we could let the user optionally specify one amongst different supported platforms
+    # The platform is determined only for known images.
+    # Alternatively, we could let the user optionally specify one amongst different supported platforms
     platform = NULL
     image_name = .dockerfile@image@image
     if (image_name %in% .debian_images) {
@@ -265,7 +270,8 @@ dockerfileFromSession <-
         platform = platform,
         soft = soft,
         offline = offline,
-        versioned_libs = versioned_libs
+        versioned_libs = versioned_libs,
+        workdir = workdir # will be added as last instruction
       )
 
     return(.dockerfile)
@@ -278,10 +284,10 @@ dockerfileFromFile <-
            copy,
            offline,
            add_self,
-           copy_destination,
            vanilla,
            silent,
-           versioned_libs) {
+           versioned_libs,
+           workdir) {
     futile.logger::flog.debug("Creating from file")
     #################################################
     # prepare context ( = working directory) and normalize paths:
@@ -310,7 +316,7 @@ dockerfileFromFile <-
           slave = silent,
           echo = !silent
         )
-    } else if (stringr::str_detect(file, ".Rmd$")) {
+    }  else if (stringr::str_detect(file, ".Rmd$")) {
       futile.logger::flog.info("Processing the given file %s locally using rmarkdown::render(...)", rel_path)
       sessionInfo <-
         obtain_localSessionInfo(
@@ -333,13 +339,12 @@ dockerfileFromFile <-
         soft = soft,
         offline = offline,
         add_self = add_self,
-        versioned_libs = versioned_libs
+        versioned_libs = versioned_libs,
+        workdir = workdir
       )
 
-    ## set working directory to the copy destination and add copy instructions
+    ## working directory must be set before. Now add copy instructions
     ####################################################
-    addInstruction(.dockerfile) <- Workdir(copy_destination)
-
     if (!is.null(copy) && !is.na(copy)) {
       copy = unlist(copy)
       if (!is.character(copy)) {
@@ -392,10 +397,10 @@ dockerfileFromWorkspace <-
            offline,
            add_self,
            copy,
-           copy_destination,
            vanilla,
            silent,
-           versioned_libs) {
+           versioned_libs,
+           workdir) {
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
 
@@ -411,7 +416,7 @@ dockerfileFromWorkspace <-
     .md_Files <-
       dir(
         path = path,
-        pattern = "\\.Rmd$|\\.Rnw$",
+        pattern = "\\.Rmd$", #|\\.Rnw$",
         full.names = TRUE,
         include.dirs = FALSE,
         recursive = TRUE
@@ -445,10 +450,10 @@ dockerfileFromWorkspace <-
       offline = offline,
       copy = copy,
       add_self = add_self,
-      copy_destination = copy_destination,
       vanilla = vanilla,
       silent = silent,
-      versioned_libs = versioned_libs
+      versioned_libs = versioned_libs,
+      workdir = workdir
     )
     return(.df)
   }
