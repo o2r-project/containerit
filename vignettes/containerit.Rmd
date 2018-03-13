@@ -197,14 +197,14 @@ It then proceeds to package this file along with all other resources in the dire
 Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
 ```{r resources}
-response <- file.copy(from = system.file("simple_test_script_resources/", 
+response <- file.copy(from = system.file("script_resources/", 
                                          package = "containerit"),
                       to = temp_workspace, recursive = TRUE)
 
 
-dockerfile_object <- dockerfile("simple_test_script_resources/",
+dockerfile_object <- dockerfile("script_resources/",
               copy = "script_dir",
-              cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"))
+              cmd = CMD_Rscript("script_resources/simple_test.R"))
 ```
 
 ```{r print_resources_df, comment=NA}

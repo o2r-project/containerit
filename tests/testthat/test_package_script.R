@@ -7,52 +7,52 @@ test_that("the R script location is checked ",{
 })
 
 test_that("an R script can be created with resources of the same folder ",{
-  df <- dockerfile("simple_test_script_resources/simple_test.R",
+  df <- dockerfile("script_resources/simple_test.R",
                 copy = "script_dir",
-                cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"),
+                cmd = CMD_Rscript("script_resources/simple_test.R"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
   #for overwriting
-  #write(df, "simple_test_script_resources/Dockerfile")
+  #write(df, "script_resources/Dockerfile")
 
   # test run (shoud be fast and not give any errors)
   image <- create_localDockerImage(df, use_workdir = TRUE)
   harbor::docker_run(image = image, rm = TRUE)
   harbor::docker_cmd(harbor::localhost, "rmi", image)
 
-  expected_file <- readLines("simple_test_script_resources/Dockerfile")
+  expected_file <- readLines("script_resources/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("a workspace with one R script can be packaged ",{
   #This test should result in the same dockerfile as above:
-  df <- dockerfile("simple_test_script_resources/",
+  df <- dockerfile("script_resources/",
                 copy = "script_dir",
-                cmd = CMD_Rscript("simple_test_script_resources/simple_test.R"),
+                cmd = CMD_Rscript("script_resources/simple_test.R"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
 
-  expected_file <- readLines("simple_test_script_resources/Dockerfile")
+  expected_file <- readLines("script_resources/Dockerfile")
   expect_equal(toString(df), expected_file)
 })
 
 test_that("a list of resources can be packaged ",{
-  df <- dockerfile("simple_test_script_resources/simple_test.R",
-                copy = c("simple_test_script_resources/simple_test.R",
-                         "simple_test_script_resources/test_table.csv",
-                         "simple_test_script_resources/test_subfolder/testresource"),
+  df <- dockerfile("script_resources/simple_test.R",
+                copy = c("script_resources/simple_test.R",
+                         "script_resources/test_table.csv",
+                         "script_resources/test_subfolder/testresource"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
   #for overwriting
-  #write(df, "simple_test_script_resources/Dockerfile2")
-  expected_file <- readLines("simple_test_script_resources/Dockerfile2")
+  #write(df, "script_resources/Dockerfile2")
+  expected_file <- readLines("script_resources/Dockerfile2")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("there is an error if non-existing resources are to be packages",{
-  expect_error(dockerfile("simple_test_script_resources/simple_test.R",
+  expect_error(dockerfile("script_resources/simple_test.R",
                           copy = c("does_not_exist.R")))
 })
 
@@ -74,23 +74,23 @@ test_that("The gstat demo 'zonal' can be packaged ",{
 })
 
 test_that("The file is automatically copied", {
-  df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R")
+  df_copy <- dockerfile(from = "script_resources/simple_test.R")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
               info = "at least one Copy instruction")
 })
 
 test_that("File copying can be disabled with NA", {
-  df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R", copy = NA)
+  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NA_character", {
-  df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R", copy = NA_character_)
+  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA_character_)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NULL", {
-  df_copy <- dockerfile(from = "simple_test_script_resources/simple_test.R", copy = NULL)
+  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NULL)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
