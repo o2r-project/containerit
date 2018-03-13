@@ -1,28 +1,20 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 library(containerit)
-context("dockerfile-generation")
+context("dockerfile generation")
 
-test_that("a simple dockerfile object can be saved to file", {
+test_that("dockerfile object can be saved to file", {
   t_dir <- tempfile(pattern = "dir")
   dir.create(t_dir)
 
   gen_file <- paste(t_dir, "Dockerfile", sep = "/")
-  maintainer <-
-    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  dfile <- dockerfile(from = NULL, maintainer = maintainer)
+  dfile <- dockerfile(from = NULL, maintainer = NULL, r_version = "3.4.1")
   write(dfile, file = gen_file)
 
-  control_file <- "./dockerfile-method-resources/simple_dockerfile"
+  control_file <- "./Dockerfile"
   control_instructions <- readLines(control_file)
-  #update control-file to current version
-  current_version <- paste(R.version$major, R.version$minor, sep = ".")
-  control_instructions[1] <- stringr::str_replace(control_instructions[1],
-                                                  "rocker/r-ver:\\d.\\d.\\d",
-                                                  replacement = paste0("rocker/r-ver:",current_version))
 
   generated_instructions <- readLines(gen_file)
-  #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
 
   unlink(t_dir, recursive = TRUE)

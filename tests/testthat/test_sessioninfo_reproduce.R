@@ -1,7 +1,5 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-# This script may take a few minutes. Disable this test, e.g. by renaming the file, in order to speed-up the testing
-
 library(containerit)
 
 requireNamespace("rgdal")
@@ -9,7 +7,7 @@ requireNamespace("proj4")
 requireNamespace("sp")
 requireNamespace("codetools")
 
-context("session-reproduction")
+context("session reproduction")
 
 # test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it
 # All libraries used must be locally installed prior to running this test!
@@ -102,7 +100,7 @@ test_that("a local sessionInfo() can be created ", {
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
-test_that("a sessionInfo can be reproduced with docker", {
+test_that("a sessionInfo can be reproduced with Docker", {
   skip_on_cran()
   skip_on_travis()
 
@@ -127,7 +125,7 @@ test_that("a sessionInfo can be reproduced with docker", {
   harbor::docker_cmd(harbor::localhost, "rmi", docker_tempimage)
 })
 
-test_that("the same base packages are attached locally and in Docker ", {
+test_that("the same base packages are attached locally and in Docker", {
   skip_on_cran()
   skip_on_travis()
   skip_if_not(!is.null(docker_sessionInfo))
@@ -206,7 +204,7 @@ test_that("the locales are the same ", {
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
 })
 
-#visual comparison
+# manual comparison
 if(FALSE) {
   cat("\nlocal sessionInfo: \n\n")
   print(local_sessionInfo)

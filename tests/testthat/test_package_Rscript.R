@@ -60,15 +60,15 @@ test_that("The gstat demo 'zonal' can be packaged ",{
   expect_true(requireNamespace("sp"))
   expect_true(requireNamespace("gstat"))
 
-  df <- dockerfile("test_script_gstat/zonal.R",
-                cmd = CMD_Rscript("test_script_gstat/zonal.R"),
+  df <- dockerfile("script_gstat/zonal.R",
+                cmd = CMD_Rscript("script_gstat/zonal.R"),
                 maintainer = "matthiashinz",
                 r_version = "3.3.2")
 
   #for overwriting
-  #write(df, "test_script_gstat/Dockerfile")
+  #write(df, "script_gstat/Dockerfile")
   #test execution would be similar to the test above; will not be done because of slowlieness
-  expected_file = readLines("test_script_gstat/Dockerfile")
+  expected_file = readLines("script_gstat/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
@@ -95,7 +95,7 @@ test_that("File copying can be disabled with NULL", {
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("simple_test_script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.3", nearest = FALSE))
-  expected_file = readLines("simple_test_script_packages/Dockerfile")
+  df <- dockerfile("script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.3", nearest = FALSE))
+  expected_file = readLines("script_packages/Dockerfile")
   expect_equal(toString(df), expected_file)
 })

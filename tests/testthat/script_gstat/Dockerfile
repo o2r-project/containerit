@@ -6,5 +6,5 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 	libproj-dev
 RUN ["install2.r", "FNN", "gstat", "intervals", "lattice", "rgdal", "sp", "spacetime", "xts", "zoo"]
 WORKDIR /payload/
-COPY ["test_script_gstat/zonal.R", "test_script_gstat/zonal.R"]
-CMD ["R", "--vanilla", "-f", "test_script_gstat/zonal.R"]
+COPY ["script_gstat/zonal.R", "script_gstat/zonal.R"]
+CMD ["R", "--vanilla", "-f", "script_gstat/zonal.R"]
