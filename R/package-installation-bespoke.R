@@ -9,7 +9,7 @@
   return(c())
 }
 
-.install_sf_with_outdated_system_deps <- function() {
+.install_sf_with_outdated_system_deps <- function(image_name, pkg_names, versioned_libs, add_apt, add_inst) {
   if ("sf" %in% pkg_names) {
     # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated.
     sf_installed <- requireNamespace("sf")

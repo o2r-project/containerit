@@ -50,11 +50,13 @@ Suggests:
     ggplot2
 RoxygenNote: 6.0.1
 Collate:
+Collate: 
     'Class-Instruction.R'
     'Class-Add.R'
     'Class-All.R'
     'Class-Arg.R'
     'Class-Cmd.R'
+    'Class-Comment.R'
     'Class-Copy.R'
     'Class-Entrypoint.R'
     'Class-From.R'
