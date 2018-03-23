@@ -2,14 +2,14 @@
 
 context("Package R markdown files")
 
-test_that("A markdown file can be packaged (using markdowntainer-units-expample)", {
+test_that("A markdown file can be packaged (using units expample)", {
   skip("FIXME, works when run single, but not when run with full package check")
 
-  df <- dockerfile(from = "package_markdown/markdowntainer-units/",
+  df <- dockerfile(from = "package_markdown/units/",
                    maintainer = "Ted Tester",
                    image = getImageForVersion("3.3.2"),
                    copy = "script_dir",
-                   cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
+                   cmd = CMD_Render("package_markdown/units/2016-09-29-plot_units.Rmd"))
   #write(df, "package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
@@ -59,23 +59,23 @@ test_that("The render command supports output directory and output file at the s
 })
 
 test_that("The file is copied", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = "script")
+  df_copy <- dockerfile(from = "package_markdown/units/", copy = "script")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
 })
 
 test_that("File copying is disabled by default", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/")
+  df_copy <- dockerfile(from = "package_markdown/units/")
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NA/NA_character", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA_character_)
+  df_copy <- dockerfile(from = "package_markdown/units/", copy = NA_character_)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
-  df_copy2 <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA_character_)
+  df_copy2 <- dockerfile(from = "package_markdown/units/", copy = NA_character_)
   expect_false(object = any(sapply(df_copy2@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NULL", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NULL)
+  df_copy <- dockerfile(from = "package_markdown/units/", copy = NULL)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
