@@ -171,7 +171,7 @@
     }
   }
 
-  futile.logger::flog.debug("Found system %s dependencies: %s", length(.dependencies), toString(.dependencies))
+  futile.logger::flog.debug("Found %s system dependencies: %s", length(.dependencies), toString(.dependencies))
   return(.dependencies)
 }
 
@@ -273,10 +273,11 @@
 
     tryCatch({
       desc <- readLines(con, warn = FALSE)
-      futile.logger::flog.debug("Response:\n%s", toString(desc))
+      futile.logger::flog.debug("Response: %s", toString(desc))
       parser <- rjson::newJSONParser()
       parser$addData(desc)
       desc <- as.character(parser$getObject())
+      desc <- desc[!desc == "NULL"]
     }, error = function(e) {
       success <- FALSE
       futile.logger::flog.debug("Error requesting package info from sysreqs online DB: %s", toString(e))
