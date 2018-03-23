@@ -2,12 +2,12 @@
 % Please edit documentation in R/utility-functions.R
 \name{getRVersionTag}
 \alias{getRVersionTag}
-\title{Get R version from a variety of sources in a string format used for image tags}
+\title{Get R version in string format used for image tags}
 \usage{
 getRVersionTag(from = NULL, default = R.Version())
 }
 \arguments{
-\item{from}{the source to extract an R version: a `sessionInfo()` object}
+\item{from}{the source to extract an R version: a `sessionInfo()` object, or an \code{Rdata} file with a \code{sessionInfo} object}
 
 \item{default}{if 'from' does not contain version information (e.g. its an Rscript), use this default version information.}
 }

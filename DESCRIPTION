@@ -74,6 +74,7 @@ Collate:
     'containerit.R'
     'defaults.R'
     'dockerfile.R'
+    'package-installation-bespoke.R'
     'package-installation-methods.R'
     'sessionInfo-localbuild-methods.R'
     'utility-functions.R'

@@ -205,7 +205,7 @@ test_that("the locales are the same ", {
 })
 
 # manual comparison
-if(FALSE) {
+if (FALSE) {
   cat("\nlocal sessionInfo: \n\n")
   print(local_sessionInfo)
   cat("\n------------------------------------")

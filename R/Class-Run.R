@@ -21,7 +21,7 @@ setClass("Run_shell",
   # or ["param1","param2"] (for CMD as default parameters to ENTRYPOINT)
 
   commands <- methods::slot(obj, "commands")
-  string <- paste(commands, collapse = " \\\n && ")
+  string <- paste(commands, collapse = " \\\n  && ")
   return(string)
 }
 

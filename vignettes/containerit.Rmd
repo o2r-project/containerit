@@ -345,7 +345,7 @@ Note that while choosing an R version for the Dockerfile explicitly is possible,
 The following examples show usage of these options and the respective `FROM` statements in the Dockerfile.
 
 ```{r base_image, comment=NA}
-df_custom <- dockerfile(from = NULL, r_version = "3.1.0", silent = TRUE)
+df_custom <- dockerfile(from = NULL, image = getImageForVersion("3.3.3"), silent = TRUE)
 print(df_custom@image)
 df_custom <- dockerfile(from = NULL, image = "rocker/geospatial", silent = TRUE)
 print(df_custom@image)
@@ -379,7 +379,7 @@ CLI Examples:
 
   # Creates an empty R session with the given R commands
   # Set R version of the container to 3.3.0
-  containerit session -p -e "library(sp)" -e "demo(meuse, ask=FALSE)" --r_version 3.3.0
+  containerit session -p -e "library(sp)" -e "demo(meuse, ask=FALSE)"
 ```
 
 ## 7. Challenges

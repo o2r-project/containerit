@@ -4,16 +4,24 @@
 \alias{getGitHubRef}
 \title{Get GitHub reference from package}
 \usage{
-getGitHubRef(pkg)
+getGitHubRef(pkg, pkgs = c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
 }
 \arguments{
-\item{pkg}{The name of the package to retrieve the}
+\item{pkg}{The name of the package to retrieve the reference for}
+
+\item{pkgs}{Lists of packages from a sessionInfo object}
 }
 \value{
-A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}
+A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}, \code{NA} is nothign could be found
 }
 \description{
-If a package is not installed from CRAN, this functions tries to determine if it was installed from GitHub using \code{\link[devtools]{session_info}}.
+If a package is installed from GitHub this function tries to retrieve the reference (i.e. repository accoutn, name, and commit) from
+}
+\details{
+\enumerate{
+  \item the provided sessionInfo
+  \item locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}
+}
 }
 \examples{
 \dontrun{

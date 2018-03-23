@@ -7,7 +7,7 @@ test_that("A markdown file can be packaged (using markdowntainer-units-expample)
 
   df <- dockerfile(from = "package_markdown/markdowntainer-units/",
                    maintainer = "Ted Tester",
-                   r_version = "3.3.2",
+                   image = getImageForVersion("3.3.2"),
                    copy = "script_dir",
                    cmd = CMD_Render("package_markdown/markdowntainer-units/2016-09-29-plot_units.Rmd"))
   #write(df, "package_markdown/units_Dockerfile")
@@ -58,19 +58,21 @@ test_that("The render command supports output directory and output file at the s
   expect_equal(stringr::str_count(toString(cmd), 'output_file = \\\\\\"myfile.html\\\\\\"'), 1)
 })
 
-test_that("The file is automatically copied", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/")
+test_that("The file is copied", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = "script")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
 })
 
-test_that("File copying can be disabled with NA", {
-  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA)
+test_that("File copying is disabled by default", {
+  df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/")
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
-test_that("File copying can be disabled with NA_character", {
+test_that("File copying can be disabled with NA/NA_character", {
   df_copy <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA_character_)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
+  df_copy2 <- dockerfile(from = "package_markdown/markdowntainer-units/", copy = NA_character_)
+  expect_false(object = any(sapply(df_copy2@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NULL", {

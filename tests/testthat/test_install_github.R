@@ -11,7 +11,7 @@ test_that("github_packages can be installed", {
   #library(c("harbor", "sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "sessionInfo.Rdata")
   load("./github/sessionInfo.Rdata")
 
-  df = dockerfile(github_test_sessionInfo, maintainer = "matthiashinz", r_version = "3.3.2")
+  df = dockerfile(github_test_sessionInfo, maintainer = "matthiashinz", image = getImageForVersion("3.3.2"))
   write(df, "./github/Dockerfile")
 
   expected_file <- readLines("./github/Dockerfile")
@@ -19,8 +19,8 @@ test_that("github_packages can be installed", {
   expect_equal(generated_file, expected_file)
 })
 
-test_that("GitHub references can be retrieved (using package sysreqs); test fails if package was installed locally from source", {
+test_that("GitHub references can be retrieved for package sysreqs (test fails if package was installed from source)", {
   skip_if_not_installed("sysreqs")
-  ref <- getGitHubRef("sysreqs")
+  ref <- getGitHubRef("sysreqs", c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
   expect_match(ref, "r-hub/sysreqs@([a-f0-9]{7})")
 })

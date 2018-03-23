@@ -1,7 +1,7 @@
 FROM rocker/r-ver:3.3.2
 LABEL maintainer="matthiashinz"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
- && apt-get install -y gdal-bin \
+  && apt-get install -y gdal-bin \
 	libgdal-dev \
 	libproj-dev
 RUN ["install2.r", "FNN", "gstat", "intervals", "lattice", "rgdal", "sp", "spacetime", "xts", "zoo"]

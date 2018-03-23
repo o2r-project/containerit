@@ -11,7 +11,7 @@ test_that("an R script can be created with resources of the same folder ",{
                 copy = "script_dir",
                 cmd = CMD_Rscript("script_resources/simple_test.R"),
                 maintainer = "matthiashinz",
-                r_version = "3.3.2")
+                image = getImageForVersion("3.3.2"))
   #for overwriting
   #write(df, "script_resources/Dockerfile")
 
@@ -31,7 +31,7 @@ test_that("a workspace with one R script can be packaged ",{
                 copy = "script_dir",
                 cmd = CMD_Rscript("script_resources/simple_test.R"),
                 maintainer = "matthiashinz",
-                r_version = "3.3.2")
+                image = getImageForVersion("3.3.2"))
 
   expected_file <- readLines("script_resources/Dockerfile")
   expect_equal(toString(df), expected_file)
@@ -43,7 +43,7 @@ test_that("a list of resources can be packaged ",{
                          "script_resources/test_table.csv",
                          "script_resources/test_subfolder/testresource"),
                 maintainer = "matthiashinz",
-                r_version = "3.3.2")
+                image = getImageForVersion("3.3.2"))
   #for overwriting
   #write(df, "script_resources/Dockerfile2")
   expected_file <- readLines("script_resources/Dockerfile2")
@@ -57,13 +57,14 @@ test_that("there is an error if non-existing resources are to be packages",{
 })
 
 test_that("The gstat demo 'zonal' can be packaged ",{
-  expect_true(requireNamespace("sp"))
-  expect_true(requireNamespace("gstat"))
+  skip_if_not_installed("sp")
+  skip_if_not_installed("gstat")
 
   df <- dockerfile("script_gstat/zonal.R",
                 cmd = CMD_Rscript("script_gstat/zonal.R"),
                 maintainer = "matthiashinz",
-                r_version = "3.3.2")
+                image = getImageForVersion("3.3.2"),
+                copy = "script")
 
   #for overwriting
   #write(df, "script_gstat/Dockerfile")
@@ -73,29 +74,36 @@ test_that("The gstat demo 'zonal' can be packaged ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("The file is automatically copied", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R")
+test_that("The file can be copied", {
+  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = "script")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
               info = "at least one Copy instruction")
 })
 
-test_that("File copying can be disabled with NA", {
+test_that("File copying is disabled by default", {
+  df_copy <- dockerfile(from = "script_resources/simple_test.R")
+  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
+})
+
+test_that("File copying is disabled with NA", {
   df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
-test_that("File copying can be disabled with NA_character", {
+test_that("File copying is disabled with NA_character", {
   df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA_character_)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
-test_that("File copying can be disabled with NULL", {
+test_that("File copying is disabled with NULL", {
   df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NULL)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("script_packages/", maintainer = "o2r", image = getImageForVersion("3.4.3", nearest = FALSE))
+  df <- dockerfile("script_packages/", maintainer = "o2r",
+                   image = getImageForVersion("3.4.3", nearest = FALSE),
+                   copy = "script")
   expected_file = readLines("script_packages/Dockerfile")
   expect_equal(toString(df), expected_file)
 })
