@@ -44,6 +44,7 @@
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
 #' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})
 #' @param silent Whether or not to print information during execution
+#' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages [EXPERIMENTAL] Whether it shall be attempted to match versions of R packages
 #'
@@ -73,6 +74,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        add_self = FALSE,
                        vanilla = TRUE,
                        silent = FALSE,
+                       predetect = TRUE,
                        versioned_libs = FALSE,
                        versioned_packages = FALSE) {
     if (silent) {
@@ -162,10 +164,9 @@ dockerfile <- function(from = utils::sessionInfo(),
       futile.logger::flog.debug("Creating from character string '%s'", from)
 
       if (dir.exists(from)) {
-        futile.logger::flog.debug("'%s' is a directory")
+        futile.logger::flog.debug("'%s' is a directory", from)
         .originalFrom <- from
-        .dockerfile <-
-          dockerfileFromWorkspace(
+        .dockerfile <- dockerfileFromWorkspace(
             path = from,
             .dockerfile = .dockerfile,
             soft = soft,
@@ -174,15 +175,14 @@ dockerfile <- function(from = utils::sessionInfo(),
             copy = copy,
             vanilla = vanilla,
             silent = silent,
+            predetect = predetect,
             versioned_libs = versioned_libs,
             versioned_packages = versioned_packages,
-            workdir = workdir
-          )
+            workdir = workdir)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
         .originalFrom <- from
-        .dockerfile <-
-          dockerfileFromFile(
+        .dockerfile <- dockerfileFromFile(
             file = from,
             .dockerfile = .dockerfile,
             soft = soft,
@@ -191,10 +191,10 @@ dockerfile <- function(from = utils::sessionInfo(),
             copy = copy,
             vanilla = vanilla,
             silent = silent,
+            predetect = predetect,
             versioned_libs = versioned_libs,
             versioned_packages = versioned_packages,
-            workdir = workdir
-          )
+            workdir = workdir)
       } else {
         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
       }
@@ -278,23 +278,24 @@ dockerfileFromSession <- function(session,
     return(.dockerfile)
   }
 
-dockerfileFromFile <-
-  function(file,
-           .dockerfile,
-           soft,
-           copy,
-           offline,
-           add_self,
-           vanilla,
-           silent,
-           versioned_libs,
-           versioned_packages,
-           workdir) {
+dockerfileFromFile <- function(file,
+                               .dockerfile,
+                               soft,
+                               copy,
+                               offline,
+                               add_self,
+                               vanilla,
+                               silent,
+                               predetect,
+                               versioned_libs,
+                               versioned_packages,
+                               workdir) {
     futile.logger::flog.debug("Creating from file")
 
     # prepare context ( = working directory) and normalize paths:
     context = normalizePath(getwd())
     file = normalizePath(file)
+    futile.logger::flog.debug("Working with file %s in working directory %s", file, context)
 
     #Is the file within the context?
     len = stringr::str_length(context)
@@ -307,23 +308,19 @@ dockerfileFromFile <-
 
     # execute script / markdowns or read Rdata file to obtain sessioninfo
     if (stringr::str_detect(file, ".R$")) {
-      futile.logger::flog.info("Executing R script file in %s locally.", rel_path)
-      sessionInfo <-
-        obtain_localSessionInfo(
-          file = file,
-          vanilla = vanilla,
-          slave = silent,
-          echo = !silent
-        )
+      futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
+      sessionInfo <- obtain_localSessionInfo(file = file,
+                                             vanilla = vanilla,
+                                             slave = silent,
+                                             echo = !silent,
+                                             predetect = predetect)
     } else if (stringr::str_detect(file, ".Rmd$")) {
-      futile.logger::flog.info("Processing the given file %s locally using rmarkdown::render(...)", rel_path)
-      sessionInfo <-
-        obtain_localSessionInfo(
-          rmd_file = file,
-          vanilla = vanilla,
-          slave = silent,
-          echo = !silent
-        )
+      futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_path)
+      sessionInfo <- obtain_localSessionInfo(rmd_file = file,
+                                             vanilla = vanilla,
+                                             slave = silent,
+                                             echo = !silent,
+                                             predetect = predetect)
     } else if (stringr::str_detect(file, ".Rdata$")) {
       sessionInfo <- getSessionInfoFromRdata(file)
     } else{
@@ -331,17 +328,14 @@ dockerfileFromFile <-
     }
 
     # append system dependencies and package installation instructions
-    .dockerfile <-
-      dockerfileFromSession(
-        session = sessionInfo,
-        .dockerfile = .dockerfile,
-        soft = soft,
-        offline = offline,
-        add_self = add_self,
-        versioned_libs = versioned_libs,
-        versioned_packages = versioned_packages,
-        workdir = workdir
-      )
+    .dockerfile <- dockerfileFromSession(session = sessionInfo,
+                                         .dockerfile = .dockerfile,
+                                         soft = soft,
+                                         offline = offline,
+                                         add_self = add_self,
+                                         versioned_libs = versioned_libs,
+                                         versioned_packages = versioned_packages,
+                                         workdir = workdir)
 
     ## working directory must be set before. Now add copy instructions
     if (!is.null(copy) && !is.na(copy)) {
@@ -370,8 +364,7 @@ dockerfileFromFile <-
         sapply(copy, function(file) {
           if (file.exists(file)) {
             rel_path <- .makeRelative(normalizePath(file), context)
-            rel_path_dest <-
-              stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+            rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
             if (dir.exists(file) &&
                 !stringr::str_detect(rel_path_dest, "/$"))
               rel_path_dest <- paste0(rel_dir_dest, "/")
@@ -389,18 +382,18 @@ dockerfileFromFile <-
     return(.dockerfile)
   }
 
-dockerfileFromWorkspace <-
-  function(path,
-           .dockerfile,
-           soft,
-           offline,
-           add_self,
-           copy,
-           vanilla,
-           silent,
-           versioned_libs,
-           versioned_packages,
-           workdir) {
+dockerfileFromWorkspace <- function(path,
+                                   .dockerfile,
+                                   soft,
+                                   offline,
+                                   add_self,
+                                   copy,
+                                   vanilla,
+                                   silent,
+                                   predetect,
+                                   versioned_libs,
+                                   versioned_packages,
+                                   workdir) {
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
 
@@ -443,19 +436,18 @@ dockerfileFromWorkspace <-
     else
       futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
 
-    .df <- dockerfileFromFile(
-      target_file,
-      .dockerfile = .dockerfile,
-      soft = soft,
-      offline = offline,
-      copy = copy,
-      add_self = add_self,
-      vanilla = vanilla,
-      silent = silent,
-      versioned_libs = versioned_libs,
-      versioned_packages = versioned_packages,
-      workdir = workdir
-    )
+    .df <- dockerfileFromFile(target_file,
+                              .dockerfile = .dockerfile,
+                              soft = soft,
+                              offline = offline,
+                              copy = copy,
+                              add_self = add_self,
+                              vanilla = vanilla,
+                              silent = silent,
+                              predetect = predetect,
+                              versioned_libs = versioned_libs,
+                              versioned_packages = versioned_packages,
+                              workdir = workdir)
     return(.df)
   }
 

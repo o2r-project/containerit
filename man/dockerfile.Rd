@@ -11,7 +11,7 @@ dockerfile(from = utils::sessionInfo(),
   utils::packageVersion("containerit"))), soft = FALSE, offline = FALSE,
   copy = NA, container_workdir = "/payload/", cmd = Cmd("R"),
   entrypoint = NULL, add_self = FALSE, vanilla = TRUE, silent = FALSE,
-  versioned_libs = FALSE, versioned_packages = FALSE)
+  predetect = TRUE, versioned_libs = FALSE, versioned_packages = FALSE)
 }
 \arguments{
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
@@ -44,6 +44,8 @@ By default, the image is determinded from the given session. Alternatively, use 
 \item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})}
 
 \item{silent}{Whether or not to print information during execution}
+
+\item{predetect}{Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document}
 
 \item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
 

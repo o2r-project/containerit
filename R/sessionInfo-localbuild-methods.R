@@ -99,51 +99,74 @@ create_localDockerImage <- function(x,
 #
 # This method is used for packaging R scripts (see dockerFileFromFile)
 # and for comparing session information (see test/testthat/test_sessioninfo_repoduce.R)
-obtain_localSessionInfo <-
-  function(expr = c(),
+obtain_localSessionInfo <- function(expr = c(),
            file = NULL, # an R script to be executed
            rmd_file = NULL, # an R Markdown file
            vanilla = TRUE,
            silent = TRUE,
            slave = FALSE,
-           echo = FALSE, #whether R scripts should be 'echoed'
+           echo = FALSE, # whether R scripts should be 'echoed'
+           predetect = TRUE, # whether to use automagic to make sure all required packages are installed
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"),
            local_temp_script = tempfile(pattern = "r-script")) {
-    #append commands to create a local sessionInfo
-    if (!is.null(file) && file.exists(file)) {
-      expr <- append(expr, call("source", file = file, echo = echo))
+  #append commands to create a local sessionInfo
+  required_pkgs <- c()
+  if (!is.null(file) && file.exists(file)) {
+    expr <- append(expr, call("source", file = file, echo = echo))
+
+    if (predetect) {
+      required_pkgs <- automagic::parse_packages(file)
+      futile.logger::flog.debug("Analysed input file %s and found required packages: %s",
+                               file, toString(required_pkgs))
     }
-
-    if (!is.null(rmd_file) && file.exists(rmd_file)) {
-      render_call <- quote(rmarkdown::render("file"))
-      render_call[[2]] <- rmd_file #replace the argument "file
-      expr <- append(expr, render_call)
-    }
-
-    expr <- append(expr, .writeSessionInfoExp(local_tempfile))
-    args <- .exprToParam(expr, to_string = TRUE)
-    if (vanilla)
-      args <- append("--vanilla", args)
-
-    if (slave)
-      args <- append("--slave", args)
-
-    if (silent)
-      args <- append("--silent", args)
-
-    futile.logger::flog.info(paste(
-      "Creating an R session with the following arguments:\n\t R ",
-      paste(args, collapse = " ")
-    ))
-
-    system2("R", args)
-
-    if (!file.exists(local_tempfile))
-      stop("Failed to execute the script locally! A sessionInfo could not be determined.")
-
-    load(local_tempfile)
-    #clean up:
-    unlink(local_tempfile)
-    unlink(local_temp_script)
-    return(get("info"))
   }
+
+  if (!is.null(rmd_file) && file.exists(rmd_file)) {
+    render_call <- quote(rmarkdown::render("file"))
+    render_call[[2]] <- rmd_file #replace the argument "file
+    expr <- append(expr, render_call)
+
+    if (predetect) {
+      required_pkgs <- automagic::parse_packages(rmd_file)
+      futile.logger::flog.debug("Analysed input file %s and found required packages: %s",
+                                rmd_file, toString(required_pkgs))
+    }
+  }
+
+  if (predetect && length(required_pkgs) > 0) {
+    installing_pkgs <- stringr::str_remove_all(required_pkgs, "\"")
+    installing_pkgs <- setdiff(installing_pkgs, rownames(installed.packages()))
+    if (length(installing_pkgs) > 0) {
+      futile.logger::flog.info("Missing packages installed before running file: %s",
+                               toString(installing_pkgs))
+      install.packages(pkgs = installing_pkgs)
+    } else {
+      futile.logger::flog.debug("No missing packages to install before running file")
+    }
+  }
+
+  expr <- append(expr, .writeSessionInfoExp(local_tempfile))
+  args <- .exprToParam(expr, to_string = TRUE)
+  if (vanilla)
+    args <- append("--vanilla", args)
+
+  if (slave)
+    args <- append("--slave", args)
+
+  if (silent)
+    args <- append("--silent", args)
+
+  futile.logger::flog.info(paste("Creating an R session with the following arguments:\n\t R ",
+                                 paste(args, collapse = " ")))
+
+  system2("R", args)
+
+  if (!file.exists(local_tempfile))
+    stop("Failed to execute the script locally! A sessionInfo could not be determined.")
+
+  load(local_tempfile)
+  #clean up:
+  unlink(local_tempfile)
+  unlink(local_temp_script)
+  return(get("info"))
+}
