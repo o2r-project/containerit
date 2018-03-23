@@ -1,7 +1,7 @@
 Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.2.4
+Version: 0.3.0
 Authors@R: c(person("Daniel", "Nuest", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de", comment = c(ORCID = "0000-0003-2392-6140")),
     person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
