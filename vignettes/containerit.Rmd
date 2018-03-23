@@ -172,14 +172,14 @@ Similarly to scripts, R Markdown files can be passed to the `from` argument.
 In the following example, a vignette from the Simple Features package `sf` is packaged in a container.
 To render the document at startup, the Dockerfile's `CMD` instruction must be changed.
 To do this, the `cmd` argument passed to `dockerfile()` is constructed using the function `CMD_Render`.
-Note that, as shown in the Dockerfile, the GDAL library has to be build from source for `sf` to work properly, because a quite recent version of GDAL is required.
-This adaptation of the installation instruction is based on an internal ruleset for the package `sf`.
 
 ```{r sf_vignette, results='hide', eval=FALSE}
-file.copy(from = system.file("doc/sf1.Rmd",package = "sf"),
-                        to = temp_workspace, recursive = TRUE)
-dockerfile_object <- dockerfile(from = file.path(temp_workspace, "sf1.Rmd"), silent = TRUE, 
-                                cmd = CMD_Render("sf1.Rmd"))
+file.copy(from = system.file("doc/sf6.Rmd", package = "sf"),
+          to = file.path(temp_workspace, "sf6.Rmd"),
+          overwrite = TRUE)
+dockerfile_object <- dockerfile(from = file.path(temp_workspace, "sf6.Rmd"),
+                                silent = TRUE, 
+                                cmd = CMD_Render("sf6.Rmd"))
 ```
 
 ```{r print_sf_vignette, comment=NA}
@@ -199,10 +199,11 @@ The `sessionInfo` object must have the name `sessionInfo` and must be the only o
 This is useful when you want to re-create sessions on different machines.
 
 ```{r sessionInfo_Rdata}
-library("sf")
+suppressPackageStartupMessages(library("sf"))
 sessionInfo <- sessionInfo()
-save(sessionInfo, file = "sessionInfo.Rdata")
+save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.Rdata"))
 unloadNamespace("sf")
+df <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
 print(df)
 ```
 
@@ -211,11 +212,11 @@ print(df)
 Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
 ```{r resources}
-response <- file.copy(from = system.file("simple_test_script_resources", 
-                                         package = "containerit"),
-                      to = temp_workspace, recursive = TRUE)
-
-dockerfile_resources <- dockerfile(from = file.path(temp_workspace, "simple_test_script_resources"),
+file.copy(from = system.file("simple_test_script_resources", 
+                             package = "containerit"),
+          to = temp_workspace, recursive = TRUE)
+setwd(file.path(temp_workspace, "simple_test_script_resources"))
+dockerfile_resources <- dockerfile(from = ".",
               copy = "script_dir",
               cmd = CMD_Rscript("simple_test.R"))
 ```
