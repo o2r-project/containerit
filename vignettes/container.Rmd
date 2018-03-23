@@ -81,12 +81,12 @@ rm -r /tmp/containerit
 With the following commands you can build an image from the local source code.
 The following command executed in the `containerit` source directory creates an image `containerit`:
 
-```{bash, eval=TRUE}
+```{bash, eval=FALSE}
 docker build --file inst/docker/local/Dockerfile --tag containerit .
 ```
 
 You can try the `predetect` feature by packaging the R Markdown file of the spacetime vignette:
 
-```
+```{bash, eval=FALSE}
 docker run --rm -it -v $(pwd)/tests/testthat/package_markdown/spacetime:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R -e "setwd('/erc'); print(dockerfile(from = '/erc'))"
 ```

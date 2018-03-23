@@ -178,7 +178,7 @@ This adaptation of the installation instruction is based on an internal ruleset 
 ```{r sf_vignette, results='hide', eval=FALSE}
 file.copy(from = system.file("doc/sf1.Rmd",package = "sf"),
                         to = temp_workspace, recursive = TRUE)
-dockerfile_object <- dockerfile(from = "sf1.Rmd", silent = TRUE, 
+dockerfile_object <- dockerfile(from = file.path(temp_workspace, "sf1.Rmd"), silent = TRUE, 
                                 cmd = CMD_Render("sf1.Rmd"))
 ```
 
@@ -192,23 +192,36 @@ A typical case expected to be interesting for `containerit` users is packaging a
 If providing a directory path to the `dockerfile()` function, the package searches for the first occurence of an R script, or otherwise the first occurence of an R markdown file.
 It then proceeds to package this file along with all other resources in the directory, as shown in the next section.
 
+### 2.7 Packaging from a stored sessionInfo
+
+You can also save your `sessionInfo()` into an `Rdata` file and create a `Dockerfile` form it.
+The `sessionInfo` object must have the name `sessionInfo` and must be the only object in the `.Rdata` file.
+This is useful when you want to re-create sessions on different machines.
+
+```{r sessionInfo_Rdata}
+library("sf")
+sessionInfo <- sessionInfo()
+save(sessionInfo, file = "sessionInfo.Rdata")
+unloadNamespace("sf")
+print(df)
+```
+
 ## 3. Including resources
 
 Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
 ```{r resources}
-response <- file.copy(from = system.file("script_resources/", 
+response <- file.copy(from = system.file("simple_test_script_resources", 
                                          package = "containerit"),
                       to = temp_workspace, recursive = TRUE)
 
-
-dockerfile_object <- dockerfile("script_resources/",
+dockerfile_resources <- dockerfile(from = file.path(temp_workspace, "simple_test_script_resources"),
               copy = "script_dir",
-              cmd = CMD_Rscript("script_resources/simple_test.R"))
+              cmd = CMD_Rscript("simple_test.R"))
 ```
 
 ```{r print_resources_df, comment=NA}
-print(dockerfile_object)
+print(dockerfile_resources)
 ```
                          
 Including R objects works similar to resources, using the argument `save_image`.

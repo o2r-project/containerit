@@ -11,9 +11,9 @@ See official documentation at \url{https://docs.docker.com/engine/reference/buil
 \seealso{
 Other instruction classes: \code{\link{Add-class}},
   \code{\link{Arg-class}}, \code{\link{Cmd-class}},
-  \code{\link{Copy-class}}, \code{\link{Entrypoint-class}},
-  \code{\link{Env-class}}, \code{\link{Expose-class}},
-  \code{\link{From-class}},
+  \code{\link{Comment-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
   \code{\link{Healthcheck-class}},
   \code{\link{Label-class}},
   \code{\link{Maintainer-class}},
