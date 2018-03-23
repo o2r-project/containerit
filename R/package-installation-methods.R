@@ -10,6 +10,7 @@
            offline,
            versioned_libs,
            versioned_packages,
+           filter_baseimage_pkgs,
            filter_deps_by_image = FALSE) {
     package_reqs <- character(0)
     cran_packages <- character(0)
@@ -17,7 +18,21 @@
     pkg_names <-  character(0)
     package_versions <- character(0)
 
-    # 1. identify where to install the package from
+    # 0. Packages can be left out because they are pre-installed for given image
+    image_name <- dockerfile@image@image
+    if (filter_baseimage_pkgs && !versioned_packages) {
+      image <- docker_arguments(dockerfile@image)
+      available_pkgs <- get_installed_packages(image = image)$pkg
+      skipable <- names(pkgs) %in% available_pkgs
+      skipped_str <- toString(sort(names(pkgs[skipable])))
+      futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
+                               image, skipped_str)
+      addInstruction(dockerfile) <- Comment(text = paste0("Packages skipped because they are in the base image: ",
+                                                          skipped_str))
+      pkgs <- pkgs[!skipable]
+    }
+
+    # 1. identify where to install the package from - FIXME do not split into seperate lists but put in a data.frame
     sapply(pkgs,
            function(pkg) {
              #determine package name
@@ -48,9 +63,7 @@
              }
            })
 
-    image_name <- dockerfile@image@image
-
-    # installing github packages, requires the package 'remotes'
+    # Installing github packages requires the package 'remotes'
     if (length(github_packages) > 0 &&
         !"remotes" %in% cran_packages &&
         !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")) {
@@ -73,7 +86,7 @@
 
     # 2. get system dependencies if packages must be installed
     if (length(pkg_names) > 0) {
-      # see package-installation-bespoke.R
+      # see package-installation-bespoke.R for some outdated code
       # add_inst <- list()
 
       #  determine package dependencies (if applicable by given platform)
@@ -85,7 +98,7 @@
         package_version = package_versions
       )
 
-      # dependencies that can be left out because they are pre-installed for a certain image
+      # system dependencies that can be left out because they are pre-installed for given image
       if (filter_deps_by_image) {
         skipable <- .skipable_deps(image_name)
         package_reqs <- package_reqs[!package_reqs %in% skipable]

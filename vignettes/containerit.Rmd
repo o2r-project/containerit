@@ -337,6 +337,17 @@ dockerfile_with_entrypoint <- dockerfile(from = NULL,
 print(dockerfile_with_entrypoint)
 ```
 
+### 4.4 Comments
+
+Comments can be added to a Dockerfile.
+By default they are the last instruction.
+
+```{r comment, comment=NA}
+df_comment <- dockerfile(from = NULL, image = getImageForVersion("3.3.3"), silent = TRUE)
+addInstruction(df_comment) <- Comment(text = "Don't forget about this!")
+print(df_comment)
+```
+
 ## 5. Custom base image
 
 The `dockerfile()` function allows further customization regarding the R version or the used base image (cf. Rocker stack).
@@ -351,6 +362,19 @@ df_custom <- dockerfile(from = NULL, image = "rocker/geospatial", silent = TRUE)
 print(df_custom@image)
 df_custom <- dockerfile(from = NULL, image = "rocker/verse:3.0.0", silent = TRUE)@image
 print(df_custom@image)
+```
+
+When you change the base image, you might not want to re-install packages that are already in the base image.
+The helper function `get_installed_packages()` is used internally to filter the installed packages and can be activated with `filter_baseimage_pkgs`.
+
+```{r base_image_filter, comment=NA}
+expressions <- c(expression(library("sp")),
+                 expression(library("cshapes")))
+session <- clean_session(expressions, echo = TRUE)
+df_filtered <- dockerfile(from = session, maintainer = "o2r",
+                   image = "rocker/geospatial:3.4.4",
+                   filter_baseimage_pkgs = TRUE)
+print(df_filtered)
 ```
 
 ## 6. CLI

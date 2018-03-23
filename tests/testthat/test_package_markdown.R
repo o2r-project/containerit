@@ -81,12 +81,17 @@ test_that("File copying can be disabled with NULL", {
 })
 
 test_that("Packaging fails if dependency is missing in the base image and predetection is disabled", {
-  remove.packages(pkgs = c("plm"))
+  if (requireNamespace("plm")) {
+    remove.packages(pkgs = c("plm"))
+  }
   expect_failure(dockerfile(from = "package_markdown/spacetime/", predetect = FALSE), "Failed to execute")
 })
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
-  remove.packages(pkgs = c("plm"))
+  if (requireNamespace("plm")) {
+    remove.packages(pkgs = c("plm"))
+  }
+  # this will re-install the package plm again:
   df <- dockerfile(from = "package_markdown/spacetime/", maintainer = "o2r", predetect = TRUE)
   expected_file <- readLines("package_markdown/spacetime/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))

@@ -47,6 +47,7 @@
 #' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages [EXPERIMENTAL] Whether it shall be attempted to match versions of R packages
+#' @param filter_baseimage_pkgs Whether it shall be attempted to match versions of R packages
 #'
 #' @return An object of class Dockerfile
 #'
@@ -76,7 +77,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                        silent = FALSE,
                        predetect = TRUE,
                        versioned_libs = FALSE,
-                       versioned_packages = FALSE) {
+                       versioned_packages = FALSE,
+                       filter_baseimage_pkgs = FALSE) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -133,15 +135,13 @@ dockerfile <- function(from = utils::sessionInfo(),
     }
 
     # base dockerfile
-    .dockerfile <-
-      methods::new(
-        "Dockerfile",
-        instructions = list(),
-        maintainer = maintainer,
-        image = image,
-        entrypoint = entrypoint,
-        cmd = cmd
-      )
+    .dockerfile <- methods::new("Dockerfile",
+                                instructions = list(),
+                                maintainer = maintainer,
+                                image = image,
+                                entrypoint = entrypoint,
+                                cmd = cmd)
+
     # handle differe "from" cases
     if (is.null(from)) {
       futile.logger::flog.debug("from is NULL, not deriving any information at all")
@@ -149,52 +149,50 @@ dockerfile <- function(from = utils::sessionInfo(),
         addInstruction(.dockerfile) <- workdir
     } else if (inherits(x = from, "sessionInfo")) {
       futile.logger::flog.debug("Creating from sessionInfo object")
-      .dockerfile <-
-        dockerfileFromSession(
-          .dockerfile = .dockerfile,
-          session = from,
-          soft = soft,
-          offline = offline,
-          add_self = add_self,
-          versioned_libs = versioned_libs,
-          versioned_packages = versioned_packages,
-          workdir = workdir
-        )
+      .dockerfile <- dockerfileFromSession(.dockerfile = .dockerfile,
+                                           session = from,
+                                           soft = soft,
+                                           offline = offline,
+                                           add_self = add_self,
+                                           versioned_libs = versioned_libs,
+                                           versioned_packages = versioned_packages,
+                                           filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                           workdir = workdir)
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
 
       if (dir.exists(from)) {
         futile.logger::flog.debug("'%s' is a directory", from)
         .originalFrom <- from
-        .dockerfile <- dockerfileFromWorkspace(
-            path = from,
-            .dockerfile = .dockerfile,
-            soft = soft,
-            offline = offline,
-            add_self = add_self,
-            copy = copy,
-            vanilla = vanilla,
-            silent = silent,
-            predetect = predetect,
-            versioned_libs = versioned_libs,
-            versioned_packages = versioned_packages,
-            workdir = workdir)
+        .dockerfile <- dockerfileFromWorkspace(path = from,
+                                               .dockerfile = .dockerfile,
+                                               soft = soft,
+                                               offline = offline,
+                                               add_self = add_self,
+                                               copy = copy,
+                                               vanilla = vanilla,
+                                               silent = silent,
+                                               predetect = predetect,
+                                               versioned_libs = versioned_libs,
+                                               versioned_packages = versioned_packages,
+                                               filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                               workdir = workdir)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
         .originalFrom <- from
-        .dockerfile <- dockerfileFromFile(
-            file = from,
-            .dockerfile = .dockerfile,
-            soft = soft,
-            offline = offline,
-            add_self = add_self,
-            copy = copy,
-            vanilla = vanilla,
-            silent = silent,
-            predetect = predetect,
-            versioned_libs = versioned_libs,
-            versioned_packages = versioned_packages,
-            workdir = workdir)
+        .dockerfile <- dockerfileFromFile(file = from,
+                                          .dockerfile = .dockerfile,
+                                          soft = soft,
+                                          offline = offline,
+                                          add_self = add_self,
+                                          copy = copy,
+                                          vanilla = vanilla,
+                                          silent = silent,
+                                          predetect = predetect,
+                                          versioned_libs = versioned_libs,
+                                          versioned_packages = versioned_packages,
+                                          filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                          workdir = workdir)
       } else {
         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
       }
@@ -212,6 +210,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                                            add_self = add_self,
                                            versioned_libs = versioned_libs,
                                            versioned_packages = versioned_packages,
+                                           filter_baseimage_pkgs = filter_baseimage_pkgs,
                                            workdir = workdir)
     } else {
       stop("Unsupported 'from': ", class(from), " ", from)
@@ -244,6 +243,7 @@ dockerfileFromSession <- function(session,
                                  add_self,
                                  versioned_libs,
                                  versioned_packages,
+                                 filter_baseimage_pkgs,
                                  workdir) {
     futile.logger::flog.debug("Creating from sessionInfo")
 
@@ -270,7 +270,8 @@ dockerfileFromSession <- function(session,
       soft = soft,
       offline = offline,
       versioned_libs = versioned_libs,
-      versioned_packages = versioned_packages)
+      versioned_packages = versioned_packages,
+      filter_baseimage_pkgs = filter_baseimage_pkgs)
 
     # after all installation is done, set the workdir
     addInstruction(.dockerfile) <- workdir
@@ -289,6 +290,7 @@ dockerfileFromFile <- function(file,
                                predetect,
                                versioned_libs,
                                versioned_packages,
+                               filter_baseimage_pkgs,
                                workdir) {
     futile.logger::flog.debug("Creating from file")
 
@@ -335,6 +337,7 @@ dockerfileFromFile <- function(file,
                                          add_self = add_self,
                                          versioned_libs = versioned_libs,
                                          versioned_packages = versioned_packages,
+                                         filter_baseimage_pkgs = filter_baseimage_pkgs,
                                          workdir = workdir)
 
     ## working directory must be set before. Now add copy instructions
@@ -393,6 +396,7 @@ dockerfileFromWorkspace <- function(path,
                                    predetect,
                                    versioned_libs,
                                    versioned_packages,
+                                   filter_baseimage_pkgs,
                                    workdir) {
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
@@ -447,6 +451,7 @@ dockerfileFromWorkspace <- function(path,
                               predetect = predetect,
                               versioned_libs = versioned_libs,
                               versioned_packages = versioned_packages,
+                              filter_baseimage_pkgs = filter_baseimage_pkgs,
                               workdir = workdir)
     return(.df)
   }

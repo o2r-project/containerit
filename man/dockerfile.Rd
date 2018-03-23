@@ -11,7 +11,8 @@ dockerfile(from = utils::sessionInfo(),
   utils::packageVersion("containerit"))), soft = FALSE, offline = FALSE,
   copy = NA, container_workdir = "/payload/", cmd = Cmd("R"),
   entrypoint = NULL, add_self = FALSE, vanilla = TRUE, silent = FALSE,
-  predetect = TRUE, versioned_libs = FALSE, versioned_packages = FALSE)
+  predetect = TRUE, versioned_libs = FALSE, versioned_packages = FALSE,
+  filter_baseimage_pkgs = FALSE)
 }
 \arguments{
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
@@ -50,6 +51,8 @@ By default, the image is determinded from the given session. Alternatively, use 
 \item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
 
 \item{versioned_packages}{[EXPERIMENTAL] Whether it shall be attempted to match versions of R packages}
+
+\item{filter_baseimage_pkgs}{Whether it shall be attempted to match versions of R packages}
 }
 \value{
 An object of class Dockerfile
