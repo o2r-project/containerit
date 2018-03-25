@@ -51,6 +51,19 @@ r_packages:
   - sf
   - fortunes
   - lwgeom
+  # needed for rendering spacetime/main.Rmd
+  - plm
+  - spacetime
+  - mapdata
+  - lattice
+  - RColorBrewer
+  - xts
+  - maptools
+  - maps
+  - diveMove
+  - trip
+  - adehabitatLT
+  - cshapes
 
 after_failure:
   - Rscript -e 'library(methods)' -e 'devtools::test()'
