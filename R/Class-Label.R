@@ -3,7 +3,6 @@
 #' Instruction class representing a LABEL
 #'
 #' See Dockerfile reference at https://docs.docker.com/engine/reference/builder/#label
-#' See project issue at https://github.com/o2r-project/containerit/issues/42
 #'
 #' @include Class-Instruction.R
 #'

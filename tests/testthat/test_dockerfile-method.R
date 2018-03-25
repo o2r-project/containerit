@@ -1,28 +1,20 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
 library(containerit)
-context("dockerfile-generation")
+context("dockerfile generation")
 
-test_that("a simple dockerfile object can be saved to file", {
+test_that("dockerfile object can be saved to file", {
   t_dir <- tempfile(pattern = "dir")
   dir.create(t_dir)
 
   gen_file <- paste(t_dir, "Dockerfile", sep = "/")
-  maintainer <-
-    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  dfile <- dockerfile(from = NULL, maintainer = maintainer)
+  dfile <- dockerfile(from = NULL, maintainer = NULL, image = getImageForVersion("3.4.1"))
   write(dfile, file = gen_file)
 
-  control_file <- "./dockerfile-method-resources/simple_dockerfile"
+  control_file <- "./Dockerfile"
   control_instructions <- readLines(control_file)
-  #update control-file to current version
-  current_version <- paste(R.version$major, R.version$minor, sep = ".")
-  control_instructions[1] <- stringr::str_replace(control_instructions[1],
-                                                  "rocker/r-ver:\\d.\\d.\\d",
-                                                  replacement = paste0("rocker/r-ver:",current_version))
 
   generated_instructions <- readLines(gen_file)
-  #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
 
   unlink(t_dir, recursive = TRUE)
@@ -59,26 +51,18 @@ test_that("users can specify the base image", {
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
   #check if from - instruction is the first (may be necessary to ignore comments in later tests)
   expect_length(which(toString(dfile1) == fromstr), 1)
-  #expect that custom image is preferred over R version argument
-  dfile2 <-
-    dockerfile(from = NULL,
-               image = imagestr,
-               r_version = "3.1.0")
-  expect_equal(as.character(slot(dfile2, "image")), fromstr)
-  #expect_equal(toString(slot(dfile2, "image")), fromstr)
-  expect_length(which(toString(dfile2) == fromstr), 1)
 })
 
 test_that("users can specify the R version", {
   versionstr <- "3.1.0"
-  dfile <- dockerfile(from = NULL, r_version = versionstr)
+  dfile <- dockerfile(from = NULL, image = getImageForVersion(versionstr))
   #check content of image and instructions slots
   expect_equal(toString(slot(slot(dfile, "image"), "postfix")), versionstr)
   expect_match(toString(dfile), versionstr, all = FALSE)
 })
 
 test_that("users are warned if an unsupported R version is set", {
-  expect_warning(dockerfile(from = NULL, r_version = "2.0.0"), "closest")
+  expect_warning(dockerfile(from = NULL, image = getImageForVersion("2.0.0")), "returning closest match")
 })
 
 test_that("R version is the current version if not specified otherwise", {

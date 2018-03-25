@@ -1,7 +1,7 @@
 FROM rocker/geospatial
 LABEL maintainer="matthiashinz"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
- && apt-get install -y libudunits2-dev \
+  && apt-get install -y libudunits2-dev \
 	pandoc \
 	pandoc-citeproc
 RUN ["install2.r", "dplyr", "sf", "Rcpp", "assertthat", "digest", "rprojroot", "R6", "DBI", "backports", "magrittr", "evaluate", "units", "rlang", "stringi", "rmarkdown", "udunits2", "stringr", "glue", "yaml", "htmltools", "knitr", "tibble"]

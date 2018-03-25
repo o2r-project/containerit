@@ -55,8 +55,8 @@ r_packages:
 after_failure:
   - Rscript -e 'library(methods)' -e 'devtools::test()'
 
-after_success:
+#after_success:
 #  - Rscript -e 'covr::codecov()'
-  - Rscript -e 'lintr::lint_package()'
-  - echo $TRAVIS_R_VERSION
-  - echo $TRAVIS_OS_NAME
+#  - Rscript -e 'lintr::lint_package()'
+#  - echo $TRAVIS_R_VERSION
+#  - echo $TRAVIS_OS_NAME

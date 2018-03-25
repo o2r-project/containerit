@@ -1,181 +1,96 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-#pkgs list of packages as returned by sessionInfo
+# pkgs is a list of packages as returned by sessionInfo()
+# function returns a the dockerfile with the required instructions
 .create_run_install <-
-  function(.dockerfile,
+  function(dockerfile,
            pkgs,
            platform,
            soft,
            offline,
            versioned_libs,
-           workdir) {
-    #create RUN expressions
+           versioned_packages,
+           filter_baseimage_pkgs,
+           filter_deps_by_image = FALSE) {
     package_reqs <- character(0)
     cran_packages <- character(0)
     github_packages <- character(0)
-    local_packages <- character(0)
-    other_packages <-  character(0)
     pkg_names <-  character(0)
     package_versions <- character(0)
 
+    # 0. Packages can be left out because they are pre-installed for given image
+    image_name <- dockerfile@image@image
+    if (filter_baseimage_pkgs && !versioned_packages) {
+      image <- docker_arguments(dockerfile@image)
+      available_pkgs <- get_installed_packages(image = image)$pkg
+      skipable <- names(pkgs) %in% available_pkgs
+      skipped_str <- toString(sort(names(pkgs[skipable])))
+      futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
+                               image, skipped_str)
+      addInstruction(dockerfile) <- Comment(text = paste0("Packages skipped because they are in the base image: ",
+                                                          skipped_str))
+      pkgs <- pkgs[!skipable]
+    }
+
+    # 1. identify where to install the package from - FIXME do not split into seperate lists but put in a data.frame
     sapply(pkgs,
            function(pkg) {
              #determine package name
              if ("Package" %in% names(pkg))
                name <- pkg$Package
              else
-               stop("Package name cannot be dertermined for ", pkg) #should hopefully never occure
+               stop("Package name cannot be dertermined for ", pkg)
 
              if ("Priority" %in% names(pkg) &&
                  stringr::str_detect(pkg$Priority, "(?i)base")) {
-               #packages with these priorities are normally included and don't need to be installed; do nothing
-               return()
-             }
-             #if necessary, determine package dependencies (outside the loop)
-             pkg_names <<- append(pkg_names, name)
-             package_versions <<-
-               append(package_versions, pkg$Version)
+               futile.logger::flog.debug("Skipping Priority package %s, is included with R", name)
+             } else {
+               #if necessary, determine package dependencies (outside the loop)
+               pkg_names <<- append(pkg_names, name)
+               package_versions <<- append(package_versions, pkg$Version)
 
-             #check if package come from CRAN or GitHub
-             if ("Repository" %in% names(pkg) &&
-                 stringr::str_detect(pkg$Repository, "(?i)CRAN"))
-             {
-               cran_packages <<- append(cran_packages, pkg$Package)
-               return()
-             } else if ("RemoteType" %in% names(pkg) &&
-                        stringr::str_detect(pkg$RemoteType, "(?i)github"))
-             {
-               github_packages <<-
-                 append(github_packages, getGitHubRef(pkg$Package))
-               return()
+               #check if package come from CRAN or GitHub
+               if ("Repository" %in% names(pkg) &&
+                   stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
+                 cran_packages <<- append(cran_packages, pkg$Package)
+               } else if ("RemoteType" %in% names(pkg) &&
+                          stringr::str_detect(pkg$RemoteType, "(?i)github")) {
+                 github_packages <<- append(github_packages, getGitHubRef(pkg$Package, pkgs))
+               } else
+                 warning("Failed to identify a source for package ",
+                         pkg$Package,
+                         ". Therefore the package cannot be installed in the Docker image.\n")
              }
-
-             else
-               warning(
-                 "Failed to identify source for package ",
-                 pkg$Package,
-                 ". Therefore the package cannot be installed in the Docker image.\n"
-               )
            })
 
-    image_name <- .dockerfile@image@image
-
-    # installing github packages requires the package 'remotes'
+    # Installing github packages requires the package 'remotes'
     if (length(github_packages) > 0 &&
         !"remotes" %in% cran_packages &&
         !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")) {
       cran_packages <- append(cran_packages, "remotes")
       pkg_names <- append(pkg_names, "remotes")
-      if (requireNamespace("remotes"))
-        package_versions <-
-        append(package_versions, utils::packageVersion("remotes"))
-      else
-        package_versions <- append(package_versions, "latest")
+      #if (requireNamespace("remotes"))
+      #  package_versions <-
+      #  append(package_versions, utils::packageVersion("remotes"))
+      #else
+      package_versions <- append(package_versions, "latest")
     }
 
-    if(is.null(platform)) {
+    if (is.null(platform)) {
       warning("Platform could not be detected, proceed at own risk.")
     } else if (!isTRUE(platform %in% .supported_platforms)) {
-      warning(
-        "The determined platform '",
-        platform,
-        "' is currently not supported for handling system dependencies. Therefore, the created manifests might not work."
-      )
+      warning("The determined platform '",
+              platform,
+              "' is currently not supported for handling system dependencies. Therefore, the created manifests might not work.")
     }
 
+    # 2. get system dependencies if packages must be installed
     if (length(pkg_names) > 0) {
-      # dependencies that can be left out
-      no_apt <- character(0)
+      # see package-installation-bespoke.R for some outdated code
+      # add_inst <- list()
 
-      # additional dependencies
-      add_apt <- character(0)
-
-      # additional instructions that shall be appended -after- installing system requirements
-      add_inst <- list()
-
-      if ("sf" %in% pkg_names) {
-        # sf-dependencies proj and gdal cannot be installed directly from apt get, because the available packages are outdated.
-        sf_installed <- requireNamespace("sf")
-
-        if (sf_installed &&
-            versioned_libs) {
-          # Exceptions are handled by json config here:
-          ext_soft <- sf::sf_extSoftVersion()
-          mapply(function(lib, version) {
-            if (!.isVersionSupported(lib, version, .package_config)) {
-              msg <-
-                paste(
-                  "No explicit for support for the version",
-                  version,
-                  "of the linked external software",
-                  lib
-                )
-              futile.logger::flog.warn(msg)
-              return()
-            }
-            add_apt <<-
-              append(add_apt,
-                     .get_lib_apt_requirements(lib, version, .package_config))
-            no_apt <<-
-              append(
-                add_apt,
-                .get_lib_pkgs_names(
-                  lib = lib,
-                  platform = .debian_platform,
-                  config = .package_config
-                )
-              )
-            add_inst <<-
-              append(
-                add_inst,
-                .get_lib_install_instructions(
-                  lib = lib,
-                  version = version,
-                  config = .package_config
-                )
-              )
-            return(invisible())
-          },
-          lib = names(ext_soft),
-          version = as.character(ext_soft))
-
-
-          #NOTE: The following is the "old" way to do it. Getting sf to work only requires a more current version gdal, while all other dependencies can be installed from APT
-        } else if (!image_name == "rocker/geospatial") {
-          futile.logger::flog.info(
-            "The dependent package simple features for R requires current versions from gdal, geos and proj that may not be available by standard apt-get.\nWe recommend using the base image rocker/geospatial."
-          )
-          futile.logger::flog.info("Docker will try to install GDAL 2.1.3 from source")
-
-          add_apt <- append(add_apt, c("wget", "make"))
-          add_inst <- append(add_inst, Workdir("/tmp/gdal"))
-          add_inst <-
-            append(add_inst, Run_shell(
-              c(
-                "wget http://download.osgeo.org/gdal/2.1.3/gdal-2.1.3.tar.gz",
-                "tar zxf gdal-2.1.3.tar.gz",
-                "cd gdal-2.1.3",
-                "./configure",
-                "make",
-                "make install",
-                "ldconfig",
-                "rm -r /tmp/gdal"
-              )
-            ))
-        }
-      }
-
-      # we may ad more no-apt or analogue no-package exceptions here and handle them with the json config -
-      # as far as we know that certain images have sertain dependencies pre-installed,
-      # but at the moment it won't be necessary
-      if (image_name == "rocker/geospatial") {
-        #these packages are pre-installed
-        no_apt <-
-          append(no_apt, c("libproj-dev", "libgeos-dev", "gdal-bin"))
-      }
-
-      # determine package dependencies (if applicable by given platform)
-      pkg_dep <- .find_system_dependencies(
+      #  determine package dependencies (if applicable by given platform)
+      package_reqs <- .find_system_dependencies(
         pkg_names,
         platform = platform,
         soft = soft,
@@ -183,108 +98,107 @@
         package_version = package_versions
       )
 
-      # fix duplicates and parsing https://github.com/o2r-project/containerit/issues/79
-      pkg_dep_deduped <- unique(unlist(pkg_dep, use.names = FALSE))
+      # system dependencies that can be left out because they are pre-installed for given image
+      if (filter_deps_by_image) {
+        skipable <- .skipable_deps(image_name)
+        package_reqs <- package_reqs[!package_reqs %in% skipable]
+        futile.logger::flog.info("Skipping deps for image %s: %s", image_name, toString(skipable))
+      }
 
-      # fix if depends come back with a space https://github.com/r-hub/sysreqsdb/issues/22
-      pkg_dep <-
-        unlist(lapply(pkg_dep_deduped, function(x) {
-          unlist(strsplit(x, split = " "))
-        }))
-
-      package_reqs <- append(package_reqs, pkg_dep)
-
-      #some packages may not need to be installed, e.g. because they are pre-installed for a certain image
-      package_reqs <- package_reqs[!package_reqs %in% no_apt]
-      package_reqs <- append(package_reqs, add_apt)
-
-      #remove dublicate system requirements and sort (to increase own reproducibility)
+      # remove dublicate system requirements and sort (to increase own reproducibility)
       package_reqs <- levels(as.factor(package_reqs))
       package_reqs <- sort(package_reqs)
 
       # if platform is debian and system dependencies need to be installed
-      if (platform == .debian_platform && length(package_reqs) > 0) {
-        commands <-
-          "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
-        install_command <-
-          paste("apt-get install -y",
-                paste(package_reqs, collapse = " \\\n\t"))
-        commands <- append(commands, install_command)
-        addInstruction(.dockerfile)  <- Run_shell(commands)
+      if (length(package_reqs) > 0) {
+        if (platform == .debian_platform) {
+          commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
+          install_command <- paste("apt-get install -y",
+                                   paste(package_reqs, collapse = " \\\n\t"))
+          commands <- append(commands, install_command)
+          addInstruction(dockerfile)  <- Run_shell(commands)
 
-        if (length(add_inst) > 0)
-          addInstruction(.dockerfile) <- add_inst
-        # For using the exec form (??):
-        #  Run("/bin/sh", params = c("-c", "export", "DEBIAN_FRONTEND=noninteractive")))
-        #  Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
+          #if (length(add_inst) > 0)
+          #  addInstruction(dockerfile) <- add_inst
+          # For using the exec form (??):
+          #  Run("/bin/sh", params = c("-c", "export", "DEBIAN_FRONTEND=noninteractive")))
+          #  Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
+        } else {
+          warning("Platform ", platform, " not supported, cannot add installation commands for system requirements.")
+        }
       }
-
     } # length(package_names)
 
     if (length(cran_packages) > 0) {
       cran_packages <- sort(cran_packages) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-      addInstruction(.dockerfile) <- Run("install2.r", cran_packages)
+      addInstruction(dockerfile) <- Run("install2.r", cran_packages)
     }
 
-    if (length(github_packages) > 0) { # sort, to increase own reproducibility
-      github_packages <- sort(github_packages)
+    if (length(github_packages) > 0) {
+      github_packages <- sort(github_packages) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
-      addInstruction(.dockerfile) <- Run("installGithub.r", github_packages)
+      addInstruction(dockerfile) <- Run("installGithub.r", github_packages)
     }
 
-    # after all installation is done, set the workdir
-    addInstruction(.dockerfile) <- workdir
-
-    return(.dockerfile)
+    return(dockerfile)
   }
 
-.find_system_dependencies <-
-  function(package,
-           platform,
-           soft = TRUE,
-           offline = FALSE,
-           package_version = utils::packageVersion(package)) {
-    method = if (offline == TRUE)
-      method = "sysreq-package"
-    else
-      method = "sysreq-api"
-    .dependencies <- NA
+.find_system_dependencies <- function(package,
+                                      platform,
+                                      soft = TRUE,
+                                      offline = FALSE,
+                                      package_version = utils::packageVersion(package)) {
+  method = if (offline == TRUE)
+    method = "sysreq-package"
+  else
+    method = "sysreq-api"
 
-    futile.logger::flog.info("Going online? %s  ... to retrieve system dependencies (%s)", !offline, method)
-    futile.logger::flog.debug("Retrieving sysreqs for %s packages and platform %s:\n%s", length(package), platform, toString(package))
+  .dependencies <- NA
+
+  futile.logger::flog.info("Going online? %s  ... to retrieve system dependencies (%s)", !offline, method)
+  futile.logger::flog.debug("Retrieving sysreqs for %s packages and platform %s: %s", length(package), platform, toString(package))
 
     # slower, because it analyzes all package DESCRIPTION files of attached / loaded packages.
     # That causes an overhead of database-requests, because dependent packages appear in the sessionInfo as well as in the DESCRIPTION files
 
-    if (method == "sysreq-package")
-      .dependencies <- .find_by_sysreqs_pkg(
-          package = package,
-          package_version = package_version,
-          platform = platform,
-          soft = soft
-        )
-
-    # faster, but only finds direct package dependencies from all attached / loaded packages
-    if (method == "sysreq-api")
-      .dependencies <- .find_by_sysreqs_api(package = package, platform = platform)
-
-    futile.logger::flog.debug("Found system %s dependencies:\n%s", length(.dependencies), toString(.dependencies))
-    return(.dependencies)
+  if (method == "sysreq-package") {
+    .dependencies <- .find_by_sysreqs_pkg(
+        package = package,
+        package_version = package_version,
+        platform = platform,
+        soft = soft
+      )
   }
 
-.find_by_sysreqs_pkg <-
-  function(package,
-           platform,
-           soft = TRUE,
-           package_version,
-           localFirst = TRUE) {
-    #for more than one package:
+  # faster, but only finds direct package dependencies from all attached / loaded packages
+  if (method == "sysreq-api") {
+    .dependencies <- .find_by_sysreqs_api(package = package, platform = platform)
+
+    if (length(.dependencies) > 0) {
+      # remove duplicates and unlist dependency string from sysreqs
+      .dependencies <- unique(unlist(.dependencies, use.names = FALSE))
+      .dependencies <- unlist(lapply(.dependencies, function(x) {
+        unlist(strsplit(x, split = " "))
+      }))
+    }
+  }
+
+  futile.logger::flog.debug("Found %s system dependencies: %s", length(.dependencies), toString(.dependencies))
+  return(.dependencies)
+}
+
+.find_by_sysreqs_pkg <- function(package,
+                                 platform,
+                                 soft = TRUE,
+                                 package_version,
+                                 localFirst = TRUE) {
+    # for more than one package:
     if (length(package) > 1) {
       out <- mapply(function(pkg, version) {
         .find_by_sysreqs_pkg(pkg, platform, soft, version, localFirst)
       }, pkg = package, version = package_version)
-      return(out) #there might be dublicate dependencies here but they are removed by the invoking method
+      return(out) # there might be dublicate dependencies, they must be removed by the invoking method
     }
 
     sysreqs <- character(0)
@@ -306,7 +220,7 @@
         )
       } else{
         sysreqs <- NA
-        if(is.null(platform)) {
+        if (is.null(platform)) {
           futile.logger::flog.warn("Platform could not be determined, possibly because of unknown base image.",
                                    " Using '%s'", sysreqs::current_platform())
           sysreqs <-
@@ -325,12 +239,9 @@
     futile.logger::flog.info("Trying to determine system requirements for '%s' from the DESCRIPTION file on CRAN",
       package)
 
-    con <-
-      url(paste0(
-        "https://CRAN.R-project.org/package=",
-        package,
-        "/DESCRIPTION"
-      ))
+    con <- url(paste0("https://CRAN.R-project.org/package=",
+                      package,
+                      "/DESCRIPTION"))
     temp <- tempfile()
     success <- TRUE
     tryCatch({
@@ -359,18 +270,13 @@
   }
 
 
-.find_by_sysreqs_api <-
-  function(package, platform) {
-    #calls like e.g. https://sysreqs.r-hub.io/pkg/rgdal,curl,rmarkdown/linux-x86_64-ubuntu-gcc are much faster than doing separate calls for each package
+.find_by_sysreqs_api <- function(package, platform) {
+    # calls like e.g. https://sysreqs.r-hub.io/pkg/rgdal,curl,rmarkdown/linux-x86_64-ubuntu-gcc are much faster than doing separate calls for each package
     if (length(package) > 0) {
       package = paste(package, collapse = ",")
     }
 
-    package_msg <- stringr::str_replace_all(package, ",", ", ")
-    futile.logger::flog.info(
-      "Trying to determine system requirements for the package(s) '%s' from sysreq online DB",
-      package_msg
-    )
+    futile.logger::flog.info("Trying to determine system requirements for the package(s) '%s' from sysreqs online DB", package)
 
     .url <- paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform)
     con <- url(.url)
@@ -380,10 +286,11 @@
 
     tryCatch({
       desc <- readLines(con, warn = FALSE)
-      futile.logger::flog.debug("Response:\n%s", toString(desc))
+      futile.logger::flog.debug("Response: %s", toString(desc))
       parser <- rjson::newJSONParser()
       parser$addData(desc)
       desc <- as.character(parser$getObject())
+      desc <- desc[!desc == "NULL"]
     }, error = function(e) {
       success <- FALSE
       futile.logger::flog.debug("Error requesting package info from sysreqs online DB: %s", toString(e))
@@ -400,11 +307,17 @@
 
 #' Get GitHub reference from package
 #'
-#' If a package is not installed from CRAN, this functions tries to determine if it was installed from GitHub using \code{\link[devtools]{session_info}}.
+#' If a package is installed from GitHub this function tries to retrieve the reference (i.e. repository accoutn, name, and commit) from
 #'
-#' @param pkg The name of the package to retrieve the
+#' \enumerate{
+#'   \item the provided sessionInfo
+#'   \item locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}
+#' }
 #'
-#' @return A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}
+#' @param pkg The name of the package to retrieve the reference for
+#' @param pkgs Lists of packages from a sessionInfo object
+#'
+#' @return A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}, \code{NA} is nothign could be found
 #' @export
 #'
 #' @examples
@@ -412,38 +325,45 @@
 #' getGitHubRef(rsysreqs)
 #' }
 #'
-getGitHubRef = function(pkg) {
-  if (!requireNamespace(pkg))
-    stop("Package ", pkg, " cannot be loaded.")
+getGitHubRef = function(pkg, pkgs = c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly)) {
+  ref <- NA_character_
 
-  si_devtools <- devtools::session_info()
-  selected <- si_devtools$packages$package == pkg
-  ref_devtools <- si_devtools$packages$source[selected]
-  futile.logger::flog.debug("Looking for references for package %s", ref_devtools)
-
-  #try to determine github reference from devools
-  if (stringr::str_detect(ref_devtools, "(?i)^GitHub \\(.*/.*@|#.*\\)$")) {
-    ref_devtools <-
-      stringr::str_replace(ref_devtools, "(?i)^GitHub \\(", replacement = "")
-    ref_devtools <-
-      stringr::str_replace(ref_devtools, "\\)$", replacement = "")
-
-    futile.logger::flog.debug("GitHub reference for %s found with devtools: %s",
-                              pkg,
-                              ref_devtools)
-    return(ref_devtools)
-  } else {
-    #alternatively, try with 'normal' sessioninfo (normally does not reference a commit)
-    si_regular <- sessionInfo()
-    pkgs = c(si_regular$otherPkgs, si_regular$loadedOnly)
+  if (!is.null(pkgs[[pkg]]$GithubRepo))
     repo <- pkgs[[pkg]]$GithubRepo
-    uname <- pkgs[[pkg]]$GithubUsername
-    ghr <- pkgs[[pkg]]$GithubRef
-    ref = paste0(uname, "/", repo, "@", ghr)
+  else repo <- pkgs[[pkg]]$RemoteRepo
 
-    futile.logger::flog.warn("Exact reference of GitHub package %s could not be determined: %s",
-                             pkg,
-                             ref)
-    return(ref)
+  if (!is.null(pkgs[[pkg]]$GithubUsername))
+    uname <- pkgs[[pkg]]$GithubUsername
+  else uname <- pkgs[[pkg]]$RemoteUsername
+
+  if (!is.null(pkgs[[pkg]]$GithubSHA1))
+    ghr <- pkgs[[pkg]]$GithubSHA1
+  else ghr <- pkgs[[pkg]]$RemoteSha
+
+  if (any(sapply(X = c(repo, uname, ghr), FUN = is.null))) {
+    futile.logger::flog.warn("Exact reference of GitHub package %s could not be determined from session info: %s %s %s",
+                             pkg, repo, uname, ghr)
+  } else {
+    ref = paste0(uname, "/", repo, "@", ghr)
   }
+
+  if (is.na(ref)) {
+    if (requireNamespace(pkg))
+    #try to determine github reference from devools
+    si_devtools <- devtools::session_info()
+    ref_devtools <- si_devtools$packages$source[si_devtools$packages$package == pkg]
+    futile.logger::flog.debug("Looking for references with devtools for package %s", ref_devtools)
+
+    if (stringr::str_detect(ref_devtools, "(?i)^GitHub \\(.*/.*@|#.*\\)$")) {
+      ref_devtools <- stringr::str_replace(ref_devtools, "(?i)^GitHub \\(", replacement = "")
+      ref_devtools <- stringr::str_replace(ref_devtools, "\\)$", replacement = "")
+      futile.logger::flog.debug("GitHub reference for %s found with devtools: %s",
+                                pkg,
+                                ref_devtools)
+      ref <- ref_devtools
+    } else
+      futile.logger::flog.warn("GitHub ref is unknown, but package %s is not available locally, no fallback.", pkg)
+  }
+  return(ref)
 }
+

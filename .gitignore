@@ -27,7 +27,13 @@ inst/doc
 *.Rproj
 *.out
 
-tests/testthat/package_markdown/markdowntainer-units/images/
-tests/testthat/package_markdown/markdowntainer-units/*\.html
+tests/testthat/package_markdown/units/images/
+tests/testthat/package_markdown/units/*\.html
 
 tests/testthat/Rplots\.pdf
+
+tests/testthat/package_markdown/spacetime/main\.html
+
+vignettes/sessionInfo\.Rdata
+
+sessionInfo\.Rdata

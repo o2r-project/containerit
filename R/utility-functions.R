@@ -121,11 +121,11 @@ addInstruction <- function(dockerfileObject, value) {
 #' addInstruction(df) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
 
-#' Get R version from a variety of sources in a string format used for image tags
+#' Get R version in string format used for image tags
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
-#' @param from the source to extract an R version: a `sessionInfo()` object
+#' @param from the source to extract an R version: a `sessionInfo()` object, or an \code{Rdata} file with a \code{sessionInfo} object
 #' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
 #'
 #' @export
@@ -135,12 +135,49 @@ addInstruction <- function(dockerfileObject, value) {
 #' getRVersionTag()
 getRVersionTag <- function(from = NULL, default = R.Version()) {
   r_version <- NULL
-  if (inherits(from, "sessionInfo")) {
-    r_version <- from$R.version
-  } else
+  if (is.null(from)) {
     r_version <- default
+  } else if (inherits(from, "sessionInfo")) {
+    r_version <- from$R.version
+    futile.logger::flog.debug("Got R version from sessionInfo: %s", r_version)
+  } else if (file.exists(from) && stringr::str_detect(from, ".Rdata$")) {
+    sessionInfo <- getSessionInfoFromRdata(from)
+    r_version <- sessionInfo$R.version
+    futile.logger::flog.debug("Got R version from file %s: %s", from, r_version)
+  } else {
+    r_version <- default
+    futile.logger::flog.debug("Falling back to default R version: %s", r_version)
+  }
 
   return(paste(r_version$major, r_version$minor, sep = "."))
+}
+
+#' Reads a \code{sessionInfo} object from an \code{Rdata} file
+#'
+#' @param file file path
+#'
+#' @return An object of class \code{sessionInfo}
+#' @export
+#'
+#' @examples
+#' sessionInfo <- sessionInfo()
+#' file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
+#' save(sessionInfo, file = file)
+#' getSessionInfoFromRdata(file)
+getSessionInfoFromRdata <- function(file) {
+  futile.logger::flog.info("Reading object 'sessionInfo' from the given file %s", file)
+  e1 <- new.env()
+  load(file = file, envir = e1)
+
+  futile.logger::flog.debug("Loaded Rdata file with objects %s", toString(ls(envir = e1)))
+  if (!all(grepl(pattern = "sessionInfo", ls(envir = e1))))
+    stop("Provided Rdata file must contain only one object of name 'sessionInfo'")
+
+  sessionInfo <- get("sessionInfo", envir = e1)
+  if (!inherits(sessionInfo, "sessionInfo"))
+    stop("Provided sessionInfo objects must have class 'sessionInfo' but is ", class(sessionInfo))
+
+  return(sessionInfo)
 }
 
 #' Creates an empty R session via system commands and captures the session information
@@ -153,18 +190,14 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
 #'
 #' @return An object of class session info (Can be used as an input to the dockerfile-method)
 #' @export
-#'
-clean_session <-
-  function(expr = list(),
-           file = NULL,
-           vanilla = TRUE,
-           slave = FALSE,
-           echo = FALSE) {
-    obtain_localSessionInfo(
-      expr = expr,
-      file = file,
-      slave = slave,
-      echo = echo,
-      vanilla = vanilla
-    )
-  }
+clean_session <- function(expr = list(),
+                          file = NULL,
+                          vanilla = TRUE,
+                          slave = FALSE,
+                          echo = FALSE) {
+  obtain_localSessionInfo(expr = expr,
+                          file = file,
+                          slave = slave,
+                          echo = echo,
+                          vanilla = vanilla)
+}
