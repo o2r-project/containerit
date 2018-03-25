@@ -107,6 +107,7 @@ obtain_localSessionInfo <- function(expr = c(),
            slave = FALSE,
            echo = FALSE, # whether R scripts should be 'echoed'
            predetect = TRUE, # whether to use automagic to make sure all required packages are installed
+           repos = "http://cloud.r-project.org",
            local_tempfile = tempfile(pattern = "rdata-sessioninfo"),
            local_temp_script = tempfile(pattern = "r-script")) {
   #append commands to create a local sessionInfo
@@ -137,9 +138,11 @@ obtain_localSessionInfo <- function(expr = c(),
     installing_pkgs <- stringr::str_remove_all(required_pkgs, "\"")
     installing_pkgs <- setdiff(installing_pkgs, rownames(installed.packages()))
     if (length(installing_pkgs) > 0) {
-      futile.logger::flog.info("Missing packages installed before running file: %s",
+      futile.logger::flog.info("Missing packages installed before running file using repos %s: %s",
+                               toString(repos),
                                toString(installing_pkgs))
-      install.packages(pkgs = installing_pkgs)
+
+      install.packages(pkgs = installing_pkgs, repos = repos)
     } else {
       futile.logger::flog.debug("No missing packages to install before running file")
     }

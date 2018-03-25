@@ -1,7 +1,7 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-library(testthat)
-library(containerit)
+library("testthat")
+library("containerit")
 
 #for testing whole files manually:
 if(FALSE){
