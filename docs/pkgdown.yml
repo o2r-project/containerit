@@ -1,0 +1,8 @@
+pandoc: '2.1'
+pkgdown: 0.1.0.9000
+pkgdown_sha: 5e4825875751c009444c56ce43d06324ec53e910
+articles:
+  basic: basic.html
+  container: container.html
+  containerit: containerit.html
+
