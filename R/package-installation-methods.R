@@ -1,102 +1,60 @@
 # Copyright 2017 Opening Reproducible Research (http://o2r.info)
 
-# pkgs is a list of packages as returned by sessionInfo()
+# pkgs is a data.frame of packages with the columns name, version, and source (either "CRAN" or "github")
 # function returns a the dockerfile with the required instructions
-.create_run_install <-
-  function(dockerfile,
-           pkgs,
-           platform,
-           soft,
-           offline,
-           versioned_libs,
-           versioned_packages,
-           filter_baseimage_pkgs,
-           filter_deps_by_image = FALSE) {
+add_install_instructions <- function(dockerfile,
+                                     pkgs,
+                                     platform,
+                                     soft,
+                                     offline,
+                                     versioned_libs,
+                                     versioned_packages,
+                                     filter_baseimage_pkgs,
+                                     filter_deps_by_image = FALSE) {
     package_reqs <- character(0)
-    cran_packages <- character(0)
-    github_packages <- character(0)
-    pkg_names <-  character(0)
-    package_versions <- character(0)
 
-    # 0. Packages can be left out because they are pre-installed for given image
+    # 0. Check if pckages can be left out because they are pre-installed for given image
     image_name <- dockerfile@image@image
     if (filter_baseimage_pkgs && !versioned_packages) {
       image <- docker_arguments(dockerfile@image)
       available_pkgs <- get_installed_packages(image = image)$pkg
-      skipable <- names(pkgs) %in% available_pkgs
-      skipped_str <- toString(sort(names(pkgs[skipable])))
+      skipable <- pkgs$name %in% available_pkgs
+      skipped_str <- toString(sort(unlist(pkgs[skipable,]$name)))
       futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                                image, skipped_str)
       addInstruction(dockerfile) <- Comment(text = paste0("Packages skipped because they are in the base image: ",
                                                           skipped_str))
-      pkgs <- pkgs[!skipable]
+      pkgs <- pkgs[!skipable,]
     }
 
-    # 1. identify where to install the package from - FIXME do not split into seperate lists but put in a data.frame
-    sapply(pkgs,
-           function(pkg) {
-             #determine package name
-             if ("Package" %in% names(pkg))
-               name <- pkg$Package
-             else
-               stop("Package name cannot be dertermined for ", pkg)
-
-             if ("Priority" %in% names(pkg) &&
-                 stringr::str_detect(pkg$Priority, "(?i)base")) {
-               futile.logger::flog.debug("Skipping Priority package %s, is included with R", name)
-             } else {
-               #if necessary, determine package dependencies (outside the loop)
-               pkg_names <<- append(pkg_names, name)
-               package_versions <<- append(package_versions, pkg$Version)
-
-               #check if package come from CRAN or GitHub
-               if ("Repository" %in% names(pkg) &&
-                   stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
-                 cran_packages <<- append(cran_packages, pkg$Package)
-               } else if ("RemoteType" %in% names(pkg) &&
-                          stringr::str_detect(pkg$RemoteType, "(?i)github")) {
-                 github_packages <<- append(github_packages, getGitHubRef(pkg$Package, pkgs))
-               } else
-                 warning("Failed to identify a source for package ",
-                         pkg$Package,
-                         ". Therefore the package cannot be installed in the Docker image.\n")
-             }
-           })
-
-    # Installing github packages requires the package 'remotes'
-    if (length(github_packages) > 0 &&
-        !"remotes" %in% cran_packages &&
-        !image_name %in% c("rocker/tidyverse", "rocker/verse", "rocker/geospatial")) {
-      cran_packages <- append(cran_packages, "remotes")
-      pkg_names <- append(pkg_names, "remotes")
+    # 0. Installing github packages requires the package 'remotes'
+    if (nrow(pkgs[pkgs$source == "github",]) > 0 &&
+        !"remotes" %in% pkgs$name) {
+      pkgs[nrow(pkgs) + 1,] <- c("remotes",NA,"CRAN")
       #if (requireNamespace("remotes"))
       #  package_versions <-
       #  append(package_versions, utils::packageVersion("remotes"))
       #else
-      package_versions <- append(package_versions, "latest")
     }
 
     if (is.null(platform)) {
       warning("Platform could not be detected, proceed at own risk.")
     } else if (!isTRUE(platform %in% .supported_platforms)) {
-      warning("The determined platform '",
-              platform,
+      warning("The determined platform '", platform,
               "' is currently not supported for handling system dependencies. Therefore, the created manifests might not work.")
     }
 
     # 2. get system dependencies if packages must be installed
-    if (length(pkg_names) > 0) {
+    if (nrow(pkgs) > 0) {
       # see package-installation-bespoke.R for some outdated code
       # add_inst <- list()
 
       #  determine package dependencies (if applicable by given platform)
-      package_reqs <- .find_system_dependencies(
-        pkg_names,
-        platform = platform,
-        soft = soft,
-        offline = offline,
-        package_version = package_versions
-      )
+      package_reqs <- .find_system_dependencies(pkgs$name,
+                                                platform = platform,
+                                                soft = soft,
+                                                offline = offline,
+                                                package_version = package_versions)
 
       # system dependencies that can be left out because they are pre-installed for given image
       if (filter_deps_by_image) {
@@ -127,16 +85,20 @@
           warning("Platform ", platform, " not supported, cannot add installation commands for system requirements.")
         }
       }
-    } # length(package_names)
+    } else {
+      futile.logger::flog.debug("No system dependencies found for any package.")
+    }
 
-    if (length(cran_packages) > 0) {
-      cran_packages <- sort(cran_packages) # sort, to increase own reproducibility
+    pkgs_cran <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
+    if (nrow(pkgs_cran) > 0) {
+      cran_packages <- sort(unlist(pkgs_cran$name)) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
       addInstruction(dockerfile) <- Run("install2.r", cran_packages)
     }
 
-    if (length(github_packages) > 0) {
-      github_packages <- sort(github_packages) # sort, to increase own reproducibility
+    pkgs_gh <- pkgs[stringr::str_detect(string = pkgs$source, stringr::regex("GitHub", ignore_case = TRUE)),]
+    if (nrow(pkgs_gh) > 0) {
+      github_packages <- sort(unlist(pkgs_gh$version)) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
       addInstruction(dockerfile) <- Run("installGithub.r", github_packages)
     }

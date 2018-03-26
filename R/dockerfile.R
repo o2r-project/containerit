@@ -149,8 +149,8 @@ dockerfile <- function(from = utils::sessionInfo(),
         addInstruction(.dockerfile) <- workdir
     } else if (inherits(x = from, "sessionInfo")) {
       futile.logger::flog.debug("Creating from sessionInfo object")
-      .dockerfile <- dockerfileFromSession(.dockerfile = .dockerfile,
-                                           session = from,
+      .dockerfile <- dockerfileFromSession(session = from,
+                                           dockerfile = .dockerfile,
                                            soft = soft,
                                            offline = offline,
                                            add_self = add_self,
@@ -165,7 +165,7 @@ dockerfile <- function(from = utils::sessionInfo(),
         futile.logger::flog.debug("'%s' is a directory", from)
         .originalFrom <- from
         .dockerfile <- dockerfileFromWorkspace(path = from,
-                                               .dockerfile = .dockerfile,
+                                               dockerfile = .dockerfile,
                                                soft = soft,
                                                offline = offline,
                                                add_self = add_self,
@@ -181,7 +181,7 @@ dockerfile <- function(from = utils::sessionInfo(),
         futile.logger::flog.debug("'%s' is a file", from)
         .originalFrom <- from
         .dockerfile <- dockerfileFromFile(file = from,
-                                          .dockerfile = .dockerfile,
+                                          dockerfile = .dockerfile,
                                           soft = soft,
                                           offline = offline,
                                           add_self = add_self,
@@ -203,8 +203,8 @@ dockerfile <- function(from = utils::sessionInfo(),
       .sessionInfo <- clean_session(expr = from,
                                     slave = silent,
                                     vanilla = vanilla)
-      .dockerfile <- dockerfileFromSession(.dockerfile = .dockerfile,
-                                           session = .sessionInfo,
+      .dockerfile <- dockerfileFromSession(session = .sessionInfo,
+                                           dockerfile = .dockerfile,
                                            soft = soft,
                                            offline = offline,
                                            add_self = add_self,
@@ -234,53 +234,161 @@ dockerfile <- function(from = utils::sessionInfo(),
 
     futile.logger::flog.info("Created Dockerfile-Object based on %s", .originalFrom)
     return(.dockerfile)
+}
+
+dockerfileFromPackages <- function(pkgs,
+                                   dockerfile,
+                                   soft,
+                                   offline,
+                                   add_self,
+                                   versioned_libs,
+                                   versioned_packages,
+                                   filter_baseimage_pkgs,
+                                   workdir) {
+  futile.logger::flog.debug("Creating from packages data.frame")
+
+  if (!add_self)
+    pkgs <- pkgs[pkgs$name != "containerit",]
+
+  # The platform is determined only for known images.
+  # Alternatively, we could let the user optionally specify one amongst different supported platforms
+  platform = NULL
+  image_name = dockerfile@image@image
+  if (image_name %in% .debian_images) {
+    platform = .debian_platform
+    futile.logger::flog.debug("Found image %s in list of Debian images", image_name)
   }
+  futile.logger::flog.debug("Detected platform: %s", platform)
 
-dockerfileFromSession <- function(session,
-                                 .dockerfile,
-                                 soft,
-                                 offline,
-                                 add_self,
-                                 versioned_libs,
-                                 versioned_packages,
-                                 filter_baseimage_pkgs,
-                                 workdir) {
-    futile.logger::flog.debug("Creating from sessionInfo")
+  .dockerfile <- add_install_instructions(dockerfile = dockerfile,
+                                     pkgs = pkgs,
+                                     platform = platform,
+                                     soft = soft,
+                                     offline = offline,
+                                     versioned_libs = versioned_libs,
+                                     versioned_packages = versioned_packages,
+                                     filter_baseimage_pkgs = filter_baseimage_pkgs)
 
-    apks <- session$otherPkgs
-    lpks <- session$loadedOnly
-    pkgs <- append(apks, lpks) ##packages to be installed
-    if (!add_self)
-      pkgs <- pkgs[names(pkgs) != "containerit"]
+  # after all installation is done, set the workdir
+  addInstruction(.dockerfile) <- workdir
 
-    # The platform is determined only for known images.
-    # Alternatively, we could let the user optionally specify one amongst different supported platforms
-    platform = NULL
-    image_name = .dockerfile@image@image
-    if (image_name %in% .debian_images) {
-      platform = .debian_platform
-      futile.logger::flog.debug("Found image %s in list of Debian images", image_name)
+  return(.dockerfile)
+}
+
+dockerfileFromSession <- function(session, ...) {
+  UseMethod("dockerfileFromSession", session)
+}
+
+dockerfileFromSession.sessionInfo <- function(session,
+                                              dockerfile,
+                                              soft,
+                                              offline,
+                                              add_self,
+                                              versioned_libs,
+                                              versioned_packages,
+                                              filter_baseimage_pkgs,
+                                              workdir) {
+  futile.logger::flog.debug("Creating from sessionInfo")
+
+  apks <- session$otherPkgs
+  lpks <- session$loadedOnly
+  pkgs <- append(apks, lpks) # packages to be installed
+
+  # 1. identify where to install the package from
+  pkgs_list <- lapply(pkgs, function(pkg) {
+           #determine package name
+           if ("Package" %in% names(pkg))
+             name <- pkg$Package
+           else
+             stop("Package name cannot be dertermined for ", pkg)
+
+           if ("Priority" %in% names(pkg) &&
+               stringr::str_detect(pkg$Priority, "(?i)base")) {
+             futile.logger::flog.debug("Skipping Priority package %s, is included with R", name)
+           } else {
+             version <- NA
+             source <- NA
+
+             #check if package come from CRAN or GitHub
+             if ("Repository" %in% names(pkg) &&
+                 stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
+               source <- "CRAN"
+               version <- pkg$Version
+             } else if ("RemoteType" %in% names(pkg) &&
+                        stringr::str_detect(pkg$RemoteType, "(?i)github")) {
+               source <- "github"
+               version <- getGitHubRef(name, pkgs)
+             } else {
+               warning("Failed to identify a source for package ", name,
+                       ". Therefore the package cannot be installed in the Docker image.\n")
+             }
+
+             return(list(name = name, version = version, source = source))
+           }
+         })
+
+  packages_df <- as.data.frame(do.call("rbind", pkgs_list))
+  futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
+
+  .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+                                        dockerfile = dockerfile,
+                                        soft = soft,
+                                        offline = offline,
+                                        add_self = add_self,
+                                        versioned_libs = versioned_libs,
+                                        versioned_packages = versioned_packages,
+                                        filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                        workdir = workdir)
+  return(.dockerfile)
+}
+
+dockerfileFromSession.session_info <- function(session,
+                                              dockerfile,
+                                              soft,
+                                              offline,
+                                              add_self,
+                                              versioned_libs,
+                                              versioned_packages,
+                                              filter_baseimage_pkgs,
+                                              workdir) {
+  futile.logger::flog.debug("Creating from session_info")
+
+  if (is.null(session$packages) || !(inherits(session$packages, "packages_info")))
+    stop("Unsupported object of class session_info, needs list slot 'packages' of class 'packages_info'")
+
+  if ("loadedversion" %in% names(session$packages)) {
+    # sessioninfo
+    packages_df <- session$packages[,c("package", "loadedversion", "source")]
+  } else {
+    # devtools
+    packages_df <- session$packages[,c("package", "version", "source")]
+  }
+  names(packages_df) <- c("name", "version", "source")
+
+  # create version strings as we want them for GitHub packages
+  pkgs_gh <- packages_df[stringr::str_detect(string = packages_df$source, stringr::regex("GitHub", ignore_case = TRUE)),]
+  if (nrow(pkgs_gh) > 0) {
+    for (pkg in pkgs_gh$name) {
+      currentPkg <- subset(pkgs_gh, name == pkg)
+      versionString <- stringr::str_extract(string = currentPkg$source, pattern = "(?<=\\()(.*)(?=\\))")
+      packages_df[packages_df$name == pkg,c("version")] <- versionString
     }
-    futile.logger::flog.debug("Detected platform: %s", platform)
-
-    .dockerfile <- .create_run_install(
-      dockerfile = .dockerfile,
-      pkgs = pkgs,
-      platform = platform,
-      soft = soft,
-      offline = offline,
-      versioned_libs = versioned_libs,
-      versioned_packages = versioned_packages,
-      filter_baseimage_pkgs = filter_baseimage_pkgs)
-
-    # after all installation is done, set the workdir
-    addInstruction(.dockerfile) <- workdir
-
-    return(.dockerfile)
   }
+
+  .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+                                        dockerfile = dockerfile,
+                                        soft = soft,
+                                        offline = offline,
+                                        add_self = add_self,
+                                        versioned_libs = versioned_libs,
+                                        versioned_packages = versioned_packages,
+                                        filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                        workdir = workdir)
+  return(.dockerfile)
+}
 
 dockerfileFromFile <- function(file,
-                               .dockerfile,
+                               dockerfile,
                                soft,
                                copy,
                                offline,
@@ -331,7 +439,7 @@ dockerfileFromFile <- function(file,
 
     # append system dependencies and package installation instructions
     .dockerfile <- dockerfileFromSession(session = sessionInfo,
-                                         .dockerfile = .dockerfile,
+                                         dockerfile = dockerfile,
                                          soft = soft,
                                          offline = offline,
                                          add_self = add_self,
@@ -386,7 +494,7 @@ dockerfileFromFile <- function(file,
   }
 
 dockerfileFromWorkspace <- function(path,
-                                   .dockerfile,
+                                   dockerfile,
                                    soft,
                                    offline,
                                    add_self,
@@ -401,30 +509,23 @@ dockerfileFromWorkspace <- function(path,
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
 
-    .rFiles <-
-      dir(
-        path = path,
-        pattern = "\\.R$",
-        full.names = TRUE,
-        include.dirs = FALSE,
-        recursive = TRUE
-      )
+    .rFiles <- dir(path = path,
+                   pattern = "\\.R$",
+                   full.names = TRUE,
+                   include.dirs = FALSE,
+                   recursive = TRUE)
 
-    .md_Files <-
-      dir(
-        path = path,
-        pattern = "\\.Rmd$", #|\\.Rnw$",
-        full.names = TRUE,
-        include.dirs = FALSE,
-        recursive = TRUE
-      )
+    .md_Files <- dir(path = path,
+                     pattern = "\\.Rmd$", #|\\.Rnw$",
+                     full.names = TRUE,
+                     include.dirs = FALSE,
+                     recursive = TRUE)
     futile.logger::flog.debug("Found %s scripts and %s documents", length(.rFiles), length(.md_Files))
 
     if (length(.rFiles) > 0 && length(.md_Files) > 0) {
       target_file <- .md_Files[1]
       warning("Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: \n\t",
-              target_file
-      )
+              target_file)
     } else if (length(.md_Files) > 0) {
       target_file <- .md_Files[1]
       if (length(.md_Files) > 1)
@@ -440,8 +541,8 @@ dockerfileFromWorkspace <- function(path,
     else
       futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
 
-    .df <- dockerfileFromFile(target_file,
-                              .dockerfile = .dockerfile,
+    .dockerfile <- dockerfileFromFile(target_file,
+                              dockerfile = dockerfile,
                               soft = soft,
                               offline = offline,
                               copy = copy,
@@ -453,7 +554,7 @@ dockerfileFromWorkspace <- function(path,
                               versioned_packages = versioned_packages,
                               filter_baseimage_pkgs = filter_baseimage_pkgs,
                               workdir = workdir)
-    return(.df)
+    return(.dockerfile)
   }
 
 

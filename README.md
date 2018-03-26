@@ -43,9 +43,17 @@ abide by its terms.
 [r-hub builder](https://builder.r-hub.io/) is great for running checks,
 e.g. before submitting to CRAN and on other operating systems.
 
-    library(rhub)
-    rhub::check_for_cran()
-    rhub::check_on_windows()
+``` r
+library(rhub)
+rhub::check_for_cran()
+rhub::check_on_windows()
+```
+
+You can build the [`pkgdown`]() site with
+
+``` r
+pkgdown::build_site()
+```
 
 ## License
 

@@ -195,7 +195,8 @@ It then proceeds to package this file along with all other resources in the dire
 ### 2.7 Packaging from a stored sessionInfo
 
 You can also save your `sessionInfo()` into an `Rdata` file and create a `Dockerfile` form it.
-The `sessionInfo` object must have the name `sessionInfo` and must be the only object in the `.Rdata` file.
+The `sessionInfo` object must have the one of the names `sessionInfo`, `sessioninfo`, or `session_info`.
+It must be the only object in the `.Rdata` file.
 This is useful when you want to re-create sessions on different machines.
 
 ```{r sessionInfo_Rdata}
@@ -205,6 +206,38 @@ save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.Rdata"))
 unloadNamespace("sf")
 df <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
 print(df)
+```
+
+Two alternative packages provide their own version of a session info, both of which are supported as well.
+The following examples first load the packages `A3` and `abc` (because they are first in the alphabet), store session information objects, and then unload the packages again before creating `Dockerfile`s from the stored objects.
+
+```{r session_info}
+suppressPackageStartupMessages(library("devtools"))
+suppressPackageStartupMessages(library("sessioninfo"))
+
+suppressPackageStartupMessages(library("abc"))
+suppressPackageStartupMessages(library("A3"))
+
+session_info <- devtools::session_info()
+save(session_info, file = file.path(temp_workspace, "session_info_devtools.Rdata"))
+
+sessioninfo = sessioninfo::session_info()
+save(sessioninfo, file = file.path(temp_workspace, "session_info.Rdata"))
+
+unloadNamespace("abc")
+unloadNamespace("A3")
+
+df_sessioninfo <- dockerfile(from = file.path(temp_workspace, "session_info.Rdata"))
+df_devtools <- dockerfile(from = file.path(temp_workspace, "session_info_devtools.Rdata"))
+```
+
+```{r sessioninfo_print}
+
+print(df_sessioninfo)
+```
+
+```{r session_info_devtools_print}
+print(df_devtools)
 ```
 
 ## 3. Including resources

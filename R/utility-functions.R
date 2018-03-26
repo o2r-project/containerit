@@ -16,16 +16,15 @@
 #'
 #' @return A table of active images on the instance
 #' @export
-#@importFrom harbor localhost docker_cmd
-docker_build <-
-  function (host = harbor::localhost,
-            dockerfolder,
-            tag,
-            dockerfile = character(0),
-            wait = FALSE,
-            no_cache = FALSE,
-            docker_opts = character(0),
-            ...) {
+#' @importFrom harbor localhost docker_cmd
+docker_build <- function(host = harbor::localhost,
+                         dockerfolder,
+                         tag,
+                         dockerfile = character(0),
+                         wait = FALSE,
+                         no_cache = FALSE,
+                         docker_opts = character(0),
+                         ...) {
     # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
     stopifnot(dir.exists(dockerfolder))
 
@@ -125,7 +124,7 @@ addInstruction <- function(dockerfileObject, value) {
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
-#' @param from the source to extract an R version: a `sessionInfo()` object, or an \code{Rdata} file with a \code{sessionInfo} object
+#' @param from the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{Rdata} file with a session info object
 #' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
 #'
 #' @export
@@ -133,23 +132,24 @@ addInstruction <- function(dockerfileObject, value) {
 #' @examples
 #' getRVersionTag(from = sessionInfo())
 #' getRVersionTag()
-getRVersionTag <- function(from = NULL, default = R.Version()) {
+getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$minor, sep = ".")) {
   r_version <- NULL
-  if (is.null(from)) {
-    r_version <- default
-  } else if (inherits(from, "sessionInfo")) {
-    r_version <- from$R.version
+  if (inherits(from, "sessionInfo")) {
+    r_version <- paste(from$R.version$major, from$R.version$minor, sep = ".")
     futile.logger::flog.debug("Got R version from sessionInfo: %s", r_version)
+  } else if (inherits(from, "session_info")) {
+    r_version <- stringr::str_extract(pattern = "\\d+(\\.\\d+)+", string = from$platform$version)
+    futile.logger::flog.debug("Got R version from session_info: %s", r_version)
   } else if (file.exists(from) && stringr::str_detect(from, ".Rdata$")) {
     sessionInfo <- getSessionInfoFromRdata(from)
-    r_version <- sessionInfo$R.version
+    r_version <- getRVersionTag(sessionInfo)
     futile.logger::flog.debug("Got R version from file %s: %s", from, r_version)
   } else {
     r_version <- default
     futile.logger::flog.debug("Falling back to default R version: %s", r_version)
   }
 
-  return(paste(r_version$major, r_version$minor, sep = "."))
+  return(r_version)
 }
 
 #' Reads a \code{sessionInfo} object from an \code{Rdata} file
@@ -164,20 +164,26 @@ getRVersionTag <- function(from = NULL, default = R.Version()) {
 #' file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
 #' save(sessionInfo, file = file)
 #' getSessionInfoFromRdata(file)
+#'
 getSessionInfoFromRdata <- function(file) {
   futile.logger::flog.info("Reading object 'sessionInfo' from the given file %s", file)
   e1 <- new.env()
   load(file = file, envir = e1)
 
   futile.logger::flog.debug("Loaded Rdata file with objects %s", toString(ls(envir = e1)))
-  if (!all(grepl(pattern = "sessionInfo", ls(envir = e1))))
-    stop("Provided Rdata file must contain only one object of name 'sessionInfo'")
+  if (length(ls(envir = e1)) != 1)
+    stop("Provided Rdata file must contain exactly one object.")
 
-  sessionInfo <- get("sessionInfo", envir = e1)
-  if (!inherits(sessionInfo, "sessionInfo"))
-    stop("Provided sessionInfo objects must have class 'sessionInfo' but is ", class(sessionInfo))
+  if (!grepl(pattern = "sessionInfo|sessioninfo|session_info", ls(envir = e1)[1]))
+    stop("Provided objects must be named sessionInfo|session_info|sessionInfo but have", ls(envir = e1)[1])
 
-  return(sessionInfo)
+  info <- get(ls(envir = e1)[1], envir = e1)
+
+  if (!(inherits(info, "sessionInfo") ||
+         inherits(info, "session_info")))
+    stop("Provided sessionInfo objects must have class 'sessionInfo' or 'session_info' but is ", class(info))
+
+  return(info)
 }
 
 #' Creates an empty R session via system commands and captures the session information
