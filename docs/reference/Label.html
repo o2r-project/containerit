@@ -55,7 +55,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -162,17 +162,9 @@
 )
 <span class='co'>#label with fixed namespace for all keys</span>
 <span class='no'>label3</span> <span class='kw'>&lt;-</span> <span class='fu'>Label</span>(<span class='st'>"name"</span><span class='kw'>=</span><span class='st'>"A name"</span>, <span class='st'>"description"</span> <span class='kw'>=</span> <span class='st'>"A description"</span>, <span class='kw'>label_ns</span> <span class='kw'>=</span> <span class='st'>"my.label.ns."</span>)
-<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2018-03-25 15:33:02] Creating an R session with the following arguments:
-#&gt; 	 R  --silent --vanilla -e "info &lt;- sessionInfo()" -e "save(list = \"info\", file = \"/tmp/Rtmp1VMXZh/rdata-sessioninfo35101bbe622d\")"
-#&gt; DEBUG [2018-03-25 15:33:05] Got R version from sessionInfo: x86_64-pc-linux-gnu
-#&gt; DEBUG [2018-03-25 15:33:05] Creating a new Dockerfile from 'list(platform = "x86_64-pc-linux-gnu", arch = "x86_64", os = "linux-gnu", system = "x86_64, linux-gnu", status = "", major = "3", minor = "4.4", year = "2018", month = "03", day = "15", `svn rev` = "74408", language = "R", version.string = "R version 3.4.4 (2018-03-15)", nickname = "Someone to Lean On")' with base image FROM rocker/r-ver:3.4.4
-#&gt; DEBUG [2018-03-25 15:33:05] Turning maintainer character string 'daniel' into label: LABEL maintainer="daniel"
-#&gt; DEBUG [2018-03-25 15:33:05] Creating from sessionInfo object
-#&gt; DEBUG [2018-03-25 15:33:05] Creating from sessionInfo
-#&gt; DEBUG [2018-03-25 15:33:05] Found image rocker/r-ver in list of Debian images
-#&gt; DEBUG [2018-03-25 15:33:05] Detected platform: linux-x86_64-debian-gcc
-#&gt; DEBUG [2018-03-25 15:33:05] Skipping Priority package compiler, is included with R
-#&gt; INFO [2018-03-25 15:33:05] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>df</span>) <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='no'>label1</span>, <span class='no'>label2</span>, <span class='no'>label3</span>)
+<span class='no'>df</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2018-03-26 22:21:51] Creating an R session with the following arguments:
+#&gt; 	 R  --silent --vanilla -e "info &lt;- sessionInfo()" -e "save(list = \"info\", file = \"/tmp/RtmpBJq2xz/rdata-sessioninfo19e52ee35ce3\")"
+#&gt; INFO [2018-03-26 22:21:53] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>df</span>) <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='no'>label1</span>, <span class='no'>label2</span>, <span class='no'>label3</span>)
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>df</span>),<span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"\n"</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.4.4                                                                                             
 #&gt; LABEL maintainer="daniel"                                                                                           
 #&gt; WORKDIR /payload/                                                                                                   

@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1>Using <code>containerit</code> Docker image</h1>
                         <h4 class="author">Daniel Nüst</h4>
             
-            <h4 class="date">2018-03-25</h4>
+            <h4 class="date">2018-03-26</h4>
       
       <small>Source: <a href="https://github.com/o2r/containerit//blob/master/vignettes/container.Rmd"><code>vignettes/container.Rmd</code></a></small>
 
@@ -126,10 +126,10 @@
 ## Type 'q()' to quit R.
 ## 
 ## &gt; df &lt;- dockerfile(); print(df);
-## INFO [2018-03-25 13:34:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2018-03-25 13:34:52] Trying to determine system requirements for the package(s) 'futile.logger, lambda.r, Rcpp, futile.options, semver' from sysreq online DB
-## INFO [2018-03-25 13:34:53] Adding CRAN packages: futile.logger, futile.options, lambda.r, Rcpp, semver
-## INFO [2018-03-25 13:34:53] Created Dockerfile-Object based on sessionInfo
+## INFO [2018-03-26 20:22:40] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2018-03-26 20:22:40] Trying to determine system requirements for the package(s) 'futile.logger, lambda.r, Rcpp, futile.options, semver' from sysreq online DB
+## INFO [2018-03-26 20:22:41] Adding CRAN packages: futile.logger, futile.options, lambda.r, Rcpp, semver
+## INFO [2018-03-26 20:22:41] Created Dockerfile-Object based on sessionInfo
 ## FROM rocker/r-ver:3.4.3
 ## LABEL maintainer="root"
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
@@ -177,10 +177,10 @@
 <p>By default the containerit images print the session info before R is terminated. You can disable this by setting the environment variable <code>CONTAINERIT_SILENT</code>. Combined with the <code>--quiet</code> option for R, this reduces the output to merely the Dockerfile</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ex">docker</span> run --rm -e CONTAINERIT_SILENT=true o2rproject/containerit:geospatial R -q -e <span class="st">"df &lt;- dockerfile(); print(df);"</span></a></code></pre></div>
 <pre><code>## &gt; df &lt;- dockerfile(); print(df);
-## INFO [2018-03-25 13:34:57] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2018-03-25 13:34:57] Trying to determine system requirements for the package(s) 'futile.logger, lambda.r, Rcpp, futile.options, semver' from sysreq online DB
-## INFO [2018-03-25 13:34:58] Adding CRAN packages: futile.logger, futile.options, lambda.r, Rcpp, semver
-## INFO [2018-03-25 13:34:58] Created Dockerfile-Object based on sessionInfo
+## INFO [2018-03-26 20:22:44] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2018-03-26 20:22:44] Trying to determine system requirements for the package(s) 'futile.logger, lambda.r, Rcpp, futile.options, semver' from sysreq online DB
+## INFO [2018-03-26 20:22:45] Adding CRAN packages: futile.logger, futile.options, lambda.r, Rcpp, semver
+## INFO [2018-03-26 20:22:45] Created Dockerfile-Object based on sessionInfo
 ## FROM rocker/r-ver:3.4.3
 ## LABEL maintainer="root"
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
@@ -213,12 +213,12 @@
 <a class="sourceLine" id="cb7-4" data-line-number="4"><span class="fu">ls</span> -l /tmp/containerit</a>
 <a class="sourceLine" id="cb7-5" data-line-number="5"><span class="fu">rm</span> -r /tmp/containerit</a></code></pre></div>
 <pre><code>## &gt; df &lt;- dockerfile(); write(df);
-## INFO [2018-03-25 13:35:08] Writing dockerfile to /containerit/Dockerfile
+## INFO [2018-03-26 20:22:53] Writing dockerfile to /containerit/Dockerfile
 ## &gt; 
 ## &gt; 
 ## Directory contents:
 ## total 4
-## -rw-r--r-- 1 root root 251 Mar 25 15:35 Dockerfile</code></pre>
+## -rw-r--r-- 1 root root 251 Mar 26 22:22 Dockerfile</code></pre>
 <p>Or you can use full paths, as shown below. The next example also sets the <a href="https://github.com/rocker-org/rocker/wiki/managing-users-in-docker">user of the container</a>, so that the file on the host has a more convenient user and permissions.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">mkdir</span> /tmp/containerit</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="ex">docker</span> run --rm -v /tmp/containerit:/my_dir -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN --user=1000 o2rproject/containerit:geospatial R -q -e <span class="st">"df &lt;- dockerfile(); write(df, file = '/my_dir/Dockerfile');"</span></a>
@@ -226,12 +226,12 @@
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="fu">ls</span> -l /tmp/containerit</a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="fu">rm</span> -r /tmp/containerit</a></code></pre></div>
 <pre><code>## &gt; df &lt;- dockerfile(); write(df, file = '/my_dir/Dockerfile');
-## INFO [2018-03-25 13:35:13] Writing dockerfile to /my_dir/Dockerfile
+## INFO [2018-03-26 20:22:57] Writing dockerfile to /my_dir/Dockerfile
 ## &gt; 
 ## &gt; 
 ## Directory contents:
 ## total 4
-## -rw-r--r-- 1 daniel daniel 254 Mar 25 15:35 Dockerfile</code></pre>
+## -rw-r--r-- 1 daniel daniel 254 Mar 26 22:22 Dockerfile</code></pre>
 </div>
 <div id="example-package-script" class="section level2">
 <h2 class="hasAnchor">
@@ -244,9 +244,9 @@
 <a class="sourceLine" id="cb11-6" data-line-number="6"><span class="fu">cat</span> /tmp/containerit/Dockerfile</a>
 <a class="sourceLine" id="cb11-7" data-line-number="7"><span class="fu">rm</span> -r /tmp/containerit</a></code></pre></div>
 <pre><code>## &gt; setwd('/data'); scriptFile &lt;- 'script.R'; write(dockerfile(from = scriptFile, cmd = CMD_Rscript(basename(scriptFile))));
-## INFO [2018-03-25 13:35:16] Executing R script file in script.R locally.
-## INFO [2018-03-25 13:35:16] Creating an R session with the following arguments:
-##   R  --silent --vanilla -e "source(file = \"/data/script.R\", echo = TRUE)" -e "info &lt;- sessionInfo()" -e "save(list = \"info\", file = \"/tmp/RtmpA9LRI1/rdata-sessioninfo156e00ea4\")"
+## INFO [2018-03-26 20:23:00] Executing R script file in script.R locally.
+## INFO [2018-03-26 20:23:00] Creating an R session with the following arguments:
+##   R  --silent --vanilla -e "source(file = \"/data/script.R\", echo = TRUE)" -e "info &lt;- sessionInfo()" -e "save(list = \"info\", file = \"/tmp/Rtmp3GoEsu/rdata-sessioninfo1756b5f00\")"
 ## &gt; source(file = "/data/script.R", echo = TRUE)
 ## 
 ## &gt; install.packages("fortunes", repos = "http://cran.r-project.org")
@@ -270,27 +270,24 @@
 ## * DONE (fortunes)
 ## 
 ## The downloaded source packages are in
-##  ‘/tmp/RtmpFxOqP1/downloaded_packages’
+##  ‘/tmp/Rtmpfq43nC/downloaded_packages’
 ## 
 ## &gt; fortunes::fortune()
 ## 
-## Welcome to the wonderful world of heterogeneity (tau^2) estimators in
-## meta-analysis. The question of which estimator to choose never fails to provide
-## fun and entertainment for the entire family and I predict that it will do so
-## for generations to come. Please quote me on that!
-##    -- Wolfgang Viechtbauer (in response to a request for the appropriate
-##       heterogeneity estimator)
-##       R-SIG-Mixed-Models (May 2015)
+## It was simple, but you know, it's always simple when you've done it.
+##    -- Simone Gabbriellini (after solving a problem with a trick suggested on
+##       the list)
+##       R-help (August 2005)
 ## 
 ## &gt; info &lt;- sessionInfo()
-## &gt; save(list = "info", file = "/tmp/RtmpA9LRI1/rdata-sessioninfo156e00ea4")
+## &gt; save(list = "info", file = "/tmp/Rtmp3GoEsu/rdata-sessioninfo1756b5f00")
 ## &gt; 
 ## &gt; 
-## INFO [2018-03-25 13:35:20] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2018-03-25 13:35:20] Trying to determine system requirements for the package(s) 'fortunes' from sysreq online DB
-## INFO [2018-03-25 13:35:21] Adding CRAN packages: fortunes
-## INFO [2018-03-25 13:35:21] Created Dockerfile-Object based on script.R
-## INFO [2018-03-25 13:35:21] Writing dockerfile to /data/Dockerfile
+## INFO [2018-03-26 20:23:03] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2018-03-26 20:23:03] Trying to determine system requirements for the package(s) 'fortunes' from sysreq online DB
+## INFO [2018-03-26 20:23:04] Adding CRAN packages: fortunes
+## INFO [2018-03-26 20:23:04] Created Dockerfile-Object based on script.R
+## INFO [2018-03-26 20:23:04] Writing dockerfile to /data/Dockerfile
 ## Warning message:
 ## In getImageForVersion(r_version) :
 ##   No Docker image found for the given R version. You might want to specify a custom Docker image or 

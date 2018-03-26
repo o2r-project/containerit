@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -125,9 +125,11 @@
 <h2 class="hasAnchor">
 <a href="#development" class="anchor"></a>Development</h2>
 <p><a href="https://builder.r-hub.io/">r-hub builder</a> is great for running checks, e.g. before submitting to CRAN and on other operating systems.</p>
-<pre><code>library(rhub)
-rhub::check_for_cran()
-rhub::check_on_windows()</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(rhub)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">rhub<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rhub/topics/check_for_cran">check_for_cran</a></span>()</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">rhub<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rhub/topics/check_shortcuts">check_on_windows</a></span>()</a></code></pre></div>
+<p>You can build the <a href=""><code>pkgdown</code></a> site with</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">pkgdown<span class="op">::</span><span class="kw"><a href="http://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</a></code></pre></div>
 </div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">

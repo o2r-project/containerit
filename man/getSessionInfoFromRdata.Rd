@@ -20,4 +20,5 @@ sessionInfo <- sessionInfo()
 file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
 save(sessionInfo, file = file)
 getSessionInfoFromRdata(file)
+
 }

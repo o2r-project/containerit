@@ -55,7 +55,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -239,183 +239,25 @@ This executes the whole file to obtain a complete <code>sessionInfo</code> objec
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; <span class='warning'>Warning: DESCRIPTION file of package 'plm' is missing or broken</span></div><div class='output co'>#&gt; <span class='error'>Error: $ operator is invalid for atomic vectors</span></div><div class='input'><span class='fu'>print</span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; function(from = utils::sessionInfo(),
-#&gt;                        image = getImageForVersion(getRVersionTag(from)),
-#&gt;                        maintainer = Sys.info()[["user"]],
-#&gt;                        save_image = FALSE,
-#&gt;                        env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
-#&gt;                        soft = FALSE,
-#&gt;                        offline = FALSE,
-#&gt;                        copy = NA, # "script",
-#&gt;                        # nolint start
-#&gt;                        container_workdir = "/payload/",
-#&gt;                        # nolint end
-#&gt;                        cmd = Cmd("R"),
-#&gt;                        entrypoint = NULL,
-#&gt;                        add_self = FALSE,
-#&gt;                        vanilla = TRUE,
-#&gt;                        silent = FALSE,
-#&gt;                        predetect = TRUE,
-#&gt;                        versioned_libs = FALSE,
-#&gt;                        versioned_packages = FALSE,
-#&gt;                        filter_baseimage_pkgs = FALSE) {
-#&gt;     if (silent) {
-#&gt;       invisible(futile.logger::flog.threshold(futile.logger::WARN))
-#&gt;     }
-#&gt; 
-#&gt;     .dockerfile &lt;- NA
-#&gt;     .originalFrom &lt;- class(from)
-#&gt; 
-#&gt;     #parse From-object from string if necessary
-#&gt;     if (is.character(image)) {
-#&gt;       image &lt;- parseFrom(image)
-#&gt;     }
-#&gt;     futile.logger::flog.debug("Creating a new Dockerfile from '%s' with base image %s", from, toString(image))
-#&gt; 
-#&gt;     if (is.character(maintainer)) {
-#&gt;       .label &lt;- Label_Maintainer(maintainer)
-#&gt;       futile.logger::flog.debug("Turning maintainer character string '%s' into label: %s", maintainer, toString(.label))
-#&gt;       maintainer &lt;- .label
-#&gt;     }
-#&gt; 
-#&gt;     # check CMD instruction
-#&gt;     if (!inherits(x = cmd, "Cmd")) {
-#&gt;       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
-#&gt;         class(cmd))
-#&gt;     }
-#&gt; 
-#&gt;     # check ENTRYPOINT instruction
-#&gt;     if ( !is.null(entrypoint) &amp;&amp; !inherits(x = entrypoint, "Entrypoint")) {
-#&gt;       stop("Unsupported parameter for 'entrypoint', expected an object of class 'Entrypoint', given was :",
-#&gt;         class(entrypoint))
-#&gt;     }
-#&gt; 
-#&gt;     # check and create WORKDIR instruction
-#&gt;     workdir &lt;- NULL
-#&gt;     if ( !is.null(container_workdir)) {
-#&gt;       if ( !is.character(container_workdir)) {
-#&gt;         stop("Unsupported parameter for 'container_workdir', expected a character string or NULL")
-#&gt;       } else {
-#&gt;         # nolint start
-#&gt;         if (!stringr::str_detect(container_workdir, "/$")) {
-#&gt;           # nolint end
-#&gt;           # directories given as destination must have a trailing slash in dockerfiles
-#&gt;           container_workdir &lt;- paste0(container_workdir, "/")
-#&gt;           futile.logger::flog.info("Appended trailing slash, workdir is '%s'", container_workdir)
-#&gt;         }
-#&gt;         workdir &lt;- Workdir(container_workdir)
-#&gt;       }
-#&gt;     }
-#&gt; 
-#&gt;     # whether image is supported
-#&gt;     image_name &lt;- image@image
-#&gt;     if (!image_name %in% .supported_images) {
-#&gt;       warning("Unsupported base image. Proceed at your own risk. The following base images are supported:\n",
-#&gt;         paste(.supported_images, collapse = "\n"))
-#&gt;     }
-#&gt; 
-#&gt;     # base dockerfile
-#&gt;     .dockerfile &lt;- methods::new("Dockerfile",
-#&gt;                                 instructions = list(),
-#&gt;                                 maintainer = maintainer,
-#&gt;                                 image = image,
-#&gt;                                 entrypoint = entrypoint,
-#&gt;                                 cmd = cmd)
-#&gt; 
-#&gt;     # handle differe "from" cases
-#&gt;     if (is.null(from)) {
-#&gt;       futile.logger::flog.debug("from is NULL, not deriving any information at all")
-#&gt;       if (!is.null(workdir))
-#&gt;         addInstruction(.dockerfile) &lt;- workdir
-#&gt;     } else if (inherits(x = from, "sessionInfo")) {
-#&gt;       futile.logger::flog.debug("Creating from sessionInfo object")
-#&gt;       .dockerfile &lt;- dockerfileFromSession(.dockerfile = .dockerfile,
-#&gt;                                            session = from,
-#&gt;                                            soft = soft,
-#&gt;                                            offline = offline,
-#&gt;                                            add_self = add_self,
-#&gt;                                            versioned_libs = versioned_libs,
-#&gt;                                            versioned_packages = versioned_packages,
-#&gt;                                            filter_baseimage_pkgs = filter_baseimage_pkgs,
-#&gt;                                            workdir = workdir)
-#&gt;     } else if (inherits(x = from, "character")) {
-#&gt;       futile.logger::flog.debug("Creating from character string '%s'", from)
-#&gt; 
-#&gt;       if (dir.exists(from)) {
-#&gt;         futile.logger::flog.debug("'%s' is a directory", from)
-#&gt;         .originalFrom &lt;- from
-#&gt;         .dockerfile &lt;- dockerfileFromWorkspace(path = from,
-#&gt;                                                .dockerfile = .dockerfile,
-#&gt;                                                soft = soft,
-#&gt;                                                offline = offline,
-#&gt;                                                add_self = add_self,
-#&gt;                                                copy = copy,
-#&gt;                                                vanilla = vanilla,
-#&gt;                                                silent = silent,
-#&gt;                                                predetect = predetect,
-#&gt;                                                versioned_libs = versioned_libs,
-#&gt;                                                versioned_packages = versioned_packages,
-#&gt;                                                filter_baseimage_pkgs = filter_baseimage_pkgs,
-#&gt;                                                workdir = workdir)
-#&gt;       } else if (file.exists(from)) {
-#&gt;         futile.logger::flog.debug("'%s' is a file", from)
-#&gt;         .originalFrom &lt;- from
-#&gt;         .dockerfile &lt;- dockerfileFromFile(file = from,
-#&gt;                                           .dockerfile = .dockerfile,
-#&gt;                                           soft = soft,
-#&gt;                                           offline = offline,
-#&gt;                                           add_self = add_self,
-#&gt;                                           copy = copy,
-#&gt;                                           vanilla = vanilla,
-#&gt;                                           silent = silent,
-#&gt;                                           predetect = predetect,
-#&gt;                                           versioned_libs = versioned_libs,
-#&gt;                                           versioned_packages = versioned_packages,
-#&gt;                                           filter_baseimage_pkgs = filter_baseimage_pkgs,
-#&gt;                                           workdir = workdir)
-#&gt;       } else {
-#&gt;         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
-#&gt;       }
-#&gt;     } else if (is.expression(from) ||
-#&gt;                (is.list(from) &amp;&amp; all(sapply(from, is.expression)))) {
-#&gt;       futile.logger::flog.debug("Creating from expession: '%s' with a clean session", toString(from))
-#&gt; 
-#&gt;       .sessionInfo &lt;- clean_session(expr = from,
-#&gt;                                     slave = silent,
-#&gt;                                     vanilla = vanilla)
-#&gt;       .dockerfile &lt;- dockerfileFromSession(.dockerfile = .dockerfile,
-#&gt;                                            session = .sessionInfo,
-#&gt;                                            soft = soft,
-#&gt;                                            offline = offline,
-#&gt;                                            add_self = add_self,
-#&gt;                                            versioned_libs = versioned_libs,
-#&gt;                                            versioned_packages = versioned_packages,
-#&gt;                                            filter_baseimage_pkgs = filter_baseimage_pkgs,
-#&gt;                                            workdir = workdir)
-#&gt;     } else {
-#&gt;       stop("Unsupported 'from': ", class(from), " ", from)
-#&gt;     }
-#&gt; 
-#&gt;     # copy any additional files / objects into the working directory from here:
-#&gt;     if (isTRUE(save_image)) {
-#&gt;       save.image()
-#&gt;       addInstruction(.dockerfile) &lt;-
-#&gt;         Copy(src = "./.RData", dest = "./")
-#&gt;     } else if (is.list(save_image)) {
-#&gt;       do.call(.save_objects, save_image)
-#&gt;       if ("file" %in% names(save_image)) {
-#&gt;         file &lt;- save_image$file
-#&gt;         # try to assure unix-compatibility..
-#&gt;         file &lt;- stringr::str_replace_all(file, "\\\\", "/")
-#&gt;       } else
-#&gt;         file = "./payload.RData"
-#&gt;       addInstruction(.dockerfile) &lt;- Copy(src = file, dest = file)
-#&gt;     }
-#&gt; 
-#&gt;     futile.logger::flog.info("Created Dockerfile-Object based on %s", .originalFrom)
-#&gt;     return(.dockerfile)
-#&gt;   }
-#&gt; &lt;environment: namespace:containerit&gt;</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; <span class='warning'>Warning: Failed to identify a source for package containerit. Therefore the package cannot be installed in the Docker image.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Failed to identify a source for package harbor. Therefore the package cannot be installed in the Docker image.</span></div><div class='output co'>#&gt; INFO [2018-03-26 22:22:06] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#&gt; INFO [2018-03-26 22:22:06] Trying to determine system requirements for the package(s) 'A3,pbapply,xtable,abc,locfit,MASS,quantreg,SparseM,nnet,abc.data,sessioninfo,devtools,testthat,httr,pkgload,jsonlite,assertthat,yaml,highlight,pillar,backports,lattice,glue,digest,colorspace,htmltools,Matrix,plyr,clisymbols,pkgconfig,purrr,scales,whisker,MatrixModels,tibble,pacman,withr,fortunes,cli,magrittr,crayon,memoise,evaluate,fs,xml2,githubinstall,pkgbuild,data.table,formatR,stringr,sysreqs,munsell,lambda.r,bindrcpp,callr,pkgdown,rlang,futile.logger,debugme,rstudioapi,sys,rjson,rmarkdown,codetools,roxygen2,curl,rematch,R6,knitr,dplyr,bindr,automagic,commonmark,rprojroot,futile.options,semver,desc,stringi,Rcpp,harbor,remotes' from sysreqs online DB
+#&gt; INFO [2018-03-26 22:22:09] Adding CRAN packages: A3, abc, abc.data, assertthat, automagic, backports, bindr, bindrcpp, callr, cli, clisymbols, codetools, colorspace, commonmark, crayon, curl, data.table, debugme, desc, devtools, digest, dplyr, evaluate, formatR, fortunes, fs, futile.logger, futile.options, githubinstall, glue, highlight, htmltools, httr, jsonlite, knitr, lambda.r, lattice, locfit, magrittr, MASS, Matrix, MatrixModels, memoise, munsell, nnet, pacman, pbapply, pillar, pkgconfig, plyr, purrr, quantreg, R6, Rcpp, rematch, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, scales, semver, sessioninfo, SparseM, stringi, stringr, sys, tibble, whisker, withr, xml2, xtable, yaml
+#&gt; INFO [2018-03-26 22:22:09] Adding GitHub packages: r-hub/sysreqs@e4050e6068655ce519bb39f0508c7f10e19b6f0b, r-lib/pkgbuild@015f7f68ac4cae91ae7744558e4221034140f259, r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910, r-lib/pkgload@0cd9f8d9d455f447a0449513fa27745417289f73, r-lib/testthat@eda2d54a78e75e76f5544b78a14b50e88d926689
+#&gt; INFO [2018-03-26 22:22:09] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>print</span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.4.4
+#&gt; LABEL maintainer="daniel"
+#&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+#&gt;   &amp;&amp; apt-get install -y git-core \
+#&gt; 	libapparmor-dev \
+#&gt; 	libcurl4-openssl-dev \
+#&gt; 	libssl-dev \
+#&gt; 	libxml2-dev \
+#&gt; 	make \
+#&gt; 	pandoc \
+#&gt; 	pandoc-citeproc
+#&gt; RUN ["install2.r", "A3", "abc", "abc.data", "assertthat", "automagic", "backports", "bindr", "bindrcpp", "callr", "cli", "clisymbols", "codetools", "colorspace", "commonmark", "crayon", "curl", "data.table", "debugme", "desc", "devtools", "digest", "dplyr", "evaluate", "formatR", "fortunes", "fs", "futile.logger", "futile.options", "githubinstall", "glue", "highlight", "htmltools", "httr", "jsonlite", "knitr", "lambda.r", "lattice", "locfit", "magrittr", "MASS", "Matrix", "MatrixModels", "memoise", "munsell", "nnet", "pacman", "pbapply", "pillar", "pkgconfig", "plyr", "purrr", "quantreg", "R6", "Rcpp", "rematch", "remotes", "rjson", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "scales", "semver", "sessioninfo", "SparseM", "stringi", "stringr", "sys", "tibble", "whisker", "withr", "xml2", "xtable", "yaml"]
+#&gt; RUN ["installGithub.r", "r-hub/sysreqs@e4050e6068655ce519bb39f0508c7f10e19b6f0b", "r-lib/pkgbuild@015f7f68ac4cae91ae7744558e4221034140f259", "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910", "r-lib/pkgload@0cd9f8d9d455f447a0449513fa27745417289f73", "r-lib/testthat@eda2d54a78e75e76f5544b78a14b50e88d926689"]
+#&gt; WORKDIR /payload/
+#&gt; CMD ["R"]</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

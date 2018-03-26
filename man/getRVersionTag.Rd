@@ -4,10 +4,11 @@
 \alias{getRVersionTag}
 \title{Get R version in string format used for image tags}
 \usage{
-getRVersionTag(from = NULL, default = R.Version())
+getRVersionTag(from, default = paste(R.Version()$major, R.Version()$minor, sep
+  = "."))
 }
 \arguments{
-\item{from}{the source to extract an R version: a `sessionInfo()` object, or an \code{Rdata} file with a \code{sessionInfo} object}
+\item{from}{the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{Rdata} file with a session info object}
 
 \item{default}{if 'from' does not contain version information (e.g. its an Rscript), use this default version information.}
 }

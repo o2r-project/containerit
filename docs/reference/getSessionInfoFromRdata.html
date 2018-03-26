@@ -55,7 +55,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -136,10 +136,61 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>sessionInfo</span> <span class='kw'>&lt;-</span> <span class='fu'>sessionInfo</span>()</div><div class='output co'>#&gt; <span class='warning'>Warning: DESCRIPTION file of package 'plm' is missing or broken</span></div><div class='output co'>#&gt; <span class='error'>Error: $ operator is invalid for atomic vectors</span></div><div class='input'><span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>(<span class='kw'>tmpdir</span> <span class='kw'>=</span> <span class='fu'>tempdir</span>(), <span class='kw'>fileext</span> <span class='kw'>=</span> <span class='st'>".Rdata"</span>)
+    <pre class="examples"><div class='input'><span class='no'>sessionInfo</span> <span class='kw'>&lt;-</span> <span class='fu'>sessionInfo</span>()
+<span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'>tempfile</span>(<span class='kw'>tmpdir</span> <span class='kw'>=</span> <span class='fu'>tempdir</span>(), <span class='kw'>fileext</span> <span class='kw'>=</span> <span class='st'>".Rdata"</span>)
 <span class='fu'>save</span>(<span class='no'>sessionInfo</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>file</span>)
-<span class='fu'>getSessionInfoFromRdata</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; INFO [2018-03-25 15:34:10] Reading object 'sessionInfo' from the given file /tmp/Rtmp1VMXZh/file35102b983f67.Rdata
-#&gt; DEBUG [2018-03-25 15:34:10] Loaded Rdata file with objects sessionInfo</div><div class='output co'>#&gt; <span class='error'>Error in getSessionInfoFromRdata(file): Provided sessionInfo objects must have class 'sessionInfo' but is function</span></div></pre>
+<span class='fu'>getSessionInfoFromRdata</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; INFO [2018-03-26 22:22:14] Reading object 'sessionInfo' from the given file /tmp/RtmpBJq2xz/file19e57df5c324.Rdata</div><div class='output co'>#&gt; R version 3.4.4 (2018-03-15)
+#&gt; Platform: x86_64-pc-linux-gnu (64-bit)
+#&gt; Running under: Ubuntu 16.04.4 LTS
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS: /usr/lib/libblas/libblas.so.3.6.0
+#&gt; LAPACK: /usr/lib/lapack/liblapack.so.3.6.0
+#&gt; 
+#&gt; locale:
+#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+#&gt;  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_US.UTF-8    
+#&gt;  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_US.UTF-8   
+#&gt;  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+#&gt; [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
+#&gt; 
+#&gt; other attached packages:
+#&gt;  [1] containerit_0.4.0   A3_1.0.0            pbapply_1.3-4      
+#&gt;  [4] xtable_1.8-2        abc_2.1             locfit_1.5-9.1     
+#&gt;  [7] MASS_7.3-49         quantreg_5.35       SparseM_1.77       
+#&gt; [10] nnet_7.3-12         abc.data_1.0        sessioninfo_1.0.0  
+#&gt; [13] devtools_1.13.5     testthat_2.0.0.9000
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;  [1] httr_1.3.1           pkgload_1.0.0        jsonlite_1.5        
+#&gt;  [4] assertthat_0.2.0     yaml_2.1.18          highlight_0.4.7.2   
+#&gt;  [7] pillar_1.2.1         backports_1.1.2      lattice_0.20-35     
+#&gt; [10] glue_1.2.0           digest_0.6.15        colorspace_1.3-2    
+#&gt; [13] htmltools_0.3.6      Matrix_1.2-12        plyr_1.8.4          
+#&gt; [16] clisymbols_1.2.0     pkgconfig_2.0.1      purrr_0.2.4         
+#&gt; [19] scales_0.5.0         whisker_0.3-2        MatrixModels_0.4-1  
+#&gt; [22] tibble_1.4.2         pacman_0.4.6         withr_2.1.2         
+#&gt; [25] fortunes_1.5-4       cli_1.0.0            magrittr_1.5        
+#&gt; [28] crayon_1.3.4         memoise_1.1.0        evaluate_0.10.1     
+#&gt; [31] fs_1.2.2             xml2_1.2.0           githubinstall_0.2.2 
+#&gt; [34] pkgbuild_1.0.0       rsconnect_0.8.8      data.table_1.10.4-3 
+#&gt; [37] tools_3.4.4          formatR_1.5          stringr_1.3.0       
+#&gt; [40] sysreqs_1.0.0.9000   munsell_0.4.3        lambda.r_1.2        
+#&gt; [43] bindrcpp_0.2         callr_2.0.2          compiler_3.4.4      
+#&gt; [46] pkgdown_0.1.0.9000   rlang_0.2.0          futile.logger_1.4.3 
+#&gt; [49] debugme_1.1.0        grid_3.4.4           rstudioapi_0.7      
+#&gt; [52] sys_1.5              rjson_0.2.15         rmarkdown_1.9       
+#&gt; [55] codetools_0.2-15     roxygen2_6.0.1       curl_3.1            
+#&gt; [58] rematch_1.0.1        R6_2.2.2             knitr_1.20          
+#&gt; [61] dplyr_0.7.4          bindr_0.1            automagic_0.3       
+#&gt; [64] commonmark_1.4       rprojroot_1.3-2      futile.options_1.0.0
+#&gt; [67] semver_0.2.0         desc_1.1.1           stringi_1.1.6       
+#&gt; [70] parallel_3.4.4       Rcpp_0.12.16         harbor_0.2.0        </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

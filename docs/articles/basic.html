@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@
 </h1>
                         <h4 class="author">Daniel Nüst</h4>
             
-            <h4 class="date">2018-03-25</h4>
+            <h4 class="date">2018-03-26</h4>
       
       <small>Source: <a href="https://github.com/o2r/containerit//blob/master/vignettes/basic.Rmd"><code>vignettes/basic.Rmd</code></a></small>
 
@@ -132,51 +132,56 @@
 <a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">plot</span>(v, <span class="dt">model =</span> m)</a></code></pre></div>
 <p><img src="basic_files/figure-html/tldr-1.png" width="672"></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">container &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dockerfile.html">dockerfile</a></span>(<span class="dt">from =</span> <span class="kw">sessionInfo</span>())</a></code></pre></div>
-<pre><code>## INFO [2018-03-25 15:34:33] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2018-03-25 15:34:33] Trying to determine system requirements for the package(s) 'sp,gstat,Rcpp,rstudioapi,knitr,xml2,magrittr,roxygen2,MASS,lattice,FNN,R6,rlang,stringr,xts,semver,lambda.r,futile.logger,intervals,htmltools,commonmark,yaml,rprojroot,digest,assertthat,pkgdown,crayon,futile.options,fs,memoise,evaluate,rmarkdown,stringi,desc,backports,spacetime,zoo,remotes' from sysreqs online DB
-## INFO [2018-03-25 15:34:35] Adding CRAN packages: assertthat, backports, commonmark, crayon, desc, digest, evaluate, FNN, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, MASS, memoise, R6, Rcpp, remotes, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stringi, stringr, xml2, xts, yaml, zoo
-## INFO [2018-03-25 15:34:35] Adding GitHub packages: r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910
-## INFO [2018-03-25 15:34:35] Created Dockerfile-Object based on sessionInfo</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): Failed to identify a source for package containerit. Therefore the package cannot be installed in the Docker image.</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): Failed to identify a source for package harbor. Therefore the package cannot be installed in the Docker image.</code></pre>
+<pre><code>## INFO [2018-03-26 22:22:25] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2018-03-26 22:22:25] Trying to determine system requirements for the package(s) 'sp,gstat,Rcpp,futile.logger,harbor,plyr,xts,futile.options,sys,digest,jsonlite,evaluate,memoise,lattice,rlang,rstudioapi,commonmark,yaml,pkgdown,stringr,roxygen2,xml2,knitr,desc,fs,rprojroot,spacetime,R6,rmarkdown,lambda.r,semver,magrittr,intervals,backports,scales,htmltools,MASS,assertthat,colorspace,stringi,munsell,FNN,crayon,zoo,remotes' from sysreqs online DB
+## INFO [2018-03-26 22:22:27] Adding CRAN packages: assertthat, backports, colorspace, commonmark, crayon, desc, digest, evaluate, FNN, fs, futile.logger, futile.options, gstat, htmltools, intervals, jsonlite, knitr, lambda.r, lattice, magrittr, MASS, memoise, munsell, plyr, R6, Rcpp, remotes, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, scales, semver, sp, spacetime, stringi, stringr, sys, xml2, xts, yaml, zoo
+## INFO [2018-03-26 22:22:27] Adding GitHub packages: r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910
+## INFO [2018-03-26 22:22:27] Created Dockerfile-Object based on sessionInfo</code></pre>
 <p>The Dockerfile object can be saved to a file or printed out.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw">format</span>(container)), <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
-<pre><code>## FROM rocker/r-ver:3.4.4                                                                                                                                                                                                                                                                                                                                                                                                     
-## LABEL maintainer="daniel"                                                                                                                                                                                                                                                                                                                                                                                                   
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">as.character</span>(<span class="kw">format</span>(container)), <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
+<pre><code>## FROM rocker/r-ver:3.4.4                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+## LABEL maintainer="daniel"                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 ##   &amp;&amp; apt-get install -y git-core \
+##  libapparmor-dev \
 ##  libxml2-dev \
 ##  make \
 ##  pandoc \
-##  pandoc-citeproc                                                                                                                                                                                                                                                           
-## RUN ["install2.r", "assertthat", "backports", "commonmark", "crayon", "desc", "digest", "evaluate", "FNN", "fs", "futile.logger", "futile.options", "gstat", "htmltools", "intervals", "knitr", "lambda.r", "lattice", "magrittr", "MASS", "memoise", "R6", "Rcpp", "remotes", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "semver", "sp", "spacetime", "stringi", "stringr", "xml2", "xts", "yaml", "zoo"]
-## RUN ["installGithub.r", "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910"]                                                                                                                                                                                                                                                                                                                                           
-## WORKDIR /payload/                                                                                                                                                                                                                                                                                                                                                                                                           
+##  pandoc-citeproc                                                                                                                                                                                                                                                                                                   
+## RUN ["install2.r", "assertthat", "backports", "colorspace", "commonmark", "crayon", "desc", "digest", "evaluate", "FNN", "fs", "futile.logger", "futile.options", "gstat", "htmltools", "intervals", "jsonlite", "knitr", "lambda.r", "lattice", "magrittr", "MASS", "memoise", "munsell", "plyr", "R6", "Rcpp", "remotes", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "scales", "semver", "sp", "spacetime", "stringi", "stringr", "sys", "xml2", "xts", "yaml", "zoo"]
+## RUN ["installGithub.r", "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910"]                                                                                                                                                                                                                                                                                                                                                                                                         
+## WORKDIR /payload/                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 ## CMD ["R"]</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">write</span>(container, <span class="dt">file =</span> <span class="kw">tempfile</span>())</a></code></pre></div>
-<pre><code>## INFO [2018-03-25 15:34:35] Writing dockerfile to /tmp/RtmpjjPJfF/file4fab5415f1a3</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">write</span>(container, <span class="dt">file =</span> <span class="kw">tempfile</span>())</a></code></pre></div>
+<pre><code>## INFO [2018-03-26 22:22:28] Writing dockerfile to /tmp/RtmpCaJgPD/file259d4fd715d8</code></pre>
 </div>
 <div id="dockerfile-examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#dockerfile-examples" class="anchor"></a>Dockerfile examples</h2>
 <p>The following demos use the <a href="https://cran.r-project.org/web/packages/rgdal/index.html">rgdal</a> package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the <a href="http://edzer.github.io/sp/">sp gallery</a>.</p>
 <p>Here is some regular R code loading a file and plotting it.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">library</span>(<span class="st">"rgdal"</span>)</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">library</span>(<span class="st">"maptools"</span>)</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">nc &lt;-<span class="st"> </span>rgdal<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rgdal/topics/readOGR">readOGR</a></span>(<span class="kw">system.file</span>(<span class="st">"shapes/"</span>, <span class="dt">package=</span><span class="st">"maptools"</span>), <span class="st">"sids"</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="kw"><a href="http://www.rdocumentation.org/packages/sp/topics/is.projected">proj4string</a></span>(nc) &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/rgdal/topics/CRS-class">CRS</a></span>(<span class="st">"+proj=longlat +datum=NAD27"</span>)</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="kw">plot</span>(nc)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">library</span>(<span class="st">"rgdal"</span>)</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">library</span>(<span class="st">"maptools"</span>)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">nc &lt;-<span class="st"> </span>rgdal<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rgdal/topics/readOGR">readOGR</a></span>(<span class="kw">system.file</span>(<span class="st">"shapes/"</span>, <span class="dt">package=</span><span class="st">"maptools"</span>), <span class="st">"sids"</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="http://www.rdocumentation.org/packages/sp/topics/is.projected">proj4string</a></span>(nc) &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/rgdal/topics/CRS-class">CRS</a></span>(<span class="st">"+proj=longlat +datum=NAD27"</span>)</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="kw">plot</span>(nc)</a></code></pre></div>
 <p><img src="basic_files/figure-html/example_geo-1.png" width="672"></p>
 <div id="create-dockerfile-from-session" class="section level3">
 <h3 class="hasAnchor">
 <a href="#create-dockerfile-from-session" class="anchor"></a>Create Dockerfile from session</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">class</span>(<span class="kw">sessionInfo</span>())</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">class</span>(<span class="kw">sessionInfo</span>())</a></code></pre></div>
 <pre><code>## [1] "sessionInfo"</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">containerit<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="kw">sessionInfo</span>(), <span class="dt">env =</span> <span class="kw">ls</span>())</a></code></pre></div>
-<pre><code>## INFO [2018-03-25 15:34:37] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2018-03-25 15:34:37] Trying to determine system requirements for the package(s) 'Rcpp,futile.logger,futile.options,xts,digest,gstat,evaluate,memoise,lattice,rlang,rstudioapi,commonmark,yaml,rgdal,pkgdown,stringr,roxygen2,xml2,knitr,desc,fs,rprojroot,spacetime,R6,foreign,rmarkdown,sp,lambda.r,semver,magrittr,backports,htmltools,intervals,MASS,maptools,assertthat,stringi,crayon,FNN,rjson,zoo,remotes' from sysreqs online DB
-## INFO [2018-03-25 15:34:39] Adding CRAN packages: assertthat, backports, commonmark, crayon, desc, digest, evaluate, FNN, foreign, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, maptools, MASS, memoise, R6, Rcpp, remotes, rgdal, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stringi, stringr, xml2, xts, yaml, zoo
-## INFO [2018-03-25 15:34:39] Adding GitHub packages: r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910
-## INFO [2018-03-25 15:34:39] Created Dockerfile-Object based on sessionInfo</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">containerit<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="kw">sessionInfo</span>(), <span class="dt">env =</span> <span class="kw">ls</span>())</a></code></pre></div>
+<pre><code>## Warning in FUN(X[[i]], ...): Failed to identify a source for package containerit. Therefore the package cannot be installed in the Docker image.</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): Failed to identify a source for package harbor. Therefore the package cannot be installed in the Docker image.</code></pre>
+<pre><code>## INFO [2018-03-26 22:22:30] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2018-03-26 22:22:30] Trying to determine system requirements for the package(s) 'Rcpp,futile.logger,harbor,plyr,xts,futile.options,sys,digest,gstat,jsonlite,evaluate,memoise,lattice,rlang,rstudioapi,commonmark,rgdal,yaml,pkgdown,stringr,roxygen2,xml2,knitr,desc,fs,rprojroot,spacetime,R6,foreign,rmarkdown,sp,lambda.r,semver,magrittr,maptools,intervals,backports,scales,htmltools,MASS,assertthat,colorspace,stringi,munsell,rjson,FNN,crayon,zoo,remotes' from sysreqs online DB
+## INFO [2018-03-26 22:22:32] Adding CRAN packages: assertthat, backports, colorspace, commonmark, crayon, desc, digest, evaluate, FNN, foreign, fs, futile.logger, futile.options, gstat, htmltools, intervals, jsonlite, knitr, lambda.r, lattice, magrittr, maptools, MASS, memoise, munsell, plyr, R6, Rcpp, remotes, rgdal, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, scales, semver, sp, spacetime, stringi, stringr, sys, xml2, xts, yaml, zoo
+## INFO [2018-03-26 22:22:32] Adding GitHub packages: r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910
+## INFO [2018-03-26 22:22:32] Created Dockerfile-Object based on sessionInfo</code></pre>
 <pre><code>## An object of class "Dockerfile"
 ## Slot "image":
 ## An object of class "From"
@@ -203,8 +208,8 @@
 ## [[1]]
 ## An object of class "Run_shell"
 ## Slot "commands":
-## [1] "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"                                                                                      
-## [2] "apt-get install -y gdal-bin \\\n\tgit-core \\\n\tlibgdal-dev \\\n\tlibproj-dev \\\n\tlibxml2-dev \\\n\tmake \\\n\tpandoc \\\n\tpandoc-citeproc"
+## [1] "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"                                                                                                            
+## [2] "apt-get install -y gdal-bin \\\n\tgit-core \\\n\tlibapparmor-dev \\\n\tlibgdal-dev \\\n\tlibproj-dev \\\n\tlibxml2-dev \\\n\tmake \\\n\tpandoc \\\n\tpandoc-citeproc"
 ## 
 ## 
 ## [[2]]
@@ -213,17 +218,30 @@
 ## [1] "install2.r"
 ## 
 ## Slot "params":
-##  [1] "assertthat"     "backports"      "commonmark"     "crayon"        
-##  [5] "desc"           "digest"         "evaluate"       "FNN"           
-##  [9] "foreign"        "fs"             "futile.logger"  "futile.options"
-## [13] "gstat"          "htmltools"      "intervals"      "knitr"         
-## [17] "lambda.r"       "lattice"        "magrittr"       "maptools"      
-## [21] "MASS"           "memoise"        "R6"             "Rcpp"          
-## [25] "remotes"        "rgdal"          "rjson"          "rlang"         
-## [29] "rmarkdown"      "roxygen2"       "rprojroot"      "rstudioapi"    
-## [33] "semver"         "sp"             "spacetime"      "stringi"       
-## [37] "stringr"        "xml2"           "xts"            "yaml"          
-## [41] "zoo"           
+##       assertthat        backports       colorspace       commonmark 
+##     "assertthat"      "backports"     "colorspace"     "commonmark" 
+##           crayon             desc           digest         evaluate 
+##         "crayon"           "desc"         "digest"       "evaluate" 
+##              FNN          foreign               fs    futile.logger 
+##            "FNN"        "foreign"             "fs"  "futile.logger" 
+##   futile.options            gstat        htmltools        intervals 
+## "futile.options"          "gstat"      "htmltools"      "intervals" 
+##         jsonlite            knitr         lambda.r          lattice 
+##       "jsonlite"          "knitr"       "lambda.r"        "lattice" 
+##         magrittr         maptools             MASS          memoise 
+##       "magrittr"       "maptools"           "MASS"        "memoise" 
+##          munsell             plyr               R6             Rcpp 
+##        "munsell"           "plyr"             "R6"           "Rcpp" 
+##               49            rgdal            rjson            rlang 
+##        "remotes"          "rgdal"          "rjson"          "rlang" 
+##        rmarkdown         roxygen2        rprojroot       rstudioapi 
+##      "rmarkdown"       "roxygen2"      "rprojroot"     "rstudioapi" 
+##           scales           semver               sp        spacetime 
+##         "scales"         "semver"             "sp"      "spacetime" 
+##          stringi          stringr              sys             xml2 
+##        "stringi"        "stringr"            "sys"           "xml2" 
+##              xts             yaml              zoo 
+##            "xts"           "yaml"            "zoo" 
 ## 
 ## 
 ## [[3]]
@@ -232,7 +250,8 @@
 ## [1] "installGithub.r"
 ## 
 ## Slot "params":
-## [1] "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910"
+##                                                  pkgdown 
+## "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910" 
 ## 
 ## 
 ## [[4]]
@@ -259,32 +278,32 @@
 <div id="script" class="section level3">
 <h3 class="hasAnchor">
 <a href="#script" class="anchor"></a>Script</h3>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">scriptFile &lt;-<span class="st"> </span><span class="kw">tempfile</span>(<span class="dt">pattern =</span> <span class="st">"containerit_"</span>, <span class="dt">fileext =</span> <span class="st">".R"</span>)</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">file &lt;-<span class="st"> </span><span class="kw">file</span>(scriptFile)</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="kw">writeLines</span>(<span class="kw">c</span>(<span class="st">'nc &lt;- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)'</span>,</a>
-<a class="sourceLine" id="cb17-4" data-line-number="4">             <span class="st">'proj4string(nc) &lt;- CRS("+proj=longlat +datum=NAD27")'</span>,</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">             <span class="st">'plot(nc)'</span>), file)</a>
-<a class="sourceLine" id="cb17-6" data-line-number="6"><span class="kw">close</span>(file)</a>
-<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="kw">class</span>(file)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">scriptFile &lt;-<span class="st"> </span><span class="kw">tempfile</span>(<span class="dt">pattern =</span> <span class="st">"containerit_"</span>, <span class="dt">fileext =</span> <span class="st">".R"</span>)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">file &lt;-<span class="st"> </span><span class="kw">file</span>(scriptFile)</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw">writeLines</span>(<span class="kw">c</span>(<span class="st">'nc &lt;- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)'</span>,</a>
+<a class="sourceLine" id="cb21-4" data-line-number="4">             <span class="st">'proj4string(nc) &lt;- CRS("+proj=longlat +datum=NAD27")'</span>,</a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">             <span class="st">'plot(nc)'</span>), file)</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="kw">close</span>(file)</a>
+<a class="sourceLine" id="cb21-7" data-line-number="7"><span class="kw">class</span>(file)</a></code></pre></div>
 <pre><code>## [1] "file"       "connection"</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co">#containerit::dockerfile(from = file)</span></a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co">#containerit::dockerfile(from = file)</span></a></code></pre></div>
 </div>
 <div id="workspace" class="section level3">
 <h3 class="hasAnchor">
 <a href="#workspace" class="anchor"></a>Workspace</h3>
 <p>Go through all <code>.R</code> files in a directory and create a Dockerfile with a runtime environment which can run all of them.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">workspace &lt;-<span class="st"> </span><span class="kw">getwd</span>()</a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">class</span>(workspace)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">workspace &lt;-<span class="st"> </span><span class="kw">getwd</span>()</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">class</span>(workspace)</a></code></pre></div>
 <pre><code>## [1] "character"</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">dir.exists</span>(workspace)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">dir.exists</span>(workspace)</a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co">#containerit::dockerfile(from = workspace)</span></a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co">#containerit::dockerfile(from = workspace)</span></a></code></pre></div>
 </div>
 </div>
 <div id="sessioninfo" class="section level2">
 <h2 class="hasAnchor">
 <a href="#sessioninfo" class="anchor"></a>sessionInfo()</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 <pre><code>## R version 3.4.4 (2018-03-15)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.4 LTS
@@ -309,20 +328,22 @@
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16         compiler_3.4.4       futile.logger_1.4.3 
-##  [4] futile.options_1.0.0 tools_3.4.4          xts_0.10-2          
-##  [7] digest_0.6.15        gstat_1.1-5          evaluate_0.10.1     
-## [10] memoise_1.1.0        lattice_0.20-35      rlang_0.2.0         
-## [13] rstudioapi_0.7       commonmark_1.4       yaml_2.1.18         
-## [16] rgdal_1.2-16         pkgdown_0.1.0.9000   stringr_1.3.0       
-## [19] roxygen2_6.0.1       xml2_1.2.0           knitr_1.20          
-## [22] desc_1.1.1           fs_1.2.2             rprojroot_1.3-2     
-## [25] grid_3.4.4           spacetime_1.2-1      R6_2.2.2            
-## [28] foreign_0.8-69       rmarkdown_1.9        sp_1.2-7            
-## [31] lambda.r_1.2         semver_0.2.0         magrittr_1.5        
-## [34] backports_1.1.2      htmltools_0.3.6      intervals_0.15.1    
-## [37] MASS_7.3-49          maptools_0.9-2       assertthat_0.2.0    
-## [40] stringi_1.1.6        crayon_1.3.4         FNN_1.1             
-## [43] rjson_0.2.15         zoo_1.8-1</code></pre>
+##  [4] harbor_0.2.0         plyr_1.8.4           xts_0.10-2          
+##  [7] futile.options_1.0.0 tools_3.4.4          sys_1.5             
+## [10] digest_0.6.15        gstat_1.1-5          jsonlite_1.5        
+## [13] evaluate_0.10.1      memoise_1.1.0        lattice_0.20-35     
+## [16] rlang_0.2.0          rstudioapi_0.7       commonmark_1.4      
+## [19] rgdal_1.2-16         yaml_2.1.18          pkgdown_0.1.0.9000  
+## [22] stringr_1.3.0        roxygen2_6.0.1       xml2_1.2.0          
+## [25] knitr_1.20           desc_1.1.1           fs_1.2.2            
+## [28] rprojroot_1.3-2      grid_3.4.4           spacetime_1.2-1     
+## [31] R6_2.2.2             foreign_0.8-69       rmarkdown_1.9       
+## [34] sp_1.2-7             lambda.r_1.2         semver_0.2.0        
+## [37] magrittr_1.5         maptools_0.9-2       intervals_0.15.1    
+## [40] backports_1.1.2      scales_0.5.0         htmltools_0.3.6     
+## [43] MASS_7.3-49          assertthat_0.2.0     colorspace_1.3-2    
+## [46] stringi_1.1.6        munsell_0.4.3        rjson_0.2.15        
+## [49] FNN_1.1              crayon_1.3.4         zoo_1.8-1</code></pre>
 </div>
 </div>
   </div>
