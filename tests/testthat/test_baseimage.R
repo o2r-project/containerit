@@ -29,8 +29,11 @@ test_that("list of installed packages can be filtered when creating a Dockerfile
                    maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
                    filter_baseimage_pkgs = TRUE)
-  expected_file <- readLines("package_markdown/spacetime/Dockerfile.filtered")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
-  expect_equal(generated_file, expected_file)
   expect_true(object = any(grepl("# Packages skipped", x = toString(df))), info = "Packages skipped are mentioned in a comment")
+  # these packages are not in rocker/r-ver:
+  expect_true(object = any(grepl("^#.*gstat", x = toString(df))), info = "gstat is filtered")
+  expect_true(object = any(grepl("^#.*raster", x = toString(df))), info = "raster is filtered")
+  # these packages are not in rocker/geospatial
+  expect_true(object = any(grepl("^RUN.*\"adehabitatLT\"", x = toString(df))), info = "adehabitatLT is not filtered")
+  expect_true(object = any(grepl("^RUN.*\"trip\"", x = toString(df))), info = "trip is not filtered")
 })

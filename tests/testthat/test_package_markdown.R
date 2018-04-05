@@ -80,7 +80,8 @@ test_that("File copying can be disabled with NULL", {
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
-test_that("Packaging fails if dependency is missing in the base image and predetection is disabled", {
+test_that("Packaging fails if dependency is missing and predetection is disabled", {
+  skip_on_cran() # cannot remove packages on CRAN
   if (requireNamespace("plm", quietly = TRUE)) {
     remove.packages(pkgs = c("plm"))
   }
@@ -89,6 +90,7 @@ test_that("Packaging fails if dependency is missing in the base image and predet
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
   skip("error removing the package during running tests...")
+  skip_on_cran() # cannot remove packages on CRAN
   if (requireNamespace("plm", quietly = TRUE)) {
     remove.packages(pkgs = c("plm"))
   }

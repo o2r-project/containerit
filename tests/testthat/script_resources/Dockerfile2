@@ -1,7 +1,0 @@
-FROM rocker/r-ver:3.3.2
-LABEL maintainer="matthiashinz"
-WORKDIR /payload/
-COPY ["script_resources/simple_test.R", "script_resources/simple_test.R"]
-COPY ["script_resources/test_table.csv", "script_resources/test_table.csv"]
-COPY ["script_resources/test_subfolder/testresource", "script_resources/test_subfolder/testresource"]
-CMD ["R"]

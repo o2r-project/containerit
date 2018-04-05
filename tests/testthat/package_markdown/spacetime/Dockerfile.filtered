@@ -1,6 +1,6 @@
 FROM rocker/geospatial:3.4.4
 LABEL maintainer="o2r"
-# Packages skipped because they are in the base image: abind, backports, bitops, boot, caTools, compiler, deldir, digest, evaluate, FNN, foreign, Formula, geosphere, goftest, grid, gstat, htmltools, intervals, knitr, lattice, magrittr, mapdata, maps, maptools, MASS, Matrix, MatrixModels, mgcv, mvtnorm, nlme, parallel, plyr, polyclip, quantreg, raster, RColorBrewer, Rcpp, rgdal, rmarkdown, rpart, rprojroot, sandwich, sp, spacetime, SparseM, spatstat, spatstat.data, spatstat.utils, splines, stringi, stringr, tensor, tools, xts, yaml, zoo
+# Packages skipped because they are in the base image: abind, backports, bitops, boot, caTools, deldir, evaluate, FNN, foreign, Formula, geosphere, goftest, grid, gstat, htmltools, intervals, knitr, lattice, magrittr, mapdata, maps, maptools, MASS, Matrix, MatrixModels, mgcv, mvtnorm, nlme, parallel, plyr, polyclip, quantreg, raster, RColorBrewer, Rcpp, rgdal, rmarkdown, rpart, rprojroot, sandwich, sp, spacetime, SparseM, spatstat, spatstat.data, spatstat.utils, splines, stringi, stringr, tensor, tools, xts, yaml, zoo
 RUN ["install2.r", "ade4", "adehabitatLT", "adehabitatMA", "bdsmatrix", "CircStats", "cshapes", "diveMove", "DoseFinding", "KernSmooth", "lmtest", "maxLik", "miscTools", "plm", "quadprog", "SEL", "trip", "uniReg"]
 WORKDIR /payload/
 CMD ["R"]

@@ -7,52 +7,52 @@ test_that("the R script location is checked ",{
 })
 
 test_that("an R script can be created with resources of the same folder ",{
-  df <- dockerfile("script_resources/simple_test.R",
+  df <- dockerfile("package_script/resources/simple_test.R",
                 copy = "script_dir",
-                cmd = CMD_Rscript("script_resources/simple_test.R"),
+                cmd = CMD_Rscript("package_script/resources/simple_test.R"),
                 maintainer = "matthiashinz",
                 image = getImageForVersion("3.3.2"))
   #for overwriting
-  #write(df, "script_resources/Dockerfile")
+  #write(df, "package_script/resources/Dockerfile")
 
   # test run (shoud be fast and not give any errors)
   image <- create_localDockerImage(df, use_workdir = TRUE)
   harbor::docker_run(image = image, rm = TRUE)
   harbor::docker_cmd(harbor::localhost, "rmi", image)
 
-  expected_file <- readLines("script_resources/Dockerfile")
+  expected_file <- readLines("package_script/resources/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("a workspace with one R script can be packaged ",{
   #This test should result in the same dockerfile as above:
-  df <- dockerfile("script_resources/",
+  df <- dockerfile("package_script/resources/",
                 copy = "script_dir",
-                cmd = CMD_Rscript("script_resources/simple_test.R"),
+                cmd = CMD_Rscript("package_script/resources/simple_test.R"),
                 maintainer = "matthiashinz",
                 image = getImageForVersion("3.3.2"))
 
-  expected_file <- readLines("script_resources/Dockerfile")
+  expected_file <- readLines("package_script/resources/Dockerfile")
   expect_equal(toString(df), expected_file)
 })
 
 test_that("a list of resources can be packaged ",{
-  df <- dockerfile("script_resources/simple_test.R",
-                copy = c("script_resources/simple_test.R",
-                         "script_resources/test_table.csv",
-                         "script_resources/test_subfolder/testresource"),
+  df <- dockerfile("package_script/resources/simple_test.R",
+                copy = c("package_script/resources/simple_test.R",
+                         "package_script/resources/test_table.csv",
+                         "package_script/resources/test_subfolder/testresource"),
                 maintainer = "matthiashinz",
                 image = getImageForVersion("3.3.2"))
   #for overwriting
-  #write(df, "script_resources/Dockerfile2")
-  expected_file <- readLines("script_resources/Dockerfile2")
+  #write(df, "package_script/resources/Dockerfile2")
+  expected_file <- readLines("package_script/resources/Dockerfile2")
   generated_file <- unlist(stringr::str_split(toString(df),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("there is an error if non-existing resources are to be packages",{
-  expect_error(dockerfile("script_resources/simple_test.R",
+  expect_error(dockerfile("package_script/resources/simple_test.R",
                           copy = c("does_not_exist.R")))
 })
 
@@ -75,35 +75,50 @@ test_that("The gstat demo 'zonal' can be packaged ",{
 })
 
 test_that("The file can be copied", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = "script")
+  df_copy <- dockerfile(from = "package_script/resources/simple_test.R", copy = "script")
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
               info = "at least one Copy instruction")
 })
 
 test_that("File copying is disabled by default", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R")
+  df_copy <- dockerfile(from = "package_script/resources/simple_test.R")
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying is disabled with NA", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA)
+  df_copy <- dockerfile(from = "package_script/resources/simple_test.R", copy = NA)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying is disabled with NA_character", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NA_character_)
+  df_copy <- dockerfile(from = "package_script/resources/simple_test.R", copy = NA_character_)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying is disabled with NULL", {
-  df_copy <- dockerfile(from = "script_resources/simple_test.R", copy = NULL)
+  df_copy <- dockerfile(from = "package_script/resources/simple_test.R", copy = NULL)
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("script_packages/", maintainer = "o2r",
+  df <- dockerfile("package_script/resources/", maintainer = "o2r",
                    image = getImageForVersion("3.4.3", nearest = FALSE),
-                   copy = "script")
-  expected_file = readLines("script_packages/Dockerfile")
+                   copy = "script",
+                   cmd = CMD_Rscript("package_script/resources/simple_test.R"))
+  expected_file = readLines("package_script/resources/Dockerfile")
   expect_equal(toString(df), expected_file)
+})
+
+test_that("packaging works if library from script is missing but predetection is enabled", {
+  skip_on_cran() # cannot remove packages on CRAN
+  if (requireNamespace("boxoffice", quietly = TRUE)) {
+    remove.packages(pkgs = c("boxoffice"))
+  }
+
+  # this will re-install the package again:
+  df <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r", predetect = TRUE)
+  expected_file <- readLines("package_script/needs_predetect/Dockerfile")
+  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  expect_equal(generated_file, expected_file)
+  expect_true(object = any(grepl("^RUN.*\"boxoffice\"", x = toString(df))), info = "Packages missing are detected")
 })
