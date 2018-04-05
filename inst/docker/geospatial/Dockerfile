@@ -7,6 +7,9 @@ RUN apt-get update \
 
 RUN ["install2.r", "rjson", "futile.logger"]
 
+# FIXME devtools somehow does not pick up on the remote for harbor, so install it first manually
+RUN ["R", "-e", "devtools::install_github('wch/harbor')"]
+
 # use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
 RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]
 
