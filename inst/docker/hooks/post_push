@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+VERSION=$(sed -nE 's/Version: (.*?)$/\1/p' DESCRIPTION)
+echo Add version tag using $VERSION
+
+docker tag $IMAGE_NAME $DOCKER_REPO:VERSION
+docker push $DOCKER_REPO:geospatial-VERSION
