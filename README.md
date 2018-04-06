@@ -26,8 +26,33 @@ Development version from GitHub.
 
 ### Use
 
-See the vignettes at `vignettes/containerit.Rmd` and
-`vignettes/container.Rmd`.
+See the vignettes at `vignettes/containerit.Rmd` for usage from the R
+command line, and `vignettes/container.Rmd` for the usage from a regular
+command line interface based on [containers from Docker
+Hub](https://hub.docker.com/r/o2rproject/containerit/).
+
+### Containers
+
+Images are available starting from different base images. All images are
+also available with version tags.
+
+#### verse
+
+Base image:
+`rocker/verse:3.4.4`
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
+
+#### geospatial
+
+Base image:
+`rocker/geospatial:3.4.4`
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
 
 ## Contribute
 

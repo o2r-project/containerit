@@ -33,7 +33,32 @@ devtools::install_github("o2r-project/containerit")
 
 ### Use
 
-See the vignettes at `vignettes/containerit.Rmd` and `vignettes/container.Rmd`.
+See the vignettes at `vignettes/containerit.Rmd` for usage from the R command line, and `vignettes/container.Rmd` for the usage from a regular command line interface based on [containers from Docker Hub](https://hub.docker.com/r/o2rproject/containerit/).
+
+### Containers
+
+```{r, echo=FALSE, results='hide'}
+suppressPackageStartupMessages(library("here"))
+dockerfile_latest <- readLines(here("inst/docker/Dockerfile"))
+base_image = sub(".*? (.+)", "\\1", dockerfile_latest[[1]])
+dockerfile_geospatial <- readLines(here("inst/docker/geospatial/Dockerfile"))
+geospatial_base_image = sub(".*? (.+)", "\\1", dockerfile_geospatial[[1]])
+```
+
+Images are available starting from different base images.
+All images are also available with version tags.
+
+#### verse
+
+Base image: `` `r base_image` ``
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
+
+#### geospatial
+
+Base image: `` `r geospatial_base_image` ``
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
 
 ## Contribute
 
