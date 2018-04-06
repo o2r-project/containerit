@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PACKAGE_VERSION=$(sed -n '/Version:/p' DESCRIPTION | sed 's/[^0-9,.]*//g')
+PACKAGE_VERSION=$(sed -n '/Version:/p' ../../../DESCRIPTION | sed 's/[^0-9,.]*//g')
 
 echo "Build hook running for version" $PACKAGE_VERSION
 docker build \
