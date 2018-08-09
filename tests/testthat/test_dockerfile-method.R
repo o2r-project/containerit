@@ -73,20 +73,20 @@ test_that("R version is the current version if not specified otherwise", {
 })
 
 test_that("The package containerit is not packaged by default", {
-  info = obtain_localSessionInfo(expr = quote(library(containerit)))
-  df = dockerfile(info)
-  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+  info = containerit:::obtain_localSessionInfo(expr = quote(library(containerit)))
+  the_dockerfile <- dockerfile(info)
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })
 
 test_that("The package containerit is not packaged (add_self = FALSE)", {
-  info = obtain_localSessionInfo(expr = quote(library(containerit)))
-  df = dockerfile(info, add_self = FALSE)
-  expect_false(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+  info = containerit:::obtain_localSessionInfo(expr = quote(library(containerit)))
+  the_dockerfile <- dockerfile(info, add_self = FALSE)
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })
 
 test_that("The package containerit can be packaged (add_self = TRUE)", {
   skip("containerit not yet available from CRAN")
-  info = obtain_localSessionInfo(expr = quote(library(containerit)))
-  df = dockerfile(info, add_self = TRUE)
-  # expect_true(any(stringr::str_detect(format(df), "^RUN.*containerit")))
+  info = containerit:::obtain_localSessionInfo(expr = quote(library(containerit)))
+  the_dockerfile <- dockerfile(info, add_self = TRUE)
+  expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })

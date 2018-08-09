@@ -2,7 +2,7 @@
 
 context("Save workspace and R objects (save_image - argument)")
 
-original_sessionInfo <- obtain_localSessionInfo()
+original_sessionInfo <- containerit:::obtain_localSessionInfo()
 #this step is necessary because when running in test mode, the object is normally not written to the global environment
 #alternatively, the second test could use a different envir-argument
 assign("original_sessionInfo", original_sessionInfo, envir = .GlobalEnv)
@@ -15,7 +15,7 @@ test_that("A workspace image can be containerized", {
   if (file.exists(".RData"))
     return() #don't continue
 
-  df <- dockerfile(original_sessionInfo, save_image = TRUE)
+  the_dockerfile <- dockerfile(original_sessionInfo, save_image = TRUE)
 
   expect_true(
     file.exists(".RData"),
@@ -26,7 +26,7 @@ test_that("A workspace image can be containerized", {
               " R object was not saved to RData file.")
   detach(pos = 2)
 
-  inst <- methods::slot(df, "instructions")
+  inst <- methods::slot(the_dockerfile,"instructions")
   inst_types <- sapply(inst, class)
   #select last occurence of a Workdir instruction
   last_wd_sel <- max(which(inst_types == "Workdir"))
@@ -55,7 +55,7 @@ test_that("A workspace image can be containerized given an object list and save-
             targetfile <-
               paste0(test_folder, "/testworkspace.RData")
             message("Workspace here: ", ls(all.names = TRUE, envir = .GlobalEnv))
-            df <-
+            the_dockerfile <-
               dockerfile(original_sessionInfo,
                          save_image = list("original_sessionInfo", file = targetfile))
 
@@ -74,7 +74,7 @@ test_that("A workspace image can be containerized given an object list and save-
                         " R object was not saved to RData file.")
             detach(pos = 2)
 
-            inst <- methods::slot(df, "instructions")
+            inst <- methods::slot(the_dockerfile,"instructions")
             inst_types <- sapply(inst, class)
             #select last occurence of a Workdir instruction
             last_wd_sel <- max(which(inst_types == "Workdir"))

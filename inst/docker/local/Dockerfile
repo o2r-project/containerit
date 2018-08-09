@@ -25,8 +25,7 @@ WORKDIR /containerit
 COPY . /containerit
 
 # use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file, and run vanilla so the above options are not used yet
-# FIXME devtools somehow does not pick up on the remote for harbor, so install it first manually
-RUN ["R", "--vanilla", "-e", "devtools::install_github('wch/harbor')"]
+RUN ["R", "--vanilla", "-e", "devtools::install_github('richfitz/stevedore')"]
 RUN ["R", "--vanilla", "-e", "devtools::install()"]
 
 CMD ["R"]

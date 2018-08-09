@@ -19,14 +19,14 @@
 #' @family label
 #'
 #' @examples
-#' df <- dockerfile(clean_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' factory <- LabelSchemaFactory()
 #' label <- factory(name = "ImageName",
 #'   description = "Description of the image",
 #'   build_date = Sys.time()
 #'  )
-#' addInstruction(df) <- label
-#' cat(format(df))
+#' addInstruction(the_dockerfile) <- label
+#' cat(format(the_dockerfile))
 #'
 #'
 LabelSchemaFactory <- function() {

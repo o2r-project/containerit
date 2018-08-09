@@ -20,8 +20,8 @@ See https://docs.docker.com/engine/reference/builder/#label
 }
 \examples{
 session <- clean_session()
-df <- dockerfile(session)
-addInstruction(df) <- Label_SessionInfo(session)
+the_dockerfile <- dockerfile(session)
+addInstruction(the_dockerfile) <- Label_SessionInfo(session)
 }
 \seealso{
 Other label: \code{\link{Label-class}},

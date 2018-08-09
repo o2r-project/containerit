@@ -1,5 +1,5 @@
 FROM rocker/geospatial
-LABEL maintainer="matthiashinz"
+LABEL maintainer="o2r"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
   && apt-get install -y libudunits2-dev \
 	pandoc \

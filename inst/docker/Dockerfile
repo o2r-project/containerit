@@ -4,8 +4,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
 
-# FIXME devtools somehow does not pick up on the remote for harbor, so install it first manually
-RUN ["R", "-e", "devtools::install_github('wch/harbor')"]
+RUN ["R", "-e", "devtools::install_github('richfitz/stevedore')"]
 
 # use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
 RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]

@@ -47,7 +47,7 @@ The Dockerfile created by `containerit` can then be used to build a Docker image
 Running the image will start an R session that closely resembles the creating systems runtime environment.
 The image can be shared and archived and works anywhere with a compatible Docker version. 
 
-To build images and run containers, the package integrates with the [harbor](https://github.com/wch/harbor) package and adds a few convenience functions for interacting with Docker images and containers.
+To build images and run containers, the package integrates with the [stevedore](https://github.com/richfitz/stevedore) package and adds a few convenience functions for interacting with Docker images and containers.
 For concrete details on reading, loading, or installing the _exact_ versions of R packages including their system dependencies/libraries, this project focuses on the geospatial domain.
 `containerit` uses the package [`futile.logger`](https://cran.r-project.org/web/packages/futile.logger/) to provide information to the user at a configurable level of detail, see [futile.logger documentation](https://cran.r-project.org/web/packages/futile.logger/README.html).
 
@@ -204,8 +204,8 @@ suppressPackageStartupMessages(library("sf"))
 sessionInfo <- sessionInfo()
 save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.Rdata"))
 unloadNamespace("sf")
-df <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
-print(df)
+the_dockerfile <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
+print(the_dockerfile)
 ```
 
 Two alternative packages provide their own version of a session info, both of which are supported as well.
@@ -262,8 +262,8 @@ Including R objects works similar to resources, using the argument `save_image`.
 The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .RData file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
 
 ```{r save_image, comment=NA}
-df <- dockerfile(save_image = TRUE)
-print(df)
+the_dockerfile <- dockerfile(save_image = TRUE)
+print(the_dockerfile)
 ```
 
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
@@ -275,12 +275,12 @@ calculation <- 41 + 1
 frtn <- fortunes::fortune()
 original_sessionInfo <- sessionInfo()
 
-df <- dockerfile(silent = TRUE,
+the_dockerfile <- dockerfile(silent = TRUE,
                  save_image = list("original_sessionInfo", "frtn"))
 ```
 
 ```{r print_save_image_list_df, comment=NA}
-print(df)
+print(the_dockerfile)
 ```
 
 ## 4. Advanced Dockerfile instructions
@@ -483,7 +483,7 @@ All Dockerfiles and instructions are adjusted to the Rocker image stack and assu
 As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
 
 The package is a first prototype available via GitHub.
-While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as [harbor](https://github.com/wch/harbor/issues/5), being available on CRAN, too.
+While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as `stevedore`, being available on CRAN, too.
 The prototype of `containerit` was developed and tested only on Ubuntu/Linux, which should be extended before releasing a stable version on CRAN.
 
 As part of the o2r project, it is planned to integrate `containerit` in a [web service](http://o2r.info/architecture) for creating archivable research in form of [Executable Research Compendia (ERC)](https://doi.org/10.1045/january2017-nuest).

@@ -10,11 +10,11 @@ test_that("can create comments",{
 })
 
 test_that("can add comments to a Dockerfile", {
-  df <- dockerfile(clean_session())
-  addInstruction(df) <- Comment(text = "the text")
-  addInstruction(df) <- Label(foo = "bar")
-  addInstruction(df) <- Comment(text = "after foo bar")
-  df_str <- toString(df)
+  the_dockerfile <- dockerfile(clean_session())
+  addInstruction(the_dockerfile) <- Comment(text = "the text")
+  addInstruction(the_dockerfile) <- Label(foo = "bar")
+  addInstruction(the_dockerfile) <- Comment(text = "after foo bar")
+  df_str <- toString(the_dockerfile)
   expect_equal(df_str[[4]], "# the text")
   expect_equal(df_str[[6]], "# after foo bar")
 })

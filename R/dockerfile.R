@@ -419,14 +419,14 @@ dockerfileFromFile <- function(file,
     # execute script / markdowns or read Rdata file to obtain sessioninfo
     if (stringr::str_detect(file, ".R$")) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
-      sessionInfo <- obtain_localSessionInfo(file = file,
+      sessionInfo <- containerit:::obtain_localSessionInfo(file = file,
                                              vanilla = vanilla,
                                              slave = silent,
                                              echo = !silent,
                                              predetect = predetect)
     } else if (stringr::str_detect(file, ".Rmd$")) {
       futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_path)
-      sessionInfo <- obtain_localSessionInfo(rmd_file = file,
+      sessionInfo <- containerit:::obtain_localSessionInfo(rmd_file = file,
                                              vanilla = vanilla,
                                              slave = silent,
                                              echo = !silent,
@@ -465,9 +465,14 @@ dockerfileFromFile <- function(file,
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
         rel_dir_dest <-
           stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
+        
+        # directories given as destination must have a trailing slash in dockerfiles
         if (!stringr::str_detect(rel_dir_dest, "/$"))
-          # directories given as destination must have a trailing slash in dockerfiles
           rel_dir_dest <- paste0(rel_dir_dest, "/")
+
+        # let's also add a trailing slash to the source dir
+        if (!stringr::str_detect(rel_dir, "/$"))
+          rel_dir <- paste0(rel_dir, "/")
 
         addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
       } else {

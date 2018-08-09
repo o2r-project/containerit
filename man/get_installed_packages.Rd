@@ -4,11 +4,9 @@
 \alias{get_installed_packages}
 \title{Detect packages in a Docker image}
 \usage{
-get_installed_packages(host = harbor::localhost, image)
+get_installed_packages(image)
 }
 \arguments{
-\item{host}{A host object (see harbor-package)}
-
 \item{image}{Name of the new image to be run}
 }
 \value{
@@ -16,5 +14,5 @@ A \code{data.frame} with installed packages and their version of the image
 }
 \description{
 Extracts all installed packages from a Docker image by running it.
-The method is based on \code{harbor::docker_cmd}.
+The method is based on \code{stevedore}.
 }

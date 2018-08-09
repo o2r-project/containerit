@@ -52,20 +52,20 @@ test_that("Entrypoint parameters correctly rendered in shell form", {
 })
 
 test_that("Entrypoint command is correctly added to Dockerfile as second to last line", {
-  df <- dockerfile(from = NULL,
+  the_dockerfile <- dockerfile(from = NULL,
                    entrypoint = Entrypoint("Rscript"),
                    cmd = Cmd("script.R"))
-  df_string <- toString(df)
+  df_string <- toString(the_dockerfile)
   expect_equal(df_string[length(df_string) - 1], 'ENTRYPOINT ["Rscript"]')
 })
 
 test_that("Entrypoint command is correctly rendered to file", {
-  df <- dockerfile(from = NULL, image = "ubuntu",
+  the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
                    maintainer = NULL, container_workdir = NULL,
                    entrypoint = Entrypoint("top", list("-b")),
                    cmd = Cmd(params = c("-c")))
   tempfile <- file.path(tempdir(), "Dockerfile.entrypoint")
-  write(df, file = tempfile)
+  write(the_dockerfile, file = tempfile)
 
   control_file <- "./entrypoint/Dockerfile"
   control_instructions <- readLines(control_file)

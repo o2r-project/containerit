@@ -163,7 +163,7 @@ Points, MultiPoints, Lines, MultiLines, Polygons and MultiPolygons can be conver
 ```{r}
 df = data.frame(a=1)
 df$geom = sfc(list(mp))
-sf = sf(df)
+sf = sf(the_dockerfile)
 library(methods)
 a = as(sf, "Spatial")
 class(a)

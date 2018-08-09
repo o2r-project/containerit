@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library(containerit)
 
@@ -31,23 +31,23 @@ dockerfile_object <- NULL
 obtain_dockerSessionInfo <- function(docker_image,
            expr = c(),
            vanilla = FALSE,
-           docker_tempdir = "/tmp/containerit_temp",
-           local_tempdir = tempfile(pattern = "dir"),
+           container_dir = "/tmp",
+           local_dir = tempfile(pattern = "dir"),
            deleteTempfiles = TRUE) {
     result = tryCatch({
-      #create local temporary directory
-      dir.create(local_tempdir)
-      if (!dir.exists(local_tempdir))
-        stop("Unable to locate temporary directory: ", local_tempdir)
+      # for testing:
+      # docker_image <- "rocker/geospatial:3.4.4"
 
-      #mount option
-      volume_opt = c("-v", paste0(local_tempdir, ":", docker_tempdir))
+      #create local temporary directory
+      dir.create(local_dir)
+      if (!dir.exists(local_dir))
+        stop("Unable to locate temporary directory: ", local_dir)
 
       #rdata file to which session info shall be written
-      docker_tempfile =  paste0(docker_tempdir, "/", "rdata")
-      local_docker_tempfile = file.path(local_tempdir, "rdata")
-      #cat(writeExp(docker_tempfile))
-      expr <- append(expr, .writeSessionInfoExp(docker_tempfile))
+      container_tempfile =  file.path(container_dir, "capture.Rdata")
+      local_docker_tempfile = file.path(local_dir, "capture.Rdata")
+
+      expr <- append(expr, containerit:::.writeSessionInfoExp(container_tempfile))
       #convert to cmd parameters
       expr <- .exprToParam(expr)
 
@@ -56,37 +56,31 @@ obtain_dockerSessionInfo <- function(docker_image,
         cmd <- append(cmd, "--vanilla")
       }
       cmd <- append(cmd, expr)
-      futile.logger::flog.info("Creating R session in Docker with the following arguments:\n\t",
-                               "docker run %s %s %s",
-                               paste(volume_opt, collapse = " "),
+
+      futile.logger::flog.info("Running R in container to obtain a session info using image %s and command %s",
                                docker_image,
                                paste(cmd, collapse = " "))
 
-
-      container <- harbor::docker_run(
-        harbor::localhost,
-        image = docker_image,
-        cmd = cmd ,
-        docker_opts = volume_opt
-      )
-
-      if (harbor::container_running(container))
-        stop("Unexpected behavior: The container is still running!")
-
-      harbor::container_rm(container)
+      client <- stevedore::docker_client()
+      container <- client$container$run(image = docker_image,
+                                        cmd = cmd,
+                                        host_config = list(binds = c(paste0(local_dir, ":", container_dir))),
+                                        name = "containerit_capturer")
 
       if (!file.exists(local_docker_tempfile))
-        stop("Sessioninfo was not written to file (it does not exist): ",
+        stop("Sessioninfo was not written to file (file missing): ",
              local_docker_tempfile)
 
       futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
       load(local_docker_tempfile)
       #clean up
       if (deleteTempfiles)
-        unlink(local_tempdir, recursive = TRUE)
+        unlink(local_dir, recursive = TRUE)
+      container$container$remove()
+
       get("info")
     }, error = function(e) {
-      cat("Error obtaining session infor via harbor:", toString(e), "\n")
+      cat("Error obtaining session info:", toString(e), "\n")
       NULL
     }, finally = {
       #
@@ -96,33 +90,30 @@ obtain_dockerSessionInfo <- function(docker_image,
   }
 
 test_that("a local sessionInfo() can be created ", {
-  local_sessionInfo <<- obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
+  local_sessionInfo <<- containerit:::obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
 test_that("a sessionInfo can be reproduced with Docker", {
   skip_on_cran()
   skip_on_travis()
+  skip_if_not(stevedore::docker_available())
 
-  if(is.null(local_sessionInfo))
+  if (is.null(local_sessionInfo))
     skip("previous test failed (missing objects to continue)")
 
-  dockerfile_object <<- dockerfile(local_sessionInfo)
-  docker_tempimage <- create_localDockerImage(dockerfile_object, no_cache = FALSE)
+  dockerfile_object <- dockerfile(local_sessionInfo)
+  docker_tempimage_id <- containerit:::create_localDockerImage(dockerfile_object)
 
   #expect that image was created:
-  expect_match(
-    harbor::docker_cmd(
-      harbor::localhost,
-      "images",
-      docker_tempimage,
-      capture_text = TRUE
-    ), docker_tempimage)
+  client <- stevedore::docker_client()
+  expect_true(docker_tempimage_id %in% client$image$list()$id)
 
   docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage, expressions, vanilla = TRUE)
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
+
   #clean up: remove image
-  harbor::docker_cmd(harbor::localhost, "rmi", docker_tempimage)
+  client$image$remove(docker_tempimage_id)
 })
 
 test_that("the same base packages are attached locally and in Docker", {

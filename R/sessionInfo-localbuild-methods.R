@@ -3,45 +3,35 @@
 # Shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
 # When a Dockerfile object is written, a temporary file is written in the context directory and deleted after build
 # Currently used for testing only.
+# Returns the image name.
 create_localDockerImage <- function(x,
-                                    host = harbor::localhost,
-                                    image_name = strsplit(tempfile(pattern = "containerit_test", tmpdir = ""), "/")[[1]][2],
-                                    no_cache = FALSE,
+                                    image_name = strsplit(tempfile(pattern = "containerit_test_", tmpdir = ""), "/")[[1]][2],
                                     use_workdir = FALSE) {
-  if (is.character(x))
-    docker_build(
-      harbor::localhost,
-      dockerfolder = x,
-      tag = image_name,
-      wait = TRUE
-    )
-  if (inherits(x, "Dockerfile")) {
-    tempdir <- tempfile(pattern = "dir")
+  if (is.character(x)) {
+    image_id <- docker_build(context = x,
+                 tag = image_name)
+    return(image_id)
+  } else if (inherits(x, "Dockerfile")) {
+    context <- NULL
 
     if (use_workdir) {
-      context = getwd()
-      futile.logger::flog.info("Building Docker image from temporary Dockerfile in context directory:\n\t%s", context)
-      dockerfile_path = tempfile(pattern = "Dockerfile", tmpdir = context)
+      context <- getwd()
+      futile.logger::flog.info("Building Docker image from temporary Dockerfile in working directory %s", context)
+      dockerfile_path <- tempfile(pattern = "Dockerfile", tmpdir = context)
     } else {
+      tempdir <- tempfile(pattern = "dir")
       futile.logger::flog.info("Building Docker image from temporary Dockerfile and directory")
       context = tempdir
       dir.create(tempdir)
-      #write dockerfile into temp dir
-      dockerfile_path = file.path(tempdir, "Dockerfile")
+      dockerfile_path <- file.path(tempdir, "Dockerfile")
     }
 
     write(x, file = dockerfile_path)
-    dockerfile_path = normalizePath(dockerfile_path)
+    futile.logger::flog.debug("Wrote Dockerfile to %s", dockerfile_path)
 
-    .built <- docker_build(
-      host,
-      dockerfolder = context,
-      tag = image_name,
-      wait = TRUE,
-      no_cache = no_cache,
-      dockerfile = dockerfile_path
-    )
-    futile.logger::flog.debug("Build output: %s\n", .built)
+    image_id <- docker_build(context = context,
+                                tag = image_name)
+    futile.logger::flog.debug("Build image: %s", image_id)
 
     if (use_workdir) {
       futile.logger::flog.info("Deleting temporary Dockerfile...")
@@ -51,9 +41,10 @@ create_localDockerImage <- function(x,
       unlink(tempdir, recursive = TRUE)
     }
 
+    return(image_id)
+  } else {
+    stop("Unsupported first argument: ", toString(x))
   }
-
-  return(image_name)
 }
 
 
@@ -62,13 +53,10 @@ create_localDockerImage <- function(x,
   e1 <- quote(info <- sessionInfo())
   e2 <- quote(save(list = "info", file = tempfile))
   e2[[3]] <- tempfile
-  #for debugging:
-  #e3 <- quote(file.exists(tempfile))
-  #e3[[2]] <- tempfile
   return(c(e1, e2))
 }
 
-#converts an vector or list of R expression into command line parmaeters for R (batch mode)
+#converts an vector or list of R expression into command line parameters for R (batch mode)
 .exprToParam <-
   function(expr,
            e_append = append,

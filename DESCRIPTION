@@ -38,7 +38,7 @@ Suggests:
     rgdal,
     maptools,
     magrittr,
-    harbor,
+    stevedore,
     lintr,
     sp,
     gstat,
@@ -83,4 +83,4 @@ Collate:
     'sessionInfo-localbuild-methods.R'
     'utility-functions.R'
 Remotes: github::r-hub/sysreqs,
-    github::wch/harbor
+    github::richfitz/stevedore

@@ -41,10 +41,10 @@ test_that("Cmd parameters are correctly rendered in shell form", {
 })
 
 test_that("Cmd command is correctly added to Dockerfile as last line", {
-  df <- dockerfile(from = NULL,
+  the_dockerfile <- dockerfile(from = NULL,
                    entrypoint = Entrypoint("Rscript"),
                    cmd = Cmd("script.R"))
-  df_string <- toString(df)
+  df_string <- toString(the_dockerfile)
   expect_equal(df_string[length(df_string)], 'CMD ["script.R"]')
 })
 
