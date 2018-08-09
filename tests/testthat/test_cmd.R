@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Rcmdroducible Research (http://o2r.info)
+# Copyright 2018 Opening Rcmdroducible Research (https://o2r.info)
 
 library(containerit)
 context("cmd instruction")

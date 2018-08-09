@@ -33,7 +33,7 @@ It can be supported by packages such as [packrat](https://rstudio.github.io/pack
 An alternative to updating or managing packages explicitly is providing the full runtime environment in its original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
 
 The R extension package `containerit` aims to facilitate the latter approach by making reproducible and archivable research with containers easier.
-The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](http://o2r.info)).
+The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](https://o2r.info)).
 `containerit` relies on [Docker](http://docker.com/) and automatically generates a container manifest, or "recipe", with setup instructions to recreate a runtime environment based on a given R session, R script, R Markdown file or workspace directory.
 The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine to create a software container containing all the R packages and their system dependencies.
 This way all requirements of an R workflow are packaged in an executable format.

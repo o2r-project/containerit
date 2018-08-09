@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 # pkgs is a data.frame of packages with the columns name, version, and source (either "CRAN" or "github")
 # function returns a the dockerfile with the required instructions

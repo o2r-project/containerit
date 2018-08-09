@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' containerit: A package for packaging R objects and their dependencies in software containers
 #'

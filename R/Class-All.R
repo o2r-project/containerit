@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' Class union for slots taking either numeric or character input
 #'

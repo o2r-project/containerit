@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 # Shorthand method for creating a local Docker Image based on either an existing Dockerfile (given by folder) or a Dockerfile object
 # When a Dockerfile object is written, a temporary file is written in the context directory and deleted after build
