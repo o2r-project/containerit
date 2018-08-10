@@ -209,14 +209,14 @@ print(the_dockerfile)
 ```
 
 Two alternative packages provide their own version of a session info, both of which are supported as well.
-The following examples first load the packages `A3` and `abc` (because they are first in the alphabet), store session information objects, and then unload the packages again before creating `Dockerfile`s from the stored objects.
+The following examples first load the packages `fortunes` and `remotes`, store session information objects, and then unload the packages again before creating `Dockerfile`s from the stored objects.
 
 ```{r session_info}
 suppressPackageStartupMessages(library("devtools"))
 suppressPackageStartupMessages(library("sessioninfo"))
 
-suppressPackageStartupMessages(library("abc"))
-suppressPackageStartupMessages(library("A3"))
+suppressPackageStartupMessages(library("fortunes"))
+suppressPackageStartupMessages(library("remotes"))
 
 session_info <- devtools::session_info()
 save(session_info, file = file.path(temp_workspace, "session_info_devtools.Rdata"))
