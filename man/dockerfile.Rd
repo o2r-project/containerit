@@ -7,11 +7,12 @@
 dockerfile(from = utils::sessionInfo(),
   image = getImageForVersion(getRVersionTag(from)),
   maintainer = Sys.info()[["user"]], save_image = FALSE,
-  env = list(generator = paste("containerit",
-  utils::packageVersion("containerit"))), soft = FALSE, offline = FALSE,
-  copy = NA, container_workdir = "/payload/", cmd = Cmd("R"),
-  entrypoint = NULL, add_self = FALSE, vanilla = TRUE, silent = FALSE,
-  predetect = TRUE, versioned_libs = FALSE, versioned_packages = FALSE,
+  envir = .GlobalEnv, env = list(generator = paste("containerit",
+  utils::packageVersion("containerit"))), soft = FALSE,
+  offline = FALSE, copy = NA, container_workdir = "/payload/",
+  cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE,
+  vanilla = TRUE, silent = FALSE, predetect = TRUE,
+  versioned_libs = FALSE, versioned_packages = FALSE,
   filter_baseimage_pkgs = FALSE)
 }
 \arguments{
@@ -22,9 +23,11 @@ By default, the image is determinded from the given session. Alternatively, use 
 
 \item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
-\item{save_image}{When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
- Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
-\code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv}
+\item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
+ Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.Rdata")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
+\code{save} will be called with \code{envir}.}
+
+\item{envir}{The environment for \code{save_image}.}
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 

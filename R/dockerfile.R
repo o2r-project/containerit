@@ -31,9 +31,10 @@
 #' @param image (\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 #'      By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.
 #' @param maintainer Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
-#' @param save_image When TRUE, it calls \link[base]{save.image} and include the resulting .RData in the container's working directory.
-#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}. E.g. save_image = list("object1", "object2", file = "path/in/wd/filename.RData").
-#' \code{save} will be called with default arguments file = ".RData" and envir = .GlobalEnv
+#' @param save_image When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
+#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.Rdata")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
+#' \code{save} will be called with \code{envir}.
+#' @param envir The environment for \code{save_image}.
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
@@ -63,6 +64,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        image = getImageForVersion(getRVersionTag(from)),
                        maintainer = Sys.info()[["user"]],
                        save_image = FALSE,
+                       envir = .GlobalEnv,
                        env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
                        soft = FALSE,
                        offline = FALSE,
@@ -216,20 +218,22 @@ dockerfile <- function(from = utils::sessionInfo(),
       stop("Unsupported 'from': ", class(from), " ", from)
     }
 
-    # copy any additional files / objects into the working directory from here:
+    # copy additional objects into the container in an RData file
+    .filename = ".RData"
+    if ("save_image_filename" %in% names(save_image)) {
+      .filename <- save_image$save_image_filename
+    }
     if (isTRUE(save_image)) {
-      save.image()
-      addInstruction(.dockerfile) <-
-        Copy(src = "./.RData", dest = "./")
+      futile.logger::flog.debug("Saving image to file %s with %s and adding COPY instruction using environment %s",
+                                .filename, toString(ls(envir = envir)),
+                                capture.output(envir))
+      save(list = ls(envir = envir), file = .filename, envir = envir)
+      addInstruction(.dockerfile) <- Copy(src = .filename, dest = .filename)
     } else if (is.list(save_image)) {
-      do.call(.save_objects, save_image)
-      if ("file" %in% names(save_image)) {
-        file <- save_image$file
-        # try to assure unix-compatibility..
-        file <- stringr::str_replace_all(file, "\\\\", "/")
-      } else
-        file = "./payload.RData"
-      addInstruction(.dockerfile) <- Copy(src = file, dest = file)
+      futile.logger::flog.debug("Saving image using to file %s and adding COPY instruction based on %s",
+                                .filename, toString(save_image))
+      save(list = unlist(save_image[names(save_image) != "save_image_filename"]), file = .filename, envir = envir)
+      addInstruction(.dockerfile) <- Copy(src = .filename, dest = .filename)
     }
 
     futile.logger::flog.info("Created Dockerfile-Object based on %s", .originalFrom)
@@ -240,15 +244,11 @@ dockerfileFromPackages <- function(pkgs,
                                    dockerfile,
                                    soft,
                                    offline,
-                                   add_self,
                                    versioned_libs,
                                    versioned_packages,
                                    filter_baseimage_pkgs,
                                    workdir) {
   futile.logger::flog.debug("Creating from packages data.frame")
-
-  if (!add_self)
-    pkgs <- pkgs[pkgs$name != "containerit",]
 
   # The platform is determined only for known images.
   # Alternatively, we could let the user optionally specify one amongst different supported platforms
@@ -294,13 +294,18 @@ dockerfileFromSession.sessionInfo <- function(session,
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) # packages to be installed
 
+  if (!add_self) {
+    futile.logger::flog.debug("Removing self from the list of packages")
+    pkgs$containerit <- NULL
+  }
+
   # 1. identify where to install the package from
   pkgs_list <- lapply(pkgs, function(pkg) {
            #determine package name
            if ("Package" %in% names(pkg))
              name <- pkg$Package
            else
-             stop("Package name cannot be dertermined for ", pkg)
+             stop("Package name cannot be determined for ", pkg)
 
            if ("Priority" %in% names(pkg) &&
                stringr::str_detect(pkg$Priority, "(?i)base")) {
@@ -334,7 +339,6 @@ dockerfileFromSession.sessionInfo <- function(session,
                                         dockerfile = dockerfile,
                                         soft = soft,
                                         offline = offline,
-                                        add_self = add_self,
                                         versioned_libs = versioned_libs,
                                         versioned_packages = versioned_packages,
                                         filter_baseimage_pkgs = filter_baseimage_pkgs,
@@ -365,6 +369,11 @@ dockerfileFromSession.session_info <- function(session,
   }
   names(packages_df) <- c("name", "version", "source")
 
+  if (!add_self) {
+    futile.logger::flog.debug("Removing self from the list of packages")
+    packages_df <- packages_df[packages_df$name != "containerit",]
+  }
+
   # create version strings as we want them for GitHub packages
   pkgs_gh <- packages_df[stringr::str_detect(string = packages_df$source, stringr::regex("GitHub", ignore_case = TRUE)),]
   if (nrow(pkgs_gh) > 0) {
@@ -379,7 +388,6 @@ dockerfileFromSession.session_info <- function(session,
                                         dockerfile = dockerfile,
                                         soft = soft,
                                         offline = offline,
-                                        add_self = add_self,
                                         versioned_libs = versioned_libs,
                                         versioned_packages = versioned_packages,
                                         filter_baseimage_pkgs = filter_baseimage_pkgs,
@@ -465,7 +473,7 @@ dockerfileFromFile <- function(file,
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
         rel_dir_dest <-
           stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
-        
+
         # directories given as destination must have a trailing slash in dockerfiles
         if (!stringr::str_detect(rel_dir_dest, "/$"))
           rel_dir_dest <- paste0(rel_dir_dest, "/")
@@ -662,9 +670,3 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
   })
   as.character(out)
 }
-
-# helper function for saving lists of objects
-.save_objects <-
-  function(... , file = ".RData", envir = .GlobalEnv) {
-    save(..., file = file, envir = envir)
-  }
