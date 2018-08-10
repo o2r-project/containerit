@@ -74,10 +74,18 @@ rhub::check_for_cran()
 rhub::check_on_windows()
 ```
 
-You can build the [`pkgdown`]() site with
+You can build the [`pkgdown`](http://pkgdown.r-lib.org/) site with
 
 ``` r
 pkgdown::build_site()
+```
+
+You can build the Docker images locally with the current development
+version using the following commands.
+
+``` bash
+docker build --tag containerit:dev --file inst/docker/Dockerfile.local .
+docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .
 ```
 
 ## License

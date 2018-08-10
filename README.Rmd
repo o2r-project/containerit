@@ -71,7 +71,7 @@ By participating in this project you agree to abide by its terms.
 
 [r-hub builder](https://builder.r-hub.io/) is great for running checks, e.g. before submitting to CRAN and on other operating systems.
 
-```r
+```{r checking, eval=FALSE}
 library(rhub)
 rhub::check_for_cran()
 rhub::check_on_windows()
@@ -79,13 +79,13 @@ rhub::check_on_windows()
 
 You can build the [`pkgdown`](http://pkgdown.r-lib.org/) site with
 
-```r
+```{r pkgdown, eval=FALSE}
 pkgdown::build_site()
 ```
 
 You can build the Docker images locally with the current development version using the following commands.
 
-```
+```{bash dev_containers, eval=FALSE}
 docker build --tag containerit:dev --file inst/docker/Dockerfile.local .
 docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .
 ```
