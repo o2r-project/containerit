@@ -5,7 +5,10 @@
 
 `containerit` packages R script/session/workspace and all dependencies
 as a [Docker](http://docker.com/) container by automagically generating
-a suitable `Dockerfile`.
+a suitable `Dockerfile`. The packages’s website at
+<https://o2r.info/containerit/>. A good summary of what the package does
+can be found in this [o2r project blog
+post](http://o2r.info/2017/05/30/containerit-package/).
 
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
