@@ -28,3 +28,4 @@ Other label: \code{\link{Label-class}},
   \code{\link{LabelSchemaFactory}},
   \code{\link{Label_Maintainer}}, \code{\link{Label}}
 }
+\concept{label}

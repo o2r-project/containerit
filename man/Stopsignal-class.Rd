@@ -27,3 +27,4 @@ Other instruction classes: \code{\link{Add-class}},
   \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
   \code{\link{Volume-class}}, \code{\link{Workdir-class}}
 }
+\concept{instruction classes}

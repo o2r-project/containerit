@@ -42,3 +42,4 @@ Other label: \code{\link{Label-class}},
   \code{\link{Label_Maintainer}},
   \code{\link{Label_SessionInfo}}
 }
+\concept{label}

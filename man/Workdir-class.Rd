@@ -29,3 +29,4 @@ Other instruction classes: \code{\link{Add-class}},
   \code{\link{Stopsignal-class}},
   \code{\link{Volume-class}}
 }
+\concept{instruction classes}

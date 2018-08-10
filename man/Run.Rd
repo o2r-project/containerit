@@ -21,3 +21,4 @@ Create objects representing a RUN instruction
 Other Run instruction: \code{\link{Run-class}},
   \code{\link{Run_shell-class}}, \code{\link{Run_shell}}
 }
+\concept{Run instruction}
