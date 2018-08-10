@@ -23,7 +23,7 @@ By default, the image is determinded from the given session. Alternatively, use 
 
 \item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
-\item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
+\item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.Rdata} file to the container's working directory. The created file in the local working director will not be deleted.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.Rdata")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
 \code{save} will be called with \code{envir}.}
 

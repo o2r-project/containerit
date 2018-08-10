@@ -259,7 +259,7 @@ print(dockerfile_resources)
 ```
                          
 Including R objects works similar to resources, using the argument `save_image`.
-The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .RData file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
+The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .Rdata file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
 
 ```{r save_image, comment=NA}
 the_dockerfile <- dockerfile(save_image = TRUE)
