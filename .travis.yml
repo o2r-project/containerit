@@ -28,8 +28,7 @@ before_install:
   # activate liblwgeom by:
   - sudo ldconfig
   - Rscript -e 'update.packages(ask = FALSE)' # https://github.com/travis-ci/travis-ci/issues/6850
-  - Rscript -e 'install.packages("devtools"); devtools::install_deps(dependencies = TRUE)'
-  #- Rscript -e 'devtools::install_dev_deps()'
+  - Rscript -e 'devtools::install_deps(dependencies = TRUE)'
 
 warnings_are_errors: true
 
@@ -37,6 +36,7 @@ services:
   - docker
 
 r_packages:
+  - devtools
   - rgdal
   - roxygen2
   - covr
@@ -46,7 +46,6 @@ r_packages:
   - sp
   - gstat
   - proj4
-  - devtools
   - units
   - sf
   - fortunes

@@ -53,8 +53,7 @@ add_install_instructions <- function(dockerfile,
       package_reqs <- .find_system_dependencies(pkgs$name,
                                                 platform = platform,
                                                 soft = soft,
-                                                offline = offline,
-                                                package_version = package_versions)
+                                                offline = offline)
 
       # system dependencies that can be left out because they are pre-installed for given image
       if (filter_deps_by_image) {
@@ -68,22 +67,20 @@ add_install_instructions <- function(dockerfile,
       package_reqs <- sort(package_reqs)
 
       # if platform is debian and system dependencies need to be installed
-      if (length(package_reqs) > 0) {
-        if (platform == .debian_platform) {
-          commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
-          install_command <- paste("apt-get install -y",
-                                   paste(package_reqs, collapse = " \\\n\t"))
-          commands <- append(commands, install_command)
-          addInstruction(dockerfile)  <- Run_shell(commands)
+      if (length(package_reqs) > 0 && platform == .debian_platform) {
+        commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
+        install_command <- paste("apt-get install -y",
+                                 paste(package_reqs, collapse = " \\\n\t"))
+        commands <- append(commands, install_command)
+        addInstruction(dockerfile)  <- Run_shell(commands)
 
-          #if (length(add_inst) > 0)
-          #  addInstruction(dockerfile) <- add_inst
-          # For using the exec form (??):
-          #  Run("/bin/sh", params = c("-c", "export", "DEBIAN_FRONTEND=noninteractive")))
-          #  Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
-        } else {
-          warning("Platform ", platform, " not supported, cannot add installation commands for system requirements.")
-        }
+        #if (length(add_inst) > 0)
+        #  addInstruction(dockerfile) <- add_inst
+        # For using the exec form (??):
+        #  Run("/bin/sh", params = c("-c", "export", "DEBIAN_FRONTEND=noninteractive")))
+        #  Run("apt-get", params = c("update", "-qq", "&&", "install", "-y" , package_reqs)))
+      } else {
+        warning("Platform ", platform, " not supported, cannot add installation commands for system requirements.")
       }
     } else {
       futile.logger::flog.debug("No system dependencies found for any package.")
@@ -92,9 +89,14 @@ add_install_instructions <- function(dockerfile,
     pkgs_cran <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
     if (nrow(pkgs_cran) > 0) {
       cran_packages <- sort(unlist(pkgs_cran$name)) # sort, to increase own reproducibility
-      futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-      addInstruction(dockerfile) <- Run("install2.r", cran_packages)
-    }
+
+      futile.logger::flog.info("Adding CRAN packages (versioned? %s): %s", versioned_packages, toString(cran_packages))
+      if (versioned_packages) {
+
+      } else {
+        addInstruction(dockerfile) <- Run("install2.r", cran_packages)
+      }
+    } else futile.logger::flog.debug("No CRAN packages to add.")
 
     pkgs_gh <- pkgs[stringr::str_detect(string = pkgs$source, stringr::regex("GitHub", ignore_case = TRUE)),]
     if (nrow(pkgs_gh) > 0) {
@@ -105,6 +107,21 @@ add_install_instructions <- function(dockerfile,
 
     return(dockerfile)
   }
+
+versioned_install_instruction <- function(x, version) {
+  UseMethod("versioned_install_instruction", x)
+}
+
+# RUN ["Rscript", "-e", "versions::install.versions(\"fortunes\", \"1.5-3\")", "-e", "versions::install.versions(\"cowsay\", \"0.5.0\")"]
+versioned_install_instruction.character <- function(x, version) {
+  .instruction <- Run(exec = "Rscript", params = c("-e", paste0('versions::install.versions(\'', x, '\', \'' , version, '\')')))
+  return(.instruction)
+}
+
+versioned_install_instruction.data.frame <- function(x, ...) {
+  .instruction <- Run(exec = "Rscript", params = c("-e", x, version))
+  return(.instruction)
+}
 
 .find_system_dependencies <- function(package,
                                       platform,

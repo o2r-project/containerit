@@ -20,7 +20,8 @@ Imports:
     semver,
     automagic,
     sessioninfo,
-    stevedore
+    stevedore,
+    versions
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
