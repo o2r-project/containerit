@@ -1,9 +1,5 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
-
-requireNamespace("rgdal")
-requireNamespace("proj4")
 requireNamespace("sp")
 requireNamespace("codetools")
 
@@ -12,8 +8,6 @@ context("session reproduction")
 # test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it
 # All libraries used must be locally installed prior to running this test!
 expressions <- list(
-  #quote(library(rgdal)),
-  #quote(library(proj4)),
   quote(library(sp)),
   quote(library(sysreqs)), # test for github package
   quote(codetools::showTree(quote(-3))) # test for attached package
@@ -33,7 +27,8 @@ obtain_dockerSessionInfo <- function(docker_image,
            vanilla = FALSE,
            container_dir = "/tmp",
            local_dir = tempfile(pattern = "dir"),
-           deleteTempfiles = TRUE) {
+           deleteTempfiles = TRUE,
+           container_name = "containerit_capturer") {
     result = tryCatch({
       # for testing:
       # docker_image <- "rocker/geospatial:3.4.4"
@@ -49,7 +44,7 @@ obtain_dockerSessionInfo <- function(docker_image,
 
       expr <- append(expr, containerit:::.writeSessionInfoExp(container_tempfile))
       #convert to cmd parameters
-      expr <- .exprToParam(expr)
+      expr <- containerit:::.exprToParam(expr)
 
       cmd <- c("R")
       if (vanilla) {
@@ -65,7 +60,7 @@ obtain_dockerSessionInfo <- function(docker_image,
       container <- client$container$run(image = docker_image,
                                         cmd = cmd,
                                         host_config = list(binds = c(paste0(local_dir, ":", container_dir))),
-                                        name = "containerit_capturer")
+                                        name = container_name)
 
       if (!file.exists(local_docker_tempfile))
         stop("Sessioninfo was not written to file (file missing): ",
@@ -76,6 +71,7 @@ obtain_dockerSessionInfo <- function(docker_image,
       #clean up
       if (deleteTempfiles)
         unlink(local_dir, recursive = TRUE)
+
       container$container$remove()
 
       get("info")
@@ -109,7 +105,7 @@ test_that("a sessionInfo can be reproduced with Docker", {
   client <- stevedore::docker_client()
   expect_true(docker_tempimage_id %in% client$image$list()$id)
 
-  docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage, expressions, vanilla = TRUE)
+  docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage_id, expressions, vanilla = TRUE)
   skip_if(is.null(docker_sessionInfo))
 
   #clean up: remove image
@@ -119,7 +115,7 @@ test_that("a sessionInfo can be reproduced with Docker", {
 test_that("the same base packages are attached locally and in Docker", {
   skip_on_cran()
   skip_on_travis()
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
 
   if(is.null(docker_sessionInfo))
     skip("previous test failed (missing objects to continue)")
@@ -136,7 +132,7 @@ test_that("the same base packages are attached locally and in Docker", {
 test_that("the same other packages are attached locally and in Docker ", {
   skip_on_cran()
   skip_on_travis()
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
 
   #expect that non-base packages are attached
   local_attached <- names(local_sessionInfo$otherPkgs)
@@ -156,7 +152,7 @@ test_that("the same other packages are attached locally and in Docker ", {
 test_that("the packages are loaded via Namespace locally and in Docker (requires updated local packages)", {
   skip_on_cran()
   skip_on_travis()
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
 
   # FIXME remove rstudioapi from the local packages
   local_loaded_packages <- Filter(
@@ -177,7 +173,7 @@ test_that("the packages are loaded via Namespace locally and in Docker (requires
 test_that("the R versions are the same ", {
   skip_on_cran()
   skip_on_travis()
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
 
   #expect that same base and non-base packages loaded via namespace
   expect_equal(local_sessionInfo$R.version$major,
@@ -189,20 +185,8 @@ test_that("the R versions are the same ", {
 test_that("the locales are the same ", {
   skip_on_cran()
   skip_on_travis()
-  skip_if_not(!is.null(docker_sessionInfo))
+  skip_if(is.null(docker_sessionInfo))
 
   skip("not implemented yet")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
 })
-
-# manual comparison
-if (FALSE) {
-  cat("\nlocal sessionInfo: \n\n")
-  print(local_sessionInfo)
-  cat("\n------------------------------------")
-  cat("\nreproduced sessionInfo in docker: \n\n")
-  print(docker_sessionInfo)
-
-  cat("\nDockerfile: \n\n")
-  cat(paste(format(dockerfile_object), collapse = "\n"))
-}

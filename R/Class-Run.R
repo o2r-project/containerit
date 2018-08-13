@@ -79,7 +79,7 @@ setClass("Run",
 #' Create objects representing a RUN instruction
 #'
 #' @param exec character argument naming the executable
-#' @param params parameter arguments
+#' @param params parameter arguments, of class character
 #' @family Run instruction
 #' @return An S4 object of class Run
 #' @export

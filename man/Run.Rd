@@ -9,7 +9,7 @@ Run(exec, params = NA_character_)
 \arguments{
 \item{exec}{character argument naming the executable}
 
-\item{params}{parameter arguments}
+\item{params}{parameter arguments, of class character}
 }
 \value{
 An S4 object of class Run

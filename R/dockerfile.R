@@ -310,6 +310,7 @@ dockerfileFromSession.sessionInfo <- function(session,
            if ("Priority" %in% names(pkg) &&
                stringr::str_detect(pkg$Priority, "(?i)base")) {
              futile.logger::flog.debug("Skipping Priority package %s, is included with R", name)
+             return(NULL)
            } else {
              version <- NA
              source <- NA
@@ -332,7 +333,10 @@ dockerfileFromSession.sessionInfo <- function(session,
            }
          })
 
-  packages_df <- as.data.frame(do.call("rbind", pkgs_list))
+  # remove NULLs
+  pkgs_list <- pkgs_list[!vapply(pkgs_list, is.null, logical(1))]
+
+  packages_df <- do.call("rbind", lapply(pkgs_list, as.data.frame))
   futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
 
   .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
@@ -643,19 +647,28 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
   urlstr <- paste0("https://registry.hub.docker.com/v2/repositories/",
                    image,
                    "/tags/?page_size=9999")
+  str <- NULL
 
+  futile.logger::flog.debug("Retrieving tags for image %s with %s", image, urlstr)
   tryCatch({
     con <- url(urlstr)
     str <- readLines(con, warn = FALSE)
-  },
+    },
+    error = function(e) {
+      warning("Could not retrieve existing tags (offline?), error: ", e)
+    },
     finally = close(con))
 
+  if (is.null(str)) {
+    return(c())
+  } else {
     parser <- rjson::newJSONParser()
     parser$addData(str)
     tags <- sapply(parser$getObject()$results, function(x) {
       x$name
     })
-  return(tags)
+    return(tags)
+  }
 }
 
 .makeRelative <- function(files, from) {

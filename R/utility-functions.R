@@ -17,8 +17,9 @@ docker_build <- function(context,
                          tag,
                          the_dockerfile = "Dockerfile",
                          ...) {
+  futile.logger::flog.debug("Build dockerfile %s at %s with tag %s", the_dockerfile, context, tag)
   stopifnot(stevedore::docker_available())
-  stopifnot(file.exists(the_dockerfile))
+  stopifnot(file.exists(file.path(context, the_dockerfile)))
 
   futile.logger::flog.info("docker build at %s with %s as %s",
                              context, the_dockerfile, tag)
