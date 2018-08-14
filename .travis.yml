@@ -4,6 +4,8 @@
 # For a potential alternative configuration see https://github.com/metacran/r-builder
 
 language: r
+services:
+  - docker
 
 r:
   - release
@@ -28,47 +30,5 @@ before_install:
   # activate liblwgeom by:
   - sudo ldconfig
   - Rscript -e 'update.packages(ask = FALSE)' # https://github.com/travis-ci/travis-ci/issues/6850
-  - Rscript -e 'devtools::install_deps(dependencies = TRUE)'
 
 warnings_are_errors: true
-
-services:
-  - docker
-
-r_packages:
-  - devtools
-  - rgdal
-  - roxygen2
-  - covr
-  #- lintr
-  - testthat
-  - codetools
-  - sp
-  - gstat
-  - proj4
-  - units
-  - sf
-  - fortunes
-  - lwgeom
-  # needed for rendering spacetime/main.Rmd
-  - plm
-  - spacetime
-  - mapdata
-  - lattice
-  - RColorBrewer
-  - xts
-  - maptools
-  - maps
-  - diveMove
-  - trip
-  - adehabitatLT
-  - cshapes
-
-after_failure:
-  - Rscript -e 'library(methods)' -e 'devtools::test()'
-
-#after_success:
-#  - Rscript -e 'covr::codecov()'
-#  - Rscript -e 'lintr::lint_package()'
-#  - echo $TRAVIS_R_VERSION
-#  - echo $TRAVIS_OS_NAME
