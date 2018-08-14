@@ -85,8 +85,9 @@ The following command executed in the `containerit` source directory creates an 
 docker build --file inst/docker/local/Dockerfile --tag containerit .
 ```
 
-You can try the `predetect` feature by packaging the R Markdown file of the spacetime vignette:
+You can try the `predetect` feature by packaging the R Markdown file of the second spacetime vignette with the non-`geospatial` image of containerit that was just built.
+The following command will install missing packages before running the file, namely `sf` itself, but it's installation will fail due to missing system dependencies, which are not covered by predetection.
 
 ```{bash, eval=FALSE}
-docker run --rm -it -v $(pwd)/tests/testthat/package_markdown/spacetime:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R -e "setwd('/erc'); print(dockerfile(from = '/erc'))"
+docker run --rm -i -v $(pwd)/tests/testthat/package_markdown/sfr:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R --quiet -e "setwd('/erc'); list.files(); print(dockerfile(from = '.'))"
 ```

@@ -25,15 +25,16 @@ test_that("installed packages are a data.frame with the image as an attribute", 
 })
 
 test_that("list of installed packages can be filtered when creating a Dockerfile", {
-  the_dockerfile <- dockerfile(from = "package_markdown/spacetime/",
+  the_dockerfile <- dockerfile(from = "package_markdown/sfr/",
                    maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
                    filter_baseimage_pkgs = TRUE)
-  expect_true(object = any(grepl("# Packages skipped", x = toString(the_dockerfile))), info = "Packages skipped are mentioned in a comment")
-  # these packages are not in rocker/r-ver:
-  expect_true(object = any(grepl("^#.*gstat", x = toString(the_dockerfile))), info = "gstat is filtered")
-  expect_true(object = any(grepl("^#.*raster", x = toString(the_dockerfile))), info = "raster is filtered")
-  # these packages are not in rocker/geospatial
-  expect_true(object = any(grepl("^RUN.*\"adehabitatLT\"", x = toString(the_dockerfile))), info = "adehabitatLT is not filtered")
-  expect_true(object = any(grepl("^RUN.*\"trip\"", x = toString(the_dockerfile))), info = "trip is not filtered")
+  the_dockerfile_string <- toString(the_dockerfile)
+
+  expect_true(object = any(grepl("# Packages skipped", x = the_dockerfile_string)), info = "Packages skipped are mentioned in a comment")
+  expect_true(object = any(grepl("^#.*rgdal", x = the_dockerfile_string)), info = "rgdal")
+  expect_true(object = any(grepl("^#.*spData", x = the_dockerfile_string)), info = "spData")
+
+  unlink("package_markdown/sfr/nc1.*")
+  unlink("package_markdown/sfr/*.html")
 })
