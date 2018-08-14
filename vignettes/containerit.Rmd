@@ -415,12 +415,14 @@ When you change the base image, you might not want to re-install packages that a
 The helper function `get_installed_packages()` is used internally to filter the installed packages and can be activated with `filter_baseimage_pkgs`.
 
 ```{r base_image_filter, comment=NA}
-expressions <- c(expression(library("sp")),
-                 expression(library("cshapes")))
+expressions <- c(expression(library("sp")))
 session <- clean_session(expressions, echo = TRUE)
 df_filtered <- dockerfile(from = session, maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
                    filter_baseimage_pkgs = TRUE)
+```
+
+```{r base_image_filter_dockerfile}
 print(df_filtered)
 ```
 
