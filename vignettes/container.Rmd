@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<!-- Copyright 2017 Opening Reproducible Research (http://o2r.info) -->
+<!-- Copyright 2018 Opening Reproducible Research (https://o2r.info) -->
 
 ## Introduction
 
@@ -21,7 +21,7 @@ This is useful if you do not want to install a full stack of packages in your lo
 The following example pulls the `geospatial` variant of the containerit images and prints out the created Dockerfile to the console.
 
 ```{bash tldr}
-docker run --rm o2rproject/containerit:geospatial R -e "df <- dockerfile(); print(df);"
+docker run --rm o2rproject/containerit:geospatial R -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
 ```
 
 ## Control output
@@ -31,13 +31,13 @@ You can disable this by setting the environment variable `CONTAINERIT_SILENT`.
 Combined with the `--quiet` option for R, this reduces the output to merely the Dockerfile
 
 ```{bash log_silent}
-docker run --rm -e CONTAINERIT_SILENT=true o2rproject/containerit:geospatial R -q -e "df <- dockerfile(); print(df);"
+docker run --rm -e CONTAINERIT_SILENT=true o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
 ```
 
 You can set the [futile.logger threshold](https://github.com/zatonovo/futile.logger#thresholds) with the environment variable `CONTAINERIT_FLOG_THRESHOLD` to `ERROR`, `WARN` or `DEBUG`; default is `INFO`.
 
 ```{bash log_threshold}
-docker run --rm -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "df <- dockerfile(); print(df);"
+docker run --rm -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
 ```
 
 ## Save file
@@ -47,7 +47,7 @@ The default directory in the container is `/containerit`, so you can mount to th
 
 ```{bash save_file}
 mkdir /tmp/containerit
-docker run --rm -v /tmp/containerit:/containerit -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "df <- dockerfile(); write(df);"
+docker run --rm -v /tmp/containerit:/containerit -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); write(the_dockerfile);"
 echo Directory contents:
 ls -l /tmp/containerit
 rm -r /tmp/containerit
@@ -58,7 +58,7 @@ The next example also sets the [user of the container](https://github.com/rocker
 
 ```{bash save_file_user_fullpath}
 mkdir /tmp/containerit
-docker run --rm -v /tmp/containerit:/my_dir -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN --user=1000 o2rproject/containerit:geospatial R -q -e "df <- dockerfile(); write(df, file = '/my_dir/Dockerfile');"
+docker run --rm -v /tmp/containerit:/my_dir -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN --user=1000 o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); write(the_dockerfile,file = '/my_dir/Dockerfile');"
 echo Directory contents:
 ls -l /tmp/containerit
 rm -r /tmp/containerit
@@ -85,8 +85,9 @@ The following command executed in the `containerit` source directory creates an 
 docker build --file inst/docker/local/Dockerfile --tag containerit .
 ```
 
-You can try the `predetect` feature by packaging the R Markdown file of the spacetime vignette:
+You can try the `predetect` feature by packaging the R Markdown file of the second spacetime vignette with the non-`geospatial` image of containerit that was just built.
+The following command will install missing packages before running the file, namely `sf` itself, but it's installation will fail due to missing system dependencies, which are not covered by predetection.
 
 ```{bash, eval=FALSE}
-docker run --rm -it -v $(pwd)/tests/testthat/package_markdown/spacetime:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R -e "setwd('/erc'); print(dockerfile(from = '/erc'))"
+docker run --rm -i -v $(pwd)/tests/testthat/package_markdown/sfr:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R --quiet -e "setwd('/erc'); list.files(); print(dockerfile(from = '.'))"
 ```

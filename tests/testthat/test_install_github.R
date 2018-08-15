@@ -1,21 +1,18 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library(containerit)
 context("install_github")
 
 test_that("github_packages can be installed", {
-  skip_if_not_installed("harbor")
-  skip_if_not_installed("sysreqs")
-
-  #get session information from previous installation, created with these commands and moved to the desired location afterwards:
-  #library(c("harbor", "sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "sessionInfo.Rdata")
+  #get session information from previous installation, created in a vanilla R session with these commands within package root directory:
+  #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo.Rdata")
   load("./github/sessionInfo.Rdata")
 
-  df = dockerfile(github_test_sessionInfo, maintainer = "matthiashinz", image = getImageForVersion("3.3.2"))
-  write(df, "./github/Dockerfile")
+  the_dockerfile <- dockerfile(github_test_sessionInfo, maintainer = "o2r", image = getImageForVersion("3.3.2"))
+  #write(the_dockerfile,"./github/Dockerfile")
 
   expected_file <- readLines("./github/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 })
 

@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' Instruction class representing a LABEL
 #'
@@ -39,9 +39,9 @@ setClass("Label",
 #' )
 #' #label with fixed namespace for all keys
 #' label3 <- Label("name"="A name", "description" = "A description", label_ns = "my.label.ns.")
-#' df <- dockerfile(clean_session())
-#' addInstruction(df) <- list(label1, label2, label3)
-#' cat(format(df),sep = "\n")
+#' the_dockerfile <- dockerfile(clean_session())
+#' addInstruction(the_dockerfile) <- list(label1, label2, label3)
+#' cat(format(the_dockerfile),sep = "\n")
 #'
 Label <-
   function(...,
@@ -67,8 +67,8 @@ Label <-
 #'
 #' @examples
 #' session <- clean_session()
-#' df <- dockerfile(session)
-#' addInstruction(df) <- Label_SessionInfo(session)
+#' the_dockerfile <- dockerfile(session)
+#' addInstruction(the_dockerfile) <- Label_SessionInfo(session)
 Label_SessionInfo <-
   function(session = sessionInfo(),
            as_json = FALSE) {

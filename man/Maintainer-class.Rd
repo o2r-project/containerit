@@ -35,3 +35,5 @@ Other instruction classes: \code{\link{Add-class}},
 Other maintainer: \code{\link{Label_Maintainer}},
   \code{\link{Maintainer}}
 }
+\concept{instruction classes}
+\concept{maintainer}

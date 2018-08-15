@@ -5,7 +5,10 @@
 
 `containerit` packages R script/session/workspace and all dependencies
 as a [Docker](http://docker.com/) container by automagically generating
-a suitable `Dockerfile`.
+a suitable `Dockerfile`. The packages’s website at
+<https://o2r.info/containerit/>. A good summary of what the package does
+can be found in this [o2r project blog
+post](http://o2r.info/2017/05/30/containerit-package/).
 
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
@@ -26,8 +29,33 @@ Development version from GitHub.
 
 ### Use
 
-See the vignettes at `vignettes/containerit.Rmd` and
-`vignettes/container.Rmd`.
+See the vignettes at `vignettes/containerit.Rmd` for usage from the R
+command line, and `vignettes/container.Rmd` for the usage from a regular
+command line interface based on [containers from Docker
+Hub](https://hub.docker.com/r/o2rproject/containerit/).
+
+### Containers
+
+Images are available starting from different base images. All images are
+also available with version tags.
+
+#### verse
+
+Base image:
+`rocker/verse:3.4.4`
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
+
+#### geospatial
+
+Base image:
+`rocker/geospatial:3.4.4`
+
+[![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")
+[![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
 
 ## Contribute
 
@@ -49,10 +77,18 @@ rhub::check_for_cran()
 rhub::check_on_windows()
 ```
 
-You can build the [`pkgdown`]() site with
+You can build the [`pkgdown`](http://pkgdown.r-lib.org/) site with
 
 ``` r
 pkgdown::build_site()
+```
+
+You can build the Docker images locally with the current development
+version using the following commands.
+
+``` bash
+docker build --tag containerit:dev --file inst/docker/Dockerfile.local .
+docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .
 ```
 
 ## License

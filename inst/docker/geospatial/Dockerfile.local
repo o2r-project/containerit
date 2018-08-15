@@ -5,7 +5,9 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
 
-RUN ["install2.r", "futile.logger"]
+RUN ["install2.r", "rjson", "futile.logger"]
+
+RUN ["R", "-e", "devtools::install_github('richfitz/stevedore')"]
 
 RUN echo 'old <- getOption("defaultPackages");\n \
 options(defaultPackages = c(old, "containerit"));\n \
@@ -24,9 +26,14 @@ options(defaultPackages = c(old, "containerit"));\n \
 WORKDIR /containerit
 COPY . /containerit
 
-# use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file, and run vanilla so the above options are not used yet
-# FIXME devtools somehow does not pick up on the remote for harbor, so install it first manually
-RUN ["R", "--vanilla", "-e", "devtools::install_github('wch/harbor')"]
 RUN ["R", "--vanilla", "-e", "devtools::install()"]
+
+LABEL maintainer="o2r-project <https://o2r.info>" \
+  org.label-schema.vendor="o2r project" \
+  org.label-schema.url="http://o2r.info" \
+  org.label-schema.name="containerit" \
+  org.label-schema.description="Package R in Docker Containers" \
+  org.label-schema.version=dev \
+  org.label-schema.docker.schema-version="rc1"
 
 CMD ["R"]

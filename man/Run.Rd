@@ -9,7 +9,7 @@ Run(exec, params = NA_character_)
 \arguments{
 \item{exec}{character argument naming the executable}
 
-\item{params}{parameter arguments}
+\item{params}{parameter arguments, of class character}
 }
 \value{
 An S4 object of class Run
@@ -21,3 +21,4 @@ Create objects representing a RUN instruction
 Other Run instruction: \code{\link{Run-class}},
   \code{\link{Run_shell-class}}, \code{\link{Run_shell}}
 }
+\concept{Run instruction}

@@ -26,8 +26,8 @@ close(fileConn)
 #' Create Dockerfile workspace with containerit
 setwd(workspace)
 cmd <- CMD_Rscript("script.R")
-df <- containerit::dockerfile(from = workspace, cmd = cmd, image = getImageForVersion("3.3.3"), copy = "script_dir")
-save(df)
+the_dockerfile <- containerit::dockerfile(from = workspace, cmd = cmd, image = getImageForVersion("3.3.3"), copy = "script_dir")
+save(the_dockerfile)
 
 #' Create image with harbor (see also utility function `containerit::docker_build(..)`).
 buildresult <- harbor::docker_cmd(harbor::localhost, "build",

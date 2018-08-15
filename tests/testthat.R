@@ -1,13 +1,13 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library("testthat")
 library("containerit")
 
-#for testing whole files manually:
-if(FALSE){
+# for testing whole files manually:
+if (FALSE){
   #assuming that workdir is the containerit-folder:
-  library(futile.logger)
-  futile.logger::flog.threshold(DEBUG)
+  library("futile.logger")
+  futile.logger::flog.threshold(futile.logger::DEBUG)
   #source("R/sessionInfo-localbuild-methods.R")
   #source("R/package-installation-methods.R")
   #source("R/containerit-config.R")
@@ -25,7 +25,7 @@ if(FALSE){
 }
 
 # for manually executing code within the tests directory, use the following wd to resolve the relative paths:
-if(FALSE) {
+if (FALSE) {
   setwd(file.path(getwd(), "tests", "testthat"))
 }
 

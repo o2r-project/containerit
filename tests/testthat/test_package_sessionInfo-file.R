@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 context("Packaging sessionInfo saved in .Rdata file")
 
@@ -46,8 +46,8 @@ sessionInfo = test_info
 save(sessionInfo, file = rdata_file)
 
 test_that("can create dockerfile object from the file with sessionInfo", {
-  df <- dockerfile(from = rdata_file)
-  expect_s4_class(df, "Dockerfile")
+  the_dockerfile <- dockerfile(from = rdata_file)
+  expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 df_test <- dockerfile(from = rdata_file)
@@ -67,6 +67,7 @@ test_that("dockerfile contains GitHub packages", {
 })
 
 test_that("dockerfile contains package versions", {
+  skip("not implemented yet")
   # FIXME not implmented yet
 })
 
@@ -99,7 +100,7 @@ test_that("error if Rdata file contains more than one object", {
   a <- "1"
   b <- "2"
   save(a, test_info, b, file = file)
-  expect_error(getSessionInfoFromRdata(file), "only one")
+  expect_error(getSessionInfoFromRdata(file), "exactly one")
 })
 
 test_that("Matching image can be retrieved from sessionInfo, with a warning", {
@@ -117,16 +118,16 @@ test_that("Object name 'sessioninfo' is accepted.", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
   sessioninfo <- test_info
   save(sessioninfo, file = rdata_file)
-  df <- dockerfile(from = rdata_file)
-  expect_s4_class(df, "Dockerfile")
+  the_dockerfile <- dockerfile(from = rdata_file)
+  expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 test_that("Object name 'session_info' is accepted.", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
   session_info <- test_info
   save(session_info, file = rdata_file)
-  df <- dockerfile(from = rdata_file)
-  expect_s4_class(df, "Dockerfile")
+  the_dockerfile <- dockerfile(from = rdata_file)
+  expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 test_that("Version tag can be retrieved from .Rdata file with session_info", {
@@ -146,14 +147,14 @@ test_that("sessioninfo::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
-  df <- dockerfile(from = rdata_file)
-  expect_s4_class(df, "Dockerfile")
+  the_dockerfile <- dockerfile(from = rdata_file)
+  expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 test_that("devtools::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
-  df <- dockerfile(from = rdata_file)
-  expect_s4_class(df, "Dockerfile")
+  the_dockerfile <- dockerfile(from = rdata_file)
+  expect_s4_class(the_dockerfile,"Dockerfile")
 })

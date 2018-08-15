@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 context("Packaging R-Scripts and workspaces.")
 
@@ -7,47 +7,50 @@ test_that("the R script location is checked ",{
 })
 
 test_that("an R script can be created with resources of the same folder ",{
-  df <- dockerfile("package_script/resources/simple_test.R",
+  the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                 copy = "script_dir",
                 cmd = CMD_Rscript("package_script/resources/simple_test.R"),
-                maintainer = "matthiashinz",
+                maintainer = "o2r",
                 image = getImageForVersion("3.3.2"))
   #for overwriting
-  #write(df, "package_script/resources/Dockerfile")
+  #write(the_dockerfile,"package_script/resources/Dockerfile")
 
   # test run (shoud be fast and not give any errors)
-  image <- create_localDockerImage(df, use_workdir = TRUE)
-  harbor::docker_run(image = image, rm = TRUE)
-  harbor::docker_cmd(harbor::localhost, "rmi", image)
+  image <- containerit:::create_localDockerImage(the_dockerfile, use_workdir = TRUE)
+
+  client <- stevedore::docker_client()
+  runOutput <- client$container$run(image = image, rm = TRUE)
+  expect_false(is.null(runOutput))
+  client$image$remove(name = image, force = TRUE)
 
   expected_file <- readLines("package_script/resources/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("a workspace with one R script can be packaged ",{
   #This test should result in the same dockerfile as above:
-  df <- dockerfile("package_script/resources/",
+  the_dockerfile <- dockerfile("package_script/resources/",
                 copy = "script_dir",
                 cmd = CMD_Rscript("package_script/resources/simple_test.R"),
-                maintainer = "matthiashinz",
+                maintainer = "o2r",
                 image = getImageForVersion("3.3.2"))
 
   expected_file <- readLines("package_script/resources/Dockerfile")
-  expect_equal(toString(df), expected_file)
+  expect_equal(toString(the_dockerfile), expected_file)
 })
 
 test_that("a list of resources can be packaged ",{
-  df <- dockerfile("package_script/resources/simple_test.R",
+  the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                 copy = c("package_script/resources/simple_test.R",
                          "package_script/resources/test_table.csv",
                          "package_script/resources/test_subfolder/testresource"),
-                maintainer = "matthiashinz",
+                maintainer = "o2r",
                 image = getImageForVersion("3.3.2"))
   #for overwriting
-  #write(df, "package_script/resources/Dockerfile2")
+  #write(the_dockerfile,"package_script/resources/Dockerfile2")
   expected_file <- readLines("package_script/resources/Dockerfile2")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
@@ -60,17 +63,17 @@ test_that("The gstat demo 'zonal' can be packaged ",{
   skip_if_not_installed("sp")
   skip_if_not_installed("gstat")
 
-  df <- dockerfile("script_gstat/zonal.R",
-                cmd = CMD_Rscript("script_gstat/zonal.R"),
-                maintainer = "matthiashinz",
+  the_dockerfile <- dockerfile("package_script/gstat/zonal.R",
+                cmd = CMD_Rscript("package_script/gstat/zonal.R"),
+                maintainer = "o2r",
                 image = getImageForVersion("3.3.2"),
                 copy = "script")
 
   #for overwriting
-  #write(df, "script_gstat/Dockerfile")
+  #write(the_dockerfile,"package_script/gstat/Dockerfile")
   #test execution would be similar to the test above; will not be done because of slowlieness
-  expected_file = readLines("script_gstat/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  expected_file = readLines("package_script/gstat/Dockerfile")
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
@@ -101,12 +104,12 @@ test_that("File copying is disabled with NULL", {
 })
 
 test_that("the installation order of packages is alphabetical (= reproducible)", {
-  df <- dockerfile("package_script/resources/", maintainer = "o2r",
-                   image = getImageForVersion("3.4.3", nearest = FALSE),
+  the_dockerfile <- dockerfile("package_script/resources/", maintainer = "o2r",
+                   image = getImageForVersion("3.3.2", nearest = FALSE),
                    copy = "script",
                    cmd = CMD_Rscript("package_script/resources/simple_test.R"))
-  expected_file = readLines("package_script/resources/Dockerfile")
-  expect_equal(toString(df), expected_file)
+  expected_file = readLines("package_script/resources/Dockerfile3")
+  expect_equal(toString(the_dockerfile), expected_file)
 })
 
 test_that("packaging works if library from script is missing but predetection is enabled", {
@@ -116,9 +119,9 @@ test_that("packaging works if library from script is missing but predetection is
   }
 
   # this will re-install the package again:
-  df <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r", predetect = TRUE)
+  the_dockerfile <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r", predetect = TRUE)
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("^RUN.*\"boxoffice\"", x = toString(df))), info = "Packages missing are detected")
+  expect_true(object = any(grepl("^RUN.*\"boxoffice\"", x = toString(the_dockerfile))), info = "Packages missing are detected")
 })

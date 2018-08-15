@@ -33,7 +33,7 @@ It can be supported by packages such as [packrat](https://rstudio.github.io/pack
 An alternative to updating or managing packages explicitly is providing the full runtime environment in its original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
 
 The R extension package `containerit` aims to facilitate the latter approach by making reproducible and archivable research with containers easier.
-The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](http://o2r.info)).
+The development is supported by the DFG-funded project Opening Reproducible Research (o2r, [http://o2r.info](https://o2r.info)).
 `containerit` relies on [Docker](http://docker.com/) and automatically generates a container manifest, or "recipe", with setup instructions to recreate a runtime environment based on a given R session, R script, R Markdown file or workspace directory.
 The resulting [`Dockerfile`](https://docs.docker.com/engine/reference/builder/) can not only be read and understood by humans, but also be interpreted by the Docker engine to create a software container containing all the R packages and their system dependencies.
 This way all requirements of an R workflow are packaged in an executable format.
@@ -47,7 +47,7 @@ The Dockerfile created by `containerit` can then be used to build a Docker image
 Running the image will start an R session that closely resembles the creating systems runtime environment.
 The image can be shared and archived and works anywhere with a compatible Docker version. 
 
-To build images and run containers, the package integrates with the [harbor](https://github.com/wch/harbor) package and adds a few convenience functions for interacting with Docker images and containers.
+To build images and run containers, the package integrates with the [stevedore](https://github.com/richfitz/stevedore) package and adds a few convenience functions for interacting with Docker images and containers.
 For concrete details on reading, loading, or installing the _exact_ versions of R packages including their system dependencies/libraries, this project focuses on the geospatial domain.
 `containerit` uses the package [`futile.logger`](https://cran.r-project.org/web/packages/futile.logger/) to provide information to the user at a configurable level of detail, see [futile.logger documentation](https://cran.r-project.org/web/packages/futile.logger/README.html).
 
@@ -204,19 +204,19 @@ suppressPackageStartupMessages(library("sf"))
 sessionInfo <- sessionInfo()
 save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.Rdata"))
 unloadNamespace("sf")
-df <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
-print(df)
+the_dockerfile <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
+print(the_dockerfile)
 ```
 
 Two alternative packages provide their own version of a session info, both of which are supported as well.
-The following examples first load the packages `A3` and `abc` (because they are first in the alphabet), store session information objects, and then unload the packages again before creating `Dockerfile`s from the stored objects.
+The following examples first load the packages `fortunes` and `remotes`, store session information objects, and then unload the packages again before creating `Dockerfile`s from the stored objects.
 
 ```{r session_info}
 suppressPackageStartupMessages(library("devtools"))
 suppressPackageStartupMessages(library("sessioninfo"))
 
-suppressPackageStartupMessages(library("abc"))
-suppressPackageStartupMessages(library("A3"))
+suppressPackageStartupMessages(library("fortunes"))
+suppressPackageStartupMessages(library("remotes"))
 
 session_info <- devtools::session_info()
 save(session_info, file = file.path(temp_workspace, "session_info_devtools.Rdata"))
@@ -259,11 +259,11 @@ print(dockerfile_resources)
 ```
                          
 Including R objects works similar to resources, using the argument `save_image`.
-The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .RData file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
+The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .Rdata file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
 
 ```{r save_image, comment=NA}
-df <- dockerfile(save_image = TRUE)
-print(df)
+the_dockerfile <- dockerfile(save_image = TRUE)
+print(the_dockerfile)
 ```
 
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
@@ -275,12 +275,12 @@ calculation <- 41 + 1
 frtn <- fortunes::fortune()
 original_sessionInfo <- sessionInfo()
 
-df <- dockerfile(silent = TRUE,
+the_dockerfile <- dockerfile(silent = TRUE,
                  save_image = list("original_sessionInfo", "frtn"))
 ```
 
 ```{r print_save_image_list_df, comment=NA}
-print(df)
+print(the_dockerfile)
 ```
 
 ## 4. Advanced Dockerfile instructions
@@ -415,12 +415,14 @@ When you change the base image, you might not want to re-install packages that a
 The helper function `get_installed_packages()` is used internally to filter the installed packages and can be activated with `filter_baseimage_pkgs`.
 
 ```{r base_image_filter, comment=NA}
-expressions <- c(expression(library("sp")),
-                 expression(library("cshapes")))
+expressions <- c(expression(library("sp")))
 session <- clean_session(expressions, echo = TRUE)
 df_filtered <- dockerfile(from = session, maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
                    filter_baseimage_pkgs = TRUE)
+```
+
+```{r base_image_filter_dockerfile}
 print(df_filtered)
 ```
 
@@ -483,7 +485,7 @@ All Dockerfiles and instructions are adjusted to the Rocker image stack and assu
 As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
 
 The package is a first prototype available via GitHub.
-While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as [harbor](https://github.com/wch/harbor/issues/5), being available on CRAN, too.
+While a publication on CRAN is a goal, it should be preceded by feedback from the user community and ideally be accompanied by related packages, such as `stevedore`, being available on CRAN, too.
 The prototype of `containerit` was developed and tested only on Ubuntu/Linux, which should be extended before releasing a stable version on CRAN.
 
 As part of the o2r project, it is planned to integrate `containerit` in a [web service](http://o2r.info/architecture) for creating archivable research in form of [Executable Research Compendia (ERC)](https://doi.org/10.1045/january2017-nuest).

@@ -18,8 +18,9 @@ Creates a comment with character content
 \examples{
 # A simple label that occupies one line:
 comment <- Comment(text = "this is important to note")
-df <- dockerfile(clean_session())
-addInstruction(df) <- comment
-print(df)
+the_dockerfile <- dockerfile(clean_session())
+addInstruction(the_dockerfile) <- comment
+print(the_dockerfile)
 
 }
+\concept{comment}

@@ -21,3 +21,4 @@ create objects of class Maintainer
 Other maintainer: \code{\link{Label_Maintainer}},
   \code{\link{Maintainer-class}}
 }
+\concept{maintainer}

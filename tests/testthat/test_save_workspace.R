@@ -1,98 +1,75 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 context("Save workspace and R objects (save_image - argument)")
 
-original_sessionInfo <- obtain_localSessionInfo()
-#this step is necessary because when running in test mode, the object is normally not written to the global environment
-#alternatively, the second test could use a different envir-argument
-assign("original_sessionInfo", original_sessionInfo, envir = .GlobalEnv)
+unlink(".Rdata")
+unlink("test_file.Rdata")
 
-test_that("A workspace image can be containerized", {
-  expect_false(
-    file.exists(".RData"),
-    "RData file already exists in testthat folder. Remove manually and restart test."
-  )
-  if (file.exists(".RData"))
-    return() #don't continue
+test_that("Session objects with default file name can be containerized", {
+  rm(list = ls(envir = environment()), envir = environment()) # start clean
+  expect_false(file.exists(".Rdata"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
 
-  df <- dockerfile(original_sessionInfo, save_image = TRUE)
+  test_text <- "test"
+  test_vector <- c(1:10)
+  test_number <- 42
+  assign("test_float", 17.42)
+  assign("test_list", list(1, "two", 3.00))
 
-  expect_true(
-    file.exists(".RData"),
-    "The expected workspace image '.RData' file was not writen dor working directory."
-  )
-  attach(".RData")
-  expect_true("original_sessionInfo" %in% ls(pos = 2) ,
-              " R object was not saved to RData file.")
-  detach(pos = 2)
+  the_dockerfile <- dockerfile(save_image = TRUE, envir = environment())
 
-  inst <- methods::slot(df, "instructions")
+  # check Dockerfile: select copy instructions that occur after workdir instructions
+  inst <- methods::slot(the_dockerfile,"instructions")
   inst_types <- sapply(inst, class)
-  #select last occurence of a Workdir instruction
   last_wd_sel <- max(which(inst_types == "Workdir"))
-  #select copy instructions that occure after workdir instructions
   copy_sel <- which(inst_types == "Copy")
   copy_sel <- copy_sel[copy_sel > last_wd_sel]
+  expect_length(copy_sel, 1)
+  expect_equal(inst[[copy_sel]], Copy(".Rdata", ".Rdata"))
 
-  expected_instruction <- toString(Copy("./.RData", "./"))
-  generated_instructions <- sapply(inst[copy_sel], toString)
-  expect_true(
-    expected_instruction %in% generated_instructions,
-    paste(
-      "Expected a copy instruction after setting the workdir as follows:",
-      expected_instruction
-    )
-  )
-  #if you test-build the dockerfile, you should find the object original_sessionInfo loaded into the workspace
-  unlink(".RData")
+  # check saved file
+  expect_true(file.exists(".Rdata"), "The expected workspace image '.Rdata' file was not written to working directory.")
+  rm(list = ls(envir = environment()), envir = environment())
+
+  load(".Rdata", envir = environment(), verbose = TRUE)
+  expect_equal(ls(envir = environment()), c("test_float", "test_list", "test_number", "test_text", "test_vector"))
+  expect_equal(test_text, "test")
+  expect_equal(test_number, 42)
+  expect_false("save_image_filename" %in% ls(envir = environment()))
+
+  unlink(".Rdata") # clean up
 })
 
+test_that("Selected session objects with configured file name can be containerized", {
+  rm(list = ls(envir = environment()), envir = environment()) # start clean
+  expect_false(file.exists("test_file.Rdata"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
 
-test_that("A workspace image can be containerized given an object list and save-arguments",
-          {
-            test_folder <- basename(tempfile(pattern = "safe_image_test"))
-            dir.create(test_folder)
-            targetfile <-
-              paste0(test_folder, "/testworkspace.RData")
-            message("Workspace here: ", ls(all.names = TRUE, envir = .GlobalEnv))
-            df <-
-              dockerfile(original_sessionInfo,
-                         save_image = list("original_sessionInfo", file = targetfile))
+  test_text <- "test"
+  test_number <- 42
+  test_list <- list(one = "two", "data" = c(1:10))
 
-            save_image = list("original_sessionInfo", file = targetfile)
+  the_dockerfile <- dockerfile(save_image = list("test_text", save_image_filename = "test_file.Rdata", "test_list"), envir = environment())
 
-            expect_true(
-              file.exists(targetfile),
-              paste(
-                "The expected workspace image ",
-                targetfile ,
-                ", was not written in working directory."
-              )
-            )
-            attach(targetfile)
-            expect_true("original_sessionInfo" %in% ls(pos = 2) ,
-                        " R object was not saved to RData file.")
-            detach(pos = 2)
+  # check Dockerfile: select copy instructions that occur after workdir instructions
+  inst <- methods::slot(the_dockerfile,"instructions")
+  inst_types <- sapply(inst, class)
+  last_wd_sel <- max(which(inst_types == "Workdir"))
+  copy_sel <- which(inst_types == "Copy")
+  copy_sel <- copy_sel[copy_sel > last_wd_sel]
+  expect_length(copy_sel, 1)
+  expect_equal(inst[[copy_sel]], Copy("test_file.Rdata", "test_file.Rdata"))
 
-            inst <- methods::slot(df, "instructions")
-            inst_types <- sapply(inst, class)
-            #select last occurence of a Workdir instruction
-            last_wd_sel <- max(which(inst_types == "Workdir"))
-            #select copy instructions that occure after workdir instructions
-            copy_sel <- which(inst_types == "Copy")
-            copy_sel <- copy_sel[copy_sel > last_wd_sel]
+  # check saved file
+  expect_true(file.exists("test_file.Rdata"), "The expected workspace image file was not written to working directory.")
+  rm(list = ls(envir = environment()), envir = environment())
 
-            expected_instruction <-
-              toString(Copy(targetfile, targetfile))
-            generated_instructions <-
-              sapply(inst[copy_sel], toString)
-            expect_true(
-              expected_instruction %in% generated_instructions,
-              paste(
-                "Expected a copy instruction after setting the workdir as follows:",
-                expected_instruction
-              )
-            )
-            #if you test-build the dockerfile, you should find the object original_sessionInfo loaded into the workspace
-            unlink(test_folder, recursive = TRUE)
-          })
+  load("test_file.Rdata", envir = environment())
+  expect_equal(ls( envir = environment()), c("test_list", "test_text"))
+  expect_false("test_number" %in% ls( envir = environment()))
+
+  unlink("test_file.Rdata") # clean up
+})
+
+test_that("Program ignores unsupported input for save_image", {
+  expect_s4_class(dockerfile(from = sessionInfo(), save_image = data.frame()), "Dockerfile")
+  expect_s4_class(dockerfile(from = sessionInfo(), save_image = matrix()), "Dockerfile")
+})

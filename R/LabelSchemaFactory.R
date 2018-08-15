@@ -1,4 +1,4 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' Create Build-time labels according to Label Schema Convention
 #'
@@ -19,14 +19,14 @@
 #' @family label
 #'
 #' @examples
-#' df <- dockerfile(clean_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' factory <- LabelSchemaFactory()
 #' label <- factory(name = "ImageName",
 #'   description = "Description of the image",
 #'   build_date = Sys.time()
 #'  )
-#' addInstruction(df) <- label
-#' cat(format(df))
+#' addInstruction(the_dockerfile) <- label
+#' cat(format(the_dockerfile))
 #'
 #'
 LabelSchemaFactory <- function() {

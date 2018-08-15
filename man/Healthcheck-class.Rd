@@ -27,3 +27,4 @@ Other instruction classes: \code{\link{Add-class}},
   \code{\link{Stopsignal-class}},
   \code{\link{Volume-class}}, \code{\link{Workdir-class}}
 }
+\concept{instruction classes}

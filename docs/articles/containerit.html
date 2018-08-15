@@ -454,7 +454,7 @@ LABEL maintainer="daniel"
 WORKDIR /payload/
 COPY [".", "./"]
 CMD ["R", "--vanilla", "-f", "simple_test.R"]</code></pre>
-<p>Including R objects works similar to resources, using the argument <code>save_image</code>. The argument can be set to <code>TRUE</code> to save <em>all</em> objects of the current workspace to an .RData file, which is then copied to the container’s working directory and loaded on startup (based on <code>save.image()</code>).</p>
+<p>Including R objects works similar to resources, using the argument <code>save_image</code>. The argument can be set to <code>TRUE</code> to save <em>all</em> objects of the current workspace to an .Rdata file, which is then copied to the container’s working directory and loaded on startup (based on <code>save.image()</code>).</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dockerfile.html">dockerfile</a></span>(<span class="dt">save_image =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>Warning in FUN(X[[i]], ...): Failed to identify a source for package containerit. Therefore the package cannot be installed in the Docker image.</code></pre>
 <pre><code>Warning in FUN(X[[i]], ...): Failed to identify a source for package harbor. Therefore the package cannot be installed in the Docker image.</code></pre>
@@ -475,7 +475,7 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 RUN ["install2.r", "abc.data", "assertthat", "automagic", "backports", "bindr", "bindrcpp", "class", "classInt", "clisymbols", "codetools", "colorspace", "commonmark", "crayon", "curl", "data.table", "DBI", "desc", "devtools", "digest", "dplyr", "e1071", "evaluate", "FNN", "formatR", "fs", "futile.logger", "futile.options", "githubinstall", "glue", "gstat", "htmltools", "httr", "intervals", "jsonlite", "knitr", "lambda.r", "lattice", "locfit", "magrittr", "MASS", "Matrix", "MatrixModels", "memoise", "munsell", "nnet", "pacman", "pbapply", "pillar", "pkgconfig", "plyr", "purrr", "quantreg", "R6", "Rcpp", "remotes", "rjson", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "scales", "semver", "sessioninfo", "sp", "spacetime", "SparseM", "stringi", "stringr", "sys", "tibble", "udunits2", "units", "withr", "xml2", "xtable", "xts", "yaml", "zoo"]
 RUN ["installGithub.r", "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910"]
 WORKDIR /payload/
-COPY ["./.RData", "./"]
+COPY ["./.Rdata", "./"]
 CMD ["R"]</code></pre>
 <p>Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the <code>save()</code> function.</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">require</span>(fortunes)</a></code></pre></div>
@@ -506,7 +506,7 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 RUN ["install2.r", "abc.data", "assertthat", "automagic", "backports", "bindr", "bindrcpp", "class", "classInt", "clisymbols", "codetools", "colorspace", "commonmark", "crayon", "curl", "data.table", "DBI", "desc", "devtools", "digest", "dplyr", "e1071", "evaluate", "FNN", "formatR", "fortunes", "fs", "futile.logger", "futile.options", "githubinstall", "glue", "gstat", "htmltools", "httr", "intervals", "jsonlite", "knitr", "lambda.r", "lattice", "locfit", "magrittr", "MASS", "Matrix", "MatrixModels", "memoise", "munsell", "nnet", "pacman", "pbapply", "pillar", "pkgconfig", "plyr", "purrr", "quantreg", "R6", "Rcpp", "remotes", "rjson", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "scales", "semver", "sessioninfo", "sp", "spacetime", "SparseM", "stringi", "stringr", "sys", "tibble", "udunits2", "units", "withr", "xml2", "xtable", "xts", "yaml", "zoo"]
 RUN ["installGithub.r", "r-lib/pkgdown@5e4825875751c009444c56ce43d06324ec53e910"]
 WORKDIR /payload/
-COPY ["./payload.RData", "./payload.RData"]
+COPY ["./payload.Rdata", "./payload.Rdata"]
 CMD ["R"]</code></pre>
 </div>
 <div id="advanced-dockerfile-instructions" class="section level2">

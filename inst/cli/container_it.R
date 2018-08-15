@@ -30,8 +30,8 @@ Options (for all modes):
   --print -p          Print dockerfile to the console
   --r_version -r <ARG>  Specify an R version number that should run inside the container.
                       By default, the version of the currently linked R instance is used.
-  --save -s <objects> ...    Save a list of objects from the workspace to an .RData file (overwrites --save-image)
-  --save-image -i     Save the current workspace to an .RData file
+  --save -s <objects> ...    Save a list of objects from the workspace to an .Rdata file (overwrites --save-image)
+  --save-image -i     Save the current workspace to an .Rdata file
   --soft              Whether to include soft dependencies among the system dependencies of R packages.
                       [default: FALSE]
   --quiet -q          Run containerit as silent as possible (print only errors and warnings) [default: FALSE]

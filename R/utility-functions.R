@@ -1,103 +1,34 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' Build a Docker image from a local Dockerfile
 #'
 #' Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
-#' The method is implemented based on \code{harbor::docker_cmd} and analogue to \code{googleComputeEngineR::docker_build} (with small differences).
+#' The method is implemented based on \pkg{stevedore}.
 #'
-#' @param host A host object (see harbor-package)
-#' @param dockerfolder Local location of build directory including valid Dockerfile
+#' @param context Local location of build directory including valid Dockerfile
 #' @param tag Name of the new image to be created
 #' @param dockerfile (optional) set path to the dockerfile (equals to path/to/Dockerfile"))
-#' @param wait Whether to block R console until finished build
-#' @param no_cache Wheter to use cached layers to build the image
-#' @param docker_opts Additional Docker options
-#' @param ... Other arguments passed to the SSH command for the host
+#' @param ... Other arguments passed to stevedore
 #'
 #' @return A table of active images on the instance
 #' @export
-#' @importFrom harbor localhost docker_cmd
-docker_build <- function(host = harbor::localhost,
-                         dockerfolder,
+#' @importFrom stevedore docker_client
+docker_build <- function(context,
                          tag,
-                         dockerfile = character(0),
-                         wait = FALSE,
-                         no_cache = FALSE,
-                         docker_opts = character(0),
+                         the_dockerfile = "Dockerfile",
                          ...) {
-    # and also handle Dockerfile-Objects as input, analogue to the internal method 'create_localDockerImage'
-    stopifnot(dir.exists(dockerfolder))
+  futile.logger::flog.debug("Build dockerfile %s at %s with tag %s", the_dockerfile, context, tag)
+  stopifnot(stevedore::docker_available())
+  stopifnot(file.exists(file.path(context, the_dockerfile)))
 
-    docker_opts <- append(docker_opts, c("-t", tag))
+  futile.logger::flog.info("docker build at %s with %s as %s",
+                             context, the_dockerfile, tag)
 
-    if (length(dockerfile) > 0) {
-      stopifnot(file.exists(dockerfile))
-      docker_opts <-
-        append(docker_opts, c("-f", normalizePath(dockerfile)))
-    }
+  client <- stevedore::docker_client()
+  buildoutput <- client$image$build(context = context, tag = tag, dockerfile = the_dockerfile)
+  futile.logger::flog.debug("Build image %s", buildoutput$name())
 
-    if (no_cache)
-      docker_opts <- append(docker_opts, "--no-cache")
-
-    futile.logger::flog.info("EXEC: docker build %s %s",
-                             paste(docker_opts, collapse = " "),
-                             dockerfolder)
-    .buildoutput <- harbor::docker_cmd(
-      host,
-      "build",
-      args = dockerfolder,
-      docker_opts = docker_opts,
-      wait = wait,
-      capture_text = TRUE,
-      ...
-    )
-    futile.logger::flog.debug("Build output: %s", .buildoutput)
-
-    harbor::docker_cmd(host, "images", ..., capture_text = TRUE)
-  }
-
-#' Read low-level information from images and containers
-#'
-#' See https://docs.docker.com/engine/reference/commandline/inspect/
-#'
-#' The imlementation is based on \link[harbor]{docker_cmd} in the harbor package
-#' @seealso \code{\link[harbor]{docker_cmd}}
-#'
-#' @param host A host object, as specified by the harbor package
-#' @param name Name or id of the docker object (can also be a list of multiple names/ids)
-#' @param labelsOnly Whether to restrict the output to the field Config > Labels
-#' @param docker_opts Options to docker. These are things that come before the docker command, when run on the command line. (as in harbor::docker:cmd)
-#' @param ... Other arguments passed to the SSH command for the host
-#'
-#' @return A named list of labels for each name or id given. (So, if there are multiple names/ids a list of named lists is returned)
-#'
-#' @export
-#' @examples
-#' \dontrun{
-#'  docker_inspect(name="rocker/r-ver:3.3.2")
-#' }
-#'
-docker_inspect <- function(host = harbor::localhost,
-                           name,
-                           labelsOnly = FALSE,
-                           docker_opts = character(0),
-                           ...) {
-  output <-
-    harbor::docker_cmd(host,
-                       "inspect",
-                       args = name,
-                       docker_opts,
-                       capture_text = TRUE,
-                       ...)
-  output <- rjson::fromJSON(output)
-  if (labelsOnly) {
-    output <- sapply(output, function(obj) {
-      list(obj[["Config"]][["Labels"]])
-    })
-  }
-  if (is.list(output) && length(output) == 1)
-    output <- output[[1]]
-  return(output)
+  buildoutput$id()
 }
 
 addInstruction <- function(dockerfileObject, value) {
@@ -116,8 +47,8 @@ addInstruction <- function(dockerfileObject, value) {
 #' @export
 #'
 #' @examples
-#' df <- dockerfile(clean_session())
-#' addInstruction(df) <- Label(myKey = "myContent")
+#' the_dockerfile <- dockerfile(clean_session())
+#' addInstruction(the_dockerfile) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
 
 #' Get R version in string format used for image tags
@@ -140,7 +71,7 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
   } else if (inherits(from, "session_info")) {
     r_version <- stringr::str_extract(pattern = "\\d+(\\.\\d+)+", string = from$platform$version)
     futile.logger::flog.debug("Got R version from session_info: %s", r_version)
-  } else if (file.exists(from) && stringr::str_detect(from, ".Rdata$")) {
+  } else if (!is.null(from) && !is.na(from) && file.exists(from) && stringr::str_detect(from, ".Rdata$")) {
     sessionInfo <- getSessionInfoFromRdata(from)
     r_version <- getRVersionTag(sessionInfo)
     futile.logger::flog.debug("Got R version from file %s: %s", from, r_version)
@@ -201,7 +132,7 @@ clean_session <- function(expr = list(),
                           vanilla = TRUE,
                           slave = FALSE,
                           echo = FALSE) {
-  obtain_localSessionInfo(expr = expr,
+  containerit:::obtain_localSessionInfo(expr = expr,
                           file = file,
                           slave = slave,
                           echo = echo,

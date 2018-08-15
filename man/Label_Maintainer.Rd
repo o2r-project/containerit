@@ -27,3 +27,5 @@ Other label: \code{\link{Label-class}},
 Other maintainer: \code{\link{Maintainer-class}},
   \code{\link{Maintainer}}
 }
+\concept{label}
+\concept{maintainer}

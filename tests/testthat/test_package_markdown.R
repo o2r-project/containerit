@@ -1,18 +1,18 @@
-# Copyright 2017 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 context("Package R markdown files")
 
 test_that("A markdown file can be packaged (using units expample)", {
   skip("FIXME, works when run single, but not when run with full package check")
 
-  df <- dockerfile(from = "package_markdown/units/",
+  the_dockerfile <- dockerfile(from = "package_markdown/units/",
                    maintainer = "Ted Tester",
                    image = getImageForVersion("3.3.2"),
                    copy = "script_dir",
                    cmd = CMD_Render("package_markdown/units/2016-09-29-plot_units.Rmd"))
-  #write(df, "package_markdown/units_Dockerfile")
+  #write(the_dockerfile,"package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 })
 
@@ -24,15 +24,15 @@ test_that("The sf3 markdown file can be packaged", {
   dir.create(dir)
   tmpfile <- tempfile(tmpdir = dir, fileext = ".Rmd")
   file.copy(from = md_file, to = tmpfile)
-  df <- dockerfile(dir,
-                   maintainer = "matthiashinz",
+  the_dockerfile <- dockerfile(dir,
+                   maintainer = "o2r",
                    image = "rocker/geospatial",
                    copy = "script_dir",
                    cmd = CMD_Render(dir, output_dir = "/output"))
-  #write(df, "package_markdown/sf_vignette_Dockerfile")
+  #write(the_dockerfile,"package_markdown/sf_vignette_Dockerfile")
   expected_file <- readLines("package_markdown/sf_vignette_Dockerfile")
   expected_file <- stringr::str_replace(string = expected_file, pattern = "###TEMPDIR###", replacement = dir)
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 
   # here we can build and run the actual container to see if the resulting file is matching
@@ -82,6 +82,7 @@ test_that("File copying can be disabled with NULL", {
 
 test_that("Packaging fails if dependency is missing and predetection is disabled", {
   skip_on_cran() # cannot remove packages on CRAN
+  skip("FIXME need a better way to test then using plm")
   if (requireNamespace("plm", quietly = TRUE)) {
     remove.packages(pkgs = c("plm"))
   }
@@ -95,9 +96,9 @@ test_that("Packaging works if dependency is missing in the base image and predet
     remove.packages(pkgs = c("plm"))
   }
   # this will re-install the package plm again:
-  df <- dockerfile(from = "package_markdown/spacetime/", maintainer = "o2r", predetect = TRUE)
+  the_dockerfile <- dockerfile(from = "package_markdown/spacetime/", maintainer = "o2r", predetect = TRUE)
   expected_file <- readLines("package_markdown/spacetime/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(df),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("\"plm\"", x = toString(df))), info = "Packages missing in the base image are detected")
+  expect_true(object = any(grepl("\"plm\"", x = toString(the_dockerfile))), info = "Packages missing in the base image are detected")
 })

@@ -34,3 +34,5 @@ Other instruction classes: \code{\link{Add-class}},
 Other Run instruction: \code{\link{Run-class}},
   \code{\link{Run_shell}}, \code{\link{Run}}
 }
+\concept{Run instruction}
+\concept{instruction classes}

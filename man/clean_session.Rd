@@ -4,8 +4,8 @@
 \alias{clean_session}
 \title{Creates an empty R session via system commands and captures the session information}
 \usage{
-clean_session(expr = list(), file = NULL, vanilla = TRUE, slave = FALSE,
-  echo = FALSE)
+clean_session(expr = list(), file = NULL, vanilla = TRUE,
+  slave = FALSE, echo = FALSE)
 }
 \arguments{
 \item{expr}{optional list of expressions to be executed in the session}
