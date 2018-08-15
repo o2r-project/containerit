@@ -127,14 +127,10 @@ getSessionInfoFromRdata <- function(file) {
 #'
 #' @return An object of class session info (Can be used as an input to the dockerfile-method)
 #' @export
-clean_session <- function(expr = list(),
+clean_session <- function(expr = c(),
                           file = NULL,
-                          vanilla = TRUE,
-                          slave = FALSE,
                           echo = FALSE) {
-  containerit:::obtain_localSessionInfo(expr = expr,
+  obtain_localSessionInfo(expr = expr,
                           file = file,
-                          slave = slave,
-                          echo = echo,
-                          vanilla = vanilla)
+                          echo = echo)
 }

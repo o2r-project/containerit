@@ -47,40 +47,6 @@ create_localDockerImage <- function(x,
   }
 }
 
-
-## R expression for writing sessioninfo as an object named 'info' to a given (temporary) rdata-file
-.writeSessionInfoExp <- function(tempfile) {
-  e1 <- quote(info <- sessionInfo())
-  e2 <- quote(save(list = "info", file = tempfile))
-  e2[[3]] <- tempfile
-  return(c(e1, e2))
-}
-
-#converts an vector or list of R expression into command line parameters for R (batch mode)
-.exprToParam <-
-  function(expr,
-           e_append = append,
-           to_string = FALSE) {
-    #convert from expressions to enquoted strings
-    if (to_string)
-      #for command line execution, the commands have to be deparsed once more to strings
-      expr <-
-        sapply(expr, function(x) {
-          deparse(x, width.cutoff = 500)
-        })
-    expr <-
-      sapply(expr, function(x) {
-        deparse(x, width.cutoff = 500)
-      }, simplify = TRUE, USE.NAMES = FALSE)
-
-    if (!is.null(e_append))
-      expr <- sapply(expr, function(x) {
-        e_append("-e", x)
-      })
-    return(unlist(as.character(expr)))
-  }
-
-
 # Obtains a session info from a local R session executed by external system commands with the given expression expr or file
 # In any case, a sessioninfo is written to a temporary file and then loaded into the current session
 # If a file (R script) is given, the script is copied to a temporary file and the commands to write the sessionInfo are appended
@@ -90,14 +56,10 @@ create_localDockerImage <- function(x,
 obtain_localSessionInfo <- function(expr = c(),
            file = NULL, # an R script to be executed
            rmd_file = NULL, # an R Markdown file
-           vanilla = TRUE,
-           silent = TRUE,
-           slave = FALSE,
            echo = FALSE, # whether R scripts should be 'echoed'
            predetect = TRUE, # whether to use automagic to make sure all required packages are installed
            repos = "http://cloud.r-project.org",
-           local_tempfile = tempfile(pattern = "rdata-sessioninfo"),
-           local_temp_script = tempfile(pattern = "r-script")) {
+           cmd = Sys.getenv("R_HOME")) {
   #append commands to create a local sessionInfo
   required_pkgs <- c()
   if (!is.null(file) && file.exists(file)) {
@@ -136,28 +98,17 @@ obtain_localSessionInfo <- function(expr = c(),
     }
   }
 
-  expr <- append(expr, .writeSessionInfoExp(local_tempfile))
-  args <- .exprToParam(expr, to_string = TRUE)
-  if (vanilla)
-    args <- append("--vanilla", args)
+  futile.logger::flog.info(paste("Creating an R session with the following expressions:\n\t ", toString(expr)))
 
-  if (slave)
-    args <- append("--slave", args)
+  info <- callr::r_vanilla(function(expressions) {
+    for (e in expressions) {
+      eval(e)
+    }
+    sessionInfo()
+  }, args = list(expressions = expr), libpath = .libPaths(), repos = repos)
 
-  if (silent)
-    args <- append("--silent", args)
+  if (is.null(info))
+    stop("Failed to determine a sessionInfo in a new R session.")
 
-  futile.logger::flog.info(paste("Creating an R session with the following arguments:\n\t R ",
-                                 paste(args, collapse = " ")))
-
-  system2("R", args)
-
-  if (!file.exists(local_tempfile))
-    stop("Failed to execute the script locally! A sessionInfo could not be determined.")
-
-  load(local_tempfile)
-  #clean up:
-  unlink(local_tempfile)
-  unlink(local_temp_script)
-  return(get("info"))
+  return(info)
 }

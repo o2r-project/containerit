@@ -11,9 +11,8 @@ dockerfile(from = utils::sessionInfo(),
   utils::packageVersion("containerit"))), soft = FALSE,
   offline = FALSE, copy = NA, container_workdir = "/payload/",
   cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE,
-  vanilla = TRUE, silent = FALSE, predetect = TRUE,
-  versioned_libs = FALSE, versioned_packages = FALSE,
-  filter_baseimage_pkgs = FALSE)
+  silent = FALSE, predetect = TRUE, versioned_libs = FALSE,
+  versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)
 }
 \arguments{
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
@@ -44,8 +43,6 @@ By default, the image is determinded from the given session. Alternatively, use 
 \item{entrypoint}{the ENTRYPOINT statement for the Dockerfile}
 
 \item{add_self}{Whether to add the package containerit itself if loaded/attached to the session}
-
-\item{vanilla}{Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})}
 
 \item{silent}{Whether or not to print information during execution}
 

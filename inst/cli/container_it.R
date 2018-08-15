@@ -24,8 +24,6 @@ Options (for all modes):
   --maintainer -m <ARG>   Name / email of the dockerfile's maintainer
                           (will be read from environment variables if not given)
   --no-write          Don't write dockerfile to output file
-  --no-vanilla        Package a session / file without using the vanilla flag
-                      (warning: site and environment files currently cannot be included in the container)
   --output -o FILE    Path and name of the output Dockerfile [default: ./Dockerfile]
   --print -p          Print dockerfile to the console
   --r_version -r <ARG>  Specify an R version number that should run inside the container.
@@ -113,9 +111,7 @@ if (length(commandArgs(trailingOnly = TRUE)) == 0) {
     }
     invisible(futile.logger::flog.info("Packaging a new R session..."))
     from <-
-      clean_session(expr = expr,
-                    vanilla = !opts[["no-vanilla"]],
-                    slave = opts[["quiet"]])
+      clean_session(expr = expr)
     this_cmd <- eval(formals(dockerfile)$cmd)
   } else{
     if (opts$dir == TRUE) {

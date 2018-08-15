@@ -4,19 +4,18 @@
 \alias{clean_session}
 \title{Creates an empty R session via system commands and captures the session information}
 \usage{
-clean_session(expr = list(), file = NULL, vanilla = TRUE,
-  slave = FALSE, echo = FALSE)
+clean_session(expr = c(), file = NULL, echo = FALSE)
 }
 \arguments{
 \item{expr}{optional list of expressions to be executed in the session}
 
 \item{file}{optional R script to be executed in the session (uses source-function)}
 
+\item{echo}{wheter to print out detailed information from R}
+
 \item{vanilla}{indicate wheter the session should be a vanilla R session}
 
 \item{slave}{whether to run R silentely (here: in slave mode)}
-
-\item{echo}{wheter to print out detailed information from R}
 }
 \value{
 An object of class session info (Can be used as an input to the dockerfile-method)

@@ -43,7 +43,6 @@
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
-#' @param vanilla Whether to use an empty vanilla session when packaging scripts and markdown files (equivalent to \code{R --vanilla})
 #' @param silent Whether or not to print information during execution
 #' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
@@ -75,7 +74,6 @@ dockerfile <- function(from = utils::sessionInfo(),
                        cmd = Cmd("R"),
                        entrypoint = NULL,
                        add_self = FALSE,
-                       vanilla = TRUE,
                        silent = FALSE,
                        predetect = TRUE,
                        versioned_libs = FALSE,
@@ -172,7 +170,6 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                offline = offline,
                                                add_self = add_self,
                                                copy = copy,
-                                               vanilla = vanilla,
                                                silent = silent,
                                                predetect = predetect,
                                                versioned_libs = versioned_libs,
@@ -188,7 +185,6 @@ dockerfile <- function(from = utils::sessionInfo(),
                                           offline = offline,
                                           add_self = add_self,
                                           copy = copy,
-                                          vanilla = vanilla,
                                           silent = silent,
                                           predetect = predetect,
                                           versioned_libs = versioned_libs,
@@ -202,9 +198,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                (is.list(from) && all(sapply(from, is.expression)))) {
       futile.logger::flog.debug("Creating from expession: '%s' with a clean session", toString(from))
 
-      .sessionInfo <- clean_session(expr = from,
-                                    slave = silent,
-                                    vanilla = vanilla)
+      .sessionInfo <- clean_session(expr = from)
       .dockerfile <- dockerfileFromSession(session = .sessionInfo,
                                            dockerfile = .dockerfile,
                                            soft = soft,
@@ -432,15 +426,11 @@ dockerfileFromFile <- function(file,
     if (stringr::str_detect(file, ".R$")) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
       sessionInfo <- containerit:::obtain_localSessionInfo(file = file,
-                                             vanilla = vanilla,
-                                             slave = silent,
                                              echo = !silent,
                                              predetect = predetect)
     } else if (stringr::str_detect(file, ".Rmd$")) {
       futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_path)
       sessionInfo <- containerit:::obtain_localSessionInfo(rmd_file = file,
-                                             vanilla = vanilla,
-                                             slave = silent,
                                              echo = !silent,
                                              predetect = predetect)
     } else if (stringr::str_detect(file, ".Rdata$")) {
@@ -516,7 +506,6 @@ dockerfileFromWorkspace <- function(path,
                                    offline,
                                    add_self,
                                    copy,
-                                   vanilla,
                                    silent,
                                    predetect,
                                    versioned_libs,
@@ -564,7 +553,6 @@ dockerfileFromWorkspace <- function(path,
                               offline = offline,
                               copy = copy,
                               add_self = add_self,
-                              vanilla = vanilla,
                               silent = silent,
                               predetect = predetect,
                               versioned_libs = versioned_libs,

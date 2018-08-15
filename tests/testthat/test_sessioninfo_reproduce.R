@@ -17,6 +17,30 @@ local_sessionInfo <- NULL
 docker_sessionInfo <- NULL
 dockerfile_object <- NULL
 
+#converts an vector or list of R expression into command line parameters for R (batch mode)
+exprToParam <-
+  function(expr,
+           e_append = append,
+           to_string = FALSE) {
+    #convert from expressions to enquoted strings
+    if (to_string)
+      #for command line execution, the commands have to be deparsed once more to strings
+      expr <-
+        sapply(expr, function(x) {
+          deparse(x, width.cutoff = 500)
+        })
+    expr <-
+      sapply(expr, function(x) {
+        deparse(x, width.cutoff = 500)
+      }, simplify = TRUE, USE.NAMES = FALSE)
+
+    if (!is.null(e_append))
+      expr <- sapply(expr, function(x) {
+        e_append("-e", x)
+      })
+    return(unlist(as.character(expr)))
+  }
+
 ## optains a session info from an R session executed in docker given expression expr and a docker image with R installed
 #  This method currently supports only expressions as an input (they should not be too long and complex).
 #  If the method should also execute complete scripts and optain the sessionInfo, it would have to be re-written according to optain_localSessionInfo.
@@ -24,7 +48,6 @@ dockerfile_object <- NULL
 #  As this function was only created for test purposes in order to compare sessionInfos, this feature is out of scope at the moment.
 obtain_dockerSessionInfo <- function(docker_image,
            expr = c(),
-           vanilla = FALSE,
            container_dir = "/tmp",
            local_dir = tempfile(pattern = "dir"),
            deleteTempfiles = TRUE,
@@ -42,14 +65,12 @@ obtain_dockerSessionInfo <- function(docker_image,
       container_tempfile =  file.path(container_dir, "capture.Rdata")
       local_docker_tempfile = file.path(local_dir, "capture.Rdata")
 
-      expr <- append(expr, containerit:::.writeSessionInfoExp(container_tempfile))
+      expr <- append(expr, writeSessionInfoExp(container_tempfile))
       #convert to cmd parameters
-      expr <- containerit:::.exprToParam(expr)
+      expr <- exprToParam(expr)
 
       cmd <- c("R")
-      if (vanilla) {
-        cmd <- append(cmd, "--vanilla")
-      }
+      cmd <- append(cmd, "--vanilla")
       cmd <- append(cmd, expr)
 
       futile.logger::flog.info("Running R in container to obtain a session info using image %s and command %s",
@@ -86,7 +107,7 @@ obtain_dockerSessionInfo <- function(docker_image,
   }
 
 test_that("a local sessionInfo() can be created ", {
-  local_sessionInfo <<- containerit:::obtain_localSessionInfo(expr = expressions, vanilla = TRUE)
+  local_sessionInfo <<- obtain_localSessionInfo(expr = expressions)
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
@@ -99,13 +120,13 @@ test_that("a sessionInfo can be reproduced with Docker", {
     skip("previous test failed (missing objects to continue)")
 
   dockerfile_object <- dockerfile(local_sessionInfo)
-  docker_tempimage_id <- containerit:::create_localDockerImage(dockerfile_object)
+  docker_tempimage_id <- create_localDockerImage(dockerfile_object)
 
   #expect that image was created:
   client <- stevedore::docker_client()
   expect_true(docker_tempimage_id %in% client$image$list()$id)
 
-  docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage_id, expressions, vanilla = TRUE)
+  docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage_id, expressions)
   skip_if(is.null(docker_sessionInfo))
 
   #clean up: remove image
