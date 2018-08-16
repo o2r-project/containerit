@@ -10,7 +10,7 @@ test_that("can create comments",{
 })
 
 test_that("can add comments to a Dockerfile", {
-  the_dockerfile <- dockerfile(clean_session())
+  the_dockerfile <- dockerfile(empty_session())
   addInstruction(the_dockerfile) <- Comment(text = "the text")
   addInstruction(the_dockerfile) <- Label(foo = "bar")
   addInstruction(the_dockerfile) <- Comment(text = "after foo bar")

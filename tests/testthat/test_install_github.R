@@ -3,7 +3,7 @@
 library(containerit)
 context("install_github")
 
-test_that("github_packages can be installed", {
+test_that("GitHub packages can be installed", {
   #get session information from previous installation, created in a vanilla R session with these commands within package root directory:
   #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo.Rdata")
   load("./github/sessionInfo.Rdata")

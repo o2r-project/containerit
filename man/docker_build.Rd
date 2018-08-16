@@ -2,23 +2,37 @@
 % Please edit documentation in R/utility-functions.R
 \name{docker_build}
 \alias{docker_build}
-\title{Build a Docker image from a local Dockerfile}
+\alias{docker_build.character}
+\alias{docker_build.Dockerfile}
+\title{Build a Docker image from a local Dockerfile or a \code{Dockerfile} object}
 \usage{
-docker_build(context, tag, the_dockerfile = "Dockerfile", ...)
+docker_build(x, tag, ...)
+
+\method{docker_build}{character}(x, tag = strsplit(tempfile(pattern =
+  "containerit_", tmpdir = ""), "/")[[1]][2],
+  the_dockerfile = "Dockerfile", ...)
+
+\method{docker_build}{Dockerfile}(x, tag = strsplit(tempfile(pattern =
+  "containerit_test_", tmpdir = ""), "/")[[1]][2], use_workdir = FALSE,
+  clean_up = TRUE)
 }
 \arguments{
-\item{context}{Local location of build directory including valid Dockerfile}
+\item{x}{the path to a directory with a valid \code{Dockerfile} (i.e. the \code{context}), or a \code{Dockerfile} object}
 
 \item{tag}{Name of the new image to be created}
 
-\item{...}{Other arguments passed to stevedore}
+\item{...}{Other arguments, passed to \code{\link[stevedore]{docker_client}}}
 
-\item{dockerfile}{(optional) set path to the dockerfile (equals to path/to/Dockerfile"))}
+\item{the_dockerfile}{Name of the \code{Dockerfile}, defaults to "Dockerfile"}
+
+\item{use_workdir}{if a \code{\link{Dockerfile}} object is given, this can set the context to the current working directory (if \code{TRUE}) or a temporary directory (default)}
+
+\item{context}{Local location of build directory including valid Dockerfile}
 }
 \value{
-A table of active images on the instance
+The id of the image
 }
 \description{
-Uploads a folder with a Dockerfile and supporting files to an instance and builds it.
-The method is implemented based on \pkg{stevedore}.
+The method is implemented based on \pkg{stevedore} and includes some logging and defaults.
+If a \code{Dockerfile} object is given, it is saved as a Dockerfile to a temporary directory.
 }

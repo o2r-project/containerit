@@ -5,6 +5,9 @@ library("containerit")
 
 # for testing whole files manually:
 if (FALSE){
+  # fix a cache path for stevedore, see
+  options(stevedore.spec.path = getwd())
+
   #assuming that workdir is the containerit-folder:
   library("futile.logger")
   futile.logger::flog.threshold(futile.logger::DEBUG)

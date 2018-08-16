@@ -39,7 +39,7 @@ setClass("Label",
 #' )
 #' #label with fixed namespace for all keys
 #' label3 <- Label("name"="A name", "description" = "A description", label_ns = "my.label.ns.")
-#' the_dockerfile <- dockerfile(clean_session())
+#' the_dockerfile <- dockerfile(empty_session())
 #' addInstruction(the_dockerfile) <- list(label1, label2, label3)
 #' cat(format(the_dockerfile),sep = "\n")
 #'
@@ -64,11 +64,12 @@ Label <-
 #' @return A label with key 'R.session-info' and the deparsed session information in one line
 #' @export
 #' @family label
+#' @importFrom utils capture.output
 #'
 #' @examples
-#' session <- clean_session()
-#' the_dockerfile <- dockerfile(session)
-#' addInstruction(the_dockerfile) <- Label_SessionInfo(session)
+#' the_session <- empty_session()
+#' the_dockerfile <- dockerfile(the_session)
+#' addInstruction(the_dockerfile) <- Label_SessionInfo(the_session)
 Label_SessionInfo <-
   function(session = sessionInfo(),
            as_json = FALSE) {

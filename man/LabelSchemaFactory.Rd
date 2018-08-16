@@ -22,7 +22,7 @@ This is a convenience function that generates method for conveniently creating m
 For details about the Label Schema, see http://label-schema.org/rc1/
 }
 \examples{
-the_dockerfile <- dockerfile(clean_session())
+the_dockerfile <- dockerfile(empty_session())
 factory <- LabelSchemaFactory()
 label <- factory(name = "ImageName",
   description = "Description of the image",

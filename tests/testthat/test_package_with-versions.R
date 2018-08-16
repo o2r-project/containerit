@@ -6,7 +6,7 @@ test_that("generation function for single package works", {
   instruction <- containerit:::versioned_install_instruction(name = "fortunes", version = "1.0-2")
   expect_s4_class(instruction,"Instruction")
 
-  instr_string <- capture.output(print(instruction))
+  instr_string <- utils::capture.output(print(instruction))
   expect_equal(instr_string, "RUN [\"Rscript\", \"-e\", \"versions::install.versions('fortunes', '1.0-2')\"]")
 })
 

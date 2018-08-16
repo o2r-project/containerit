@@ -7,3 +7,4 @@
 ^README-.*\.png$
 ^CONDUCT\.md$
 .lintr
+docs

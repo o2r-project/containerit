@@ -1,7 +1,7 @@
 Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.5.0.9001
+Version: 0.5.0.9002
 Authors@R: c(person("Daniel", "Nuest", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de", comment = c(ORCID = "0000-0003-2392-6140")),
     person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
@@ -50,7 +50,8 @@ Suggests:
     proj4,
     fortunes,
     remotes,
-    ggplot2
+    ggplot2,
+    lattice
 RoxygenNote: 6.1.0
 Collate:
     'Class-Instruction.R'
@@ -82,7 +83,6 @@ Collate:
     'dockerfile.R'
     'package-installation-bespoke.R'
     'package-installation-methods.R'
-    'sessionInfo-localbuild-methods.R'
     'utility-functions.R'
 Remotes: github::r-hub/sysreqs,
     github::richfitz/stevedore

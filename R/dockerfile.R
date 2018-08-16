@@ -54,6 +54,8 @@
 #' @export
 #'
 #' @import futile.logger
+#' @importFrom utils capture.output
+#' @importFrom stringr str_detect regex str_extract str_length str_sub
 #'
 #' @examples
 #' dockerfile <- dockerfile()
@@ -220,7 +222,7 @@ dockerfile <- function(from = utils::sessionInfo(),
     if (isTRUE(save_image)) {
       futile.logger::flog.debug("Saving image to file %s with %s and adding COPY instruction using environment %s",
                                 .filename, toString(ls(envir = envir)),
-                                capture.output(envir))
+                                utils::capture.output(envir))
       save(list = ls(envir = envir), file = .filename, envir = envir)
       addInstruction(.dockerfile) <- Copy(src = .filename, dest = .filename)
     } else if (is.list(save_image)) {
@@ -376,7 +378,7 @@ dockerfileFromSession.session_info <- function(session,
   pkgs_gh <- packages_df[stringr::str_detect(string = packages_df$source, stringr::regex("GitHub", ignore_case = TRUE)),]
   if (nrow(pkgs_gh) > 0) {
     for (pkg in pkgs_gh$name) {
-      currentPkg <- subset(pkgs_gh, name == pkg)
+      currentPkg <- subset(pkgs_gh, pkgs_gh$name == pkg)
       versionString <- stringr::str_extract(string = currentPkg$source, pattern = "(?<=\\()(.*)(?=\\))")
       packages_df[packages_df$name == pkg,c("version")] <- versionString
     }
@@ -423,18 +425,22 @@ dockerfileFromFile <- function(file,
     rel_path <- .makeRelative(file, context)
 
     # execute script / markdowns or read Rdata file to obtain sessioninfo
-    if (stringr::str_detect(file, ".R$")) {
+    if (stringr::str_detect(string = file,
+                            pattern = stringr::regex(".R$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
-      sessionInfo <- containerit:::obtain_localSessionInfo(file = file,
-                                             echo = !silent,
-                                             predetect = predetect)
-    } else if (stringr::str_detect(file, ".Rmd$")) {
+      sessionInfo <- clean_session(file = file,
+                                   echo = !silent,
+                                   predetect = predetect)
+    } else if (stringr::str_detect(string = file,
+                                   pattern = stringr::regex(".rmd$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_path)
-      sessionInfo <- containerit:::obtain_localSessionInfo(rmd_file = file,
-                                             echo = !silent,
-                                             predetect = predetect)
-    } else if (stringr::str_detect(file, ".Rdata$")) {
-      sessionInfo <- getSessionInfoFromRdata(file)
+      sessionInfo <- clean_session(rmd_file = file,
+                                   echo = !silent,
+                                   predetect = predetect)
+    } else if (stringr::str_detect(string = file,
+                                   pattern = stringr::regex(".rdata$", ignore_case = TRUE))) {
+      futile.logger::flog.info("Extracting session object from RData file %s", rel_path)
+      sessionInfo <- extract_session_file(file)
     } else{
       futile.logger::flog.info("The supplied file %s has no known extension. containerit will handle it as an R script for packaging.", rel_path)
     }
@@ -519,13 +525,15 @@ dockerfileFromWorkspace <- function(path,
                    pattern = "\\.R$",
                    full.names = TRUE,
                    include.dirs = FALSE,
-                   recursive = TRUE)
+                   recursive = TRUE,
+                   ignore.case = TRUE)
 
     .md_Files <- dir(path = path,
                      pattern = "\\.Rmd$", #|\\.Rnw$",
                      full.names = TRUE,
                      include.dirs = FALSE,
-                     recursive = TRUE)
+                     recursive = TRUE,
+                     ignore.case = TRUE)
     futile.logger::flog.debug("Found %s scripts and %s documents", length(.rFiles), length(.md_Files))
 
     if (length(.rFiles) > 0 && length(.md_Files) > 0) {

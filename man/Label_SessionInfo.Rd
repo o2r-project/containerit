@@ -19,9 +19,9 @@ A label with key 'R.session-info' and the deparsed session information in one li
 See https://docs.docker.com/engine/reference/builder/#label
 }
 \examples{
-session <- clean_session()
-the_dockerfile <- dockerfile(session)
-addInstruction(the_dockerfile) <- Label_SessionInfo(session)
+the_session <- empty_session()
+the_dockerfile <- dockerfile(the_session)
+addInstruction(the_dockerfile) <- Label_SessionInfo(the_session)
 }
 \seealso{
 Other label: \code{\link{Label-class}},

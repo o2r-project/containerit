@@ -10,6 +10,7 @@
 #' @return A \code{data.frame} with installed packages and their version of the image
 #' @export
 #' @importFrom stevedore docker_client docker_available
+#' @importFrom utils read.csv
 get_installed_packages <- function(image) {
   stopifnot(stevedore::docker_available())
 

@@ -2,24 +2,26 @@
 % Please edit documentation in R/utility-functions.R
 \name{clean_session}
 \alias{clean_session}
-\title{Creates an empty R session via system commands and captures the session information}
+\title{Obtains a \code{sessionInfo} from a local R session}
 \usage{
-clean_session(expr = c(), file = NULL, echo = FALSE)
+clean_session(expr = c(), file = NULL, rmd_file = NULL,
+  echo = FALSE, predetect = TRUE,
+  repos = "http://cloud.r-project.org", cmd = Sys.getenv("R_HOME"))
 }
 \arguments{
-\item{expr}{optional list of expressions to be executed in the session}
+\item{expr}{vector of expressions to be executed in the session (see \code{\link{quote}})}
 
-\item{file}{optional R script to be executed in the session (uses source-function)}
+\item{file}{R script to be executed in the session, uses \code{\link{source}}}
 
-\item{echo}{wheter to print out detailed information from R}
+\item{echo}{print out detailed information from R}
 
-\item{vanilla}{indicate wheter the session should be a vanilla R session}
+\item{file_rmd}{R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}}
 
-\item{slave}{whether to run R silentely (here: in slave mode)}
-}
-\value{
-An object of class session info (Can be used as an input to the dockerfile-method)
+\item{pretedect}{whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file}
 }
 \description{
-Creates an empty R session via system commands and captures the session information
+The function may also execute provided expressions or files.
+}
+\examples{
+clean_session(c(quote(library('lattice'))))
 }

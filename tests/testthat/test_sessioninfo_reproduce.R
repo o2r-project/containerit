@@ -17,165 +17,54 @@ local_sessionInfo <- NULL
 docker_sessionInfo <- NULL
 dockerfile_object <- NULL
 
-#converts an vector or list of R expression into command line parameters for R (batch mode)
-exprToParam <-
-  function(expr,
-           e_append = append,
-           to_string = FALSE) {
-    #convert from expressions to enquoted strings
-    if (to_string)
-      #for command line execution, the commands have to be deparsed once more to strings
-      expr <-
-        sapply(expr, function(x) {
-          deparse(x, width.cutoff = 500)
-        })
-    expr <-
-      sapply(expr, function(x) {
-        deparse(x, width.cutoff = 500)
-      }, simplify = TRUE, USE.NAMES = FALSE)
-
-    if (!is.null(e_append))
-      expr <- sapply(expr, function(x) {
-        e_append("-e", x)
-      })
-    return(unlist(as.character(expr)))
-  }
-
-## optains a session info from an R session executed in docker given expression expr and a docker image with R installed
-#  This method currently supports only expressions as an input (they should not be too long and complex).
-#  If the method should also execute complete scripts and optain the sessionInfo, it would have to be re-written according to optain_localSessionInfo.
-#  A temporary R script must be mounted. And then exectuted inside the container.
-#  As this function was only created for test purposes in order to compare sessionInfos, this feature is out of scope at the moment.
-obtain_dockerSessionInfo <- function(docker_image,
-           expr = c(),
-           container_dir = "/tmp",
-           local_dir = tempfile(pattern = "dir"),
-           deleteTempfiles = TRUE,
-           container_name = "containerit_capturer") {
-    result = tryCatch({
-      # for testing:
-      # docker_image <- "rocker/geospatial:3.4.4"
-
-      #create local temporary directory
-      dir.create(local_dir)
-      if (!dir.exists(local_dir))
-        stop("Unable to locate temporary directory: ", local_dir)
-
-      #rdata file to which session info shall be written
-      container_tempfile =  file.path(container_dir, "capture.Rdata")
-      local_docker_tempfile = file.path(local_dir, "capture.Rdata")
-
-      expr <- append(expr, writeSessionInfoExp(container_tempfile))
-      #convert to cmd parameters
-      expr <- exprToParam(expr)
-
-      cmd <- c("R")
-      cmd <- append(cmd, "--vanilla")
-      cmd <- append(cmd, expr)
-
-      futile.logger::flog.info("Running R in container to obtain a session info using image %s and command %s",
-                               docker_image,
-                               paste(cmd, collapse = " "))
-
-      client <- stevedore::docker_client()
-      container <- client$container$run(image = docker_image,
-                                        cmd = cmd,
-                                        host_config = list(binds = c(paste0(local_dir, ":", container_dir))),
-                                        name = container_name)
-
-      if (!file.exists(local_docker_tempfile))
-        stop("Sessioninfo was not written to file (file missing): ",
-             local_docker_tempfile)
-
-      futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
-      load(local_docker_tempfile)
-      #clean up
-      if (deleteTempfiles)
-        unlink(local_dir, recursive = TRUE)
-
-      container$container$remove()
-
-      get("info")
-    }, error = function(e) {
-      cat("Error obtaining session info:", toString(e), "\n")
-      NULL
-    }, finally = {
-      #
-    })
-
-    return(result)
-  }
-
 test_that("a local sessionInfo() can be created ", {
-  local_sessionInfo <<- obtain_localSessionInfo(expr = expressions)
+  local_sessionInfo <<- clean_session(expr = expressions)
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
 test_that("a sessionInfo can be reproduced with Docker", {
-  skip_on_cran()
-  skip_on_travis()
   skip_if_not(stevedore::docker_available())
 
-  if (is.null(local_sessionInfo))
-    skip("previous test failed (missing objects to continue)")
-
   dockerfile_object <- dockerfile(local_sessionInfo)
-  docker_tempimage_id <- create_localDockerImage(dockerfile_object)
+  docker_tempimage_id <- docker_build(dockerfile_object)
 
   #expect that image was created:
   client <- stevedore::docker_client()
   expect_true(docker_tempimage_id %in% client$image$list()$id)
 
-  docker_sessionInfo <<- obtain_dockerSessionInfo(docker_tempimage_id, expressions)
-  skip_if(is.null(docker_sessionInfo))
+  docker_sessionInfo <<- extract_session_image(docker_tempimage_id, expressions)
 
   #clean up: remove image
-  client$image$remove(docker_tempimage_id)
+  client$image$remove(docker_tempimage_id, force = TRUE)
 })
 
 test_that("the same base packages are attached locally and in Docker", {
-  skip_on_cran()
-  skip_on_travis()
-  skip_if(is.null(docker_sessionInfo))
+  skip_if_not(stevedore::docker_available())
+  expect_false(is.null(docker_sessionInfo))
 
-  if(is.null(docker_sessionInfo))
-    skip("previous test failed (missing objects to continue)")
-
-  #expect that same base packages are attached
-  expect_true(all(
-    local_sessionInfo$basePkgs %in% docker_sessionInfo$basePkgs
-  ))
-  expect_true(all(
-    docker_sessionInfo$basePkgs %in% local_sessionInfo$basePkgs
-  ))
+  expect_equal(local_sessionInfo$basePkgs, docker_sessionInfo$basePkgs)
 })
 
 test_that("the same other packages are attached locally and in Docker ", {
-  skip_on_cran()
-  skip_on_travis()
-  skip_if(is.null(docker_sessionInfo))
+  skip_if_not(stevedore::docker_available())
+  expect_false(is.null(docker_sessionInfo))
 
   #expect that non-base packages are attached
   local_attached <- names(local_sessionInfo$otherPkgs)
   docker_attached <- names(docker_sessionInfo$otherPkgs)
   expect_true(all(local_attached %in% docker_attached))
   expect_true(all(docker_attached %in% local_attached))
-  #check versions
-  local_versions <-
-    sapply(local_sessionInfo$otherPkgs, function(x)
-      x$Version)
-  docker_versions <-
-    sapply(docker_sessionInfo$otherPkgs, function(x)
-      x$Version)
-  expect_equal(local_versions, docker_versions)
+
+  #check versions > no can do, because the local R does not have the same MRAN snapshot
+  #local_versions <- sapply(local_sessionInfo$otherPkgs, function(x) x$Version)
+  #docker_versions <- sapply(docker_sessionInfo$otherPkgs, function(x) x$Version)
+  #expect_equal(local_versions, docker_versions)
 })
 
 test_that("the packages are loaded via Namespace locally and in Docker (requires updated local packages)", {
-  skip_on_cran()
-  skip_on_travis()
-  skip_if(is.null(docker_sessionInfo))
+  skip_if_not(stevedore::docker_available())
 
-  # FIXME remove rstudioapi from the local packages
+  # remove rstudioapi from the local packages when running test manually
   local_loaded_packages <- Filter(
     f = function(x) { return(x$Package != "rstudioapi") },
     x = local_sessionInfo$loadedOnly)
@@ -183,31 +72,23 @@ test_that("the packages are loaded via Namespace locally and in Docker (requires
   #expect that same base and non-base packages loaded via namespace
   local_loaded <- names(local_loaded_packages)
   docker_loaded <- names(docker_sessionInfo$loadedOnly)
-  expect_true(all(local_loaded %in% docker_loaded))
-  expect_true(all(docker_loaded %in% local_loaded))
+  expect_equal(local_loaded, docker_loaded)
 
-  local_versions <- sapply(local_loaded_packages, function(x) x$Version)
-  docker_versions <- sapply(docker_sessionInfo$loadedOnly, function(x) x$Version)
-  expect_equal(local_versions, docker_versions)
+  #local_versions <- sapply(local_loaded_packages, function(x) x$Version)
+  #docker_versions <- sapply(docker_sessionInfo$loadedOnly, function(x) x$Version)
+  #expect_equal(local_versions, docker_versions)
 })
 
 test_that("the R versions are the same ", {
-  skip_on_cran()
-  skip_on_travis()
-  skip_if(is.null(docker_sessionInfo))
+  skip_if_not(stevedore::docker_available())
 
-  #expect that same base and non-base packages loaded via namespace
-  expect_equal(local_sessionInfo$R.version$major,
-               docker_sessionInfo$R.version$major)
-  expect_equal(local_sessionInfo$R.version$minor,
-               docker_sessionInfo$R.version$minor)
+  expect_equal(local_sessionInfo$R.version$major, docker_sessionInfo$R.version$major)
+  expect_equal(local_sessionInfo$R.version$minor, docker_sessionInfo$R.version$minor)
 })
 
 test_that("the locales are the same ", {
-  skip_on_cran()
-  skip_on_travis()
-  skip_if(is.null(docker_sessionInfo))
+  skip_if_not(stevedore::docker_available())
 
   skip("not implemented yet")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
-})
+# })

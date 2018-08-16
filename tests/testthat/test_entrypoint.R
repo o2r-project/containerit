@@ -60,10 +60,10 @@ test_that("Entrypoint command is correctly added to Dockerfile as second to last
 })
 
 test_that("Entrypoint command is correctly rendered to file", {
-  the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
+  expect_warning(the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
                    maintainer = NULL, container_workdir = NULL,
                    entrypoint = Entrypoint("top", list("-b")),
-                   cmd = Cmd(params = c("-c")))
+                   cmd = Cmd(params = c("-c"))), "base image")
   tempfile <- file.path(tempdir(), "Dockerfile.entrypoint")
   write(the_dockerfile, file = tempfile)
 

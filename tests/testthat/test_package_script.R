@@ -16,11 +16,15 @@ test_that("an R script can be created with resources of the same folder ",{
   #write(the_dockerfile,"package_script/resources/Dockerfile")
 
   # test run (shoud be fast and not give any errors)
-  image <- containerit:::create_localDockerImage(the_dockerfile, use_workdir = TRUE)
+  image <- docker_build(x = the_dockerfile, use_workdir = TRUE)
 
   client <- stevedore::docker_client()
   runOutput <- client$container$run(image = image, rm = TRUE)
+
   expect_false(is.null(runOutput))
+  expect_match(toString(runOutput$logs), "R version 3.3.2")
+  expect_match(toString(runOutput$logs), "Hello from containerit!")
+
   client$image$remove(name = image, force = TRUE)
 
   expected_file <- readLines("package_script/resources/Dockerfile")
@@ -28,7 +32,7 @@ test_that("an R script can be created with resources of the same folder ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("a workspace with one R script can be packaged ",{
+test_that("a workspace with one R script can be packaged",{
   #This test should result in the same dockerfile as above:
   the_dockerfile <- dockerfile("package_script/resources/",
                 copy = "script_dir",
@@ -37,6 +41,18 @@ test_that("a workspace with one R script can be packaged ",{
                 image = getImageForVersion("3.3.2"))
 
   expected_file <- readLines("package_script/resources/Dockerfile")
+  expect_equal(toString(the_dockerfile), expected_file)
+})
+
+test_that("a workspace with one R script can be packaged if the script file has .r (lowercase) extension",{
+  #This test should result in the same dockerfile as above:
+  the_dockerfile <- dockerfile("package_script/simple_lowercase/",
+                               copy = "script_dir",
+                               cmd = CMD_Rscript("package_script/simple_lowercase/simple_test.r"),
+                               maintainer = "o2r",
+                               image = getImageForVersion("3.3.2"))
+
+  expected_file <- readLines("package_script/simple_lowercase/Dockerfile")
   expect_equal(toString(the_dockerfile), expected_file)
 })
 

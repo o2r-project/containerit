@@ -25,7 +25,7 @@ setClass("Comment",
 #' @examples
 #' # A simple label that occupies one line:
 #' comment <- Comment(text = "this is important to note")
-#' the_dockerfile <- dockerfile(clean_session())
+#' the_dockerfile <- dockerfile(empty_session())
 #' addInstruction(the_dockerfile) <- comment
 #' print(the_dockerfile)
 #'

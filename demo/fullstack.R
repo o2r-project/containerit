@@ -1,7 +1,5 @@
-#' # Demo of full R-based container interaction with containerit and harbor
+#' # Demo of full R-based container interaction with containerit
 
-# devtools::install_github("wch/harbor")
-library("harbor")
 # devtools::install_github("o2r-project/containerit")
 library("containerit")
 
@@ -29,18 +27,6 @@ cmd <- CMD_Rscript("script.R")
 the_dockerfile <- containerit::dockerfile(from = workspace, cmd = cmd, image = getImageForVersion("3.3.3"), copy = "script_dir")
 save(the_dockerfile)
 
-#' Create image with harbor (see also utility function `containerit::docker_build(..)`).
-buildresult <- harbor::docker_cmd(harbor::localhost, "build",
-                                  arg = workspace,
-                                  docker_opts = c("-t", "fullstack-r-demo"),
-                                  capture_text = TRUE
-)
-cat(buildresult)
-# equivalent to containerit::docker_build(dockerfolder = workspace, tag = "fullstack-r-demo")
-
-#' Run the image locally with harbor
-harbor::docker_run(image = "fullstack-r-demo")
-
 #' ------
 
 # devtools::install_github("cboettig/dockermachine")
@@ -59,12 +45,8 @@ system("eval $(docker-machine env machine)")
 
 # FIXME!
 
-#' Run the image in the machine with harbor
-harbor::docker_run(harbor::localhost, "debian:testing", "echo foo")
-
-
 #' Clean up
 machine_stop()
-machien_rm()
+machine_rm()
 
 # knitr::spin("fullstack.R"); unlink("fullstack.md")

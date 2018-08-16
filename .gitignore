@@ -35,3 +35,5 @@ tests/testthat/Rplots\.pdf
 vignettes/sessionInfo\.Rdata
 
 sessionInfo\.Rdata
+
+tests/testthat/v.*\.yaml

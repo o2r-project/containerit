@@ -17,5 +17,4 @@ Returns either a version extracted from a given object or the default version.
 }
 \examples{
 getRVersionTag(from = sessionInfo())
-getRVersionTag()
 }

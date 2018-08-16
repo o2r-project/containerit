@@ -9,7 +9,7 @@ test_that("the same version is returned if it exists", {
 })
 
 test_that("the closest version is returned if the one does not exist", {
-  image <- getImageForVersion("3.2.99")
+  # expect_warning(image <- getImageForVersion("3.2.99"))
   expect_equal(as.character(image), "FROM rocker/r-ver:3.2.5")
 })
 

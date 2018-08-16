@@ -28,11 +28,6 @@
                              lib,
                              version,
                              .package_config))
-        no_apt <<- append(add_apt,
-                          .get_lib_pkgs_names(
-                            lib = lib,
-                            platform = .debian_platform,
-                            config = .package_config))
         add_inst <<- append(add_inst,
                             .get_lib_install_instructions(
                               lib = lib,
