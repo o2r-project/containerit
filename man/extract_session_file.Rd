@@ -17,7 +17,7 @@ Reads a \code{sessionInfo} object from an \code{Rdata} file
 }
 \examples{
 sessionInfo <- sessionInfo()
-file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
+file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
 save(sessionInfo, file = file)
 extract_session_file(file)
 

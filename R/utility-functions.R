@@ -143,7 +143,7 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
 #'
 #' @examples
 #' sessionInfo <- sessionInfo()
-#' file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
+#' file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
 #' save(sessionInfo, file = file)
 #' extract_session_file(file)
 #'
@@ -200,8 +200,8 @@ extract_session_image <- function(docker_image,
       stop("Unable to locate temporary directory: ", local_dir)
 
     #rdata file to which session info shall be written
-    container_tempfile =  file.path(container_dir, "capture.Rdata")
-    local_docker_tempfile = file.path(local_dir, "capture.Rdata")
+    container_tempfile =  file.path(container_dir, "capture.RData")
+    local_docker_tempfile = file.path(local_dir, "capture.RData")
 
     # Write sessioninfo as an object named 'info' to a file
     e1 <- quote(info <- sessionInfo())

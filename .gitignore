@@ -2,7 +2,7 @@
 .Rhistory
 .Rapp.history
 # Session Data files
-.Rdata
+.RData
 # Example code in package build process
 *-Ex.R
 # Output files from R CMD build
@@ -32,8 +32,8 @@ tests/testthat/package_markdown/units/*\.html
 
 tests/testthat/Rplots\.pdf
 
-vignettes/sessionInfo\.Rdata
+vignettes/sessionInfo\.RData
 
-sessionInfo\.Rdata
+sessionInfo\.RData
 
 tests/testthat/v.*\.yaml

@@ -1,9 +1,9 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-context("Packaging sessionInfo saved in .Rdata file")
+context("Packaging sessionInfo saved in .RData file")
 
 # create the test data, also a good way to understand what information from session info is actually used!
-rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
 
 test_info <- list()
 test_info$R.version <- list()
@@ -97,7 +97,7 @@ test_that("R version can be retrieved from session_info", {
 })
 
 test_that("error if Rdata file contains more than one object", {
-  file <- tempfile(tmpdir = tempdir(), fileext = ".Rdata")
+  file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
   a <- "1"
   b <- "2"
   save(a, test_info, b, file = file)
@@ -109,13 +109,13 @@ test_that("Matching image can be retrieved from sessionInfo, with a warning", {
   expect_equal(toString(image), "FROM rocker/r-ver:3.1.0")
 })
 
-test_that("Version tag can be retrieved from sessionInfo.Rdata file", {
+test_that("Version tag can be retrieved from sessionInfo.RData file", {
   ver <- getRVersionTag(rdata_file)
   expect_equal(ver, "1.2.3")
 })
 
 test_that("Object name 'sessioninfo' is accepted.", {
-  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   sessioninfo <- test_info
   sessioninfo$R.version <- list(major = "3", minor = "3.3")
   save(sessioninfo, file = rdata_file)
@@ -124,7 +124,7 @@ test_that("Object name 'sessioninfo' is accepted.", {
 })
 
 test_that("Object name 'session_info' is accepted.", {
-  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- test_info
   session_info$R.version <- list(major = "3", minor = "3.3")
   save(session_info, file = rdata_file)
@@ -132,8 +132,8 @@ test_that("Object name 'session_info' is accepted.", {
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
-test_that("Version tag can be retrieved from .Rdata file with session_info", {
-  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+test_that("Version tag can be retrieved from .RData file with session_info", {
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
   ver <- getRVersionTag(rdata_file)
@@ -146,7 +146,7 @@ test_that("Version tag can be retrieved from .Rdata file with session_info", {
 })
 
 test_that("sessioninfo::session_info() is supported", {
-  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
   the_dockerfile <- dockerfile(from = rdata_file)
@@ -154,7 +154,7 @@ test_that("sessioninfo::session_info() is supported", {
 })
 
 test_that("devtools::session_info() is supported", {
-  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".Rdata")
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
   the_dockerfile <- dockerfile(from = rdata_file)

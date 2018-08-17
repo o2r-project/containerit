@@ -196,15 +196,15 @@ It then proceeds to package this file along with all other resources in the dire
 
 You can also save your `sessionInfo()` into an `Rdata` file and create a `Dockerfile` form it.
 The `sessionInfo` object must have the one of the names `sessionInfo`, `sessioninfo`, or `session_info`.
-It must be the only object in the `.Rdata` file.
+It must be the only object in the `.RData` file.
 This is useful when you want to re-create sessions on different machines.
 
 ```{r sessionInfo_Rdata}
 suppressPackageStartupMessages(library("sf"))
 sessionInfo <- sessionInfo()
-save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.Rdata"))
+save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.RData"))
 unloadNamespace("sf")
-the_dockerfile <- dockerfile(from = file.path(temp_workspace, "sessionInfo.Rdata"))
+the_dockerfile <- dockerfile(from = file.path(temp_workspace, "sessionInfo.RData"))
 print(the_dockerfile)
 ```
 
@@ -219,16 +219,16 @@ suppressPackageStartupMessages(library("fortunes"))
 suppressPackageStartupMessages(library("remotes"))
 
 session_info <- devtools::session_info()
-save(session_info, file = file.path(temp_workspace, "session_info_devtools.Rdata"))
+save(session_info, file = file.path(temp_workspace, "session_info_devtools.RData"))
 
 sessioninfo = sessioninfo::session_info()
-save(sessioninfo, file = file.path(temp_workspace, "session_info.Rdata"))
+save(sessioninfo, file = file.path(temp_workspace, "session_info.RData"))
 
 unloadNamespace("abc")
 unloadNamespace("A3")
 
-df_sessioninfo <- dockerfile(from = file.path(temp_workspace, "session_info.Rdata"))
-df_devtools <- dockerfile(from = file.path(temp_workspace, "session_info_devtools.Rdata"))
+df_sessioninfo <- dockerfile(from = file.path(temp_workspace, "session_info.RData"))
+df_devtools <- dockerfile(from = file.path(temp_workspace, "session_info_devtools.RData"))
 ```
 
 ```{r sessioninfo_print}
@@ -259,7 +259,7 @@ print(dockerfile_resources)
 ```
                          
 Including R objects works similar to resources, using the argument `save_image`.
-The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .Rdata file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
+The argument can be set to `TRUE` to save _all_ objects of the current workspace to an .RData file, which is then copied to the container's working directory and loaded on startup (based on `save.image()`).
 
 ```{r save_image, comment=NA}
 the_dockerfile <- dockerfile(save_image = TRUE)

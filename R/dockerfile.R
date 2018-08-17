@@ -31,8 +31,8 @@
 #' @param image (\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 #'      By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.
 #' @param maintainer Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
-#' @param save_image When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.Rdata} file to the container's working directory. The created file in the local working director will not be deleted.
-#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.Rdata")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
+#' @param save_image When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
+#'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.RData")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
 #' \code{save} will be called with \code{envir}.
 #' @param envir The environment for \code{save_image}.
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
@@ -215,7 +215,7 @@ dockerfile <- function(from = utils::sessionInfo(),
     }
 
     # copy additional objects into the container in an Rdata file
-    .filename = ".Rdata"
+    .filename = ".RData"
     if ("save_image_filename" %in% names(save_image)) {
       .filename <- save_image$save_image_filename
     }
