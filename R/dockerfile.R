@@ -428,7 +428,7 @@ dockerfileFromFile <- function(file,
     if (stringr::str_detect(string = file,
                             pattern = stringr::regex(".R$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
-      sessionInfo <- clean_session(file = file,
+      sessionInfo <- clean_session(script_file = file,
                                    echo = !silent,
                                    predetect = predetect)
     } else if (stringr::str_detect(string = file,

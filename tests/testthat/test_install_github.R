@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library(containerit)
-context("install_github")
+context("installation of packages from GitHub")
 
 test_that("GitHub packages can be installed", {
   #get session information from previous installation, created in a vanilla R session with these commands within package root directory:
@@ -16,7 +16,7 @@ test_that("GitHub packages can be installed", {
   expect_equal(generated_file, expected_file)
 })
 
-test_that("GitHub references can be retrieved for package sysreqs (test fails if package was installed from source)", {
+test_that("GitHub references can be retrieved for package sysreqs (test fails if sysreqs was installed from source)", {
   skip_if_not_installed("sysreqs")
   ref <- getGitHubRef("sysreqs", c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
   expect_match(ref, "r-hub/sysreqs@([a-f0-9]{7})")

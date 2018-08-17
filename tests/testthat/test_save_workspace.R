@@ -73,3 +73,6 @@ test_that("Program ignores unsupported input for save_image", {
   expect_s4_class(dockerfile(from = sessionInfo(), save_image = data.frame()), "Dockerfile")
   expect_s4_class(dockerfile(from = sessionInfo(), save_image = matrix()), "Dockerfile")
 })
+
+unlink(".Rdata")
+unlink("test_file.Rdata")

@@ -12,10 +12,8 @@ test_that("an R script can be created with resources of the same folder ",{
                 cmd = CMD_Rscript("package_script/resources/simple_test.R"),
                 maintainer = "o2r",
                 image = getImageForVersion("3.3.2"))
-  #for overwriting
   #write(the_dockerfile,"package_script/resources/Dockerfile")
 
-  # test run (shoud be fast and not give any errors)
   image <- docker_build(x = the_dockerfile, use_workdir = TRUE)
 
   client <- stevedore::docker_client()
@@ -33,7 +31,6 @@ test_that("an R script can be created with resources of the same folder ",{
 })
 
 test_that("a workspace with one R script can be packaged",{
-  #This test should result in the same dockerfile as above:
   the_dockerfile <- dockerfile("package_script/resources/",
                 copy = "script_dir",
                 cmd = CMD_Rscript("package_script/resources/simple_test.R"),
@@ -129,15 +126,22 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
 })
 
 test_that("packaging works if library from script is missing but predetection is enabled", {
-  skip_on_cran() # cannot remove packages on CRAN
-  if (requireNamespace("boxoffice", quietly = TRUE)) {
-    remove.packages(pkgs = c("boxoffice"))
-  }
+  skip_on_cran() # CRAN knows all the packages
 
-  # this will re-install the package again:
-  the_dockerfile <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r", predetect = TRUE)
+  # install package to new library path
+  test_lib_path <- tempfile("test_lib_")
+  dir.create(test_lib_path)
+  generated_file <- callr::r_vanilla(function() {
+    library("containerit")
+    the_dockerfile <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r", predetect = TRUE)
+    generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+    generated_file
+  }, libpath = c(test_lib_path, .libPaths()), repos = "http://cloud.r-project.org")
+  expect_equal(list.files(test_lib_path), c("boxoffice"))
+
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("^RUN.*\"boxoffice\"", x = toString(the_dockerfile))), info = "Packages missing are detected")
+  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = toString(the_dockerfile))), info = "Packages missing are detected")
+
+  unlink(test_lib_path)
 })

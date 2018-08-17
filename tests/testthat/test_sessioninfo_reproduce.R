@@ -91,4 +91,4 @@ test_that("the locales are the same ", {
 
   skip("not implemented yet")
   #expect_equal(local_sessionInfo$locale, docker_sessionInfo$locale)
-# })
+})

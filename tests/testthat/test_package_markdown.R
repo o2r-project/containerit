@@ -81,24 +81,32 @@ test_that("File copying can be disabled with NULL", {
 })
 
 test_that("Packaging fails if dependency is missing and predetection is disabled", {
-  skip_on_cran() # cannot remove packages on CRAN
-  skip("FIXME need a better way to test then using plm")
-  if (requireNamespace("plm", quietly = TRUE)) {
-    remove.packages(pkgs = c("plm"))
-  }
-  expect_error(dockerfile(from = "package_markdown/spacetime/", predetect = FALSE), "Failed to execute")
+  skip_on_cran() # CRAN knows all packages
+  expect_error(dockerfile(from = "package_markdown/missing_dependency/", predetect = FALSE), "there is no package")
 })
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
-  skip("error removing the package during running tests...")
   skip_on_cran() # cannot remove packages on CRAN
-  if (requireNamespace("plm", quietly = TRUE)) {
-    remove.packages(pkgs = c("plm"))
-  }
-  # this will re-install the package plm again:
-  the_dockerfile <- dockerfile(from = "package_markdown/spacetime/", maintainer = "o2r", predetect = TRUE)
-  expected_file <- readLines("package_markdown/spacetime/Dockerfile")
+
+  expect_error(library("abe"))
+
+  # install package to new library path
+  test_lib_path <- tempfile("test_lib_")
+  dir.create(test_lib_path)
+  the_dockerfile <- callr::r_vanilla(function() {
+    library("containerit")
+    the_dockerfile <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
+    the_dockerfile
+  }, libpath = c(test_lib_path, .libPaths()), repos = "http://cloud.r-project.org")
+
+  expect_s4_class(the_dockerfile, "Dockerfile")
+  expect_equal(list.files(test_lib_path), c("abe", "boxoffice"))
+  expect_error(library("abe"))
+
   generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
-  expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("\"plm\"", x = toString(the_dockerfile))), info = "Packages missing in the base image are detected")
+  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
+  expect_true(object = any(grepl("^RUN.*install2.*\"abe\"", x = generated_file)), info = "Packages missing are detected")
+
+  unlink(test_lib_path)
+  unlink("package_markdown/missing_dependency/*.md")
 })

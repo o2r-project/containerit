@@ -4,23 +4,26 @@
 \alias{clean_session}
 \title{Obtains a \code{sessionInfo} from a local R session}
 \usage{
-clean_session(expr = c(), file = NULL, rmd_file = NULL,
+clean_session(expr = c(), script_file = NULL, rmd_file = NULL,
   echo = FALSE, predetect = TRUE,
-  repos = "http://cloud.r-project.org", cmd = Sys.getenv("R_HOME"))
+  repos = "http://cloud.r-project.org")
 }
 \arguments{
 \item{expr}{vector of expressions to be executed in the session (see \code{\link{quote}})}
 
-\item{file}{R script to be executed in the session, uses \code{\link{source}}}
+\item{script_file}{R script to be executed in the session, uses \code{\link{source}}}
+
+\item{rmd_file}{R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}}
 
 \item{echo}{print out detailed information from R}
 
-\item{file_rmd}{R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}}
+\item{predetect}{whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file}
 
-\item{pretedect}{whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file}
+\item{repos}{Repository to use, requried if \code{expr} incluedes install statements}
 }
 \description{
 The function may also execute provided expressions or files.
+The implementation is based on \code{\link[callr]{r_vanilla}}.
 }
 \examples{
 clean_session(c(quote(library('lattice'))))

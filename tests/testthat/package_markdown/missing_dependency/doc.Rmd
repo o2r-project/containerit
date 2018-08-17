@@ -1,0 +1,14 @@
+---
+title: "Test missing dependency"
+author: "Daniel Nüst"
+date: "August 17, 2018"
+output: md_document
+---
+
+```{r boxoffice}
+library("boxoffice")
+```
+
+```{r abe}
+library(abe)
+```

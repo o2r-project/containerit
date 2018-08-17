@@ -2,33 +2,35 @@
 % Please edit documentation in R/utility-functions.R
 \name{extract_session_image}
 \alias{extract_session_image}
-\title{Optains a session info from R executed in a container using the given Docker image and expressions}
+\title{Optains a session info from R executed in a container}
 \usage{
 extract_session_image(docker_image, expr = c(), container_dir = "/tmp",
-  local_dir = tempfile(pattern = "dir"), deleteTempfiles = TRUE,
-  container_name = "containerit_capturer")
+  local_dir = tempfile(pattern = "extract_bind_"),
+  deleteTempfiles = TRUE, container_name = "containerit_capturer")
 }
 \arguments{
 \item{docker_image}{The name of the Docker image to run}
 
-\item{expr}{optional list of expressions to be executed in the session}
+\item{expr}{A list of expressions to be executed in the session}
 
 \item{container_dir}{The directory in the container where a local temp directory is mounted to, for saving the session info to a file (in lack of a COPY instruction)}
 
-\item{container_name}{The name used to run the container (which will be removed at the end)}
+\item{local_dir}{The local directory mounted into the container}
 
-\item{file}{optional R script to be executed in the session (uses source-function)}
+\item{deleteTempfiles}{Remove used \code{local_dir} directory when done}
+
+\item{container_name}{The name used to run the container (which will be removed at the end)}
 }
 \value{
 An object of class session info
 }
 \description{
-Optains a session info from R executed in a container using the given Docker image and expressions
+The function uses the given Docker image and executes the given expressions.
+To access the session information, a directory is mounted from the host into the container, to which the R session in the container saves an RData file with the sessionInfo object.
 }
 \note{
 This function was created for test purposes in order to compare sessionInfos.
 }
 \examples{
-si <- extract_session("rocker/geospatial:3.3.3")
-
+extract_session_image("rocker/geospatial:3.3.3")
 }

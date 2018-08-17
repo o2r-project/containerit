@@ -11,9 +11,7 @@ test_that("dockerfile object can be saved to file", {
   dfile <- dockerfile(from = NULL, maintainer = NULL, image = getImageForVersion("3.4.1"))
   write(dfile, file = gen_file)
 
-  control_file <- "./Dockerfile"
-  control_instructions <- readLines(control_file)
-
+  control_instructions <- readLines("Dockerfile.savetest")
   generated_instructions <- readLines(gen_file)
   expect_equal(control_instructions, generated_instructions)
 
@@ -21,8 +19,7 @@ test_that("dockerfile object can be saved to file", {
 })
 
 test_that("users can specify the maintainer", {
-  maintainer <-
-    methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
+  maintainer <- methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
   dfile <- dockerfile(NULL, maintainer = maintainer)
 
   expect_is(slot(dfile, "maintainer"), "Maintainer")
@@ -30,7 +27,6 @@ test_that("users can specify the maintainer", {
   expect_equal(attr(class(mslot), "package"), "containerit")
   expect_equal(slot(mslot, "name"), "Matthias Hinz")
   expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
-  #expect Maintainer instruction
   expect_equal(toString(mslot),
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 })

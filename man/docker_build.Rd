@@ -14,7 +14,7 @@ docker_build(x, tag, ...)
 
 \method{docker_build}{Dockerfile}(x, tag = strsplit(tempfile(pattern =
   "containerit_test_", tmpdir = ""), "/")[[1]][2], use_workdir = FALSE,
-  clean_up = TRUE)
+  clean_up = TRUE, ...)
 }
 \arguments{
 \item{x}{the path to a directory with a valid \code{Dockerfile} (i.e. the \code{context}), or a \code{Dockerfile} object}
@@ -27,7 +27,7 @@ docker_build(x, tag, ...)
 
 \item{use_workdir}{if a \code{\link{Dockerfile}} object is given, this can set the context to the current working directory (if \code{TRUE}) or a temporary directory (default)}
 
-\item{context}{Local location of build directory including valid Dockerfile}
+\item{clean_up}{if \code{use_workdir}, then delete the Dockerfile file in the working directory, otherwise remove the Dockerfile created as a temporary file}
 }
 \value{
 The id of the image

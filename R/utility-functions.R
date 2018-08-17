@@ -18,7 +18,6 @@ docker_build <- function(x,
   UseMethod("docker_build", x)
 }
 
-#' @param context Local location of build directory including valid Dockerfile
 #' @param the_dockerfile Name of the \code{Dockerfile}, defaults to "Dockerfile"
 #' @rdname docker_build
 #' @export
@@ -30,7 +29,6 @@ docker_build.character <- function(x,
   stopifnot(stevedore::docker_available())
   stopifnot(file.exists(file.path(x, the_dockerfile)))
 
-
   client <- stevedore::docker_client(... = ...)
   buildoutput <- client$image$build(context = x, tag = tag, dockerfile = the_dockerfile)
   futile.logger::flog.debug("Build image %s", buildoutput$name())
@@ -39,12 +37,14 @@ docker_build.character <- function(x,
 }
 
 #' @param use_workdir if a \code{\link{Dockerfile}} object is given, this can set the context to the current working directory (if \code{TRUE}) or a temporary directory (default)
+#' @param clean_up if \code{use_workdir}, then delete the Dockerfile file in the working directory, otherwise remove the Dockerfile created as a temporary file
 #' @rdname docker_build
 #' @export
 docker_build.Dockerfile <- function(x,
                                     tag = strsplit(tempfile(pattern = "containerit_test_", tmpdir = ""), "/")[[1]][2],
                                     use_workdir = FALSE,
-                                    clean_up = TRUE) {
+                                    clean_up = TRUE,
+                                    ...) {
   context <- NULL
   if (use_workdir) {
     context <- getwd()
@@ -168,12 +168,16 @@ extract_session_file <- function(file) {
   return(the_info)
 }
 
-#' Optains a session info from R executed in a container using the given Docker image and expressions
+#' Optains a session info from R executed in a container
+#'
+#' The function uses the given Docker image and executes the given expressions.
+#' To access the session information, a directory is mounted from the host into the container, to which the R session in the container saves an RData file with the sessionInfo object.
 #'
 #' @param docker_image The name of the Docker image to run
-#' @param expr optional list of expressions to be executed in the session
+#' @param expr A list of expressions to be executed in the session
 #' @param container_dir The directory in the container where a local temp directory is mounted to, for saving the session info to a file (in lack of a COPY instruction)
-#' @param file optional R script to be executed in the session (uses source-function)
+#' @param local_dir The local directory mounted into the container
+#' @param deleteTempfiles Remove used \code{local_dir} directory when done
 #' @param container_name The name used to run the container (which will be removed at the end)
 #'
 #' @note
@@ -186,7 +190,7 @@ extract_session_file <- function(file) {
 extract_session_image <- function(docker_image,
                                   expr = c(),
                                   container_dir = "/tmp",
-                                  local_dir = tempfile(pattern = "dir"),
+                                  local_dir = tempfile(pattern = "extract_bind_"),
                                   deleteTempfiles = TRUE,
                                   container_name = "containerit_capturer") {
   result = tryCatch({
@@ -266,8 +270,6 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
   return(unlist(as.character(expr)))
 }
 
-
-
 #' Creates an empty R session
 #'
 #' @return An object of class \code{sessionInfo}
@@ -276,38 +278,39 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
 #'
 #' @export
 empty_session <- function() {
-  clean_session(expr = c(), file = NULL, echo = FALSE)
+  clean_session()
 }
 
 #' Obtains a \code{sessionInfo} from a local R session
 #'
 #' The function may also execute provided expressions or files.
+#' The implementation is based on \code{\link[callr]{r_vanilla}}.
 #'
 #' @param expr vector of expressions to be executed in the session (see \code{\link{quote}})
-#' @param file R script to be executed in the session, uses \code{\link{source}}
-#' @param file_rmd R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}
+#' @param script_file R script to be executed in the session, uses \code{\link{source}}
+#' @param rmd_file R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}
 #' @param echo print out detailed information from R
-#' @param pretedect whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file
+#' @param predetect whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file
+#' @param repos Repository to use, requried if \code{expr} incluedes install statements
 #' @importFrom utils installed.packages install.packages
 #' @export
 #' @examples
 #' clean_session(c(quote(library('lattice'))))
 clean_session <- function(expr = c(),
-                          file = NULL,
+                          script_file = NULL,
                           rmd_file = NULL,
                           echo = FALSE,
                           predetect = TRUE,
-                          repos = "http://cloud.r-project.org",
-                          cmd = Sys.getenv("R_HOME")) {
+                          repos = "http://cloud.r-project.org") {
   #append commands to create a local sessionInfo
   required_pkgs <- c()
-  if (!is.null(file) && file.exists(file)) {
-    expr <- append(expr, call("source", file = file, echo = echo))
+  if (!is.null(script_file) && file.exists(script_file)) {
+    expr <- append(expr, call("source", file = script_file, echo = echo))
 
     if (predetect) {
-      required_pkgs <- automagic::parse_packages(file)
+      required_pkgs <- automagic::parse_packages(script_file)
       futile.logger::flog.debug("Analysed input file %s and found required packages: %s",
-                                file, toString(required_pkgs))
+                                script_file, toString(required_pkgs))
     }
   }
 
