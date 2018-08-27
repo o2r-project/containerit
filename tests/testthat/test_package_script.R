@@ -141,7 +141,7 @@ test_that("packaging works if library from script is missing but predetection is
 
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
   expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = toString(the_dockerfile))), info = "Packages missing are detected")
+  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
 
   unlink(test_lib_path)
 })

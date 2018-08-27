@@ -31,10 +31,39 @@ test_that("list of installed packages can be filtered when creating a Dockerfile
                    filter_baseimage_pkgs = TRUE)
   the_dockerfile_string <- toString(the_dockerfile)
 
-  expect_true(object = any(grepl("# Packages skipped", x = the_dockerfile_string)), info = "Packages skipped are mentioned in a comment")
+  expect_true(object = any(grepl("# CRAN packages skipped", x = the_dockerfile_string)), info = "Packages skipped are mentioned in a comment")
   expect_true(object = any(grepl("^#.*rgdal", x = the_dockerfile_string)), info = "rgdal")
   expect_true(object = any(grepl("^#.*spData", x = the_dockerfile_string)), info = "spData")
 
   unlink("package_markdown/sfr/nc1.*")
   unlink("package_markdown/sfr/*.html")
+})
+
+test_that("filtered list of installed packages does not filter GitHub packages", {
+  # created sessionInfo file:
+  # $  docker run --rm -it -v $(pwd):/data rocker/geospatial:3.5.1 R
+  # R> devtools::install_github("o2r-project/containerit")
+  # R> devtools::install_github("tidyverse/ggplot2", ref ="v3.0.0")
+  # R> library("ggplot2")
+  # R> sessionInfo <- sessionInfo()
+  # R> save(sessionInfo, file = "/data/sessionInfo.RData")
+
+  the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
+                               maintainer = "o2r",
+                               image = "rocker/geospatial:3.5.1",
+                               filter_baseimage_pkgs = TRUE)
+  the_dockerfile_string <- toString(the_dockerfile)
+
+  expect_false(object = any(grepl("^# CRAN packages skipped.*ggplot", x = the_dockerfile_string)), info = "ggplot is not skipped")
+  expect_true(object = any(grepl("^RUN.*installGithub.*tidyverse/ggplot2", x = the_dockerfile_string)), info = "ggplot is in installGithub command")
+})
+
+test_that("filtered list of installed packages is alphabetical", {
+  the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
+                               maintainer = "o2r",
+                               image = "rocker/geospatial:3.5.1",
+                               filter_baseimage_pkgs = TRUE)
+  the_dockerfile_string <- toString(the_dockerfile)
+
+  expect_true(object = any(grepl("^# CRAN packages skipped.*assertthat.*curl.*digest.*rlang.*withr", x = the_dockerfile_string)))
 })

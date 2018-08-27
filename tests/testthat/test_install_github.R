@@ -5,8 +5,8 @@ context("installation of packages from GitHub")
 
 test_that("GitHub packages can be installed", {
   #get session information from previous installation, created in a vanilla R session with these commands within package root directory:
-  #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo.RData")
-  load("./github/sessionInfo.RData")
+  #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo2.RData")
+  load("./github/sessionInfo2.RData")
 
   the_dockerfile <- dockerfile(github_test_sessionInfo, maintainer = "o2r", image = getImageForVersion("3.3.2"))
   #write(the_dockerfile,"./github/Dockerfile")
