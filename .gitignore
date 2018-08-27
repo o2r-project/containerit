@@ -39,3 +39,5 @@ sessionInfo\.RData
 tests/testthat/v.*\.yaml
 
 v1.*\.yaml
+
+tests/testthat/package_markdown/sfr/nc1.*
