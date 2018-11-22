@@ -25,7 +25,7 @@ close(fileConn)
 setwd(workspace)
 cmd <- CMD_Rscript("script.R")
 the_dockerfile <- containerit::dockerfile(from = workspace, cmd = cmd, image = getImageForVersion("3.3.3"), copy = "script_dir")
-save(the_dockerfile)
+save(the_dockerfile,file = tempfile(fileext = ".dockerfile"))
 
 #' ------
 
