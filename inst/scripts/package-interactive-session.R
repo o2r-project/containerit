@@ -5,9 +5,9 @@ containeritAddIn <- function(){
     miniUI::gadgetTitleBar("Docker file creation"),
     miniUI::miniContentPanel(
       shiny::textInput("text",NULL, 
-                value = paste0(getwd(),"/dockerfile.dockerfile")),
+                value = paste0(getwd(),"/Dockerfile")),
       shinyFiles::shinySaveButton("save", "Select file", "Save file as ...", 
-                filetype=list(dockerfile="dockerfile"))
+                filetype=list(dockerfile="Dockerfile"))
     )
   )
   
