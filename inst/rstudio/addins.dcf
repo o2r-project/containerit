@@ -1,3 +1,4 @@
-Name: Container It
-Description: 
-Binding: rstudio_containerit
+Name: Interactive Session
+Description: Create dockerfile from interactive session
+Binding: containerit_addin
+Interactive: true

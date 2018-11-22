@@ -79,6 +79,7 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
+    'addin.R'
     'baseimages.R'
     'containerit-config.R'
     'containerit.R'
@@ -87,6 +88,7 @@ Collate:
     'package-installation-bespoke.R'
     'package-installation-methods.R'
     'utility-functions.R'
+    'utils.R'
     'rstudio_containerit.R'
 Remotes: github::r-hub/sysreqs,
     github::richfitz/stevedore

@@ -5,14 +5,21 @@ containeritAddIn <- function(){
   ui <- miniPage(
     gadgetTitleBar("Docker file creation"),
     miniContentPanel(
-      textInput(dockerfilename, label, value = "", width = NULL, placeholder = NULL)
-      # fileInput("dockerfilename", "Save .dockerfile", accept=".dockerfile")
+      textInput("text",NULL, 
+                value = paste0(getwd(),"/dockerfile.dockerfile")),
+      shinySaveButton("save", "Select file", "Save file as ...", 
+                filetype=list(dockerfile="dockerfile"))
     )
   )
   
   
   server <- function(input, output, session){
-    shinyFileSave()
+    observeEvent(input$save,{
+      volumes <- c("UserFolder"=getwd())
+      shinyFileSave(input, "save", roots=volumes, session=session)
+      fileinfo <- parseSavePath(volumes, input$save)
+      updateTextInput(session, "text", value = fileinfo$datapath)
+    })
     observeEvent(input$done, {
       
       # Here is where your Shiny application might now go an affect the
@@ -20,6 +27,12 @@ containeritAddIn <- function(){
       #
       # At the end, your application should call 'stopApp()' here, to ensure that
       # the gadget is closed after 'done' is clicked.
+      
+      # Create docker file
+      dockerfile_object <- dockerfile()
+      # Output to desired path
+      write(dockerfile_object, file = input$text)
+      # Exit
       stopApp()
     })
     
