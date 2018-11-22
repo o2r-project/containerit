@@ -1,26 +1,25 @@
 ## GUI - package_interactive_session
-
 containeritAddIn <- function(){
   
-  ui <- miniPage(
-    gadgetTitleBar("Docker file creation"),
-    miniContentPanel(
-      textInput("text",NULL, 
+  ui <- miniUI::miniPage(
+    miniUI::gadgetTitleBar("Docker file creation"),
+    miniUI::miniContentPanel(
+      shiny::textInput("text",NULL, 
                 value = paste0(getwd(),"/dockerfile.dockerfile")),
-      shinySaveButton("save", "Select file", "Save file as ...", 
+      shinyFiles::shinySaveButton("save", "Select file", "Save file as ...", 
                 filetype=list(dockerfile="dockerfile"))
     )
   )
   
   
   server <- function(input, output, session){
-    observeEvent(input$save,{
-      volumes <- c("UserFolder"=getwd())
-      shinyFileSave(input, "save", roots=volumes, session=session)
-      fileinfo <- parseSavePath(volumes, input$save)
-      updateTextInput(session, "text", value = fileinfo$datapath)
+    shiny::observeEvent(input$save,{
+      volumes <- c("Working directory"=getwd(),"Home Directory"="~")
+      shinyFiles::shinyFileSave(input, "save", roots=volumes, session=session)
+      fileinfo <- shinyFiles::parseSavePath(volumes, input$save)
+      shiny::updateTextInput(session, "text", value = fileinfo$datapath)
     })
-    observeEvent(input$done, {
+    shiny::observeEvent(input$done, {
       
       # Here is where your Shiny application might now go an affect the
       # contents of a document open in RStudio, using the `rstudioapi` package.
@@ -28,17 +27,20 @@ containeritAddIn <- function(){
       # At the end, your application should call 'stopApp()' here, to ensure that
       # the gadget is closed after 'done' is clicked.
       
+      # Exit app first
+      shiny::stopApp()
       # Create docker file
-      dockerfile_object <- dockerfile()
+      dockerfile_object <- containerit::dockerfile()
       # Output to desired path
-      write(dockerfile_object, file = input$text)
-      # Exit
-      stopApp()
+      containerit::write(dockerfile_object, file = input$text)
+      
     })
     
   }
 
   
-  viewer <- dialogViewer(dialogName = "containerit")
-  runGadget(ui, server, viewer = viewer)
+  viewer <- shiny::dialogViewer(dialogName = "containerit")
+  shiny::runGadget(ui, server, viewer = viewer)
 }
+
+containeritAddIn()
