@@ -22,7 +22,11 @@ Imports:
     sessioninfo,
     stevedore,
     versions,
-    callr
+    callr,
+    rstudioapi,
+    shiny,
+    miniUI,
+    shinyFiles
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
@@ -76,6 +80,7 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
+    'addin.R'
     'baseimages.R'
     'containerit-config.R'
     'containerit.R'
@@ -84,5 +89,7 @@ Collate:
     'package-installation-bespoke.R'
     'package-installation-methods.R'
     'utility-functions.R'
+    'utils.R'
+    'rstudio_containerit.R'
 Remotes: github::r-hub/sysreqs,
     github::richfitz/stevedore
