@@ -17,7 +17,9 @@ containeritAddIn <- function(){
       volumes <- c("Working directory"=getwd(),"Home Directory"="~")
       shinyFiles::shinyFileSave(input, "save", roots=volumes, session=session)
       fileinfo <- shinyFiles::parseSavePath(volumes, input$save)
-      shiny::updateTextInput(session, "text", value = fileinfo$datapath)
+      if(length(fileinfo$datapath)!=0) {
+        shiny::updateTextInput(session, "text", value = fileinfo$datapath)
+      }
     })
     shiny::observeEvent(input$done, {
       
