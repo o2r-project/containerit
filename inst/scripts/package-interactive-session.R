@@ -4,12 +4,17 @@ containeritAddIn <- function(){
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Docker file creation"),
     miniUI::miniContentPanel(
-      shiny::textInput("text",NULL, 
-                value = paste0(getwd(),"/dockerfile.dockerfile")),
-      shinyFiles::shinySaveButton("save", "Select file", "Save file as ...", 
-                filetype=list(dockerfile="dockerfile"))
+      shiny::fillRow(
+        shiny::textInput("text",NULL, 
+                  value = paste0(getwd(),"/dockerfile.dockerfile")),
+        shinyFiles::shinySaveButton("save", "Select file", "Save file as ...", 
+                  filetype=list(dockerfile="dockerfile")),
+        height = '50px'
+        ),
+        shiny::checkboxInput("saveimage", "Save global R objects to dockerfile", TRUE)
+      )
     )
-  )
+  
   
   
   server <- function(input, output, session){
@@ -32,7 +37,7 @@ containeritAddIn <- function(){
       # Exit app first
       shiny::stopApp()
       # Create docker file
-      dockerfile_object <- containerit::dockerfile()
+      dockerfile_object <- containerit::dockerfile(save_image=input$saveimage)
       # Output to desired path
       containerit::write(dockerfile_object, file = input$text)
       
