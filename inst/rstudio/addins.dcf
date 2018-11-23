@@ -12,3 +12,8 @@ Name: From list of expressions
 Description: Create dockerfile from a list of expressions
 Binding: fromexpressions_addin
 Interactive: true
+
+Name: From workspace directory
+Description: Create dockerfile from a workspace directory
+Binding: workspaceDirectory_addin
+Interactive: true
