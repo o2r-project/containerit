@@ -9,3 +9,7 @@ fromfile_addin = function() {
 fromexpressions_addin = function() {
   sys.source(pkg_file('scripts','package-expressions.R'))
 }
+
+workspaceDirectory_addin = function() {
+  sys.source(pkg_file('scripts','package-workspace-directory.R'))
+}
