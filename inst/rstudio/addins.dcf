@@ -1,4 +1,9 @@
 Name: Interactive Session
 Description: Create dockerfile from interactive session
-Binding: containerit_addin
+Binding: interactive_addin
+Interactive: true
+
+Name: From File
+Description: Create dockerfile from file
+Binding: fromfile_addin
 Interactive: true

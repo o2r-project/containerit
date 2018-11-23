@@ -1,5 +1,5 @@
 ## GUI - package_interactive_session
-containeritAddIn <- function(){
+interactiveAddIn <- function(){
   
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Docker file creation"),
@@ -50,4 +50,4 @@ containeritAddIn <- function(){
   shiny::runGadget(ui, server, viewer = viewer)
 }
 
-containeritAddIn()
+interactiveAddIn()
