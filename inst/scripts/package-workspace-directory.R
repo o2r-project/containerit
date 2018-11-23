@@ -3,7 +3,7 @@
 
 # modified shinyDir button to fit inside miniPage
 
-workspaceAddIn <- function(){
+workspaceDirectory_addin <- function(){
   
   ui <- miniUI::miniPage(
     scrollable = TRUE,
@@ -24,14 +24,14 @@ workspaceAddIn <- function(){
   
   server <- function(input, output, session){
     
-    path <- reactiveValues(data = NULL) #set to wd?
-    dockerfilename <- reactiveValues(data = NULL) 
+    path <- shiny::reactiveValues(data = NULL) #set to wd?
+    dockerfilename <- shiny::reactiveValues(data = NULL) 
     
-    observeEvent(input$choose_dir, {
+    shiny::observeEvent(input$choose_dir, {
       path$data <- rstudioapi::selectDirectory() # capture user's path entry
       filename<- gsub(".*/","",path$data) # extract the name of the dir
       dockerfilename$data <- paste0(path$data,"/",filename,".dockerfile")
-      output$outputfilepath <- renderText({path$data})
+      output$outputfilepath <- shiny::renderText({path$data})
     })
     
     
@@ -55,4 +55,4 @@ workspaceAddIn <- function(){
   shiny::runGadget(ui, server, viewer = viewer)
 }
 
-workspaceAddIn()
+workspaceDirectory_addin()
