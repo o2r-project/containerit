@@ -1,4 +1,4 @@
-## GUI - package_interactive_session
+## GUI - package_load_file
 fromFileAddIn <- function(){
   
   determineDockerFunctionArguments <- function(input_filename) {
@@ -29,7 +29,7 @@ fromFileAddIn <- function(){
   
   
   ui <- miniUI::miniPage(
-    miniUI::gadgetTitleBar("Docker file creation"),
+    miniUI::gadgetTitleBar("Dockerfile creation"),
     miniUI::miniContentPanel(
       shiny::fillCol(
         flex = c(1,2,1,8),

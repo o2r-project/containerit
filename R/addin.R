@@ -5,3 +5,7 @@ interactive_addin = function() {
 fromfile_addin = function() {
   sys.source(pkg_file('scripts','package-load-file.R'))
 }
+
+fromexpressions_addin = function() {
+  sys.source(pkg_file('scripts','package-expressions.R'))
+}

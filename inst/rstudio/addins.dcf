@@ -1,9 +1,14 @@
-Name: Interactive Session
+Name: From interactive session
 Description: Create dockerfile from interactive session
 Binding: interactive_addin
 Interactive: true
 
-Name: From File
+Name: From file
 Description: Create dockerfile from file
 Binding: fromfile_addin
+Interactive: true
+
+Name: From list of expressions
+Description: Create dockerfile from a list of expressions
+Binding: fromexpressions_addin
 Interactive: true

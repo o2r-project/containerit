@@ -1,17 +1,25 @@
-## GUI - package_interactive_session
-interactiveAddIn <- function(){
+## GUI - package_expressions
+expressionsAddIn <- function(){
   
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Dockerfile creation"),
     miniUI::miniContentPanel(
+      shiny::p(shiny::strong("Create a .dockerfile file from a list of expressions")),
+      shiny::p("Input a vector of expressions. For example;"),
+      shiny::p(shiny::code(
+                "c( expression(library(sp)),
+                expression(data(meuse)), 
+                expression(mean(meuse[[\"zinc\"]])) )")),
+      shiny::p("For more information see the getting
+               started page at https://o2r.info/containerit/articles/containerit.html."),
+      shiny::textAreaInput("expressions", "List of Expressions", "", height="240px", width="500px"),
       shiny::fillRow(
         shiny::textInput("text",NULL, 
                   value = paste0(getwd(),"/dockerfile.dockerfile")),
-        shinyFiles::shinySaveButton("save", "Select file", "Save file as ...", 
+        shinyFiles::shinySaveButton("save", "Save as...", "Save file as ...", 
                   filetype=list(dockerfile="dockerfile")),
         height = '50px'
-        ),
-        shiny::checkboxInput("saveimage", "Save global R objects to dockerfile", TRUE)
+        )
       )
     )
   
@@ -34,13 +42,15 @@ interactiveAddIn <- function(){
       # At the end, your application should call 'stopApp()' here, to ensure that
       # the gadget is closed after 'done' is clicked.
       
-      # Exit app first
-      shiny::stopApp()
+      # Create the session object
+      session <- containerit::clean_session(input$expressions, echo = TRUE)
       # Create docker file
-      dockerfile_object <- containerit::dockerfile(save_image=input$saveimage)
+      dockerfile_object <- containerit::dockerfile(from=session)
       # Output to desired path
       containerit::write(dockerfile_object, file = input$text)
       
+      # Exit app
+      shiny::stopApp()
     })
     
   }
@@ -50,4 +60,4 @@ interactiveAddIn <- function(){
   shiny::runGadget(ui, server, viewer = viewer)
 }
 
-interactiveAddIn()
+expressionsAddIn()
