@@ -11,7 +11,7 @@ fromFileAddIn <- function(){
     output <- list()
     if (grepl(".R$",input_filename)) {
       output[['output_filename']] <- gsub(".R$",".dockerfile",input_filename)
-      output[['cmd']] <- containerit::CMD_Rscript(input_filename)
+      output[['cmd']] <- containerit::CMD_Rscript(basename(input_filename))
       
     } else if (grepl(".Rmd$",input_filename)) {
       output[['output_filename']] <- gsub(".Rmd$",".dockerfile",input_filename)
@@ -72,9 +72,6 @@ fromFileAddIn <- function(){
       # At the end, your application should call 'stopApp()' here, to ensure that
       # the gadget is closed after 'done' is clicked.
       
-      # Exit app first
-      shiny::stopApp()
-      
       # Throw error if nothing entered
       if (nchar(input$filename) == 0) {
          stop("No file selected")
@@ -82,12 +79,26 @@ fromFileAddIn <- function(){
 
       # Convert to an output file
       fn_args <- determineDockerFunctionArguments(input$filename)
+      # Store current directory
+      curr_dir <- getwd()
+      # Change to script directory
+      setwd(dirname(input$filename))
       # Create docker file
       dockerfile_object <- containerit::dockerfile(from=input$filename,
-                                                   cmd=fn_args[['cmd']])
+                                                   copy = "script",
+                                                   cmd=fn_args[['cmd']]
+                                                   )
       # Output to desired path
       containerit::write(dockerfile_object, file = fn_args[['output_filename']])
-      
+      # Change back to original directory
+      setwd(curr_dir)
+      # Output docker instructions
+      cat("\nInstructions to run docker container from command line:\n")
+      print(
+        c(paste("docker build -t [tag] -f",basename(fn_args[['output_filename']])),
+        "docker run -it [tag]") )
+      # Exit app
+      shiny::stopApp()
     })
     
   }
