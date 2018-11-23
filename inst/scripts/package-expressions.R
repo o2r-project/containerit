@@ -48,6 +48,11 @@ expressionsAddIn <- function(){
       dockerfile_object <- containerit::dockerfile(from=session)
       # Output to desired path
       containerit::write(dockerfile_object, file = input$text)
+      # Output docker instructions
+      cat("\nInstructions to run docker container from command line:\n")
+      print(
+        c(paste("docker build . -t [tag] -f",basename(input$text)),
+          "docker run -it [tag]") )
       
       # Exit app
       shiny::stopApp()

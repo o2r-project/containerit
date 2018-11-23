@@ -95,7 +95,7 @@ fromFileAddIn <- function(){
       # Output docker instructions
       cat("\nInstructions to run docker container from command line:\n")
       print(
-        c(paste("docker build -t [tag] -f",basename(fn_args[['output_filename']])),
+        c(paste("docker build . -t [tag] -f",basename(fn_args[['output_filename']])),
         "docker run -it [tag]") )
       # Exit app
       shiny::stopApp()
