@@ -43,15 +43,14 @@ workspaceDirectory_addin <- function(){
         # Create docker file
         print(path$data)
         dockerfile_object <- containerit::dockerfile(from = path$data)
-        print(dockerfile_object)
+        #print(dockerfile_object)
         # Output to desired path
         containerit::write(dockerfile_object, file = dockerfilename$data)
         
         # Output docker instructions
-        cat("\nInstructions to run docker container from command line:\n")
-        print(
-          c(paste("docker build . -t [tag] -f",basename(dockerfilename$data)),
-            "docker run -it [tag]") )
+        cat(paste0("\nInstructions to run docker container from command line:\n
+          >> docker build . -t [tag] -f ", basename(fn_args[['output_filename']])), "\n
+          >> docker run -t [tag]")
       } #stop("Please Choose Directory Path")
       
     })

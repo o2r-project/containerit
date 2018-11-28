@@ -42,11 +42,9 @@ interactiveAddIn <- function(){
       containerit::write(dockerfile_object, file = input$text)
       
       # Output docker instructions
-      cat("\nInstructions to run docker container from command line:\n")
-      print(
-        c(paste("docker build . -t [tag] -f",basename(input$text)),
-          "docker run -it [tag]") )
-      
+      cat(paste0("\nInstructions to run docker container from command line:\n
+                 >> docker build . -t [tag] -f ", basename(fn_args[['output_filename']])), "\n
+          >> docker run -t [tag]")
     })
     
   }

@@ -15,10 +15,10 @@ fromFileAddIn <- function(){
       
     } else if (grepl(".Rmd$",input_filename)) {
       output[['output_filename']] <- gsub(".Rmd$",".dockerfile",input_filename)
-      output[['cmd']] <- containerit::CMD_Render(input_filename)
+      output[['cmd']] <- containerit::CMD_Render(basename(input_filename))
       
-    } else if (grepl("RData$",input_filename)) {
-      output[['output_filename']] <- gsub(".Rdata$",".dockerfile",input_filename)
+    } else if (grepl("RData$|Rdata$",input_filename)) {
+      output[['output_filename']] <- gsub(".RData|.Rdata$",".dockerfile",input_filename)
       output[['cmd']] <- containerit::Cmd("R")
     }
     else {
@@ -54,7 +54,7 @@ fromFileAddIn <- function(){
     volumes <- c("Working directory"=getwd(),"Home Directory"="~")
     shiny::observe({
       shinyFiles::shinyFileChoose(input,'load', roots = volumes,
-                                  filetypes=c("R","Rmd","Rdata"))
+                                  filetypes=c("R","Rmd","Rdata","RData"))
       fileinfo <- shinyFiles::parseFilePaths(volumes, input$load)
       if (length(fileinfo$datapath) != 0) {
         shiny::updateTextInput(session, "filename", value = fileinfo$datapath)
@@ -84,7 +84,7 @@ fromFileAddIn <- function(){
       # Change to script directory
       setwd(dirname(input$filename))
       # Create docker file
-      dockerfile_object <- containerit::dockerfile(from=input$filename,
+      dockerfile_object <- containerit::dockerfile(from=basename(input$filename),
                                                    copy = "script",
                                                    cmd=fn_args[['cmd']]
                                                    )
@@ -93,10 +93,9 @@ fromFileAddIn <- function(){
       # Change back to original directory
       setwd(curr_dir)
       # Output docker instructions
-      cat("\nInstructions to run docker container from command line:\n")
-      print(
-        c(paste("docker build . -t [tag] -f",basename(fn_args[['output_filename']])),
-        "docker run -it [tag]") )
+      cat(paste0("\nInstructions to run docker container from command line:\n
+          >> docker build . -t [tag] -f ", basename(fn_args[['output_filename']])), "\n
+          >> docker run -t [tag]")
       # Exit app
       shiny::stopApp()
     })
