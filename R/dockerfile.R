@@ -311,7 +311,7 @@ dockerfileFromSession.sessionInfo <- function(session,
              version <- NA
              source <- NA
 
-             #check if package come from CRAN or GitHub
+             #check if package come from CRAN, GitHub or Bioconductor
              if ("Repository" %in% names(pkg) &&
                  stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
                source <- "CRAN"
@@ -320,7 +320,12 @@ dockerfileFromSession.sessionInfo <- function(session,
                         stringr::str_detect(pkg$RemoteType, "(?i)github")) {
                source <- "github"
                version <- getGitHubRef(name, pkgs)
-             } else {
+             } else if ("git_url" %in% names(pkg) &&
+                        stringr::str_detect(pkg$git_url, "bioconductor")) {
+               source <- "Bioconductor"
+               version <- pkg$Version
+             }
+               else {
                warning("Failed to identify a source for package ", name,
                        ". Therefore the package cannot be installed in the Docker image.\n")
              }
