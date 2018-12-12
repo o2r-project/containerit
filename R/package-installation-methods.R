@@ -77,7 +77,25 @@ add_install_instructions <- function(dockerfile,
       futile.logger::flog.debug("No system requirements found that must be installed")
     }
 
-    # 2. add installation instruction for CRAN packages
+    # 2. add installation instruction for Bioconductor packages
+    pkgs_bioc <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "Bioconductor"),]
+    if (nrow(pkgs_bioc) > 0) {
+      if (versioned_packages) {
+        futile.logger::flog.info("Adding versioned Bioconductor packages: %s", toString(pkgs_bioc$name))
+        addInstruction(dockerfile) <- Run("install2.r", "versions")
+        addInstruction(dockerfile) <- versioned_install_instructions(pkgs_bioc)
+      } else {
+        bioc_packages <- sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
+        futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
+        repos = as.character(BiocManager::repositories())
+        addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r%s -r%s",
+                                                                           repos[1], repos[2],
+                                                                           repos[3], repos[4]),
+                                                                   bioc_packages))
+      }
+    } else futile.logger::flog.debug("No Bioconductor packages to add.")
+
+    # 3. add installation instruction for CRAN packages
     pkgs_cran <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
     if (nrow(pkgs_cran) > 0) {
       if (versioned_packages) {
@@ -91,7 +109,22 @@ add_install_instructions <- function(dockerfile,
       }
     } else futile.logger::flog.debug("No CRAN packages to add.")
 
-    # 3. add installation instruction for GitHub packages
+    # 3. add installation instruction for Bioconductor packages
+    # pkgs_bioc <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "Bioconductor"),]
+    # if (nrow(pkgs_bioc) > 0) {
+    #   if (versioned_packages) {
+    #     futile.logger::flog.info("Adding versioned Bioconductor packages: %s", toString(pkgs_bioc$name))
+    #     addInstruction(dockerfile) <- Run("install2.r", "versions")
+    #     addInstruction(dockerfile) <- versioned_install_instructions(pkgs_bioc)
+    #   } else {
+    #     bioc_packages <- sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
+    #     futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
+    #     options(repos = as.character(BiocManager::repositories()))
+    #     addInstruction(dockerfile) <- Run("install2.r", bioc_packages)
+    #   }
+    # } else futile.logger::flog.debug("No Bioconductor packages to add.")
+
+    # 4. add installation instruction for GitHub packages
     pkgs_gh <- pkgs[stringr::str_detect(string = pkgs$source, stringr::regex("GitHub", ignore_case = TRUE)),]
     if (nrow(pkgs_gh) > 0) {
       github_packages <- sort(as.character(unlist(pkgs_gh$version))) # sort, to increase own reproducibility
