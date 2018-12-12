@@ -80,7 +80,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        predetect = TRUE,
                        versioned_libs = FALSE,
                        versioned_packages = FALSE,
-                       filter_baseimage_pkgs = FALSE) {
+                       filter_baseimage_pkgs = FALSE, packrat = FALSE) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -177,7 +177,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                versioned_libs = versioned_libs,
                                                versioned_packages = versioned_packages,
                                                filter_baseimage_pkgs = filter_baseimage_pkgs,
-                                               workdir = workdir)
+                                               workdir = workdir,
+                                               packrat= packrat)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
         .originalFrom <- from
@@ -522,57 +523,107 @@ dockerfileFromWorkspace <- function(path,
                                    versioned_libs,
                                    versioned_packages,
                                    filter_baseimage_pkgs,
-                                   workdir) {
+                                   workdir,
+                                   packrat) {
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
 
-    .rFiles <- dir(path = path,
-                   pattern = "\\.R$",
-                   full.names = TRUE,
-                   include.dirs = FALSE,
-                   recursive = TRUE,
-                   ignore.case = TRUE)
+    if (isTRUE(packrat)) {
 
-    .md_Files <- dir(path = path,
-                     pattern = "\\.Rmd$", #|\\.Rnw$",
+      # always TRUE for packrat
+      versioned_packages = TRUE
+
+      if (path == ".") {
+        path = usethis::proj_path()
+      } else {
+        path = path
+      }
+
+      packrat_lock = packrat:::readLockFilePackages(paste0(path, "/packrat/packrat.lock"))
+
+      pkg_name = purrr::map_chr(packrat_lock, ~ .x$name)
+      pkg_ver = purrr::map_chr(packrat_lock, ~ .x$version)
+      pkg_src = purrr::map_chr(packrat_lock, ~ .x$source)
+      # pkg_dep = purrr::map(packrat_lock, ~ .x$requires) %>%
+      #   purrr::flatten_chr() %>%
+      #   na.omit() %>%
+      #   unique()
+
+      # pkg_all = c(pkg_name, pkg_dep) %>%
+      #   unique()
+
+      packages_df = tibble::tibble(name = pkg_name, source = pkg_src,
+                                   version = pkg_ver)
+
+      # repos = as.character(unlist(strsplit(as.character(
+      #   packrat:::readDcf("packrat/packrat.lock")[1, "Repos"]),
+      #   ",[[:space:]]*", perl = TRUE)))
+
+      futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
+
+      .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+                                            dockerfile = dockerfile,
+                                            soft = soft,
+                                            offline = offline,
+                                            versioned_libs = versioned_libs,
+                                            versioned_packages = versioned_packages,
+                                            filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                            workdir = workdir)
+      return(.dockerfile)
+
+    } else {
+
+
+
+      .rFiles <- dir(path = path,
+                     pattern = "\\.R$",
                      full.names = TRUE,
                      include.dirs = FALSE,
                      recursive = TRUE,
                      ignore.case = TRUE)
-    futile.logger::flog.debug("Found %s scripts and %s documents", length(.rFiles), length(.md_Files))
 
-    if (length(.rFiles) > 0 && length(.md_Files) > 0) {
-      target_file <- .md_Files[1]
-      warning("Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: \n\t",
-              target_file)
-    } else if (length(.md_Files) > 0) {
-      target_file <- .md_Files[1]
-      if (length(.md_Files) > 1)
-        warning("Found ", length(.md_Files), " document files in the workspace, using '", target_file, "'")
-    } else if (length(.rFiles) > 0) {
-      target_file <- .rFiles[1]
-      if (length(.rFiles) > 1)
-        warning("Found ", length(.rFiles), " script files in the workspace, using '", target_file, "'")
+      .md_Files <- dir(path = path,
+                       pattern = "\\.Rmd$", #|\\.Rnw$",
+                       full.names = TRUE,
+                       include.dirs = FALSE,
+                       recursive = TRUE,
+                       ignore.case = TRUE)
+      futile.logger::flog.debug("Found %s scripts and %s documents", length(.rFiles), length(.md_Files))
+
+      if (length(.rFiles) > 0 && length(.md_Files) > 0) {
+        target_file <- .md_Files[1]
+        warning("Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: \n\t",
+                target_file)
+      } else if (length(.md_Files) > 0) {
+        target_file <- .md_Files[1]
+        if (length(.md_Files) > 1)
+          warning("Found ", length(.md_Files), " document files in the workspace, using '", target_file, "'")
+      } else if (length(.rFiles) > 0) {
+        target_file <- .rFiles[1]
+        if (length(.rFiles) > 1)
+          warning("Found ", length(.rFiles), " script files in the workspace, using '", target_file, "'")
+      }
+
+      if (is.null(target_file))
+        stop("Workspace does not contain any R file that can be packaged.")
+      else
+        futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
+
+
+      .dockerfile <- dockerfileFromFile(target_file,
+                                        dockerfile = dockerfile,
+                                        soft = soft,
+                                        offline = offline,
+                                        copy = copy,
+                                        add_self = add_self,
+                                        silent = silent,
+                                        predetect = predetect,
+                                        versioned_libs = versioned_libs,
+                                        versioned_packages = versioned_packages,
+                                        filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                        workdir = workdir)
+      return(.dockerfile)
     }
-
-    if (is.null(target_file))
-      stop("Workspace does not contain any R file that can be packaged.")
-    else
-      futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
-
-    .dockerfile <- dockerfileFromFile(target_file,
-                              dockerfile = dockerfile,
-                              soft = soft,
-                              offline = offline,
-                              copy = copy,
-                              add_self = add_self,
-                              silent = silent,
-                              predetect = predetect,
-                              versioned_libs = versioned_libs,
-                              versioned_packages = versioned_packages,
-                              filter_baseimage_pkgs = filter_baseimage_pkgs,
-                              workdir = workdir)
-    return(.dockerfile)
   }
 
 
