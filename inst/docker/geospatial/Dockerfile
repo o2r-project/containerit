@@ -1,13 +1,9 @@
-FROM rocker/geospatial:3.5.1
+FROM rocker/geospatial:3.5.0
 LABEL maintainer="o2r project <http://o2r.info>"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
-
-RUN ["install2.r", "rjson", "futile.logger"]
-
-RUN ["R", "-e", "devtools::install_github('richfitz/stevedore')"]
 
 # use devtools instead of installGithub.r to take advantage of "Remotes" defined in DESCRIPTION file
 RUN ["R", "-e", "devtools::install_github('o2r-project/containerit')"]
