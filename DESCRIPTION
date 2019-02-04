@@ -1,6 +1,7 @@
 Type: Package
 Package: containerit
 Title: Package R in Docker Containers
+    person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")))
 Version: 0.5.0
 Authors@R: 
     c(person(given = "Daniel",
