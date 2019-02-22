@@ -1,10 +1,9 @@
-@Manual{automagic,
-  title = {automagic: Automagically Document and Install Packages Necessary to Run R
-Code},
-  author = {Cole Brokamp},
-  year = {2017},
-  note = {R package version 0.3},
-  url = {https://CRAN.R-project.org/package=automagic},
+@Manual{allaire_rmarkdown_2018,
+  title = {rmarkdown: Dynamic Documents for R},
+  author = {JJ Allaire and Yihui Xie and Jonathan McPherson and Javier Luraschi and Kevin Ushey and Aron Atkins and Hadley Wickham and Joe Cheng and Winston Chang and Richard Iannone},
+  year = {2018},
+  note = {R package version 1.11},
+  url = {https://rmarkdown.rstudio.com}
 }
 
 @article{beaulieu-jones_reproducibility_2017,
@@ -56,6 +55,15 @@ Code},
   number = {2}
 }
 
+@Manual{brokamp_automagic_2017,
+  title = {automagic: Automagically Document and Install Packages Necessary to Run R
+Code},
+  author = {Cole Brokamp},
+  year = {2017},
+  note = {R package version 0.3},
+  url = {https://CRAN.R-project.org/package=automagic},
+}
+
 @inproceedings{ChirigatiRSF16,
   title = {ReproZip: Computational Reproducibility With Ease},
   author = {Chirigati, Fernando and Rampin, R{\'e}mi and Shasha, Dennis and Freire, Juliana},
@@ -71,14 +79,6 @@ Code},
   keywords = {computational reproducibility, provenance, reprozip},
 }
 
-@Manual{callr,
-  title = {callr: Call R from R},
-  author = {Gábor Csárdi and Winston Chang},
-  year = {2018},
-  note = {R package version 3.1.1},
-  url = {https://CRAN.R-project.org/package=callr},
-}
-
 @inproceedings{cito_using_2016,
 	series = {{ICSE} '16},
 	title = {Using {Docker} {Containers} to {Improve} {Reproducibility} in {Software} {Engineering} {Research}},
@@ -91,29 +91,20 @@ Code},
 	pages = {906--907}
 }
 
-@misc{codemeta,
-  doi = {10.5063/schema/codemeta-2.0},
-  url = {https://raw.githubusercontent.com/codemeta/codemeta/2.0/codemeta.jsonld},
-  author = {Jones,  Matthew B and Boettiger,  Carl and Mayes,  Abby Cabunoc and {Arfon Smith} and Slaughter,  Peter and Niemeyer,  Kyle and Gil,  Yolanda and Fenner,  Martin and Nowak,  Krzysztof and Hahnel,  Mark and Coy,  Luke and Allen,  Alice and Crosas,  Mercè and Sands,  Ashley and Hong,  Neil Chue and Cruse,  Patricia and Katz,  Dan and Goble,  Carole},
-  title = {CodeMeta: an exchange schema for software metadata},
-  publisher = {KNB Data Repository},
-  year = {2017}
-}
-
-@Manual{fay_dockerfiler,
-  title = {dockerfiler: Easy Dockerfile Creation from R},
-  author = {Colin Fay},
-  year = {2018},
-  note = {R package version 0.1.1},
-  url = {https://CRAN.R-project.org/package=dockerfiler},
-}
-
-@Manual{csardi_sysreqs,
+@Manual{csardi_sysreqs_2019,
   title = {sysreqs: Install SystemRequirements of Packages},
   author = {Csardi, Gabor},
   year = {2019},
   note = {R package version 1.0.0.9000},
   url = {https://github.com/r-hub/sysreqs},
+}
+
+@Manual{csardi_callr_2018,
+  title = {callr: Call R from R},
+  author = {Gábor Csárdi and Winston Chang},
+  year = {2018},
+  note = {R package version 3.1.1},
+  url = {https://CRAN.R-project.org/package=callr},
 }
 
 @article{emsley_framework_2018,
@@ -125,6 +116,22 @@ Code},
 	author = {Emsley, Iain and De Roure, David},
 	month = apr,
 	year = {2018}
+}
+
+@Manual{fay_dockerfiler_2018,
+  title = {dockerfiler: Easy Dockerfile Creation from R},
+  author = {Colin Fay},
+  year = {2018},
+  note = {R package version 0.1.1},
+  url = {https://CRAN.R-project.org/package=dockerfiler},
+}
+
+@Manual{fitzjohn_stevedore_2019,
+  title = {stevedore: Docker Client},
+  author = {Rich FitzJohn},
+  year = {2019},
+  note = {R package version 0.9.1},
+  url = {https://CRAN.R-project.org/package=stevedore},
 }
 
 @article{gentleman_statistical_2007,
@@ -155,60 +162,13 @@ Code},
 	pages = {2396--2398}
 }
 
-@article{howe_virtual_2012,
-	title = {Virtual {Appliances}, {Cloud} {Computing}, and {Reproducible} {Research}},
-	volume = {14},
-	issn = {1521-9615},
-	doi = {10.1109/MCSE.2012.62},
-	number = {4},
-	journal = {Computing in Science Engineering},
-	author = {Howe, Bill},
-	month = jul,
-	year = {2012},
-	pages = {36--41}
-}
-
-@article{kim_bio-docklets_2017,
-	title = {Bio-{Docklets}: {Virtualization} {Containers} for {Single}-{Step} {Execution} of {NGS} {Pipelines}.},
-	shorttitle = {Bio-{Docklets}},
-	doi = {10.1101/116962},
-	journal = {bioRxiv},
-	author = {Kim, Baekdoo and Ali, Thahmina A. and Lijeron, Carlos and Afgan, Enis and Krampis, Konstantinos},
-	month = mar,
-	year = {2017},
-	pages = {116962}
-}
-
-@article{molenaar_kliko_2018,
-	title = {Kliko - {The} {Scientific} {Compute} {Container} {Format}},
-	url = {http://arxiv.org/abs/1807.03264},
-	journal = {arXiv:1807.03264 [astro-ph]},
-	author = {Molenaar, Gijs and Makhathini, Spheshile and Girard, Julien N. and Smirnov, Oleg},
-	month = jul,
-	year = {2018},
-	note = {arXiv: 1807.03264}
-}
-
-@article{molenaar_klikoscientific_2018,
-	title = {Kliko—{The} scientific compute container format},
-	volume = {25},
-	issn = {2213-1337},
-	doi = {10.1016/j.ascom.2018.08.003},
-	journal = {Astronomy and Computing},
-	author = {Molenaar, G. and Makhathini, S. and Girard, J. N. and Smirnov, O.},
-	month = oct,
-	year = {2018},
-	keywords = {Astronomy, Containerization, Data reduction, Docker, Pipelines, Scientific computing},
-	pages = {1--9},
-}
-
-@inproceedings{jupyter2018binder,
-  title = {Binder 2.0 - Reproducible, interactive, sharable environments for science at scale},
-  author = {{Project Jupyter et al.}},
-  year = {2018},
-  booktitle = {Proceedings of the 17th Python in Science Conference},
-  url = {http://conference.scipy.org/proceedings/scipy2018/pdfs/project_jupyter.pdf},
-  doi = {10.25080/Majora-4af1f417-011}
+@misc{codemeta,
+  doi = {10.5063/schema/codemeta-2.0},
+  url = {https://raw.githubusercontent.com/codemeta/codemeta/2.0/codemeta.jsonld},
+  author = {Jones,  Matthew B and Boettiger,  Carl and Mayes,  Abby Cabunoc and {Arfon Smith} and Slaughter,  Peter and Niemeyer,  Kyle and Gil,  Yolanda and Fenner,  Martin and Nowak,  Krzysztof and Hahnel,  Mark and Coy,  Luke and Allen,  Alice and Crosas,  Mercè and Sands,  Ashley and Hong,  Neil Chue and Cruse,  Patricia and Katz,  Dan and Goble,  Carole},
+  title = {CodeMeta: an exchange schema for software metadata},
+  publisher = {KNB Data Repository},
+  year = {2017}
 }
 
 @inproceedings{katz_software_2018,
@@ -222,6 +182,17 @@ Code},
 	editor = {Davenport, James H. and Kauers, Manuel and Labahn, George and Urban, Josef},
 	year = {2018},
 	pages = {289--296}
+}
+
+@article{kim_bio-docklets_2017,
+	title = {Bio-{Docklets}: {Virtualization} {Containers} for {Single}-{Step} {Execution} of {NGS} {Pipelines}.},
+	shorttitle = {Bio-{Docklets}},
+	doi = {10.1101/116962},
+	journal = {bioRxiv},
+	author = {Kim, Baekdoo and Ali, Thahmina A. and Lijeron, Carlos and Afgan, Enis and Krampis, Konstantinos},
+	month = mar,
+	year = {2017},
+	pages = {116962}
 }
 
 @article{knoth_reproducibility_2017,
@@ -263,6 +234,28 @@ Code},
 	pages = {424--450}
 }
 
+@article{molenaar_klikoscientific_2018,
+	title = {Kliko—{The} scientific compute container format},
+	volume = {25},
+	issn = {2213-1337},
+	doi = {10.1016/j.ascom.2018.08.003},
+	journal = {Astronomy and Computing},
+	author = {Molenaar, G. and Makhathini, S. and Girard, J. N. and Smirnov, O.},
+	month = oct,
+	year = {2018},
+	keywords = {Astronomy, Containerization, Data reduction, Docker, Pipelines, Scientific computing},
+	pages = {1--9},
+}
+
+@misc{nust_reproducibility_2018,
+	title = {Reproducibility {Service} for {Executable} {Research} {Compendia}: {Technical} {Specifications} and {Reference} {Implementation}},
+	publisher = {Zenodo},
+	author = {Nüst, Daniel},
+	month = dec,
+	year = {2018},
+	doi = {10.5281/zenodo.2203844}
+}
+
 @article{nust_opening_2017,
 	title = {Opening the {Publication} {Process} with {Executable} {Research} {Compendia}},
 	volume = {23},
@@ -275,15 +268,6 @@ Code},
 	year = {2017}
 }
 
-@misc{nust_reproducibility_2018,
-	title = {Reproducibility {Service} for {Executable} {Research} {Compendia}: {Technical} {Specifications} and {Reference} {Implementation}},
-	publisher = {Zenodo},
-	author = {Nüst, Daniel},
-	month = dec,
-	year = {2018},
-	doi = {10.5281/zenodo.2203844}
-}
-
 @misc{osnat_brief_2018,
 	title = {A {Brief} {History} of {Containers}: {From} the 1970s to 2017},
 	shorttitle = {A {Brief} {History} of {Containers}},
@@ -292,6 +276,15 @@ Code},
 	author = {Osnat, Rani},
 	month = mar,
 	year = {2018}
+}
+
+@inproceedings{jupyter_binder_2018,
+  title = {Binder 2.0 - Reproducible, interactive, sharable environments for science at scale},
+  author = {{Project Jupyter et al.}},
+  year = {2018},
+  booktitle = {Proceedings of the 17th Python in Science Conference},
+  url = {http://conference.scipy.org/proceedings/scipy2018/pdfs/project_jupyter.pdf},
+  doi = {10.25080/Majora-4af1f417-011}
 }
 
 @Manual{r_2018,
@@ -314,43 +307,7 @@ Code},
 	pages = {143--151}
 }
 
-@misc{sochat_experiment_2018,
-	title = {The {Experiment} {Factory}: {Reproducible} {Experiment} {Containers}},
-	shorttitle = {The {Experiment} {Factory}},
-	journal = {The Journal of Open Source Software},
-	author = {Sochat, Vanessa},
-	month = feb,
-	year = {2018},
-	doi = {10.21105/joss.00521}
-}
-
-@Manual{stevedore,
-  title = {stevedore: Docker Client},
-  author = {Rich FitzJohn},
-  year = {2019},
-  note = {R package version 0.9.1},
-  url = {https://CRAN.R-project.org/package=stevedore},
-}
-
-@misc{nust_reproducibility_2018,
-	title = {Reproducibility {Service} for {Executable} {Research} {Compendia}: {Technical} {Specifications} and {Reference} {Implementation}},
-	shorttitle = {Reproducibility {Service} for {Executable} {Research} {Compendia}},
-	publisher = {Zenodo},
-	author = {Nüst, Daniel},
-	month = dec,
-	year = {2018},
-	doi = {10.5281/zenodo.2203844}
-}
-
-@Manual{allaire_rmarkdown_2018,
-  title = {rmarkdown: Dynamic Documents for R},
-  author = {JJ Allaire and Yihui Xie and Jonathan McPherson and Javier Luraschi and Kevin Ushey and Aron Atkins and Hadley Wickham and Joe Cheng and Winston Chang and Richard Iannone},
-  year = {2018},
-  note = {R package version 1.11},
-  url = {https://rmarkdown.rstudio.com}
-}
-
-@Manual{xiao_liftr,
+@Manual{xiao_liftr_2018,
   title = {liftr: Containerize R Markdown Documents for Continuous Reproducibility},
   author = {Nan Xiao},
   year = {2018},
