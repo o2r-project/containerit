@@ -347,6 +347,14 @@ You can use [`pre-commit`
 hooks](https://github.com/lorenzwalthert/pre-commit-hooks) to avoid some
 mistakes.
 
+A [codemeta](https://codemeta.github.io/) file, `codemeta.json` with
+metadata about the package and its dependencies is generated
+automatically when this document is compiled.
+
+``` r
+codemetar::write_codemeta("containerit")
+```
+
 ## License
 
 containerit is licensed under GNU General Public License, version 3, see
