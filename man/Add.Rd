@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Add.R
 \name{Add}
 \alias{Add}
-\title{Constructor yet to be implemented}
+\title{Add constructor yet to be implemented}
 \usage{
 Add(...)
 }
@@ -13,9 +13,8 @@ Add(...)
 the object
 }
 \description{
-Constructor yet to be implemented
+Add constructor yet to be implemented
 }
 \examples{
 #no example yet
 }
-

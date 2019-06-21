@@ -1,0 +1,93 @@
+---
+title: "Using `containerit` Docker image"
+author: "Daniel Nüst"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to package \texttt{containerit}}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- Copyright 2018 Opening Reproducible Research (https://o2r.info) -->
+
+## Introduction
+
+Containerit is also available itself as a ready-to-use Docker image.
+This is useful if you do not want to install a full stack of packages in your local machine, but still trace a specific R session/script/document.
+
+## tl;dr - pull image and show Dockerfile on console
+
+The following example pulls the `geospatial` variant of the containerit images and prints out the created Dockerfile to the console.
+
+```{bash tldr}
+docker run --rm o2rproject/containerit:geospatial R -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
+```
+
+## Control output
+
+By default the containerit images print the session info before R is terminated.
+You can disable this by setting the environment variable `CONTAINERIT_SILENT`.
+Combined with the `--quiet` option for R, this reduces the output to merely the Dockerfile
+
+```{bash log_silent, eval=FALSE}
+docker run --rm -e CONTAINERIT_SILENT=true o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
+```
+
+You can set the [futile.logger threshold](https://github.com/zatonovo/futile.logger#thresholds) with the environment variable `CONTAINERIT_FLOG_THRESHOLD` to `ERROR`, `WARN` or `DEBUG`; default is `INFO`.
+
+```{bash log_threshold, eval=FALSE}
+docker run --rm -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
+```
+
+## Save file
+
+You can of course also mount a directory with write permissions and save the Dockerfile.
+The default directory in the container is `/containerit`, so you can mount to this location and write the Dockerfile object:
+
+```{bash save_file, eval=FALSE}
+mkdir /tmp/containerit
+docker run --rm -v /tmp/containerit:/containerit -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); write(the_dockerfile);"
+echo Directory contents:
+ls -l /tmp/containerit
+rm -r /tmp/containerit
+```
+
+Or you can use full paths, as shown below.
+The next example also sets the [user of the container](https://github.com/rocker-org/rocker/wiki/managing-users-in-docker), so that the file on the host has a more convenient user and permissions.
+
+```{bash save_file_user_fullpath, eval=FALSE}
+mkdir /tmp/containerit
+docker run --rm -v /tmp/containerit:/my_dir -e CONTAINERIT_SILENT=true -e CONTAINERIT_FLOG_THRESHOLD=WARN --user=1000 o2rproject/containerit:geospatial R -q -e "the_dockerfile <- dockerfile(); write(the_dockerfile,file = '/my_dir/Dockerfile');"
+echo Directory contents:
+ls -l /tmp/containerit
+rm -r /tmp/containerit
+```
+
+## Example: package script
+
+```{bash script, eval=FALSE}
+mkdir /tmp/containerit
+echo "install.packages('fortunes', repos = 'http://cran.r-project.org'); fortunes::fortune();" >> /tmp/containerit/script.R
+
+docker run --rm -v /tmp/containerit:/data o2rproject/containerit R -q -e "setwd('/data'); scriptFile <- 'script.R'; write(dockerfile(from = scriptFile, cmd = CMD_Rscript(basename(scriptFile))));"
+
+cat /tmp/containerit/Dockerfile
+rm -r /tmp/containerit
+```
+
+## Build image
+
+With the following commands you can build an image from the local source code.
+The following command executed in the `containerit` source directory creates an image `containerit`:
+
+```{bash build_local, eval=FALSE}
+docker build --file inst/docker/Dockerfile --tag containerit .
+```
+
+You can try the `predetect` feature by packaging the R Markdown file of the second spacetime vignette with the non-`geospatial` image of containerit that was just built.
+The following command will install missing packages before running the file, namely `sf` itself, but it's installation will fail due to missing system dependencies, which are not covered by predetection.
+
+```{bash predetect, eval=FALSE}
+docker run --rm -i -v $(pwd)/tests/testthat/package_markdown/sfr:/erc -e CONTAINERIT_FLOG_THRESHOLD=DEBUG containerit R --quiet -e "setwd('/erc'); list.files(); print(dockerfile(from = '.'))"
+```

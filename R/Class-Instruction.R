@@ -1,10 +1,9 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
-
-# TODO: If necessary, add one of the following unimplemented classes refering to Docker-instructions: Arg, Onbuild, Stopsignal, Heathcheck, Shell
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 #' The Docker Instruction - Class
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#format}.
+#' @family instruction classes
 #'
 #' @export
 #'
@@ -37,19 +36,27 @@ setMethod("docker_arguments",
           })
 
 #Convert an Instruction-object to a string holding a Docker instruction
-.toString.Instruction <- function(x) {
-  return(paste(docker_key(x), docker_arguments(x)))
+.toString.Instruction <- function(x, ...) {
+  instruction <- paste0(docker_key(x), " ", docker_arguments(x))
+  return(stringr::str_trim(instruction))
 }
-
-
-setMethod("toString",
-          signature(x = "Instruction"),
-          .toString.Instruction)
-
 
 #' Convert an Instruction-object to a string holding a Docker instruction
 #'
 #' @param x Instruction object (of class Run, Cmd, From ...)
+#' @param ... Arguments to be passed down to toString
+#'
+#' @return A single character string in Dockerfile syntax
+#' @export
+#'
+setMethod("toString",
+          signature(x = "Instruction"),
+          .toString.Instruction)
+
+#' Convert an Instruction-object to a string holding a Docker instruction
+#'
+#' @param x Instruction object (of class Run, Cmd, From ...)
+#' @param ... Arguments to be passed down to toString
 #'
 #' @return A single character string in Dockerfile syntax
 #' @export
@@ -57,3 +64,19 @@ setMethod("toString",
 setMethod("as.character",
           signature(x = "Instruction"),
           .toString.Instruction)
+
+print.Instruction <- function(x, ...) {
+  cat(.toString.Instruction(x, ...), sep = "\n")
+  invisible(x)
+}
+
+#' Print an Instruction
+#'
+#' @param x Instruction.
+#' @param ... Arguments to be passed down to toString
+#'
+#' @export
+#'
+setMethod("print",
+          signature(x = "Instruction"),
+          print.Instruction)

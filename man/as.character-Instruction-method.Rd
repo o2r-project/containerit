@@ -5,10 +5,12 @@
 \alias{as.character,Instruction-method}
 \title{Convert an Instruction-object to a string holding a Docker instruction}
 \usage{
-\S4method{as.character}{Instruction}(x)
+\S4method{as.character}{Instruction}(x, ...)
 }
 \arguments{
 \item{x}{Instruction object (of class Run, Cmd, From ...)}
+
+\item{...}{Arguments to be passed down to toString}
 }
 \value{
 A single character string in Dockerfile syntax
@@ -16,4 +18,3 @@ A single character string in Dockerfile syntax
 \description{
 Convert an Instruction-object to a string holding a Docker instruction
 }
-

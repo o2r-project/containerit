@@ -1,0 +1,141 @@
+---
+layout: post
+title:  "Automatic units in axis labels"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+comments: true
+author: Edzer Pebesma
+categories: r
+---
+
+[This ERC is based on the blog post [Automatic units in axis labels](http://r-spatial.org/r/2016/09/29/plot_units.html), published under [CC-BY](http://creativecommons.org/licenses/by/4.0/) license.]
+
+This blog post concerns the development version of units, installed by
+```{r eval=FALSE}
+devtools::install_github("edzer/units")
+```
+
+Have you ever tried to properly add measurement units to R plots? It might go like this:
+
+```{r fig=TRUE, fig.path = "images/", label="plot-units1"}
+xlab = parse(text = "temperature ~~ group('[', degree * C, ']')")
+ylab = parse(text = "speed ~~ group('[', m * ~~ s^-1, ']')")
+par(mar = par("mar") + c(0, .3, 0, 0)) # avoids cutting of superscript
+plot(3 + 1:10 + 2 * rnorm(10), xlab = xlab, ylab = ylab)
+```
+
+The main observation is, of course that _it can be done_. However, 
+
+* it looks geeky, and not quite intuitive
+* you would typically postpone this work to just before submitting the paper, or during review
+* you need this so infrequently that you tend to forget how it works.
+
+Although well-written help is found in `?plotmath`, all three observations cause frustration.
+
+The [original paper](http://www.stat.washington.edu/fritz/DATAFILES498B2008/MathinR.pdf) desribing `plotmath` is by Paul Murrell and Ross Ihaka. [R core](https://www.r-project.org/contributors.html) member Paul Murrell also wrote package `grid`, part of base R. Few people use it directly, but without it [ggplot2](https://cran.r-project.org/package=ggplot2) or [lattice](https://cran.r-project.org/package=lattice) could not exist.
+
+## Automatic unit handling
+
+The new [units](https://cran.r-project.org/package=units) CRAN package now makes working with units
+
+* easier
+* automatic, and
+* less error-prone
+
+Here is an example using `mtcars`. First, we specify the imperial units to those known in the [udunits2](https://www.unidata.ucar.edu/software/udunits/udunits-2.2.20/doc/udunits/udunits2.html#Database) database:
+
+```{r}
+library(units)
+gallon = make_unit("gallon")
+consumption = mtcars$mpg * with(ud_units, mi/gallon)
+displacement = mtcars$disp * ud_units[["in"]]^3
+```
+
+For `displacement`, we cannot use the normal lookup in the database
+
+```{r eval=FALSE}
+displacement = mtcars$disp * with(ud_units, in)
+```
+
+because `in` (inch) is also a reserved word in R.
+
+We convert these values to SI units by
+
+```{r}
+units(displacement) = with(ud_units, cm^3)
+units(consumption) = with(ud_units, km/l)
+consumption[1:5]
+```
+
+## Automatic measurement units in axis labels
+
+We can plot these numeric variabes of type `units` by
+```{r fig=TRUE, fig.path = "images/", label="plot-units2"}
+par(mar = par("mar") + c(0, .1, 0, 0)) # avoids cutting of brackets at lhs
+plot(displacement, consumption)
+```
+
+The units automatically appear in axis labels! If we want to have
+negative power instead of division bars, we can set a global option
+
+```{r}
+units_options(negative_power = TRUE) # division becomes ^-1
+```
+
+Expressions such as
+```{r}
+1/displacement [1:10]
+```
+
+automatically convert units, which also happens in plots (note the converted units symbols):
+
+```{r fig=TRUE, fig.path = "images/", label="plot-units3"}
+par(mar = par("mar") + c(0, .3, 0, 0))
+plot(1/displacement, 1/consumption)
+```
+
+## How to do this with ggplot?
+
+We can of course plot these data by dropping units:
+
+```{r fig=TRUE, fig.path = "images/", label="plot-units4"}
+library(ggplot2)
+ggplot() + geom_point(aes(x = as.numeric(displacement), 
+    y = as.numeric(consumption)))
+```
+
+but that doesn't show us units. Giving the units as variables gives an error:
+
+```{r error=TRUE, fig=FALSE}
+ggplot() + geom_point(aes(x = displacement, y = consumption))
+```
+
+(I could make that error go away by letting `units` drop the
+requirement that in a comparison both sides should have compatible
+units, which of course would be wrong.)
+
+We can then go all the way with
+```{r fig=TRUE, fig.path = "images/", label="plot-units5"}
+ggplot() + geom_point(aes(x = as.numeric(displacement), 
+	y = as.numeric(consumption))) +
+	xlab(make_unit_label("displacement", displacement)) +
+	ylab(make_unit_label("consumption", consumption))
+```
+
+which at least doesn't cut off the left label, but feels too
+convoluted and error-prone.
+
+Oh ggplot gurus, who can help us out, here? How can we obtain that
+last plot by
+
+```{r eval=FALSE}
+ggplot() + geom_point(aes(x = displacement, y = consumption))
+```
+
+?
+
+
+## Related posts/articles
+
+* [Does R understand physical quantities?](http://r-spatial.org/r/2016/06/10/units.html)
+* [Measurement units in R now simplify](http://r-spatial.org/r/2016/08/16/units2.html)
+* [Measurement units for R](https://cran.r-project.org/web/packages/units/vignettes/measurement_units_in_R.pdf) (R Journal draft manuscript, package vignette)

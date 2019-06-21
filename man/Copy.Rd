@@ -2,20 +2,21 @@
 % Please edit documentation in R/Class-Copy.R
 \name{Copy}
 \alias{Copy}
-\title{Constructor yet to be implemented}
+\title{Copy one or more files or directories to a Docker image}
 \usage{
-Copy(...)
+Copy(src, dest)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{src}{(character vector) list of files or directories to be copied}
+
+\item{dest}{(character string) destination directory on the Docker image (either absolute or relative to working directory)}
 }
 \value{
 the object
 }
 \description{
-Constructor yet to be implemented
+Copy one or more files or directories to a Docker image
 }
 \examples{
 #no example yet
 }
-

@@ -2,20 +2,21 @@
 % Please edit documentation in R/Class-Expose.R
 \name{Expose}
 \alias{Expose}
-\title{Constructor yet to be implemented}
+\title{Constructor for Expose}
 \usage{
-Expose(...)
+Expose(port, host = NA_integer_)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{port}{(character or numeric, required) the port of the container to be exposed}
+
+\item{host}{(numeric, optional) port of the host, if missing the same port as in the container is exposed}
 }
 \value{
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for Expose
 }
 \examples{
 #no example yet
 }
-

@@ -3,12 +3,12 @@
 \docType{class}
 \name{From-class}
 \alias{From-class}
-\title{An S4 class to represent a FROM instrunction relating to a docker image}
+\title{An S4 class to represent a FROM instrunction relating to a Docker image}
 \value{
 an object of class \code{Docker From}
 }
 \description{
-An S4 class to represent a FROM instrunction relating to a docker image
+An S4 class to represent a FROM instrunction relating to a Docker image
 }
 \section{Slots}{
 
@@ -18,3 +18,19 @@ An S4 class to represent a FROM instrunction relating to a docker image
 \item{\code{postfix}}{tag or digest}
 }}
 
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Arg-class}}, \code{\link{Cmd-class}},
+  \code{\link{Comment-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}},
+  \code{\link{Healthcheck-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}},
+  \code{\link{Onbuild-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
+  \code{\link{Stopsignal-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+}
+\concept{instruction classes}

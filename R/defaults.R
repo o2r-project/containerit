@@ -1,38 +1,31 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-##set CRAN mirror (the rocker default MRAN is sometimes not up-to-date with current packages)
-.default_cran_mirror <- "https://cran.rstudio.com"
+.rocker_images <- c(
+  versioned = "rocker/r-ver",
+  rstudio = "rocker/rstudio",
+  tidyverse = "rocker/tidyverse",
+  verse = "rocker/verse",
+  geospatial = "rocker/geospatial"
+)
 
-#' Get default cran mirror to be used to install R packages
-#'
-#' @return The mirror's url as single character string (default: "https://cran.rstudio.com")
-#' @export
-#'
-get_docker_cran_mirror <- function() {
-  return(.default_cran_mirror)
-}
+.debian_images <- c(.rocker_images,
+  plumber = "trestletech/plumber" # extends rocker/r-base https://hub.docker.com/r/trestletech/plumber/~/dockerfile
+)
 
+.supported_images <- c(.debian_images)
 
-#' Set default cran mirror to be used to install R packages
-#'
-#' @param cran_url The mirror's url as single character string
-#' @export
-#'
-set_docker_cran_mirror <- function(cran_url){
-  .default_cran_mirror <<- cran_url
-}
-
-.rocker_images <- c("rocker/r-ver",
-                   "rocker/rstudio",
-                   "rocker/tidyverse",
-                   "rocker/verse")
-
-##TODO: append more supported images
-.supported_images <- .rocker_images
-
-.debian_platform = "linux-x86_64-debian-gcc"
-
-# TODO: Support more platforms analogue to rsysreqs > https://github.com/r-hub/sysreqsdb/tree/master/platforms
-## Enhance method .create_run_install with mappings from system requrirements to system comands
+.debian_platform <- "linux-x86_64-debian-gcc"
+.ubuntu_platform <- "linux-x86_64-ubuntu-gcc"
 .supported_platforms <- .debian_platform
 
+.init_config_file <- function() {
+  tryCatch(
+    .package_config <- .containerit_read_config(),
+    error = function(e) {
+      warning("containerit config file could not be read. Run containerit_write_config() to re-initialize the config file.", "\n\tCaused by: ", e)
+    }
+  )
+  return(.package_config)
+}
+
+.package_config <- .init_config_file()

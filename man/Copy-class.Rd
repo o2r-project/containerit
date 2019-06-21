@@ -3,14 +3,34 @@
 \docType{class}
 \name{Copy-class}
 \alias{Copy-class}
-\title{Instruction class yet to be implemented}
+\title{S4 Class representing a COPY-instruction}
+\arguments{
+\item{src}{(character vector) list of files or directories to be copied}
+
+\item{dest}{(character string) destination directory on the Docker image (either absolute or relative to working directory)}
+}
 \value{
 object
 }
 \description{
-Instruction class yet to be implemented
+S4 Class representing a COPY-instruction
 }
 \examples{
 #no example yet
 }
-
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Arg-class}}, \code{\link{Cmd-class}},
+  \code{\link{Comment-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Healthcheck-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}},
+  \code{\link{Onbuild-class}}, \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
+  \code{\link{Stopsignal-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+}
+\concept{instruction classes}

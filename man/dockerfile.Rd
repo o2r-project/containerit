@@ -4,40 +4,93 @@
 \alias{dockerfile}
 \title{dockerfile-method}
 \usage{
-dockerfile(from = utils::sessionInfo(), objects = character(0),
-  maintainer = Maintainer(name = Sys.info()[["user"]]),
-  r_version = .defaultRVersion(from), image = imagefromRVersion(r_version),
-  env = list(generator = paste("containerit",
-  utils::packageVersion("containerit"))), context = NA_character_,
-  soft = FALSE)
+dockerfile(from = utils::sessionInfo(),
+  image = getImageForVersion(getRVersionTag(from)),
+  maintainer = Sys.info()[["user"]], save_image = FALSE,
+  envir = .GlobalEnv, env = list(generator = paste("containerit",
+  utils::packageVersion("containerit"))), soft = FALSE,
+  offline = FALSE, copy = NA, container_workdir = "/payload/",
+  cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE,
+  silent = FALSE, predetect = TRUE, versioned_libs = FALSE,
+  versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)
 }
 \arguments{
-\item{from}{(sessionInfo, file or a string specifying the path to a workspace) The source of the information to construct the Dockerfile}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
 
-\item{objects}{character vector naming all R objects to be included in the docker image / R session. Can be character(0) (default), ls() or a fraction of ls()}
+\item{image}{(\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
+By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
 
-\item{maintainer}{optionally specify the maintainer of the dockerfile. See the \code{Maintainter-class} and the official documentation: \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}}
+\item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
-\item{r_version}{(character) optionally specify the R version that should run inside the container. By default, the R version from the given sessioninfo is used (if applicable) or the version of the currently running R instance}
+\item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
+ Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.RData")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
+\code{save} will be called with \code{envir}.}
 
-\item{image}{(From-object or character) optionally specify the image that shall be used for the docker container (FROM-statement)
-By default, the image is determinded from the given r_version, while the version is matched with tags from the base image rocker/r-ver
-see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}}
+\item{envir}{The environment for \code{save_image}.}
 
 \item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
 
-\item{context}{(character vector) optionally specify one or many build context paths}
+\item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed, default is no.}
 
-\item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed}
+\item{offline}{(boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.}
+
+\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files}
+
+\item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
+
+\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
+
+\item{entrypoint}{the ENTRYPOINT statement for the Dockerfile}
+
+\item{add_self}{Whether to add the package containerit itself if loaded/attached to the session}
+
+\item{silent}{Whether or not to print information during execution}
+
+\item{predetect}{Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document}
+
+\item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
+
+\item{versioned_packages}{[EXPERIMENTAL] Whether it shall be attempted to match versions of R packages}
+
+\item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.}
 }
 \value{
 An object of class Dockerfile
 }
 \description{
-Create a Dockerfile based on either a sessionInfo, a workspace or a file
+Create a Dockerfile based on either a sessionInfo, a workspace or a file.
 }
+\section{Based on \code{sessionInfo}}{
+
+
+Use the current \code{\link[utils]{sessionInfo})} to create a Dockerfile.
+}
+
+\section{Based on a workspace/directory}{
+
+
+Given an existing path to a directory, the method tries to automatically find the main \code{R} file within that directory.
+Files are searched recursively. The following types are supported:
+
+\enumerate{
+  \item regular R script files, identified by file names ending in \code{.R}
+  \item weaved documents, identified by file names ending in \href{http://rmarkdown.rstudio.com/}{R Markdown} (\code{.Rmd})
+}
+
+After identifying the main file, the process continues as described in the section file.
+If both types are found, documents are given priority over scripts.
+If multiple files are found, the first file as returned by \code{\link[base]{dir}} will be used.
+}
+
+\section{Based on a file}{
+
+
+Given an executable \code{R} script or document, create a Dockerfile to execute this file.
+This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
+}
+
 \examples{
-dockerfile()
+dockerfile <- dockerfile()
+print(dockerfile)
 
 }
-

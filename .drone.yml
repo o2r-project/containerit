@@ -11,4 +11,4 @@ build:
     - R CMD check --no-manual --no-build-vignettes $DRONE_DIR/
     - R CMD check --as-cran $DRONE_DIR/$DRONE_REPO
     - install2.r -r "http://cran.rstudio.com" roxygen2 devtools
-    - R -e "devtools::check(pkg = '/drone/src/github.com/nuest/containeRit')"
+    - R -e "devtools::check(pkg = '/drone/src/github.com/nuest/containerit')"

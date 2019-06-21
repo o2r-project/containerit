@@ -2,19 +2,23 @@
 % Please edit documentation in R/Class-Run.R
 \name{Run}
 \alias{Run}
-\title{create objects representing a RUN instruction}
+\title{Create objects representing a RUN instruction}
 \usage{
 Run(exec, params = NA_character_)
 }
 \arguments{
 \item{exec}{character argument naming the executable}
 
-\item{params}{paramterer arguments}
+\item{params}{parameter arguments, of class character}
 }
 \value{
 An S4 object of class Run
 }
 \description{
-create objects representing a RUN instruction
+Create objects representing a RUN instruction
 }
-
+\seealso{
+Other Run instruction: \code{\link{Run-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Run_shell}}
+}
+\concept{Run instruction}

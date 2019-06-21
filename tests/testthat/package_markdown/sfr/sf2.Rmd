@@ -1,0 +1,39 @@
+---
+title: "TEST FILE BASED ON SF Vignette '2. Reading, Writing and Converting Simple Features'"
+output: html_document
+---
+
+```{r echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+if (file.exists("nc1.shp"))
+	file.remove("nc1.shp", "nc1.dbf", "nc1.shx", "nc1.prj")
+```
+
+### st_read
+
+```{r}
+library("sf")
+fname <- system.file("shape/nc.shp", package = "sf")
+nc <- st_read(fname)
+```
+
+### st_write
+
+```{r}
+st_write(nc, "nc1.shp")
+```
+
+```{r}
+file.exists("nc1.shp")
+```
+
+### Conversion to and from sp
+
+```{r}
+library("sp")
+data(meuse)
+coordinates(meuse) = ~x+y
+m.sf = st_as_sf(meuse)
+opar = par(mar=rep(0,4))
+plot(m.sf)
+```

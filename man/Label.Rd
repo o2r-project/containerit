@@ -2,20 +2,44 @@
 % Please edit documentation in R/Class-Label.R
 \name{Label}
 \alias{Label}
-\title{Constructor yet to be implemented}
+\title{Creates a label of arbitrary content}
 \usage{
-Label(...)
+Label(..., multi_line = FALSE, label_ns = NA_character_)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{...}{One or more named arguments (key-value pairs), that the Instruction should consist of}
+
+\item{multi_line}{Whether to print labels with multiple values in one single line or to put each key-value pair in a new line.}
+
+\item{label_ns}{Optionally specify a namespace that should be appended to all keys of the label}
 }
 \value{
 the object
 }
 \description{
-Constructor yet to be implemented
+See https://docs.docker.com/engine/reference/builder/#label
 }
 \examples{
-#no example yet
-}
+# A simple label that occupies one line:
+label1 <- Label(key1 = "this", key2 = "that", otherKey = "content")
+# A multiline label with one key/value pair per line
+label2 <- Label(
+ "info.o2r.name" = "myProject_ImageName",
+ "org.label-schema.name" = "ImageName",
+ "yet.another_labelname" = "true",
+ multi_line = TRUE
+)
+#label with fixed namespace for all keys
+label3 <- Label("name"="A name", "description" = "A description", label_ns = "my.label.ns.")
+the_dockerfile <- dockerfile(empty_session())
+addInstruction(the_dockerfile) <- list(label1, label2, label3)
+cat(format(the_dockerfile),sep = "\\n")
 
+}
+\seealso{
+Other label: \code{\link{Label-class}},
+  \code{\link{LabelSchemaFactory}},
+  \code{\link{Label_Maintainer}},
+  \code{\link{Label_SessionInfo}}
+}
+\concept{label}

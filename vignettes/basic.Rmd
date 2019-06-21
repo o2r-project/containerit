@@ -1,20 +1,20 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
-
 ---
-title: "Introduction to package `containeRit`"
+title: "Introduction to package `containerit`"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Introduction to package \texttt{containeRit}}
+  %\VignetteIndexEntry{Introduction to package \texttt{containerit}}
   %\VignetteEncoding{UTF-8}
 ---
+
+<!-- Copyright 2018 Opening Reproducible Research (https://o2r.info) -->
 
 ## Introduction
 
 This R extension package provides features to bundle an R analysis together with the required runtime environment in so called [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization), more specifically [Docker](http://docker.com/).
-The intention of this package is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](http://o2r.info)).
+The intention of this package is to provide a building block to support reproducible and archivable research. Development is supported by the DFG-funded project Opening Reproducible Research ([http://o2r.info](https://o2r.info)).
 
 The core functionality is to create a `Dockerfile` from a given R session, script, or workspace directory. This Dockerfile contains all the R packages and their system dependencies required by the R workflow to be packaged. 
 
@@ -28,23 +28,66 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 
 ## tl;dr
 
-```{r}
-library(containerit)
-library(harbor)
-# The package uses [futile.logger]() for logging. Configure the log level with
-futile.logger::flog.threshold(futile.logger::INFO)
+Load the package, do your analysis, and create a Dockerfile.
 
-# do stuff
-plot(c(1:10), c(1:10))
+```{r tldr}
+library("containerit")
 
-# put it in a Dockerfile
-container <- dockerfile(sessionInfo(), objects = ls())
+# do stuff, based on demo("krige")
+library("gstat")
+library("sp")
 
-# build and run it (maybe do some piping here just for fun?)
-library(magrittr)
-#docker_build(container) %>% docker_run(localhost)
-#image <- docker_build(container)
-#con <- docker_run(image)
+data(meuse)
+coordinates(meuse) = ~x+y
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+v <- variogram(log(zinc)~1, meuse)
+m <- fit.variogram(v, vgm(1, "Sph", 300, 1))
+plot(v, model = m)
+
+container <- dockerfile(from = sessionInfo())
+```
+
+The Dockerfile object can be saved to a file or printed out.
+
+```{r format,results='markup'}
+cat(as.character(format(container)), sep = "\n")
+```
+
+```{r write}
+write(container, file = tempfile())
+```
+
+```{r clear_all,results='hide',echo=FALSE}
+# https://stackoverflow.com/questions/7505547/detach-all-packages-while-working-in-r
+clear_all <- function() {
+  # objects
+  rm(list = ls(all.names = TRUE))
+  
+  # packages
+  .kept.packages <- c("stats", "graphics", "grDevices", "utils", "datasets",
+                      "methods", "base", "tools", "stringr", "stringi",
+                      "containerit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
+  .package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+  .package.list <- setdiff(.package.list, paste("package:", .kept.packages, sep = ""))
+  if (length(.package.list)>0)
+    for (package in .package.list) detach(package, character.only=TRUE)
+  
+  # packages loaded via namespaces
+  # .tounload <- setdiff(loadedNamespaces(), .kept.packages)
+  # while( ! length(.tounload) == 0 ){
+  #   for(i in seq_along(.tounload)){
+  #     cat("unloading ", .tounload[i], "\n")
+  #     suppressWarnings(tryCatch(unloadNamespace(.tounload[i]), error = function(x) return(NA)))
+  #   }
+  #   .nowloaded <- setdiff(loadedNamespaces(), .kept.packages)
+  #   .tounload <- sample(.nowloaded); # randomimze list order
+  # }
+  
+  cat("cleaned up!\n")
+}
+
+clear_all()
 ```
 
 ## Dockerfile examples
@@ -53,7 +96,7 @@ The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgda
 
 Here is some regular R code loading a file and plotting it.
 
-```{r, message=FALSE}
+```{r example_geo, message=FALSE}
 library("rgdal")
 library("maptools")
 
@@ -62,17 +105,25 @@ proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
 plot(nc)
 ```
 
+```{r,results='hide',echo=FALSE}
+clear_all()
+```
+
 ### Create Dockerfile from session
 
-```{r}
+```{r example_session}
 class(sessionInfo())
-#containerit::dockerfile(from = sessionInfo(), env = ls())
+containerit::dockerfile(from = sessionInfo(), env = ls())
+```
+
+```{r clear_again,results='hide',echo=FALSE}
+clear_all()
 ```
 
 ### Script
 
-```{r}
-scriptFile <- tempfile(pattern = "containeRit_", fileext = ".R")
+```{r example_script}
+scriptFile <- tempfile(pattern = "containerit_", fileext = ".R")
 file <- file(scriptFile)
 writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
              'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
@@ -85,9 +136,9 @@ class(file)
 
 ### Workspace
 
-Go through all `.R` files in the workspace and create Dockerfile
+Go through all `.R` files in a directory and create a Dockerfile with a runtime environment which can run all of them.
 
-```{r}
+```{r example_workspace}
 workspace <- getwd()
 class(workspace)
 dir.exists(workspace)
@@ -97,6 +148,6 @@ dir.exists(workspace)
 
 ## sessionInfo()
 
-```{r}
+```{r sessionInfo}
 sessionInfo()
 ```

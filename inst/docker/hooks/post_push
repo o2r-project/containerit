@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+PACKAGE_VERSION=$(sed -n '/Version:/p' ../../DESCRIPTION | sed 's/[^0-9,.]*//g')
+echo Add version tag using $PACKAGE_VERSION
+
+docker tag $IMAGE_NAME $DOCKER_REPO:$PACKAGE_VERSION
+docker push $DOCKER_REPO:$PACKAGE_VERSION
+

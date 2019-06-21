@@ -1,59 +1,88 @@
 Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.1.0
-Authors@R: c(person("Nuest", "Daniel", role = c("aut", "cre"), email = "danie.nuest@uni-muenster.de"), person("Hinz", "Matthias", role = c("aut"), email = "matthias.m.hinz@gmail.com"))
+Version: 0.5.0.9004
+Authors@R: c(person("Daniel", "Nuest", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de", comment = c(ORCID = "0000-0003-2392-6140")),
+    person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Depends:
     R (>= 3.0.0)
 Imports:
-    futile.logger,
     methods,
     utils,
     rjson,
+    jsonlite,
     stringr,
-    sysreqs
+    sysreqs,
+    futile.logger,
+    devtools,
+    semver,
+    automagic,
+    sessioninfo,
+    stevedore,
+    versions,
+    callr
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
-    by the project Opening Reproducible Research (http://o2r.info).
+    by the project Opening Reproducible Research (https://o2r.info).
 License: GPL-3 + file LICENSE
-URL: https://github.com/o2r/containeRit/
-BugReports: https://github.com/o2r/containeRit/issues
+URL: https://github.com/o2r/containerit/
+BugReports: https://github.com/o2r/containerit/issues
 Encoding: UTF-8
 LazyData: TRUE
 Suggests:
     knitr,
+    docopt,
     rmarkdown,
     testthat,
     covr,
     rgdal,
     maptools,
     magrittr,
-    harbor,
-    analogsea,
-    googleComputeEngineR,
-    lintr
-RoxygenNote: 5.0.1
+    lintr,
+    sp,
+    gstat,
+    sf,
+    dplyr,
+    units,
+    proj4,
+    fortunes,
+    remotes,
+    ggplot2,
+    lattice,
+    stevedore
+RoxygenNote: 6.1.1
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'
+    'Class-All.R'
+    'Class-Arg.R'
     'Class-Cmd.R'
+    'Class-Comment.R'
     'Class-Copy.R'
+    'Class-Entrypoint.R'
     'Class-From.R'
+    'Class-Label.R'
     'Class-Maintainer.R'
     'Class-Dockerfile.R'
-    'Class-Entrypoint.R'
     'Class-Env.R'
     'Class-Expose.R'
-    'Class-Label.R'
+    'Class-Healthcheck.R'
+    'Class-Onbuild.R'
     'Class-Run.R'
+    'Class-Shell.R'
+    'Class-Stopsignal.R'
     'Class-Volume.R'
     'Class-Workdir.R'
-    'containeRit.R'
+    'LabelSchemaFactory.R'
+    'baseimages.R'
+    'containerit-config.R'
+    'containerit.R'
     'defaults.R'
     'dockerfile.R'
+    'package-installation-bespoke.R'
     'package-installation-methods.R'
-    'session.R'
-    'sessionInfo-localbuild-methods.R'
+    'utility-functions.R'
+Remotes: github::r-hub/sysreqs

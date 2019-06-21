@@ -1,35 +1,36 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-#' Instruction class yet to be implemented
+#' S4 Class representing a WORKDIR instruction
 #' @include Class-Instruction.R
-#'  
+#'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#workdir}.
 #'
 #' @return object
 #' @export
-#'
+#' @family instruction classes
 #' @examples
-#' #no example yet
-setClass("Workdir", contains = "Instruction")
+#' instruction <- Workdir("~/myDir/subdir/")
+#' toString(instruction)
+setClass("Workdir",
+         slots = list(path = "character"),
+         contains = "Instruction")
 
-
-#' Constructor yet to be implemented
+#' Constructor for a WORKDIR instruction
 #'
-#' @param ... fields yet to be implemented
+#' @param path The path of the working directory
 #'
 #' @return the object
 #' @export
 #'
 #' @examples
-#' #no example yet
-Workdir <- function(...){
-  stop("Constructor not yet implemented for this class.")
+#' instruction <- Workdir("~/myDir/subdir/")
+#' toString(instruction)
+Workdir <- function(path) {
+  methods::new("Workdir", path = path)
 }
 
 setMethod("docker_arguments",
           signature(obj = "Workdir"),
           function(obj) {
-            stop("The generic function docker_arguments is not implemented for class ",
-                 class(obj))
-          }
-)
+            methods::slot(obj, "path")
+          })

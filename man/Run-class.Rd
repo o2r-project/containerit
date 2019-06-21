@@ -18,3 +18,23 @@ An S4 class to represent a RUN instruction
 \item{\code{params}}{character.}
 }}
 
+\seealso{
+Other instruction classes: \code{\link{Add-class}},
+  \code{\link{Arg-class}}, \code{\link{Cmd-class}},
+  \code{\link{Comment-class}}, \code{\link{Copy-class}},
+  \code{\link{Entrypoint-class}}, \code{\link{Env-class}},
+  \code{\link{Expose-class}}, \code{\link{From-class}},
+  \code{\link{Healthcheck-class}},
+  \code{\link{Instruction-class}},
+  \code{\link{Label-class}},
+  \code{\link{Maintainer-class}},
+  \code{\link{Onbuild-class}},
+  \code{\link{Run_shell-class}}, \code{\link{Shell-class}},
+  \code{\link{Stopsignal-class}},
+  \code{\link{Volume-class}}, \code{\link{Workdir-class}}
+
+Other Run instruction: \code{\link{Run_shell-class}},
+  \code{\link{Run_shell}}, \code{\link{Run}}
+}
+\concept{Run instruction}
+\concept{instruction classes}

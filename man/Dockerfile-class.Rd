@@ -2,8 +2,8 @@
 % Please edit documentation in R/Class-Dockerfile.R
 \docType{class}
 \name{Dockerfile-class}
-\alias{Dockerfile}
 \alias{Dockerfile-class}
+\alias{Dockerfile}
 \title{An S4 class to represent a Dockerfile}
 \value{
 an object of class \code{Dockerfile}
@@ -11,16 +11,20 @@ an object of class \code{Dockerfile}
 \description{
 An S4 class to represent a Dockerfile
 }
+\details{
+The entrypoint and cmd are provided outside of instructions, as only one of them takes effect.
+If Cmd or Entrypoint instructions are provided as part of the regular instructions, they appear in the Dockerfile but have no effect.
+}
 \section{Slots}{
 
 \describe{
 \item{\code{image}}{the base image, used in the FROM statement (character)}
 
-\item{\code{maintainer}}{the MAINTAINER (object of class maintainer)}
+\item{\code{maintainer}}{a maintainer label or an object of class maintainer (the latter is debrecated)}
 
 \item{\code{instructions}}{an ordered list of instructions in the Dockerfile (list of character)}
 
-\item{\code{context}}{Directories that shall be included in the context when dockerfile is build}
+\item{\code{entrypoint}}{the entrypoint instruction applied to the container}
 
 \item{\code{cmd}}{the default cmd instruction applied to the container}
 }}

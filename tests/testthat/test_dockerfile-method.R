@@ -1,75 +1,100 @@
-# Copyright 2016 Opening Reproducible Research (http://o2r.info)
+# Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library(containerit)
-context("dockerfile-generation")
+context("dockerfile generation")
 
-test_that("a simple dockerfile object can be saved to file", {
+test_that("dockerfile object can be saved to file", {
   t_dir <- tempfile(pattern = "dir")
   dir.create(t_dir)
-  #one dockerfile is generated, one is fixed for comparism
+
   gen_file <- paste(t_dir, "Dockerfile", sep = "/")
-  maintainer <-
-    new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  dfile <- dockerfile(from = NULL, maintainer = maintainer)
-  write(dfile, file = gen_file)
-  control_file <- "./dockerfile-method-resources/simple_dockerfile"
-  control_instructions <- readLines(control_file)
+  output <- capture_output({
+    dfile <- dockerfile(from = NULL,
+                        maintainer = NULL,
+                        image = getImageForVersion("3.4.1"))
+    write(dfile, file = gen_file)
+    })
+
+  control_instructions <- readLines("Dockerfile.savetest")
   generated_instructions <- readLines(gen_file)
-  #compare generated file with permanent file
   expect_equal(control_instructions, generated_instructions)
-  #  
+
   unlink(t_dir, recursive = TRUE)
 })
 
 test_that("users can specify the maintainer", {
-  maintainer <-
-    new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  dfile <- dockerfile(NULL, maintainer = maintainer)
-  
-  #check maintainer slot content and class
+  maintainer <- methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
+  output <- capture_output(dfile <- dockerfile(NULL, maintainer = maintainer))
+
   expect_is(slot(dfile, "maintainer"), "Maintainer")
-  expect_equal(attr(class(slot(
-    dfile, "maintainer"
-  )), "package"), "containerit")
-  expect_equal(slot(slot(dfile, "maintainer"), "name"), "Matthias Hinz")
-  expect_equal(slot(slot(dfile, "maintainer"), "email"), "matthias.m.hinz@gmail.com")
-  #expect Maintainer instruction
-  expect_equal(toString(maintainer),
+  mslot = methods::slot(dfile, "maintainer")
+  expect_equal(attr(class(mslot), "package"), "containerit")
+  expect_equal(slot(mslot, "name"), "Matthias Hinz")
+  expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
+  expect_equal(toString(mslot),
                "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
 })
 
+test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
+  output <- capture_output(dfile <- dockerfile())
+
+  expect_is(slot(dfile, "maintainer"), "Label")
+  mslot = methods::slot(dfile, "maintainer")
+  expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])
+  expect_equal(toString(mslot), paste0("LABEL maintainer=\"", Sys.info()[["user"]], "\""))
+})
 
 test_that("users can specify the base image", {
   imagestr <- "rocker/r-ver:3.0.0"
   fromstr <- paste("FROM", imagestr)
-  dfile1 <- dockerfile(from = NULL, image = imagestr)
+  output <- capture_output(dfile1 <- dockerfile(from = NULL, image = imagestr))
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
   #check if from - instruction is the first (may be necessary to ignore comments in later tests)
-  expect_length(which(format(dfile1) == fromstr), 1)
-  
-  #expect that custom image is preferred over R version argument
-  dfile2 <-
-    dockerfile(from = NULL,
-               image = imagestr,
-               r_version = "3.1.0")
-  expect_equal(as.character(slot(dfile2, "image")), fromstr)
-  expect_length(which(format(dfile2) == fromstr), 1)
+  expect_length(which(toString(dfile1) == fromstr), 1)
 })
 
 test_that("users can specify the R version", {
   versionstr <- "3.1.0"
-  dfile <- dockerfile(from = NULL, r_version = versionstr)
+  output <- capture_output(dfile <- dockerfile(from = NULL, image = getImageForVersion(versionstr)))
   #check content of image and instructions slots
-  expect_equal(as.character(slot(slot(dfile, "image"), "postfix")), versionstr)
-  expect_match(as.character(format(dfile)), versionstr, all = FALSE)
-  #expect am warning if the user specifies an unsupported R version
-  expect_warning(dockerfile(from = NULL, r_version = "2.0"))
+  expect_equal(toString(slot(slot(dfile, "image"), "postfix")), versionstr)
+  expect_match(toString(dfile), versionstr, all = FALSE)
 })
 
+test_that("users are warned if an unsupported R version is set", {
+  output <- capture_output({
+    expect_warning(dockerfile(from = NULL, image = getImageForVersion("2.0.0")), "returning closest match")
+  })
+})
 
 test_that("R version is the current version if not specified otherwise", {
-  dfile <- dockerfile(NULL)
+  output <- capture_output(dfile <- dockerfile(NULL))
   #expect that image string contains the current R version
   expect_equal(as.character(slot(slot(dfile, "image"), "postfix")),
                paste(R.Version()$major, R.Version()$minor, sep = "."))
+})
+
+test_that("The package containerit is not packaged by default", {
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info)
+    })
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
+})
+
+test_that("The package containerit is not packaged (add_self = FALSE)", {
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info, add_self = FALSE)
+  })
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
+})
+
+test_that("The package containerit can be packaged (add_self = TRUE)", {
+  skip("containerit not yet available from CRAN")
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info, add_self = TRUE)
+  })
+  expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })

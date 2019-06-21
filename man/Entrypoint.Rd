@@ -2,20 +2,24 @@
 % Please edit documentation in R/Class-Entrypoint.R
 \name{Entrypoint}
 \alias{Entrypoint}
-\title{Constructor yet to be implemented}
+\title{Constructor for Entrypoint yet to be implemented}
 \usage{
-Entrypoint(...)
+Entrypoint(program, params = list(), form = "exec")
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{program}{the executable or command}
+
+\item{params}{the parameters provided to the executable or command}
+
+\item{form}{the form how the instruction is rendered, either \code{exec} or \code{shell}}
 }
 \value{
-the object
+an object of class \linkS4class{Entrypoint}
 }
 \description{
-Constructor yet to be implemented
+Constructor for Entrypoint yet to be implemented
 }
 \examples{
-#no example yet
+toString(Entrypoint("Rscript", params = list("sum", "1", "2")))
+toString(Entrypoint("/bin/echo"))
 }
-

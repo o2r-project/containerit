@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Volume.R
 \name{Volume}
 \alias{Volume}
-\title{Constructor yet to be implemented}
+\title{Constructor for Volume yet to be implemented}
 \usage{
 Volume(...)
 }
@@ -13,9 +13,8 @@ Volume(...)
 the object
 }
 \description{
-Constructor yet to be implemented
+Constructor for Volume yet to be implemented
 }
 \examples{
 #no example yet
 }
-

@@ -17,4 +17,8 @@ Maintainer object
 \description{
 create objects of class Maintainer
 }
-
+\seealso{
+Other maintainer: \code{\link{Label_Maintainer}},
+  \code{\link{Maintainer-class}}
+}
+\concept{maintainer}
