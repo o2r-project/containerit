@@ -252,7 +252,6 @@ versioned_install_instructions <- function(pkgs) {
 
 }
 
-
 .find_by_sysreqs_api <- function(package, platform) {
   # calls like e.g. https://sysreqs.r-hub.io/pkg/rgdal,curl,rmarkdown/linux-x86_64-ubuntu-gcc are much faster than doing separate calls for each package
   if (length(package) > 0) {
