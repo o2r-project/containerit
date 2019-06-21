@@ -651,7 +651,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
     str <- readLines(con, warn = FALSE)
     },
     error = function(e) {
-      warning("Could not retrieve existing tags (offline?), error: ", e)
+      stop("Could not retrieve existing tags from ", urlstr, " (offline?), error: ", e)
     },
     finally = close(con))
 

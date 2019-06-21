@@ -8,7 +8,9 @@ test_that("GitHub packages can be installed", {
   #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo2.RData")
   load("./github/sessionInfo2.RData")
 
-  the_dockerfile <- dockerfile(github_test_sessionInfo, maintainer = "o2r", image = getImageForVersion("3.3.2"))
+  output <- capture_output(
+    the_dockerfile <- dockerfile(github_test_sessionInfo, maintainer = "o2r", image = getImageForVersion("3.3.2"))
+  )
   #write(the_dockerfile,"./github/Dockerfile")
 
   expected_file <- readLines("./github/Dockerfile")

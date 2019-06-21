@@ -63,7 +63,6 @@ format.Dockerfile <- function(x, ...) {
 
 .write.Dockerfile <-
   function(x, file = file.path(getwd(), "Dockerfile")) {
-    futile.logger::flog.info("Writing dockerfile to %s", file)
     return(write(toString(x), file))
   }
 

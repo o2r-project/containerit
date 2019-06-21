@@ -8,7 +8,9 @@ test_that("Error when nothing is provided to Entrypoint constructor", {
 })
 
 test_that("Error when non-Entrypoint object is provided to Dockerfile", {
-  expect_error(dockerfile(from = NULL, entrypoint = "Rscript -e '1+1'"))
+  output <- capture_output({
+    expect_error(dockerfile(from = NULL, entrypoint = "Rscript -e '1+1'"))
+  })
 })
 
 test_that("Error when NULL is provided as program", {
@@ -52,20 +54,22 @@ test_that("Entrypoint parameters correctly rendered in shell form", {
 })
 
 test_that("Entrypoint command is correctly added to Dockerfile as second to last line", {
-  the_dockerfile <- dockerfile(from = NULL,
+  output <- capture_output(the_dockerfile <- dockerfile(from = NULL,
                    entrypoint = Entrypoint("Rscript"),
-                   cmd = Cmd("script.R"))
+                   cmd = Cmd("script.R")))
   df_string <- toString(the_dockerfile)
   expect_equal(df_string[length(df_string) - 1], 'ENTRYPOINT ["Rscript"]')
 })
 
 test_that("Entrypoint command is correctly rendered to file", {
-  expect_warning(the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
+  output <- capture_output({
+    expect_warning(the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
                    maintainer = NULL, container_workdir = NULL,
                    entrypoint = Entrypoint("top", list("-b")),
                    cmd = Cmd(params = c("-c"))), "base image")
-  tempfile <- file.path(tempdir(), "Dockerfile.entrypoint")
-  write(the_dockerfile, file = tempfile)
+    tempfile <- file.path(tempdir(), "Dockerfile.entrypoint")
+    write(the_dockerfile, file = tempfile)
+  })
 
   control_file <- "./entrypoint/Dockerfile"
   control_instructions <- readLines(control_file)
