@@ -23,13 +23,16 @@ add_install_instructions <- function(dockerfile,
   if (filter_baseimage_pkgs && !versioned_packages) {
     image <- docker_arguments(dockerfile@image)
     available_pkgs <- get_installed_packages(image = image)$pkg
-    skipable <- pkgs$name %in% available_pkgs
-    skipped_str <- toString(sort(unlist(pkgs[skipable,]$name)))
+    cran_packages <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
+    skipable <- cran_packages$name %in% available_pkgs
+    skipped_str <- toString(sort(as.character(cran_packages[skipable,]$name)))
     futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                              image, skipped_str)
-    addInstruction(dockerfile) <- Comment(text = paste0("Packages skipped because they are in the base image: ",
+    addInstruction(dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
                                                         skipped_str))
-    pkgs <- pkgs[!skipable,]
+
+    # do not add skippable, add all non-CRAN packages
+    pkgs <- rbind(cran_packages[!skipable,], pkgs[pkgs$source != "CRAN",])
   }
 
   # 0. Installing github packages requires the package 'remotes'

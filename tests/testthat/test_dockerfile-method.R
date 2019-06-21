@@ -8,8 +8,12 @@ test_that("dockerfile object can be saved to file", {
   dir.create(t_dir)
 
   gen_file <- paste(t_dir, "Dockerfile", sep = "/")
-  dfile <- dockerfile(from = NULL, maintainer = NULL, image = getImageForVersion("3.4.1"))
-  write(dfile, file = gen_file)
+  output <- capture_output({
+    dfile <- dockerfile(from = NULL,
+                        maintainer = NULL,
+                        image = getImageForVersion("3.4.1"))
+    write(dfile, file = gen_file)
+    })
 
   control_instructions <- readLines("Dockerfile.savetest")
   generated_instructions <- readLines(gen_file)
@@ -20,7 +24,7 @@ test_that("dockerfile object can be saved to file", {
 
 test_that("users can specify the maintainer", {
   maintainer <- methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  dfile <- dockerfile(NULL, maintainer = maintainer)
+  output <- capture_output(dfile <- dockerfile(NULL, maintainer = maintainer))
 
   expect_is(slot(dfile, "maintainer"), "Maintainer")
   mslot = methods::slot(dfile, "maintainer")
@@ -32,7 +36,7 @@ test_that("users can specify the maintainer", {
 })
 
 test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
-  dfile <- dockerfile()
+  output <- capture_output(dfile <- dockerfile())
 
   expect_is(slot(dfile, "maintainer"), "Label")
   mslot = methods::slot(dfile, "maintainer")
@@ -43,7 +47,7 @@ test_that("the default of maintainer is the current system user, and the default
 test_that("users can specify the base image", {
   imagestr <- "rocker/r-ver:3.0.0"
   fromstr <- paste("FROM", imagestr)
-  dfile1 <- dockerfile(from = NULL, image = imagestr)
+  output <- capture_output(dfile1 <- dockerfile(from = NULL, image = imagestr))
   expect_equal(as.character(slot(dfile1, "image")), fromstr)
   #check if from - instruction is the first (may be necessary to ignore comments in later tests)
   expect_length(which(toString(dfile1) == fromstr), 1)
@@ -51,38 +55,46 @@ test_that("users can specify the base image", {
 
 test_that("users can specify the R version", {
   versionstr <- "3.1.0"
-  dfile <- dockerfile(from = NULL, image = getImageForVersion(versionstr))
+  output <- capture_output(dfile <- dockerfile(from = NULL, image = getImageForVersion(versionstr)))
   #check content of image and instructions slots
   expect_equal(toString(slot(slot(dfile, "image"), "postfix")), versionstr)
   expect_match(toString(dfile), versionstr, all = FALSE)
 })
 
 test_that("users are warned if an unsupported R version is set", {
-  expect_warning(dockerfile(from = NULL, image = getImageForVersion("2.0.0")), "returning closest match")
+  output <- capture_output({
+    expect_warning(dockerfile(from = NULL, image = getImageForVersion("2.0.0")), "returning closest match")
+  })
 })
 
 test_that("R version is the current version if not specified otherwise", {
-  dfile <- dockerfile(NULL)
+  output <- capture_output(dfile <- dockerfile(NULL))
   #expect that image string contains the current R version
   expect_equal(as.character(slot(slot(dfile, "image"), "postfix")),
                paste(R.Version()$major, R.Version()$minor, sep = "."))
 })
 
 test_that("The package containerit is not packaged by default", {
-  info = clean_session(expr = quote(library(containerit)))
-  the_dockerfile <- dockerfile(info)
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info)
+    })
   expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })
 
 test_that("The package containerit is not packaged (add_self = FALSE)", {
-  info = clean_session(expr = quote(library(containerit)))
-  the_dockerfile <- dockerfile(info, add_self = FALSE)
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info, add_self = FALSE)
+  })
   expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })
 
 test_that("The package containerit can be packaged (add_self = TRUE)", {
   skip("containerit not yet available from CRAN")
-  info = clean_session(expr = quote(library(containerit)))
-  the_dockerfile <- dockerfile(info, add_self = TRUE)
+  output <- capture_output({
+    info <- clean_session(expr = quote(library(containerit)))
+    the_dockerfile <- dockerfile(info, add_self = TRUE)
+  })
   expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })

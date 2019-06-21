@@ -113,7 +113,7 @@ print(dockerfile_object)
 Instead of printing out to the console, you can also write to a file:
 
 ```{r write_df}
-write(dockerfile_object, file = tempfile(fileext = ".dockerfile"))
+containerit::write(dockerfile_object, file = tempfile(fileext = ".dockerfile"))
 ```
 
 

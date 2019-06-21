@@ -47,7 +47,7 @@
 #' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages [EXPERIMENTAL] Whether it shall be attempted to match versions of R packages
-#' @param filter_baseimage_pkgs Whether it shall be attempted to match versions of R packages
+#' @param filter_baseimage_pkgs Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.
 #'
 #' @return An object of class Dockerfile
 #'
@@ -656,7 +656,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
     str <- readLines(con, warn = FALSE)
     },
     error = function(e) {
-      warning("Could not retrieve existing tags (offline?), error: ", e)
+      stop("Could not retrieve existing tags from ", urlstr, " (offline?), error: ", e)
     },
     finally = close(con))
 

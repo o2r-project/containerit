@@ -30,7 +30,7 @@ A good summary of what the package does can be found in this [o2r project blog p
 Development version from GitHub.
 
 ```
-devtools::install_github("o2r-project/containerit")
+remotes::install_github("o2r-project/containerit")
 ```
 
 ### Use
