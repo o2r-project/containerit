@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("Metadata Creation: Label Schema factory")
 
 test_that("Build-time labels can be created", {

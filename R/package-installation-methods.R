@@ -11,7 +11,7 @@ add_install_instructions <- function(dockerfile,
                                      versioned_packages,
                                      filter_baseimage_pkgs,
                                      filter_deps_by_image = FALSE) {
-  if (is<.null(pkgs) || nrow(pkgs) < 1) {
+  if (is.null(pkgs) || nrow(pkgs) < 1) {
     futile.logger::flog.debug("Input packages is %s - not adding any install instructions", toString(pkgs))
     return(dockerfile)
   }
@@ -85,7 +85,20 @@ add_install_instructions <- function(dockerfile,
       addInstruction(dockerfile) <- Run("install2.r", "versions")
     }
 
-    # 2. add installation instruction for Bioconductor packages
+    # 2. add installation instruction for CRAN packages
+    pkgs_cran <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
+    if (nrow(pkgs_cran) > 0) {
+      if (versioned_packages) {
+        futile.logger::flog.info("Adding versioned CRAN packages: %s", toString(pkgs_cran$name))
+        addInstruction(dockerfile) <- versioned_install_instructions(pkgs_cran)
+      } else {
+        cran_packages <- sort(as.character(unlist(pkgs_cran$name))) # sort, to increase own reproducibility
+        futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
+        addInstruction(dockerfile) <- Run("install2.r", cran_packages)
+      }
+    } else futile.logger::flog.debug("No CRAN packages to add.")
+
+    # 3. add installation instruction for Bioconductor packages
     pkgs_bioc <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "Bioconductor"),]
     if (nrow(pkgs_bioc) > 0) {
       if (versioned_packages) {
@@ -101,19 +114,6 @@ add_install_instructions <- function(dockerfile,
                                                                    bioc_packages))
       }
     } else futile.logger::flog.debug("No Bioconductor packages to add.")
-
-    # 3. add installation instruction for CRAN packages
-    pkgs_cran <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
-    if (nrow(pkgs_cran) > 0) {
-      if (versioned_packages) {
-        futile.logger::flog.info("Adding versioned CRAN packages: %s", toString(pkgs_cran$name))
-        addInstruction(dockerfile) <- versioned_install_instructions(pkgs_cran)
-      } else {
-        cran_packages <- sort(as.character(unlist(pkgs_cran$name))) # sort, to increase own reproducibility
-        futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-        addInstruction(dockerfile) <- Run("install2.r", cran_packages)
-      }
-    } else futile.logger::flog.debug("No CRAN packages to add.")
 
     # 4. add installation instruction for GitHub packages
     pkgs_gh <- pkgs[stringr::str_detect(string = pkgs$source, stringr::regex("GitHub", ignore_case = TRUE)),]

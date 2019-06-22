@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility-functions.R
 \name{extract_session_file}
 \alias{extract_session_file}
-\title{Reads a \code{sessionInfo} object from an \code{Rdata} file}
+\title{Reads a \code{sessionInfo} object from an \code{RData} file}
 \usage{
 extract_session_file(file)
 }
@@ -13,7 +13,7 @@ extract_session_file(file)
 An object of class \code{sessionInfo}
 }
 \description{
-Reads a \code{sessionInfo} object from an \code{Rdata} file
+Reads a \code{sessionInfo} object from an \code{RData} file
 }
 \examples{
 sessionInfo <- sessionInfo()

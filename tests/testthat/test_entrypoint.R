@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("entrypoint instruction")
 
 test_that("Error when nothing is provided to Entrypoint constructor", {

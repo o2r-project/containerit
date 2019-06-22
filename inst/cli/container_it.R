@@ -67,7 +67,7 @@ Examples:
 
 
 library(methods)
-library(containerit)
+library("containerit")
 
 if (length(commandArgs(trailingOnly = TRUE)) == 0) {
   # the line below creates an error within R sessions (bug?)

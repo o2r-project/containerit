@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("installation of packages from GitHub")
 
 test_that("GitHub packages can be installed", {

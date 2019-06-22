@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("expose instruction")
 
 # EXPOSE <port> [<port>/<protocol>...]

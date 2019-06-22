@@ -214,7 +214,7 @@ dockerfile <- function(from = utils::sessionInfo(),
       stop("Unsupported 'from': ", class(from), " ", from)
     }
 
-    # copy additional objects into the container in an Rdata file
+    # copy additional objects into the container in an RData file
     .filename = ".RData"
     if ("save_image_filename" %in% names(save_image)) {
       .filename <- save_image$save_image_filename
@@ -428,7 +428,7 @@ dockerfileFromFile <- function(file,
     # make sure that the path is relative to context
     rel_path <- .makeRelative(file, context)
 
-    # execute script / markdowns or read Rdata file to obtain sessioninfo
+    # execute script / markdowns or read RData file to obtain sessioninfo
     if (stringr::str_detect(string = file,
                             pattern = stringr::regex(".R$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
