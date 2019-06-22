@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Introduction to package \texttt{containerit}}
+  %\VignetteIndexEntry{Using \texttt{containerit} Docker image}
   %\VignetteEncoding{UTF-8}
 ---
 

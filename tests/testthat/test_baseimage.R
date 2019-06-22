@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("baseimage helper functions")
 
 test_that("installed packages can be read from a Docker image", {

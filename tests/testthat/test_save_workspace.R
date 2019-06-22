@@ -7,7 +7,7 @@ unlink("test_file.RData")
 
 test_that("Session objects with default file name can be containerized", {
   rm(list = ls(envir = environment()), envir = environment()) # start clean
-  expect_false(file.exists(".RData"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
+  expect_false(file.exists(".RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
   test_vector <- c(1:10)
@@ -41,7 +41,7 @@ test_that("Session objects with default file name can be containerized", {
 
 test_that("Selected session objects with configured file name can be containerized", {
   rm(list = ls(envir = environment()), envir = environment()) # start clean
-  expect_false(file.exists("test_file.RData"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
+  expect_false(file.exists("test_file.RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
   test_number <- 42

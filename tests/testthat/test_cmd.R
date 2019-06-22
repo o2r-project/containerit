@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Rcmdroducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("cmd instruction")
 
 test_that("Error when nothing is provided to Cmd constructor", {

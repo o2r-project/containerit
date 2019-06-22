@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("label instruction")
 
 test_that("Labels of arbitrary content can be added to a Dockerfile",{

@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("copy instruction")
 
 test_that("A valid Copy instruction can be created" , {

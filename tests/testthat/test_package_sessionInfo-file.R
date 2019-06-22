@@ -98,7 +98,7 @@ test_that("R version can be retrieved from session_info", {
   expect_equal(ver3, paste0(R.version$major, ".", R.version$minor), "version extraction from devtools::session_info")
 })
 
-test_that("error if Rdata file contains more than one object", {
+test_that("error if RData file contains more than one object", {
   the_file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
   a <- "1"
   b <- "2"

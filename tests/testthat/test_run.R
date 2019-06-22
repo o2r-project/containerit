@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("run instruction")
 
 test_that("A valid Run instruction can be created" , {
