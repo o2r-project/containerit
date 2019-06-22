@@ -1,9 +1,10 @@
 Package: containerit
 Type: Package
 Title: Package R in Docker Containers
-Version: 0.5.0.9004
+Version: 0.5.0.9005
 Authors@R: c(person("Daniel", "Nuest", role = c("aut", "cre"), email = "daniel.nuest@uni-muenster.de", comment = c(ORCID = "0000-0003-2392-6140")),
-    person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")))
+    person("Matthias", "Hinz", role = c("aut"), email = "matthias.m.hinz@gmail.com", comment = c(ORCID = "0000-0001-6837-9406")),
+    person("Patrick", "Schratz", role = c("ctb"), comment = c(ORCID = "0000-0003-0748-6624")))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Depends:
@@ -22,7 +23,8 @@ Imports:
     sessioninfo,
     stevedore,
     versions,
-    callr
+    callr,
+    BiocManager
 VignetteBuilder: knitr
 Description: Package R sessions, scripts, workspaces and vignettes together with
     all dependencies to execute them in Docker containers. This package is supported
@@ -53,7 +55,7 @@ Suggests:
     ggplot2,
     lattice,
     stevedore
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'

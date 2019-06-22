@@ -20,7 +20,7 @@ test_that("error during build when installing too old a version", {
              con = file.path(the_dockerfile_dir, "Dockerfile"))
 
   client <- stevedore::docker_client()
-  expect_error(client$image$build(context = the_dockerfile_dir, dockerfile = "Dockerfile"))
+  output <- capture_output(expect_error(client$image$build(context = the_dockerfile_dir, dockerfile = "Dockerfile")))
 })
 
 test_that("generation function for multiple packages works", {
@@ -50,9 +50,9 @@ test_info$otherPkgs$testpkg2$Version <- "1.5-3"
 class(test_info) <- "sessionInfo"
 
 test_that("dockerfile with versions has only one unversioned install2.r for version package, and otherwise only versioned install statements", {
-  the_dockerfile <- dockerfile(from = test_info,
-                               maintainer = "o2r",
-                               versioned_packages = TRUE)
+  output <- capture_output(the_dockerfile <- dockerfile(from = test_info,
+                                                        maintainer = "o2r",
+                                                        versioned_packages = TRUE))
   expect_s4_class(the_dockerfile,"Dockerfile")
 
   expected_file <- readLines("package_versions/Dockerfile")
@@ -65,7 +65,7 @@ test_that("versions install commands are sorted by package name", {
 
   instruction <- containerit:::versioned_install_instructions(pkgs)
 
-  params <- instruction@params # even params are the -e ones
+  params <- instruction@params # uneven params are '-e'
   expect_equal(params[2], "versions::install.versions('a', '1')")
   expect_equal(params[4], "versions::install.versions('b', '4')")
   expect_equal(params[6], "versions::install.versions('c', '3')")
@@ -75,19 +75,21 @@ test_that("versions install commands are sorted by package name", {
 test_that("generated versioned Dockerfile can be build and executed", {
   skip_if_not(stevedore::docker_available())
 
-  the_dockerfile <- dockerfile(from = test_info,
-                               maintainer = "o2r",
-                               versioned_packages = TRUE)
+  output <- capture_output(the_dockerfile <- dockerfile(from = test_info,
+                                                        maintainer = "o2r",
+                                                        versioned_packages = TRUE))
 
   the_dockerfile_dir <- tempdir()
   write(x = the_dockerfile, file = file.path(the_dockerfile_dir, "Dockerfile"))
 
-  client <- stevedore::docker_client()
-  build <- client$image$build(context = the_dockerfile_dir, dockerfile = "Dockerfile", tag = "containerit_test_versioned_packages")
-  run <- client$container$run(image = build$id(), rm = TRUE, cmd = c('Rscript',
-                                                                     '-e', 'library(\"fortunes\");',
-                                                                     '-e', 'library(\"cowsay\");',
-                                                                     '-e', 'sessionInfo();'))
+  output <- capture_output({
+    client <- stevedore::docker_client()
+    build <- client$image$build(context = the_dockerfile_dir, dockerfile = "Dockerfile", tag = "containerit_test_versioned_packages")
+    run <- client$container$run(image = build$id(), rm = TRUE, cmd = c('Rscript',
+                                                                       '-e', 'library(\"fortunes\");',
+                                                                       '-e', 'library(\"cowsay\");',
+                                                                       '-e', 'sessionInfo();'))
+  })
   expect_match(toString(run$logs), "cowsay_0.5.0")
   expect_match(toString(run$logs), "fortunes_1.5-3")
 })

@@ -1,4 +1,5 @@
-FROM rocker/verse:3.5.0
+# Dockerfile part of https://github.com/o2r-project/containerit/
+FROM rocker/verse:3.5.3
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \

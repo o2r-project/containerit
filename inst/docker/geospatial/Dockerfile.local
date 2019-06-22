@@ -1,5 +1,5 @@
-FROM rocker/geospatial:3.5.0
-LABEL maintainer="o2r project <http://o2r.info>"
+# Dockerfile part of https://github.com/o2r-project/containerit/
+FROM rocker/geospatial:3.5.3
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \

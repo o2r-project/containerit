@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("expose instruction")
 
 # EXPOSE <port> [<port>/<protocol>...]
@@ -32,7 +32,7 @@ test_that("Expose instructions can be created and added to a Dockerfile",{
 
   expect_error(Expose(port = "1/cat"), "protocol of container must be")
 
-  the_dockerfile <- dockerfile(empty_session())
+  output <- capture_output(the_dockerfile <- dockerfile(empty_session()))
   addInstruction(the_dockerfile) <- list(expose1, expose2c)
   df_str <- toString(the_dockerfile)
   expect_true(toString(expose1) %in% df_str)

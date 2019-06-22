@@ -18,21 +18,25 @@ docker_sessionInfo <- NULL
 dockerfile_object <- NULL
 
 test_that("a local sessionInfo() can be created ", {
-  local_sessionInfo <<- clean_session(expr = expressions)
+  output <- capture_output(local_sessionInfo <<- clean_session(expr = expressions))
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })
 
 test_that("a sessionInfo can be reproduced with Docker", {
   skip_if_not(stevedore::docker_available())
 
-  dockerfile_object <- dockerfile(local_sessionInfo)
-  docker_tempimage_id <- docker_build(dockerfile_object)
+  output <- capture_output({
+    dockerfile_object <- dockerfile(local_sessionInfo)
+    docker_tempimage_id <- docker_build(dockerfile_object)
+  })
 
   #expect that image was created:
   client <- stevedore::docker_client()
   expect_true(docker_tempimage_id %in% client$image$list()$id)
 
-  docker_sessionInfo <<- extract_session_image(docker_tempimage_id, expressions)
+  output <- capture_output({
+    docker_sessionInfo <<- extract_session_image(docker_tempimage_id, expressions)
+  })
 
   #clean up: remove image
   client$image$remove(docker_tempimage_id, force = TRUE)

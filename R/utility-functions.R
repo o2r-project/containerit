@@ -102,7 +102,7 @@ addInstruction <- function(dockerfileObject, value) {
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
-#' @param from the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{Rdata} file with a session info object
+#' @param from the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{RData} file with a session info object
 #' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
 #'
 #' @export
@@ -134,7 +134,7 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
   return(r_version)
 }
 
-#' Reads a \code{sessionInfo} object from an \code{Rdata} file
+#' Reads a \code{sessionInfo} object from an \code{RData} file
 #'
 #' @param file file path
 #'
@@ -152,17 +152,16 @@ extract_session_file <- function(file) {
   e1 <- new.env()
   load(file = file, envir = e1)
 
-  futile.logger::flog.debug("Loaded Rdata file with objects %s", toString(ls(envir = e1)))
+  futile.logger::flog.debug("Loaded RData file with objects %s", toString(ls(envir = e1)))
   if (length(ls(envir = e1)) != 1)
-    stop("Provided Rdata file must contain exactly one object.")
+    stop("Provided RData file must contain exactly one object.")
 
-  if (!grepl(pattern = "sessionInfo|sessioninfo|session_info", ls(envir = e1)[1]))
-    stop("Provided objects must be named sessionInfo|session_info|sessionInfo but have", ls(envir = e1)[1])
+  if (!grepl(pattern = "sessionInfo|sessioninfo|session_info|info|session", ls(envir = e1)[1]))
+    stop("Provided objects must be named sessionInfo|session_info|sessionInfo|info|session but have", ls(envir = e1)[1])
 
   the_info <- get(ls(envir = e1)[1], envir = e1)
 
-  if (!(inherits(the_info, "sessionInfo") ||
-         inherits(the_info, "session_info")))
+  if (!(inherits(the_info, "sessionInfo") || inherits(the_info, "session_info")))
     stop("Provided sessionInfo objects must have class 'sessionInfo' or 'session_info' but is ", class(the_info))
 
   return(the_info)

@@ -47,7 +47,7 @@
 #' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages [EXPERIMENTAL] Whether it shall be attempted to match versions of R packages
-#' @param filter_baseimage_pkgs Whether it shall be attempted to match versions of R packages
+#' @param filter_baseimage_pkgs Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.
 #'
 #' @return An object of class Dockerfile
 #'
@@ -214,7 +214,7 @@ dockerfile <- function(from = utils::sessionInfo(),
       stop("Unsupported 'from': ", class(from), " ", from)
     }
 
-    # copy additional objects into the container in an Rdata file
+    # copy additional objects into the container in an RData file
     .filename = ".RData"
     if ("save_image_filename" %in% names(save_image)) {
       .filename <- save_image$save_image_filename
@@ -311,7 +311,7 @@ dockerfileFromSession.sessionInfo <- function(session,
              version <- NA
              source <- NA
 
-             #check if package come from CRAN or GitHub
+             #check if package come from CRAN, GitHub or Bioconductor
              if ("Repository" %in% names(pkg) &&
                  stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
                source <- "CRAN"
@@ -320,7 +320,11 @@ dockerfileFromSession.sessionInfo <- function(session,
                         stringr::str_detect(pkg$RemoteType, "(?i)github")) {
                source <- "github"
                version <- getGitHubRef(name, pkgs)
-             } else {
+             } else if ("biocViews" %in% names(pkg)) {
+               source <- "Bioconductor"
+               version <- pkg$Version
+             }
+               else {
                warning("Failed to identify a source for package ", name,
                        ". Therefore the package cannot be installed in the Docker image.\n")
              }
@@ -424,7 +428,7 @@ dockerfileFromFile <- function(file,
     # make sure that the path is relative to context
     rel_path <- .makeRelative(file, context)
 
-    # execute script / markdowns or read Rdata file to obtain sessioninfo
+    # execute script / markdowns or read RData file to obtain sessioninfo
     if (stringr::str_detect(string = file,
                             pattern = stringr::regex(".R$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
@@ -651,7 +655,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
     str <- readLines(con, warn = FALSE)
     },
     error = function(e) {
-      warning("Could not retrieve existing tags (offline?), error: ", e)
+      stop("Could not retrieve existing tags from ", urlstr, " (offline?), error: ", e)
     },
     finally = close(con))
 

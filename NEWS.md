@@ -1,4 +1,3 @@
-# containerIt 0.1.0 (2016-xx-xx)
+# containerit 0.5.0 (2019-xx-xx)
 
-* Initial release
-* Added a `NEWS.md` file to track changes to the package.
+* Initial release with support for creating a Dockerfile from sessionInfos (objects, stored in files) and installing packages from CRAN, Bioconductor, and GitHub

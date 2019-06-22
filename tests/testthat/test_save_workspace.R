@@ -7,7 +7,7 @@ unlink("test_file.RData")
 
 test_that("Session objects with default file name can be containerized", {
   rm(list = ls(envir = environment()), envir = environment()) # start clean
-  expect_false(file.exists(".RData"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
+  expect_false(file.exists(".RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
   test_vector <- c(1:10)
@@ -15,7 +15,7 @@ test_that("Session objects with default file name can be containerized", {
   assign("test_float", 17.42)
   assign("test_list", list(1, "two", 3.00))
 
-  the_dockerfile <- dockerfile(save_image = TRUE, envir = environment())
+  output <- capture_output(the_dockerfile <- dockerfile(save_image = TRUE, envir = environment()))
 
   # check Dockerfile: select copy instructions that occur after workdir instructions
   inst <- methods::slot(the_dockerfile,"instructions")
@@ -30,7 +30,7 @@ test_that("Session objects with default file name can be containerized", {
   expect_true(file.exists(".RData"), "The expected workspace image '.RData' file was not written to working directory.")
   rm(list = ls(envir = environment()), envir = environment())
 
-  load(".RData", envir = environment(), verbose = TRUE)
+  load(".RData", envir = environment())
   expect_equal(ls(envir = environment()), c("test_float", "test_list", "test_number", "test_text", "test_vector"))
   expect_equal(test_text, "test")
   expect_equal(test_number, 42)
@@ -41,13 +41,15 @@ test_that("Session objects with default file name can be containerized", {
 
 test_that("Selected session objects with configured file name can be containerized", {
   rm(list = ls(envir = environment()), envir = environment()) # start clean
-  expect_false(file.exists("test_file.RData"), "Rdata file already exists in testthat folder. Remove manually and restart test.")
+  expect_false(file.exists("test_file.RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
   test_number <- 42
   test_list <- list(one = "two", "data" = c(1:10))
 
-  the_dockerfile <- dockerfile(save_image = list("test_text", save_image_filename = "test_file.RData", "test_list"), envir = environment())
+  output <- capture_output(the_dockerfile <- dockerfile(save_image = list("test_text",
+                                                                          save_image_filename = "test_file.RData", "test_list"),
+                                                        envir = environment()))
 
   # check Dockerfile: select copy instructions that occur after workdir instructions
   inst <- methods::slot(the_dockerfile,"instructions")
@@ -70,9 +72,10 @@ test_that("Selected session objects with configured file name can be containeriz
 })
 
 test_that("Program ignores unsupported input for save_image", {
-  expect_s4_class(dockerfile(from = sessionInfo(), save_image = data.frame()), "Dockerfile")
-  expect_s4_class(dockerfile(from = sessionInfo(), save_image = matrix()), "Dockerfile")
+  output <- capture_output(
+    expect_s4_class(dockerfile(from = sessionInfo(), save_image = data.frame()), "Dockerfile")
+  )
+  output <- capture_output(
+    expect_s4_class(dockerfile(from = sessionInfo(), save_image = matrix()), "Dockerfile")
+  )
 })
-
-unlink(".RData")
-unlink("test_file.RData")

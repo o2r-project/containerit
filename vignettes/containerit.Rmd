@@ -194,12 +194,12 @@ It then proceeds to package this file along with all other resources in the dire
 
 ### 2.7 Packaging from a stored sessionInfo
 
-You can also save your `sessionInfo()` into an `Rdata` file and create a `Dockerfile` form it.
+You can also save your `sessionInfo()` into an `.RData` file and create a `Dockerfile` form it.
 The `sessionInfo` object must have the one of the names `sessionInfo`, `sessioninfo`, or `session_info`.
 It must be the only object in the `.RData` file.
 This is useful when you want to re-create sessions on different machines.
 
-```{r sessionInfo_Rdata}
+```{r sessionInfo_RData}
 suppressPackageStartupMessages(library("sf"))
 sessionInfo <- sessionInfo()
 save(sessionInfo, file = file.path(temp_workspace, "sessionInfo.RData"))

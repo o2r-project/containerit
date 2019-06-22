@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
+library("containerit")
 context("label instruction")
 
 test_that("Labels of arbitrary content can be added to a Dockerfile",{
@@ -13,7 +13,7 @@ test_that("Labels of arbitrary content can be added to a Dockerfile",{
   str2 <- toString(label2)
   expect_equal(str2, "LABEL key1=\"this\" \\\n\tkey2=\"that\" \\\n\tothekey=\"content\"")
 
-  the_dockerfile <- dockerfile(empty_session())
+  output <- capture_output(the_dockerfile <- dockerfile(empty_session()))
   addInstruction(the_dockerfile) <- list(label1, label2)
   df_str <- toString(the_dockerfile)
   expect_true(str1 %in% df_str)

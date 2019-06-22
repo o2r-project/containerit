@@ -2,7 +2,7 @@
 
 # You can use the following code to manually inspect and manipulate the configuration file.
 if (FALSE) {
-  library(containerit)
+  library("containerit")
   source("R/containerit-config.R")
 
   current_config <- .containerit_read_config()
