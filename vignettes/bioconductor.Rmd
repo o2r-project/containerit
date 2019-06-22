@@ -1,0 +1,49 @@
+---
+title: "Using Bioconductor with `containerit`"
+author: "Daniel Nüst"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Using Bioconductor with \texttt{containerit}}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- Copyright 2019 Opening Reproducible Research (https://o2r.info) -->
+
+`containerit` can install [_Bioconductor_](https://bioconductor.org) packages.
+
+First we need a _Bioconductor_ package locally:
+
+```{r install_from_bioc, message=FALSE, warning=FALSE, results='hide'}
+if (!require("BiocGenerics", character.only = TRUE)) BiocManager::install(c("BiocGenerics"))
+```
+
+Then we load the package in a clean session and save the session, and only then create a `Dockerfile` from the session to not have `containerit`-specific dependencies in the `Dockerfile`:
+
+```{r bioc_dockerfile, message=FALSE}
+info <- callr::r_safe(function() {
+      suppressPackageStartupMessages({
+        library("BiocGenerics")
+        sessionInfo()
+      })
+    })
+
+library("containerit")
+df <- dockerfile(from = info)
+```
+
+A shortcut to this is provided with the function `containerit::clean_session(..)`:
+
+```{r bioc_dockerfile_clean_session, results='hide'}
+containerit::clean_session(expr = quote(library("BiocGenerics")))
+```
+
+
+The created `Dockerfile` is:
+
+```{r print, results='markup', comment=NA}
+containerit::print(df)
+```
+
+Using a specific [_Bioconductor_ version](https://bioconductor.org/about/release-announcements/) is **not supported**. 

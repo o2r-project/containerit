@@ -320,8 +320,7 @@ dockerfileFromSession.sessionInfo <- function(session,
                         stringr::str_detect(pkg$RemoteType, "(?i)github")) {
                source <- "github"
                version <- getGitHubRef(name, pkgs)
-             } else if ("git_url" %in% names(pkg) &&
-                        stringr::str_detect(pkg$git_url, "bioconductor")) {
+             } else if ("biocViews" %in% names(pkg)) {
                source <- "Bioconductor"
                version <- pkg$Version
              }
