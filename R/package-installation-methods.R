@@ -108,7 +108,7 @@ add_install_instructions <- function(dockerfile,
         bioc_packages <- sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
         futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
         repos = as.character(BiocManager::repositories())
-        addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r%s -r%s",
+        addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
                                                                            repos[1], repos[2],
                                                                            repos[3], repos[4]),
                                                                    bioc_packages))
