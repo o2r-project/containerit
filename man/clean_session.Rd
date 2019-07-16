@@ -6,7 +6,7 @@
 \usage{
 clean_session(expr = c(), script_file = NULL, rmd_file = NULL,
   echo = FALSE, predetect = TRUE,
-  repos = "http://cloud.r-project.org")
+  repos = "https://cloud.r-project.org")
 }
 \arguments{
 \item{expr}{vector of expressions to be executed in the session (see \code{\link{quote}})}

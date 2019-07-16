@@ -21,6 +21,7 @@ This is useful if you do not want to install a full stack of packages in your lo
 The following example pulls the `geospatial` variant of the containerit images and prints out the created Dockerfile to the console.
 
 ```{bash tldr}
+docker pull o2rproject/containerit:geospatial
 docker run --rm o2rproject/containerit:geospatial R -e "library(sf); the_dockerfile <- containerit::dockerfile(); print(the_dockerfile);"
 ```
 
@@ -76,7 +77,7 @@ cat /tmp/containerit/Dockerfile
 rm -r /tmp/containerit
 ```
 
-## Build image
+## Build image locally
 
 With the following commands you can build an image from the local source code.
 The following commands executed in the `containerit` source directory create an image `containerit:geo-manual` and run it to create a `Dockerfile`:

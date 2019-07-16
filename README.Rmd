@@ -42,9 +42,9 @@ See the vignettes at `vignettes/containerit.Rmd` for usage from the R command li
 ```{r, echo=FALSE, results='hide'}
 suppressPackageStartupMessages(library("here"))
 dockerfile_latest <- readLines(here("inst/docker/Dockerfile"))
-base_image = sub(".*? (.+)", "\\1", dockerfile_latest[[1]])
+base_image = sub(".*? (.+)", "\\1", dockerfile_latest[[2]])
 dockerfile_geospatial <- readLines(here("inst/docker/geospatial/Dockerfile"))
-geospatial_base_image = sub(".*? (.+)", "\\1", dockerfile_geospatial[[1]])
+geospatial_base_image = sub(".*? (.+)", "\\1", dockerfile_geospatial[[2]])
 ```
 
 Images are available starting from different base images.

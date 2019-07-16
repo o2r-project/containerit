@@ -42,7 +42,7 @@ also available with version tags.
 #### verse
 
 Base image:
-`rocker/verse:3.5.0`
+`rocker/verse:3.5.3`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
@@ -51,7 +51,7 @@ Base image:
 #### geospatial
 
 Base image:
-`rocker/geospatial:3.5.0`
+`rocker/geospatial:3.5.3`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")

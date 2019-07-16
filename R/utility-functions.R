@@ -300,7 +300,7 @@ clean_session <- function(expr = c(),
                           rmd_file = NULL,
                           echo = FALSE,
                           predetect = TRUE,
-                          repos = "http://cloud.r-project.org") {
+                          repos = "https://cloud.r-project.org") {
   #append commands to create a local sessionInfo
   required_pkgs <- c()
   if (!is.null(script_file) && file.exists(script_file)) {
