@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S4 Class representing a COPY-instruction — Copy-class • containerit</title>
+<title>Optains a session info from R executed in a container — extract_session_image • containerit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,10 @@
 
 
 
-<meta property="og:title" content="S4 Class representing a COPY-instruction — Copy-class" />
+<meta property="og:title" content="Optains a session info from R executed in a container — extract_session_image" />
 
-<meta property="og:description" content="S4 Class representing a COPY-instruction" />
+<meta property="og:description" content="The function uses the given Docker image and executes the given expressions.
+To access the session information, a directory is mounted from the host into the container, to which the R session in the container saves an RData file with the sessionInfo object." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,55 +124,104 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>S4 Class representing a COPY-instruction</h1>
-    <small class="dont-index">Source: <a href='https://github.com/o2r/containerit/blob/master/R/Class-Copy.R'><code>R/Class-Copy.R</code></a></small>
-    <div class="hidden name"><code>Copy-class.Rd</code></div>
+    <h1>Optains a session info from R executed in a container</h1>
+    <small class="dont-index">Source: <a href='https://github.com/o2r/containerit/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
+    <div class="hidden name"><code>extract_session_image.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>S4 Class representing a COPY-instruction</p>
+    <p>The function uses the given Docker image and executes the given expressions.
+To access the session information, a directory is mounted from the host into the container, to which the R session in the container saves an RData file with the sessionInfo object.</p>
     
     </div>
 
+    <pre class="usage"><span class='fu'>extract_session_image</span>(<span class='no'>docker_image</span>, <span class='kw'>expr</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(), <span class='kw'>container_dir</span> <span class='kw'>=</span> <span class='st'>"/tmp"</span>,
+  <span class='kw'>local_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/tempfile'>tempfile</a></span>(<span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>"extract_bind_"</span>),
+  <span class='kw'>deleteTempfiles</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>container_name</span> <span class='kw'>=</span> <span class='st'>"containerit_capturer"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>src</th>
-      <td><p>(character vector) list of files or directories to be copied</p></td>
+      <th>docker_image</th>
+      <td><p>The name of the Docker image to run</p></td>
     </tr>
     <tr>
-      <th>dest</th>
-      <td><p>(character string) destination directory on the Docker image (either absolute or relative to working directory)</p></td>
+      <th>expr</th>
+      <td><p>A list of expressions to be executed in the session</p></td>
+    </tr>
+    <tr>
+      <th>container_dir</th>
+      <td><p>The directory in the container where a local temp directory is mounted to, for saving the session info to a file (in lack of a COPY instruction)</p></td>
+    </tr>
+    <tr>
+      <th>local_dir</th>
+      <td><p>The local directory mounted into the container</p></td>
+    </tr>
+    <tr>
+      <th>deleteTempfiles</th>
+      <td><p>Remove used <code>local_dir</code> directory when done</p></td>
+    </tr>
+    <tr>
+      <th>container_name</th>
+      <td><p>The name used to run the container (which will be removed at the end)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>object</p>
+    <p>An object of class session info</p>
     
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <div class='dont-index'><p>Other instruction classes: <code><a href='Add-class.html'>Add-class</a></code>,
-  <code><a href='Arg-class.html'>Arg-class</a></code>, <code><a href='Cmd-class.html'>Cmd-class</a></code>,
-  <code><a href='Comment-class.html'>Comment-class</a></code>,
-  <code><a href='Entrypoint-class.html'>Entrypoint-class</a></code>, <code><a href='Env-class.html'>Env-class</a></code>,
-  <code><a href='Expose-class.html'>Expose-class</a></code>, <code><a href='From-class.html'>From-class</a></code>,
-  <code><a href='Healthcheck-class.html'>Healthcheck-class</a></code>,
-  <code><a href='Instruction-class.html'>Instruction-class</a></code>,
-  <code><a href='Label-class.html'>Label-class</a></code>,
-  <code><a href='Maintainer-class.html'>Maintainer-class</a></code>,
-  <code><a href='Onbuild-class.html'>Onbuild-class</a></code>, <code><a href='Run-class.html'>Run-class</a></code>,
-  <code><a href='Run_shell-class.html'>Run_shell-class</a></code>, <code><a href='Shell-class.html'>Shell-class</a></code>,
-  <code><a href='Stopsignal-class.html'>Stopsignal-class</a></code>,
-  <code><a href='Volume-class.html'>Volume-class</a></code>, <code><a href='Workdir-class.html'>Workdir-class</a></code></p></div>
+    <p>This function was created for test purposes in order to compare sessionInfos.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#no example yet
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>extract_session_image</span>(<span class='st'>"rocker/geospatial:3.3.3"</span>)</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:44] Running R in container to obtain a session info using image rocker/geospatial:3.3.3 and command R --vanilla -e info &lt;- sessionInfo() -e save(list = "info", file = "/tmp/capture.RData")
+#&gt; O&gt; 
+#&gt; O&gt; R version 3.3.3 (2017-03-06) -- "Another Canoe"
+#&gt; O&gt; Copyright (C) 2017 The R Foundation for Statistical Computing
+#&gt; O&gt; Platform: x86_64-pc-linux-gnu (64-bit)
+#&gt; O&gt; 
+#&gt; O&gt; R is free software and comes with ABSOLUTELY NO WARRANTY.
+#&gt; O&gt; You are welcome to redistribute it under certain conditions.
+#&gt; O&gt; Type 'license()' or 'licence()' for distribution details.
+#&gt; O&gt; 
+#&gt; O&gt; R is a collaborative project with many contributors.
+#&gt; O&gt; Type 'contributors()' for more information and
+#&gt; O&gt; 'citation()' on how to cite R or R packages in publications.
+#&gt; O&gt; 
+#&gt; O&gt; Type 'demo()' for some demos, 'help()' for on-line help, or
+#&gt; O&gt; 'help.start()' for an HTML browser interface to help.
+#&gt; O&gt; Type 'q()' to quit R.
+#&gt; O&gt; 
+#&gt; O&gt; &gt; info &lt;- sessionInfo()
+#&gt; O&gt; &gt; save(list = "info", file = "/tmp/capture.RData")
+#&gt; O&gt; &gt; 
+#&gt; O&gt; &gt; 
+#&gt; INFO [2019-07-16 16:50:48] Wrote sessioninfo from Docker to /tmp/Rtmp2szfYe/extract_bind_538e78122c72/capture.RData</div><div class='output co'>#&gt; R version 3.3.3 (2017-03-06)
+#&gt; Platform: x86_64-pc-linux-gnu (64-bit)
+#&gt; Running under: Debian GNU/Linux 8 (jessie)
+#&gt; 
+#&gt; Matrix products: 
+#&gt; 
+#&gt; Random number generation:
+#&gt;  RNG:     
+#&gt;  Normal:  
+#&gt;  Sample:  
+#&gt;  
+#&gt; locale:
+#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=C             
+#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -180,7 +230,7 @@
       
       <li><a href="#value">Value</a></li>
 
-      <li><a href="#see-also">See also</a></li>
+      <li><a href="#note">Note</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

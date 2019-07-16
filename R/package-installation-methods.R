@@ -22,12 +22,16 @@ add_install_instructions <- function(dockerfile,
   image_name <- dockerfile@image@image
   if (filter_baseimage_pkgs && !versioned_packages) {
     image <- docker_arguments(dockerfile@image)
-    available_pkgs <- get_installed_packages(image = image)$pkg
+
+    no_log <- capture.output(available_pkgs <- get_installed_packages(image = image)$pkg)
+    futile.logger::flog.debug("Detected packages: %s", toString(no_log))
+
     cran_packages <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
     skipable <- cran_packages$name %in% available_pkgs
     skipped_str <- toString(stringr::str_sort((as.character(cran_packages[skipable,]$name))))
     futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                              image, skipped_str)
+
     addInstruction(dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
                                                         skipped_str))
 

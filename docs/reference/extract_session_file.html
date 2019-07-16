@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert an Instruction-object to a string holding a Docker instruction — as.character,Instruction-method • containerit</title>
+<title>Reads a <code>sessionInfo</code> object from an <code>RData</code> file — extract_session_file • containerit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Convert an Instruction-object to a string holding a Docker instruction — as.character,Instruction-method" />
+<meta property="og:title" content="Reads a <code>sessionInfo</code> object from an <code>RData</code> file — extract_session_file" />
 
-<meta property="og:description" content="Convert an Instruction-object to a string holding a Docker instruction" />
+<meta property="og:description" content="Reads a sessionInfo object from an RData file" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,38 +123,83 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert an Instruction-object to a string holding a Docker instruction</h1>
-    <small class="dont-index">Source: <a href='https://github.com/o2r/containerit/blob/master/R/Class-Instruction.R'><code>R/Class-Instruction.R</code></a></small>
-    <div class="hidden name"><code>as.character-Instruction-method.Rd</code></div>
+    <h1>Reads a <code>sessionInfo</code> object from an <code>RData</code> file</h1>
+    <small class="dont-index">Source: <a href='https://github.com/o2r/containerit/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
+    <div class="hidden name"><code>extract_session_file.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Convert an Instruction-object to a string holding a Docker instruction</p>
+    <p>Reads a <code>sessionInfo</code> object from an <code>RData</code> file</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for Instruction</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>as.character</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>extract_session_file</span>(<span class='no'>file</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>Instruction object (of class Run, Cmd, From ...)</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Arguments to be passed down to toString</p></td>
+      <th>file</th>
+      <td><p>file path</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A single character string in Dockerfile syntax</p>
+    <p>An object of class <code>sessionInfo</code></p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>sessionInfo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/sessionInfo'>sessionInfo</a></span>()
+<span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/tempfile'>tempfile</a></span>(<span class='kw'>tmpdir</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/tempfile'>tempdir</a></span>(), <span class='kw'>fileext</span> <span class='kw'>=</span> <span class='st'>".RData"</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/save'>save</a></span>(<span class='no'>sessionInfo</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>file</span>)
+<span class='fu'>extract_session_file</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:43] Reading object 'sessionInfo' from the given file /tmp/Rtmp2szfYe/file538e6b7c2e9d.RData</div><div class='output co'>#&gt; R version 3.6.1 (2019-07-05)
+#&gt; Platform: x86_64-pc-linux-gnu (64-bit)
+#&gt; Running under: Ubuntu 18.04.2 LTS
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+#&gt; 
+#&gt; locale:
+#&gt;  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+#&gt;  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_GB.UTF-8    
+#&gt;  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+#&gt;  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
+#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+#&gt; [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
+#&gt; 
+#&gt; other attached packages:
+#&gt; [1] containerit_0.5.0.9005 testthat_2.1.1        
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;  [1] xfun_0.8             remotes_2.1.0        rematch2_2.1.0      
+#&gt;  [4] purrr_0.3.2          htmltools_0.3.6      usethis_1.5.1       
+#&gt;  [7] yaml_2.2.0           rlang_0.4.0          pkgbuild_1.0.3      
+#&gt; [10] pkgdown_1.3.0        stevedore_0.9.1      pillar_1.4.2        
+#&gt; [13] glue_1.3.1           withr_2.1.2          automagic_0.5.1     
+#&gt; [16] semver_0.2.0         lambda.r_1.2.3       sessioninfo_1.1.1   
+#&gt; [19] stringr_1.4.0        commonmark_1.7       futile.logger_1.4.3 
+#&gt; [22] devtools_2.1.0       codetools_0.2-16     evaluate_0.14       
+#&gt; [25] memoise_1.1.0        knitr_1.23           highlight_0.4.7.2   
+#&gt; [28] callr_3.3.0          ps_1.3.0             curl_3.3            
+#&gt; [31] fansi_0.4.0          Rcpp_1.0.1           BiocManager_1.30.4  
+#&gt; [34] backports_1.1.4      formatR_1.7          desc_1.2.0          
+#&gt; [37] pkgload_1.0.2        jsonlite_1.6         debugme_1.1.0       
+#&gt; [40] fs_1.3.1             rjson_0.2.20         versions_0.3        
+#&gt; [43] digest_0.6.20        stringi_1.4.3        processx_3.4.0      
+#&gt; [46] rprojroot_1.3-2      cli_1.1.0            tools_3.6.1         
+#&gt; [49] magrittr_1.5         tibble_2.1.3         futile.options_1.0.1
+#&gt; [52] crayon_1.3.4         whisker_0.3-2        pkgconfig_2.0.2     
+#&gt; [55] MASS_7.3-51.4        xml2_1.2.0           prettyunits_1.0.2   
+#&gt; [58] sysreqs_1.0.0.9000   assertthat_0.2.1     rmarkdown_1.14      
+#&gt; [61] roxygen2_6.1.1       httr_1.4.0           rstudioapi_0.10     
+#&gt; [64] R6_2.4.0             compiler_3.6.1      </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -162,7 +207,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
