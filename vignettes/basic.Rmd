@@ -1,5 +1,5 @@
 ---
-title: "Introduction to package `containerit`"
+title: "Basic introduction to package containerit"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -10,6 +10,10 @@ vignette: >
 ---
 
 <!-- Copyright 2018 Opening Reproducible Research (https://o2r.info) -->
+
+```{r disable_logger, include=FALSE, results='hide'}
+futile.logger::flog.threshold(futile.logger::INFO)
+```
 
 ## Introduction
 
@@ -31,11 +35,11 @@ For nitty gritty things like reading/loading/installing the _exact_ versions, in
 Load the package, do your analysis, and create a Dockerfile.
 
 ```{r tldr}
-library("containerit")
+suppressPackageStartupMessages(library("containerit"))
 
 # do stuff, based on demo("krige")
-library("gstat")
-library("sp")
+suppressPackageStartupMessages(library("gstat"))
+suppressPackageStartupMessages(library("sp"))
 
 data(meuse)
 coordinates(meuse) = ~x+y
@@ -45,17 +49,17 @@ v <- variogram(log(zinc)~1, meuse)
 m <- fit.variogram(v, vgm(1, "Sph", 300, 1))
 plot(v, model = m)
 
-container <- dockerfile(from = sessionInfo())
+my_environment <- dockerfile(from = sessionInfo())
 ```
 
 The Dockerfile object can be saved to a file or printed out.
 
-```{r format,results='markup'}
-cat(as.character(format(container)), sep = "\n")
+```{r format,results='markup', comment=FALSE}
+cat(as.character(format(my_environment)), sep = "\n")
 ```
 
 ```{r write}
-write(container, file = tempfile())
+write(my_environment, file = tempfile())
 ```
 
 ```{r clear_all,results='hide',echo=FALSE}
@@ -68,10 +72,10 @@ clear_all <- function() {
   .kept.packages <- c("stats", "graphics", "grDevices", "utils", "datasets",
                       "methods", "base", "tools", "stringr", "stringi",
                       "containerit", "futile.logger", "futile.namespaces", "futile.options", "lambda.r")
-  .package.list <- search()[ifelse(unlist(gregexpr("package:",search()))==1,TRUE,FALSE)]
+  .package.list <- search()[ifelse(unlist(gregexpr("package:",search())) == 1,TRUE,FALSE)]
   .package.list <- setdiff(.package.list, paste("package:", .kept.packages, sep = ""))
-  if (length(.package.list)>0)
-    for (package in .package.list) detach(package, character.only=TRUE)
+  if (length(.package.list) > 0)
+    for (package in .package.list) detach(package, character.only = TRUE)
   
   # packages loaded via namespaces
   # .tounload <- setdiff(loadedNamespaces(), .kept.packages)
@@ -90,24 +94,11 @@ clear_all <- function() {
 clear_all()
 ```
 
-## Dockerfile examples
-
-The following demos use the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.4. Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
-
-Here is some regular R code loading a file and plotting it.
-
-```{r example_geo, message=FALSE}
-library("rgdal")
-library("maptools")
-
-nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)
-proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
-plot(nc)
-```
-
 ```{r,results='hide',echo=FALSE}
 clear_all()
 ```
+
+## Dockerfile examples
 
 ### Create Dockerfile from session
 
@@ -120,34 +111,62 @@ containerit::dockerfile(from = sessionInfo(), env = ls())
 clear_all()
 ```
 
-### Script
+### Create Dockerfile from script
+
+This example uses the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.
+Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
+Here is some regular R code loading a file and plotting it.
+
+```{r example_geo, eval=FALSE}
+library("rgdal")
+library("maptools")
+nc <- readOGR(system.file("shapes/", package = "maptools"), "sids", verbose = FALSE)
+proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")
+plot(nc)
+```
+
+The code is not executed but dynamically saved to a temporary file, which is then used to create a `Dockerfile`.
 
 ```{r example_script}
 scriptFile <- tempfile(pattern = "containerit_", fileext = ".R")
-file <- file(scriptFile)
-writeLines(c('nc <- rgdal::readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
-             'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
-             'plot(nc)'), file)
-close(file)
-class(file)
+writeLines(text = c('library("sp")',
+                    'library("rgdal")',
+                    'nc <- readOGR(system.file("shapes/", package="maptools"), "sids", verbose = FALSE)',
+                    'proj4string(nc) <- CRS("+proj=longlat +datum=NAD27")',
+                    'plot(nc)'),
+           con = scriptFile)
 
-#containerit::dockerfile(from = file)
+print(
+  containerit::dockerfile(from = scriptFile)
+)
 ```
 
 ### Workspace
 
-Go through all `.R` files in a directory and create a Dockerfile with a runtime environment which can run all of them.
+This examples packages a workspace directory.
+
+```{r example_workspace_list}
+list.files("../inst")
+```
+
+`containerit` looks for files in a directory that can be executed and creates a Dockerfile based on the first document found, in this case an R Markdown document.
 
 ```{r example_workspace}
-workspace <- getwd()
-class(workspace)
-dir.exists(workspace)
-
-#containerit::dockerfile(from = workspace)
+df <- containerit::dockerfile(from = "../inst")
+print(df)
 ```
 
-## sessionInfo()
+### Configure `Dockerfile`
 
-```{r sessionInfo}
-sessionInfo()
+You can skip available packages and choose your own base image.
+
+```{bash pull_geospatial, include=FALSE}
+docker pull rocker/geospatial:3.5.2
 ```
+
+```{r example_configure}
+df <- containerit::dockerfile(from = "../inst", image = "rocker/geospatial:3.5.2", filter_baseimage_pkgs = TRUE)
+print(df)
+```
+
+For extended configuration options see the vignettes online at https://o2r.info/containerit/articles/.

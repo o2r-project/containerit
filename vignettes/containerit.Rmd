@@ -1,5 +1,5 @@
 ---
-title: "Generating Dockerfiles for reproducible research with R"
+title: "Generating Dockerfiles for Reproducible Research with R"
 author: "Matthias Hinz, Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

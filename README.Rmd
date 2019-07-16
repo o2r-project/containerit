@@ -3,7 +3,7 @@ output: github_document
 ---
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r knitr_config, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -27,7 +27,7 @@ A good summary of what the package does can be found in this [o2r project blog p
 
 ### Install
 
-Development version from GitHub.
+Installation is only possible from GitHub:
 
 ```
 remotes::install_github("o2r-project/containerit")
@@ -35,11 +35,39 @@ remotes::install_github("o2r-project/containerit")
 
 ### Use
 
-See the vignettes at `vignettes/containerit.Rmd` for usage from the R command line, and `vignettes/container.Rmd` for the usage from a regular command line interface based on [containers from Docker Hub](https://hub.docker.com/r/o2rproject/containerit/).
+`containerit` can create `Dockerfile` objects in R and render them as `Dockerfile` instructions based on session information objects or runnable R files (`.R`, `.Rmd`).
+
+```{r use_session}
+suppressPackageStartupMessages(library("containerit"))
+my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
+```
+
+```{r use_print}
+print(my_dockerfile)
+```
+
+You can disable logging:
+
+```{r disable_logger, results='hide'}
+futile.logger::flog.threshold(futile.logger::ERROR)
+```
+
+Now create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:
+
+```{bash pull, include=FALSE}
+docker pull rocker/verse:3.5.2
+```
+
+```{r use_file}
+rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
+print(rmd_dockerfile)
+```
+
+For extended instructions, see the vignettes at in the directory `vignettes/`, which are readable online at https://o2r.info/containerit/articles/.
 
 ### Containers
 
-```{r, echo=FALSE, results='hide'}
+```{r image_names, echo=FALSE, results='hide'}
 suppressPackageStartupMessages(library("here"))
 dockerfile_latest <- readLines(here("inst/docker/Dockerfile"))
 base_image = sub(".*? (.+)", "\\1", dockerfile_latest[[2]])
@@ -96,4 +124,4 @@ docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dock
 
 containerit is licensed under GNU General Public License, version 3, see file LICENSE.
 
-Copyright (C) 2018 - o2r project.
+Copyright (C) 2019 - o2r project.

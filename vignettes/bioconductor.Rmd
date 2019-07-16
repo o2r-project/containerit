@@ -1,5 +1,5 @@
 ---
-title: "Using Bioconductor with `containerit`"
+title: "Using Bioconductor with containerit"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

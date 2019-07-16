@@ -1,0 +1,18 @@
+---
+title: "containerit demo R Markdown file"
+author: "Daniel Nüst"
+date: "16/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r math}
+1 + 1
+```
+
+```{r session}
+sessioninfo::session_info()
+```

@@ -23,16 +23,64 @@ Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https:
 
 ### Install
 
-Development version from GitHub.
+Installation is only possible from GitHub:
 
     remotes::install_github("o2r-project/containerit")
 
 ### Use
 
-See the vignettes at `vignettes/containerit.Rmd` for usage from the R
-command line, and `vignettes/container.Rmd` for the usage from a regular
-command line interface based on [containers from Docker
-Hub](https://hub.docker.com/r/o2rproject/containerit/).
+`containerit` can create `Dockerfile` objects in R and render them as
+`Dockerfile` instructions based on session information objects or
+runnable R files (`.R`, `.Rmd`).
+
+``` r
+suppressPackageStartupMessages(library("containerit"))
+my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
+#> INFO [2019-07-16 17:02:07] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-07-16 17:02:07] Trying to determine system requirements for the package(s) 'Rcpp,digest,futile.options,semver,formatR,magrittr,evaluate,stringi,curl,futile.logger,rmarkdown,lambda.r,stringr,xfun,yaml,stevedore,htmltools,knitr' from sysreqs online DB
+#> INFO [2019-07-16 17:02:10] Adding CRAN packages: curl, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, Rcpp, rmarkdown, semver, stevedore, stringi, stringr, xfun, yaml
+#> INFO [2019-07-16 17:02:10] Created Dockerfile-Object based on sessionInfo
+```
+
+``` r
+print(my_dockerfile)
+#> FROM rocker/r-ver:3.6.1
+#> LABEL maintainer="daniel"
+#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+#>   && apt-get install -y git-core \
+#>  libcurl4-openssl-dev \
+#>  libssl-dev \
+#>  pandoc \
+#>  pandoc-citeproc
+#> RUN ["install2.r", "curl", "digest", "evaluate", "formatR", "futile.logger", "futile.options", "htmltools", "knitr", "lambda.r", "magrittr", "Rcpp", "rmarkdown", "semver", "stevedore", "stringi", "stringr", "xfun", "yaml"]
+#> WORKDIR /payload/
+#> CMD ["R"]
+```
+
+You can disable logging:
+
+``` r
+futile.logger::flog.threshold(futile.logger::ERROR)
+```
+
+Now create a Dockerfile for a specific R version and R Markdown file and
+do not add any packages already available in the base
+image:
+
+``` r
+rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
+print(rmd_dockerfile)
+#> FROM rocker/verse:3.5.2
+#> LABEL maintainer="o2r"
+#> # CRAN packages skipped because they are in the base image: assertthat, cli, crayon, curl, digest, evaluate, formatR, htmltools, knitr, magrittr, Rcpp, rmarkdown, sessioninfo, stringi, stringr, withr, xfun, yaml
+#> RUN ["install2.r", "futile.logger", "futile.options", "lambda.r", "semver", "stevedore"]
+#> WORKDIR /payload/
+#> CMD ["R"]
+```
+
+For extended instructions, see the vignettes at in the directory
+`vignettes/`, which are readable online at
+<https://o2r.info/containerit/articles/>.
 
 ### Containers
 
@@ -96,4 +144,4 @@ docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dock
 containerit is licensed under GNU General Public License, version 3, see
 file LICENSE.
 
-Copyright (C) 2018 - o2r project.
+Copyright (C) 2019 - o2r project.
