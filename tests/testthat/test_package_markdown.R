@@ -96,6 +96,7 @@ test_that("Packaging fails if dependency is missing and predetection is disabled
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
   skip_on_cran() # cannot remove packages on CRAN
+  skip_on_ci()
 
   expect_warning(if (require("abe")) remove.packages("abe"))
 
