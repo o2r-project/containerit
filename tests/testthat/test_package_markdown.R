@@ -97,6 +97,8 @@ test_that("Packaging fails if dependency is missing and predetection is disabled
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
   skip_on_cran() # cannot remove packages on CRAN
 
+  expect_warning(if (require("abe")) remove.packages("abe"))
+
   expect_error(library("abe"))
 
   # install package to new library path
@@ -108,7 +110,7 @@ test_that("Packaging works if dependency is missing in the base image and predet
       the_dockerfile <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
       the_dockerfile
     },
-    libpath = c(test_lib_path, .libPaths()), repos = "http://cloud.r-project.org")
+    libpath = c(test_lib_path, .libPaths()), repos = "https://cloud.r-project.org")
   })
 
   expect_s4_class(the_dockerfile, "Dockerfile")

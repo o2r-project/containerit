@@ -49,12 +49,13 @@ Suggests:
     sf,
     dplyr,
     units,
-    proj4,
     fortunes,
     remotes,
     ggplot2,
     lattice,
-    stevedore
+    codetools,
+    BiocGenerics,
+    abe
 RoxygenNote: 6.1.1
 Collate:
     'Class-Instruction.R'

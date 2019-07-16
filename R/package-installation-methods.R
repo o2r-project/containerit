@@ -25,7 +25,7 @@ add_install_instructions <- function(dockerfile,
     available_pkgs <- get_installed_packages(image = image)$pkg
     cran_packages <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "CRAN"),]
     skipable <- cran_packages$name %in% available_pkgs
-    skipped_str <- toString(sort(as.character(cran_packages[skipable,]$name)))
+    skipped_str <- toString(stringr::str_sort((as.character(cran_packages[skipable,]$name))))
     futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                              image, skipped_str)
     addInstruction(dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
@@ -92,7 +92,7 @@ add_install_instructions <- function(dockerfile,
         futile.logger::flog.info("Adding versioned CRAN packages: %s", toString(pkgs_cran$name))
         addInstruction(dockerfile) <- versioned_install_instructions(pkgs_cran)
       } else {
-        cran_packages <- sort(as.character(unlist(pkgs_cran$name))) # sort, to increase own reproducibility
+        cran_packages <- stringr::str_sort(as.character(unlist(pkgs_cran$name))) # sort, to increase own reproducibility
         futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
         addInstruction(dockerfile) <- Run("install2.r", cran_packages)
       }
@@ -105,7 +105,7 @@ add_install_instructions <- function(dockerfile,
         futile.logger::flog.info("Adding versioned Bioconductor packages: %s", toString(pkgs_bioc$name))
         addInstruction(dockerfile) <- versioned_install_instructions(pkgs_bioc)
       } else {
-        bioc_packages <- sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
+        bioc_packages <- stringr::str_sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
         futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
         repos = as.character(BiocManager::repositories())
         addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
@@ -118,7 +118,7 @@ add_install_instructions <- function(dockerfile,
     # 4. add installation instruction for GitHub packages
     pkgs_gh <- pkgs[stringr::str_detect(string = pkgs$source, stringr::regex("GitHub", ignore_case = TRUE)),]
     if (nrow(pkgs_gh) > 0) {
-      github_packages <- sort(as.character(unlist(pkgs_gh$version))) # sort, to increase own reproducibility
+      github_packages <- stringr::str_sort(as.character(unlist(pkgs_gh$version))) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
       addInstruction(dockerfile) <- Run("installGithub.r", github_packages)
     }
