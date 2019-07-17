@@ -51,6 +51,8 @@ To build images and run containers, the package integrates with the [stevedore](
 For concrete details on reading, loading, or installing the _exact_ versions of R packages including their system dependencies/libraries, this project focuses on the geospatial domain.
 `containerit` uses the package [`futile.logger`](https://cran.r-project.org/web/packages/futile.logger/) to provide information to the user at a configurable level of detail, see [futile.logger documentation](https://cran.r-project.org/web/packages/futile.logger/README.html).
 
+The related package [`liftr`](https://liftr.me/) creates Dockerfiles for rendering R Markdown documents, but relies on manually created metadata in the document's YAML header.
+
 In the remainder of this vignette, we first introduce the main usage scenarios for `containerit` and document current challenges as well as directions for future work.
 
 ## 2. Creating a Dockerfile
