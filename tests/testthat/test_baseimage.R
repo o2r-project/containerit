@@ -31,6 +31,9 @@ test_that("installed packages are a data.frame with the image as an attribute", 
 })
 
 test_that("list of installed packages can be filtered when creating a Dockerfile", {
+  skip_on_appveyor()
+  skip_on_cran()
+
   output <- capture_output(the_dockerfile <- dockerfile(from = "package_markdown/sfr/",
                    maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
