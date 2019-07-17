@@ -15,6 +15,8 @@ has not yet been a stable, usable release suitable for the
 public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Build
 Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/nuest/containeRit?branch=master&svg=true)](https://ci.appveyor.com/project/nuest/containeRit)
 [![](http://www.r-pkg.org/badges/version/containerit)](http://www.r-pkg.org/pkg/containerit)
 
 ![containerit logo](inst/logo.png)
@@ -36,10 +38,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-07-16 17:02:07] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-07-16 17:02:07] Trying to determine system requirements for the package(s) 'Rcpp,digest,futile.options,semver,formatR,magrittr,evaluate,stringi,curl,futile.logger,rmarkdown,lambda.r,stringr,xfun,yaml,stevedore,htmltools,knitr' from sysreqs online DB
-#> INFO [2019-07-16 17:02:10] Adding CRAN packages: curl, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, Rcpp, rmarkdown, semver, stevedore, stringi, stringr, xfun, yaml
-#> INFO [2019-07-16 17:02:10] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-07-17 10:15:45] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-07-17 10:15:45] Trying to determine system requirements for the package(s) 'Rcpp,digest,futile.options,semver,formatR,magrittr,evaluate,stringi,curl,futile.logger,rmarkdown,lambda.r,stringr,xfun,yaml,stevedore,htmltools,knitr' from sysreqs online DB
+#> INFO [2019-07-17 10:15:47] Adding CRAN packages: curl, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, Rcpp, rmarkdown, semver, stevedore, stringi, stringr, xfun, yaml
+#> INFO [2019-07-17 10:15:47] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
