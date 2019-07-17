@@ -37,7 +37,6 @@ test_that("users can specify the maintainer", {
 
 test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
   output <- capture_output(dfile <- dockerfile())
-
   expect_is(slot(dfile, "maintainer"), "Label")
   mslot = methods::slot(dfile, "maintainer")
   expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])

@@ -10,10 +10,10 @@ test_that("can create a Dockerfile from expression", {
 })
 
 test_that("can create a Dockerfile from expression with multiple statements", {
-  output <- capture_output(the_dockerfile <- dockerfile(from = expression({library(sp);library(here)})))
+  output <- capture_output(the_dockerfile <- dockerfile(from = expression({library(sp);library(fortunes)})))
   expect_s4_class(the_dockerfile,"Dockerfile")
   expect_true(any(stringr::str_detect(toString(the_dockerfile),
-                                      "^RUN \\[\"install2.r\", \"backports\", \"here\", \"lattice\", \"rprojroot\", \"sp\"\\]$")))
+                                      "^RUN \\[\"install2.r\", \"fortunes\", \"lattice\", \"sp\"\\]$")))
 })
 
 test_that("can create a Dockerfile from expression vector", {

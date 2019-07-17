@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r package}
-library("here")
-here::here()
+library("fortunes")
+fortunes::fortune()
 ```
 
 ```{r session}
