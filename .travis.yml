@@ -14,7 +14,7 @@ r:
 
 cache: packages
 sudo: required
-dist: trusty
+dist: xenial
 
 addons:
   apt:
