@@ -114,15 +114,25 @@ print(dockerfile_object)
 
 Instead of printing out to the console, you can also write to a file:
 
-```{r write_df}
-containerit::write(dockerfile_object, file = tempfile(fileext = ".dockerfile"))
+```{r write_df, eval=FALSE}
+containerit::write(dockerfile_object, file = tempfile(fileext = "_dockerfile"))
 ```
 
+There also is a convenience function to build the `Dockerfile` object with `stevedore`:
+
+```{r pre_build_df, include=FALSE}
+# run command once so the next cell just uses cache!
+containerit::docker_build(dockerfile_object)
+```
+
+```{r build_df}
+containerit::docker_build(dockerfile_object)
+```
 
 ### 2.3 Packaging an external session
 
 Packaging an interactive session has the disadvantage that unnecessary dependencies might be added to the Dockerfile and subsequently to the container.
-For instance the package `futile.logger` is a dependency of `containerit`, and it will be added to the container because it was loaded into the same session were the analyses was executed.
+For instance the package `futile.logger` is a dependency of `containerit`, and it _will_ be added to the container because it was loaded into the same session were the analyses was executed.
 It cannot be removed by default, because other packages in the session _might_ use it as well (even unintentionally in case of generic methods).
 Therefore, it is safer not to tamper with the current session, but to run the analysis in an isolated _vanilla_ session, which does not have `containerit` in it.
 The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`.
@@ -135,8 +145,7 @@ The following code creates a Dockerfile for a list of expressions in a vanilla s
 exp <- c(expression(library(sp)),
          expression(data(meuse)), 
          expression(mean(meuse[["zinc"]])))
-session <- clean_session(exp, echo = TRUE)
-dockerfile_object <- dockerfile(from = session)
+dockerfile_object <- dockerfile(from = exp)
 ```
 
 ```{r print_clean_df, results='markup', comment=NA}

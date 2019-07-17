@@ -119,6 +119,7 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
     r_version <- stringr::str_extract(pattern = "\\d+(\\.\\d+)+", string = from$platform$version)
     futile.logger::flog.debug("Got R version from session_info: %s", r_version)
   } else if (!is.null(from)
+             && !is.expression(from)
              && !is.na(from)
              && file.exists(from)
              && stringr::str_detect(string = from,
@@ -215,9 +216,10 @@ extract_session_image <- function(docker_image,
     cmd <- append(cmd, "--vanilla")
     cmd <- append(cmd, expr)
 
-    futile.logger::flog.info("Running R in container to obtain a session info using image %s and command %s",
+    futile.logger::flog.info("Running R in container to obtain a session info using image %s and command %s based on session info\n",
                              docker_image,
-                             paste(cmd, collapse = " "))
+                             paste(cmd, collapse = " "),
+                             toString(info))
 
     client <- stevedore::docker_client()
     container <- client$container$run(image = docker_image,
@@ -226,8 +228,7 @@ extract_session_image <- function(docker_image,
                                       name = container_name)
 
     if (!file.exists(local_docker_tempfile))
-      stop("Sessioninfo was not written to file (file missing): ",
-           local_docker_tempfile)
+      stop("Sessioninfo was not written to file (file missing): ", local_docker_tempfile)
 
     futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
     load(local_docker_tempfile)

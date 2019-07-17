@@ -141,7 +141,7 @@ print(
 )
 ```
 
-### Workspace
+### Create Dockerfile from directory
 
 This examples packages a workspace directory.
 
