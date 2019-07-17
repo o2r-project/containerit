@@ -292,7 +292,7 @@ dockerfileFromSession.sessionInfo <- function(session,
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) # packages to be installed
 
-  if (!add_self && is.null(pkgs$containerit)) {
+  if (!add_self && !is.null(pkgs$containerit)) {
     futile.logger::flog.debug("Removing self from the list of packages")
     pkgs$containerit <- NULL
   }
