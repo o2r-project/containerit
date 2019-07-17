@@ -467,16 +467,14 @@ dockerfileFromFile <- function(file,
         stop("Invalid argument given for 'copy'")
       } else if (length(copy) == 1 && copy == "script") {
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_path_dest <-
-          stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+        rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
         addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
       } else if (length(copy) == 1 && copy == "script_dir") {
         script_dir <- normalizePath(dirname(file))
         rel_dir <- .makeRelative(script_dir, context)
 
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_dir_dest <-
-          stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
+        rel_dir_dest <- stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
 
         # directories given as destination must have a trailing slash in dockerfiles
         if (!stringr::str_detect(rel_dir_dest, "/$"))
@@ -488,20 +486,18 @@ dockerfileFromFile <- function(file,
 
         addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
       } else {
-        ## assume that a list or vector of paths is given
+        futile.logger::flog.debug("Seems we have a list of paths/files in 'copy': ", toString(file))
         sapply(copy, function(file) {
           if (file.exists(file)) {
+            futile.logger::flog.debug("Adding copy command for file ", file)
             rel_path <- .makeRelative(normalizePath(file), context)
             rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-            if (dir.exists(file) &&
-                !stringr::str_detect(rel_path_dest, "/$"))
+            if (dir.exists(file) && !stringr::str_detect(rel_path_dest, "/$"))
               rel_path_dest <- paste0(rel_dir_dest, "/")
-            addInstruction(.dockerfile) <<-
-              Copy(rel_path, rel_path_dest)
+
+            addInstruction(.dockerfile) <<- Copy(rel_path, rel_path_dest)
           } else {
-            stop("The file ",
-                 file,
-                 ", given by 'copy', does not exist! Invalid argument.")
+            warning("The file ", file, ", given by 'copy', does not exist! Invalid argument.")
           }
         })
       }

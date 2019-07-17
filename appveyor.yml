@@ -7,25 +7,50 @@ init:
         Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
         Import-Module '..\appveyor-tool.ps1'
 
+branches:
+  only:
+    - master
+    - dev
+
+version: 1.0.{build}
+
+image:
+  - Visual Studio 2017
+  #- Ubuntu # https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/
+
 install:
-  ps: Bootstrap
+  - ps: Bootstrap
 
 cache:
   - C:\RLibrary
+  - C:\Program Files (x86)\Pandoc\
 
 environment:
   NOT_CRAN: true
   # env vars that may need to be set, at least temporarily, from time to time
   # see https://github.com/krlmlr/r-appveyor#readme for details
-  # USE_RTOOLS: true
+  USE_RTOOLS: true
   # R_REMOTES_STANDALONE: true
+  BIOC_USE_DEVEL: FALSE
 
 # Adapt as necessary starting from here
 
 build_script:
+  - docker --version
+  - travis-tool.sh install_bioc BiocGenerics
   - travis-tool.sh install_deps
 
+# https://github.com/krlmlr/r-appveyor/issues/82#issuecomment-261695154
+before_test:
+  - ps: >-
+      if (-Not (Test-Path "C:\Program Files (x86)\Pandoc\")) {
+        cinst pandoc
+      }
+  - ps: $env:Path += ";C:\Program Files (x86)\Pandoc\"
+  - pandoc -v
+
 test_script:
+  - Rscript -e "devtools::test()" # run tests beforehand to see full output
   - travis-tool.sh run_tests
 
 on_failure:

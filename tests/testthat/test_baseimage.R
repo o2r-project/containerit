@@ -4,6 +4,9 @@ library("containerit")
 context("baseimage helper functions")
 
 test_that("installed packages can be read from a Docker image", {
+  skip_on_appveyor()
+  skip_on_cran()
+
   output <- capture_output(pkgs <- get_installed_packages(image = "rocker/geospatial:3.4.4"))
 
   expect_equal(dim(pkgs), c(257,2))
@@ -16,6 +19,9 @@ test_that("installed packages can be read from a Docker image", {
 })
 
 test_that("installed packages are a data.frame with the image as an attribute", {
+  skip_on_appveyor()
+  skip_on_cran()
+
   .image <- "rocker/geospatial:3.4.4"
   output <- capture_output(pkgs <- get_installed_packages(image = .image))
 
@@ -41,6 +47,9 @@ test_that("list of installed packages can be filtered when creating a Dockerfile
 })
 
 test_that("filtered list of installed packages does not filter GitHub packages", {
+  skip_on_appveyor()
+  skip_on_cran()
+
   # created sessionInfo file:
   # $  docker run --rm -it -v $(pwd):/data rocker/geospatial:3.5.1 R
   # R> devtools::install_github("o2r-project/containerit")
@@ -60,6 +69,9 @@ test_that("filtered list of installed packages does not filter GitHub packages",
 })
 
 test_that("filtered list of installed packages is alphabetical", {
+  skip_on_appveyor()
+  skip_on_cran()
+
   output <- capture_output(the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
                                maintainer = "o2r",
                                image = "rocker/geospatial:3.5.1",
