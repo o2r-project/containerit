@@ -121,6 +121,8 @@ docker build --tag containerit:dev --file inst/docker/Dockerfile.local .
 docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .
 ```
 
+You can use [`pre-commit` hooks](https://github.com/lorenzwalthert/pre-commit-hooks) to avoid some mistakes.
+
 ## License
 
 containerit is licensed under GNU General Public License, version 3, see file LICENSE.
