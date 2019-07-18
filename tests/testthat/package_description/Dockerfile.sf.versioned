@@ -1,0 +1,13 @@
+FROM rocker/r-ver:3.3.0
+LABEL maintainer="o2r"
+RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+  && apt-get install -y gdal-bin \
+	libgdal-dev \
+	libgeos-dev \
+	libgeos++-dev \
+	libudunits2-dev
+RUN ["install2.r", "versions"]
+RUN ["install2.r", "classInt", "DBI", "graphics", "grDevices", "grid", "magrittr", "Rcpp", "stats", "tools", "units", "utils"]
+RUN ["Rscript", "-e", "versions::install.versions('sf', '0.7.6')"]
+WORKDIR /payload/
+CMD ["R"]

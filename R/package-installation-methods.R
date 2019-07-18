@@ -106,17 +106,16 @@ add_install_instructions <- function(dockerfile,
     pkgs_bioc <- pkgs[stringr::str_detect(string = pkgs$source, pattern = "Bioconductor"),]
     if (nrow(pkgs_bioc) > 0) {
       if (versioned_packages) {
-        futile.logger::flog.info("Adding versioned Bioconductor packages: %s", toString(pkgs_bioc$name))
-        addInstruction(dockerfile) <- versioned_install_instructions(pkgs_bioc)
-      } else {
-        bioc_packages <- stringr::str_sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
-        futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
-        repos = as.character(BiocManager::repositories())
-        addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
-                                                                           repos[1], repos[2],
-                                                                           repos[3], repos[4]),
-                                                                   bioc_packages))
+        futile.logger::flog.warn("Adding versioned Bioconductor packages not supported: %s", toString(pkgs_bioc$name))
       }
+
+      bioc_packages <- stringr::str_sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
+      futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
+      repos = as.character(BiocManager::repositories())
+      addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
+                                                                         repos[1], repos[2],
+                                                                         repos[3], repos[4]),
+                                                                 bioc_packages))
     } else futile.logger::flog.debug("No Bioconductor packages to add.")
 
     # 4. add installation instruction for GitHub packages
@@ -134,22 +133,29 @@ add_install_instructions <- function(dockerfile,
 }
 
 # RUN ["Rscript", "-e", "versions::install.versions(\"fortunes\", \"1.5-3\")", "-e", "versions::install.versions(\"cowsay\", \"0.5.0\")"]
-versioned_install_instruction <- function(name, version) {
-  .instruction <- Run(exec = "Rscript", params = c("-e", paste0('versions::install.versions(\'', name, '\', \'' , version, '\')')))
-  return(.instruction)
-}
-
 # expects a data.frame with columns name and version
 versioned_install_instructions <- function(pkgs) {
-  .pkgs_sorted <- pkgs[order(pkgs$name),] # sort, to increase own reproducibility
+  pkgs_sorted <- pkgs[order(pkgs$name),] # sort, to increase own reproducibility
 
-  .installInstructions <- apply(X = .pkgs_sorted,
-                                FUN = function(pkg) {
-                                  paste0('versions::install.versions(\'', pkg["name"], '\', \'' , pkg["version"], '\')')
-                                }, MARGIN = 1)
-  .params <- c(rbind(rep("-e", 2), .installInstructions))
-  .instruction <- Run(exec = "Rscript", params = .params)
-  return(.instruction)
+  installInstructions <- apply(X = pkgs_sorted,
+                               FUN = function(pkg) {
+                                 ifelse(!is.na(pkg["version"]),
+                                        paste0('versions::install.versions(\'', pkg["name"], '\', \'' , pkg["version"], '\')'),
+                                        NA)
+                                 },
+                               MARGIN = 1)
+  installInstructions <- installInstructions[!is.na(installInstructions)]
+
+  params <- c(rbind(rep("-e", length(installInstructions)), installInstructions))
+  instructions <- list(Run(exec = "Rscript", params = params))
+
+  if (any(is.na(pkgs_sorted$version))) {
+    unversioned <- pkgs_sorted[is.na(pkgs_sorted$version),]
+    unversioned <- stringr::str_sort(as.character(unlist(unversioned$name))) # sort, to increase own reproducibility
+    futile.logger::flog.warn("No version information found for packages: %s", toString(unversioned))
+    instructions <- c(Run("install2.r", unversioned), instructions)
+  }
+  return(instructions)
 }
 
 .find_system_dependencies <- function(package,
@@ -314,12 +320,9 @@ versioned_install_instructions <- function(pkgs) {
 
 #' Get GitHub reference from package
 #'
-#' If a package is installed from GitHub this function tries to retrieve the reference (i.e. repository accoutn, name, and commit) from
-#'
-#' \enumerate{
-#'   \item the provided sessionInfo
-#'   \item locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}
-#' }
+#' If a package is installed from GitHub this function tries to retrieve the reference (i.e. user name, repository name, and commit) from
+#' (a) the provided sessionInfo, or
+#' (b) locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}.
 #'
 #' @param pkg The name of the package to retrieve the reference for
 #' @param pkgs Lists of packages from a sessionInfo object

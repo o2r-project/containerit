@@ -8,7 +8,7 @@ getRVersionTag(from, default = paste(R.Version()$major,
   R.Version()$minor, sep = "."))
 }
 \arguments{
-\item{from}{the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{RData} file with a session info object}
+\item{from}{the source to extract an R version: a `sessionInfo()` or `session_info()` object, a `description` object, or an `RData` file with a session info object}
 
 \item{default}{if 'from' does not contain version information (e.g. its an Rscript), use this default version information.}
 }

@@ -193,7 +193,7 @@ dockerfile_object <- dockerfile(from = file.path(temp_workspace, "sf6.Rmd"),
                                 cmd = CMD_Render("sf6.Rmd"))
 ```
 
-```{r print_sf_vignette, comment=NA}
+```{r print_sf_vignette, results='markup', comment=NA}
 print(dockerfile_object)
 ```
 
@@ -242,13 +242,42 @@ df_sessioninfo <- dockerfile(from = file.path(temp_workspace, "session_info.RDat
 df_devtools <- dockerfile(from = file.path(temp_workspace, "session_info_devtools.RData"))
 ```
 
-```{r sessioninfo_print}
+**`sessioninfo::session_info()`**
 
+```{r sessioninfo_print, results='markup', comment=NA}
 print(df_sessioninfo)
 ```
 
-```{r session_info_devtools_print}
+**`devtools::session_info()`**
+
+```{r session_info_devtools_print, results='markup', comment=NA}
 print(df_devtools)
+```
+
+### 2.8 Packaging a `DESCRIPTION` file or object
+
+The [`DESCRIPTION` file format](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file) contains basic information about R extension packages and their dependencies.
+`containerit` can also create `Dockerfile`s based on a `DESCRIPTION` file or ob `description` objects from the [`desc`](https://cran.r-project.org/package=desc) package.
+Unless specified otherwise, it uses the minimal R version mentioned in the `Depends`-field for the base image.
+
+```{r description_file}
+df_description <- dockerfile(from = system.file("DESCRIPTION", package = "dplyr"))
+```
+
+```{r description_file_print, results='markup', comment=NA}
+print(df_description)
+```
+
+Use this to quickly create a container that contains everything needed to run your package, including system dependencies and installing the actual package in a specific version:
+
+```{r description_object}
+df_description_sf <- dockerfile(from = desc::desc(package = "sf"),
+                                 maintainer = "o2r",
+                                 versioned_packages = TRUE)
+```
+
+```{r description_object_print, results='markup', comment=NA}
+print(df_description_sf)
 ```
 
 ## 3. Including resources

@@ -16,13 +16,9 @@ getGitHubRef(pkg, pkgs = c(sessionInfo()$otherPkgs,
 A character string with a short refernce, e.g. \code{r-hub/sysreqs@481d263}, \code{NA} is nothign could be found
 }
 \description{
-If a package is installed from GitHub this function tries to retrieve the reference (i.e. repository accoutn, name, and commit) from
-}
-\details{
-\enumerate{
-  \item the provided sessionInfo
-  \item locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}
-}
+If a package is installed from GitHub this function tries to retrieve the reference (i.e. user name, repository name, and commit) from
+(a) the provided sessionInfo, or
+(b) locally, and only if the package is installed (!), using \code{\link[devtools]{session_info}}.
 }
 \examples{
 \dontrun{
