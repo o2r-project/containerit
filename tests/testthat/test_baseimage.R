@@ -1,9 +1,8 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library("containerit")
-context("baseimage helper functions")
+context("Base image helper functions")
 
-test_that("installed packages can be read from a Docker image", {
+test_that("Installed packages can be read from a Docker image", {
   skip_on_appveyor()
   skip_on_cran()
 
@@ -18,7 +17,7 @@ test_that("installed packages can be read from a Docker image", {
   expect_false("cshapes" %in% pkgs$pkg)
 })
 
-test_that("installed packages are a data.frame with the image as an attribute", {
+test_that("Installed packages are a data.frame with the image as an attribute", {
   skip_on_appveyor()
   skip_on_cran()
 
@@ -30,7 +29,7 @@ test_that("installed packages are a data.frame with the image as an attribute", 
   expect_equal(.image, attributes(pkgs)$image)
 })
 
-test_that("list of installed packages can be filtered when creating a Dockerfile", {
+test_that("List of installed packages can be filtered when creating a Dockerfile", {
   skip_on_appveyor()
   skip_on_cran()
 
@@ -49,7 +48,7 @@ test_that("list of installed packages can be filtered when creating a Dockerfile
   unlink("package_markdown/sfr/sf2_files", recursive = TRUE)
 })
 
-test_that("filtered list of installed packages does not filter GitHub packages", {
+test_that("Filtered list of installed packages does not filter GitHub packages", {
   skip_on_appveyor()
   skip_on_cran()
 
@@ -71,7 +70,7 @@ test_that("filtered list of installed packages does not filter GitHub packages",
   expect_true(object = any(grepl("^RUN.*installGithub.*tidyverse/ggplot2", x = the_dockerfile_string)), info = "ggplot is in installGithub command")
 })
 
-test_that("filtered list of installed packages is alphabetical", {
+test_that("Filtered list of installed packages is alphabetical", {
   skip_on_appveyor()
   skip_on_cran()
 

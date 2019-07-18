@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library("containerit")
-context("installation of packages from GitHub")
+context("Install packages from GitHub")
 
 test_that("GitHub packages can be installed", {
   #get session information from previous installation, created in a vanilla R session with these commands within package root directory:

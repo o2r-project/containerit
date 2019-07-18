@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library("containerit")
-context("install from Bioconductor")
+context("Install packages from Bioconductor")
 
 test_that("installation instruction for Bioconductor package is created", {
   if (!require("BiocGenerics", character.only = TRUE)) BiocManager::install(c("BiocGenerics"))

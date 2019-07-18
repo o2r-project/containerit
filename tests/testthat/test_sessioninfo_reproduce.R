@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-context("session reproduction")
+context("Session reproduction")
 
 # test-expressions: the first expression attaches a CRAN-package, the second expression loads one of the 'recommended'- packages without attaching it
 # All libraries used must be locally installed prior to running this test!
@@ -10,7 +10,7 @@ expressions <- list(
   quote(codetools::showTree(quote(-3))) # test for attached package
 )
 
-test_that("a local sessionInfo() can be created ", {
+test_that("a local sessionInfo() can be created with clean_session()", {
   output <- capture_output(local_sessionInfo <- clean_session(expr = expressions))
   expect_s3_class(local_sessionInfo, "sessionInfo")
 })

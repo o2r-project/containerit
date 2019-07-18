@@ -37,7 +37,7 @@ test_that("The sf3 markdown file can be packaged", {
 
   # here we can build and run the actual container to see if the resulting file is matching
   #expect_true(file.exists(file.path(dir, "sf3.html")))
-  unlink(dir,recursive = TRUE)
+  unlink(dir, recursive = TRUE)
 })
 
 test_that("The render command supports output directory", {
@@ -95,8 +95,12 @@ test_that("Packaging works if dependency is missing in the base image and predet
   skip_on_ci()
 
   output <- capture_output({
-    predetected_df <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
+    predetected_df <- dockerfile(from = "package_markdown/missing_dependency/",
+                                 maintainer = "o2r",
+                                 image = getImageForVersion("3.4.4"),
+                                 predetect = TRUE)
   })
+  # write(predetected_df, "package_markdown/missing_dependency/Dockerfile")
 
   expect_s4_class(predetected_df, "Dockerfile")
   # package should still not be in this session library
@@ -106,6 +110,9 @@ test_that("Packaging works if dependency is missing in the base image and predet
   generated_file <- unlist(stringr::str_split(toString(predetected_df),"\n"))
   expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
   expect_true(object = any(grepl("^RUN.*install2.*\"abe\"", x = generated_file)), info = "Packages missing are detected")
+
+  expected_file <- readLines("package_markdown/missing_dependency/Dockerfile")
+  expect_equal(capture.output(print(predetected_df)), expected_file)
 
   unlink("package_markdown/missing_dependency/*.md")
 })

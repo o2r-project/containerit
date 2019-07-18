@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library("containerit")
-context("entrypoint instruction")
+context("ENTRYPOINT instruction")
 
 test_that("Error when nothing is provided to Entrypoint constructor", {
   expect_error(Entrypoint())
@@ -21,17 +21,17 @@ test_that("Error when not a list is provided as params", {
   expect_error(Entrypoint(program = "top", params = "a b"))
 })
 
-test_that("Entrypoint program is correctly rendered", {
+test_that("ENTRYPOINT is correctly rendered", {
   ep <- Entrypoint("echo")
   expect_equal(as.character(ep), 'ENTRYPOINT ["echo"]')
 })
 
-test_that("Entrypoint program with path is correctly rendered in exec form", {
+test_that("ENTRYPOINT with path is correctly rendered in exec form", {
   ep <- Entrypoint("/bin/echo")
   expect_equal(as.character(ep), 'ENTRYPOINT ["/bin/echo"]')
 })
 
-test_that("Entrypoint program with path is correctly rendered in shell form", {
+test_that("ENTRYPOINT with path is correctly rendered in shell form", {
   ep <- Entrypoint("/bin/echo", form = "shell")
   expect_equal(as.character(ep), 'ENTRYPOINT /bin/echo')
 })
@@ -40,7 +40,7 @@ test_that("Unsupported form gives error", {
   expect_error(Entrypoint("echo", form = "unsupp"), "unsupp")
 })
 
-test_that("Entrypoint parameters are correctly rendered in exec form", {
+test_that("ENTRYPOINT parameters are correctly rendered in exec form", {
   ep <- Entrypoint(program = "Rscript", params = list("sum.R", "1", "2"))
   expect_equal(as.character(ep), 'ENTRYPOINT ["Rscript", "sum.R", "1", "2"]')
 
@@ -48,12 +48,12 @@ test_that("Entrypoint parameters are correctly rendered in exec form", {
   expect_equal(as.character(ep), 'ENTRYPOINT ["Rscript", "sum.R", "1", "2"]')
 })
 
-test_that("Entrypoint parameters correctly rendered in shell form", {
+test_that("ENTRYPOINT parameters correctly rendered in shell form", {
   ep <- Entrypoint(program = "Rscript", params = list("sum.R", "1", "2"), form = "shell")
   expect_equal(as.character(ep), 'ENTRYPOINT Rscript sum.R 1 2')
 })
 
-test_that("Entrypoint command is correctly added to Dockerfile as second to last line", {
+test_that("ENTRYPOINT is correctly added to Dockerfile as second to last line", {
   output <- capture_output(the_dockerfile <- dockerfile(from = NULL,
                    entrypoint = Entrypoint("Rscript"),
                    cmd = Cmd("script.R")))
@@ -61,7 +61,7 @@ test_that("Entrypoint command is correctly added to Dockerfile as second to last
   expect_equal(df_string[length(df_string) - 1], 'ENTRYPOINT ["Rscript"]')
 })
 
-test_that("Entrypoint command is correctly rendered to file", {
+test_that("ENTRYPOINT is correctly rendered to file", {
   output <- capture_output({
     expect_warning(the_dockerfile <- dockerfile(from = NULL, image = "ubuntu",
                    maintainer = NULL, container_workdir = NULL,

@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 library("containerit")
-context("label instruction")
+context("LABEL instruction")
 
 test_that("Labels of arbitrary content can be added to a Dockerfile", {
   label1 <- Label(key1 = "this", key2 = "that", otherKey = "content")
