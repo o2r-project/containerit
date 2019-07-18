@@ -7,10 +7,6 @@ test_that("Error when nothing is provided to Cmd constructor", {
   expect_error(Cmd())
 })
 
-test_that("Error when non-Entrypoint object is provided to Dockerfile", {
-  expect_error(dockerfile(from = NULL, cmd = "script.R"))
-})
-
 test_that("Cmd executable is correctly rendered", {
   cmd <- Cmd("echo")
   expect_equal(as.character(cmd), 'CMD ["echo"]')

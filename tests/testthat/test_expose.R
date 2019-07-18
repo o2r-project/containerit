@@ -4,7 +4,7 @@ library("containerit")
 context("expose instruction")
 
 # EXPOSE <port> [<port>/<protocol>...]
-test_that("Expose instructions can be created and added to a Dockerfile",{
+test_that("Expose instructions can be created and added to a Dockerfile", {
   expose1 <- Expose(port = 1234)
   expect_equal(toString(expose1), "EXPOSE 1234")
 

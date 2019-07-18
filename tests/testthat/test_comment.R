@@ -3,7 +3,7 @@
 library("containerit")
 context("comment instruction")
 
-test_that("can create comments",{
+test_that("can create comments", {
   cmt1 <- Comment(text = "the text")
   str1 <- toString(cmt1)
   expect_equal(str1, "# the text")

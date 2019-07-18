@@ -65,7 +65,7 @@ test_that("dockerfile with versions has only one unversioned install2.r for vers
   output <- capture_output(the_dockerfile <- dockerfile(from = test_info,
                                                         maintainer = "o2r",
                                                         versioned_packages = TRUE))
-  expect_s4_class(the_dockerfile,"Dockerfile")
+  expect_s4_class(the_dockerfile, "Dockerfile")
 
   expected_file <- readLines("package_versions/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))

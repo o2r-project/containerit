@@ -12,7 +12,7 @@ test_that("A markdown file can be packaged (using units expample)", {
   )
   #write(the_dockerfile,"package_markdown/units_Dockerfile")
   expected_file <- readLines("package_markdown/units_Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- capture.output(print(the_dockerfile))
   expect_equal(generated_file, expected_file)
 })
 

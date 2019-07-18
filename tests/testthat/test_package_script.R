@@ -2,11 +2,11 @@
 
 context("Packaging R-Scripts and workspaces.")
 
-test_that("the R script location is checked ",{
+test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
 
-test_that("an R script can be created with resources of the same folder ",{
+test_that("an R script can be created with resources of the same folder ", {
   output <- capture_output({
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                 copy = "script_dir",
@@ -33,7 +33,7 @@ test_that("an R script can be created with resources of the same folder ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("a workspace with one R script can be packaged",{
+test_that("a workspace with one R script can be packaged", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/resources/",
                 copy = "script_dir",
@@ -46,7 +46,7 @@ test_that("a workspace with one R script can be packaged",{
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
-test_that("a workspace with one R script can be packaged if the script file has .r (lowercase) extension",{
+test_that("a workspace with one R script can be packaged if the script file has .r (lowercase) extension", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/simple_lowercase/",
                                  copy = "script_dir",
@@ -58,7 +58,7 @@ test_that("a workspace with one R script can be packaged if the script file has 
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
-test_that("a list of resources can be packaged ",{
+test_that("a list of resources can be packaged ", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                                  copy = c("package_script/resources/simple_test.R",
@@ -73,14 +73,14 @@ test_that("a list of resources can be packaged ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("there is an error if non-existing resources are to be packages",{
+test_that("there is a warning if non-existing resources are to be packages", {
   output <- capture_output(
-    expect_error(dockerfile("package_script/resources/simple_test.R",
+    expect_warning(dockerfile("package_script/resources/simple_test.R",
                             copy = c("does_not_exist.R")))
   )
 })
 
-test_that("The gstat demo 'zonal' can be packaged ",{
+test_that("The gstat demo 'zonal' can be packaged ", {
   skip_if_not_installed("sp")
   skip_if_not_installed("gstat")
 

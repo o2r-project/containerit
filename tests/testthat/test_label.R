@@ -3,7 +3,7 @@
 library("containerit")
 context("label instruction")
 
-test_that("Labels of arbitrary content can be added to a Dockerfile",{
+test_that("Labels of arbitrary content can be added to a Dockerfile", {
   label1 <- Label(key1 = "this", key2 = "that", otherKey = "content")
   str1 <- toString(label1)
 
