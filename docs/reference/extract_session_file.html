@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
       </span>
     </div>
 
@@ -89,13 +89,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/basic.html">Introduction to package `containerit`</a>
+      <a href="../articles/basic.html">Basic introduction to package containerit</a>
     </li>
     <li>
-      <a href="../articles/bioconductor.html">Using Bioconductor with `containerit`</a>
+      <a href="../articles/bioconductor.html">Using Bioconductor with containerit</a>
     </li>
     <li>
-      <a href="../articles/container.html">Using `containerit` Docker image</a>
+      <a href="../articles/container.html">Using the containerit Docker image</a>
     </li>
   </ul>
 </li>
@@ -154,7 +154,7 @@
     <pre class="examples"><div class='input'><span class='no'>sessionInfo</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/sessionInfo'>sessionInfo</a></span>()
 <span class='no'>file</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/tempfile'>tempfile</a></span>(<span class='kw'>tmpdir</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/tempfile'>tempdir</a></span>(), <span class='kw'>fileext</span> <span class='kw'>=</span> <span class='st'>".RData"</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/save'>save</a></span>(<span class='no'>sessionInfo</span>, <span class='kw'>file</span> <span class='kw'>=</span> <span class='no'>file</span>)
-<span class='fu'>extract_session_file</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:43] Reading object 'sessionInfo' from the given file /tmp/Rtmp2szfYe/file538e6b7c2e9d.RData</div><div class='output co'>#&gt; R version 3.6.1 (2019-07-05)
+<span class='fu'>extract_session_file</span>(<span class='no'>file</span>)</div><div class='output co'>#&gt; INFO [2019-07-18 19:02:19] Reading object 'sessionInfo' from the given file /tmp/RtmpRkRT5G/file25564dc7eca1.RData</div><div class='output co'>#&gt; R version 3.6.1 (2019-07-05)
 #&gt; Platform: x86_64-pc-linux-gnu (64-bit)
 #&gt; Running under: Ubuntu 18.04.2 LTS
 #&gt; 
@@ -174,7 +174,7 @@
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt; [1] containerit_0.5.0.9005 testthat_2.1.1        
+#&gt; [1] containerit_0.5.0.9007 testthat_2.1.1        
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
 #&gt;  [1] xfun_0.8             remotes_2.1.0        rematch2_2.1.0      

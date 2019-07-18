@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
       </span>
     </div>
 
@@ -89,13 +89,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/basic.html">Introduction to package `containerit`</a>
+      <a href="../articles/basic.html">Basic introduction to package containerit</a>
     </li>
     <li>
-      <a href="../articles/bioconductor.html">Using Bioconductor with `containerit`</a>
+      <a href="../articles/bioconductor.html">Using Bioconductor with containerit</a>
     </li>
     <li>
-      <a href="../articles/container.html">Using `containerit` Docker image</a>
+      <a href="../articles/container.html">Using the containerit Docker image</a>
     </li>
   </ul>
 </li>
@@ -177,9 +177,9 @@
 )
 <span class='co'>#label with fixed namespace for all keys</span>
 <span class='no'>label3</span> <span class='kw'>&lt;-</span> <span class='fu'>Label</span>(<span class='st'>"name"</span><span class='kw'>=</span><span class='st'>"A name"</span>, <span class='st'>"description"</span> <span class='kw'>=</span> <span class='st'>"A description"</span>, <span class='kw'>label_ns</span> <span class='kw'>=</span> <span class='st'>"my.label.ns."</span>)
-<span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='empty_session.html'>empty_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:22] Creating an R session with the following expressions:
-#&gt; 	  
-#&gt; INFO [2019-07-16 16:50:24] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>label1</span>, <span class='no'>label2</span>, <span class='no'>label3</span>)
+<span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-07-18 19:02:02] Creating an R session with the following expressions:
+#&gt; 
+#&gt; INFO [2019-07-18 19:02:04] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>label1</span>, <span class='no'>label2</span>, <span class='no'>label3</span>)
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>the_dockerfile</span>),<span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"\n"</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1                                                                                             
 #&gt; LABEL maintainer="daniel"                                                                                           
 #&gt; WORKDIR /payload/                                                                                                   

@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
       </span>
     </div>
 
@@ -92,7 +92,7 @@
       <h1>Using Bioconductor with containerit</h1>
                         <h4 class="author">Daniel Nüst</h4>
             
-            <h4 class="date">2019-07-16</h4>
+            <h4 class="date">2019-07-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/o2r/containerit/blob/master/vignettes/bioconductor.Rmd"><code>vignettes/bioconductor.Rmd</code></a></small>
       <div class="hidden name"><code>bioconductor.Rmd</code></div>
@@ -115,10 +115,10 @@
 <a class="sourceLine" id="cb2-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"containerit"</span>)</a>
 <a class="sourceLine" id="cb2-9" data-line-number="9">df &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dockerfile.html">dockerfile</a></span>(<span class="dt">from =</span> info)</a></code></pre></div>
-<pre><code>## INFO [2019-07-16 17:05:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-16 17:05:52] Trying to determine system requirements for the package(s) 'BiocGenerics' from sysreqs online DB
-## INFO [2019-07-16 17:05:53] Adding Bioconductor packages: BiocGenerics
-## INFO [2019-07-16 17:05:58] Created Dockerfile-Object based on sessionInfo</code></pre>
+<pre><code>## INFO [2019-07-18 19:03:09] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-18 19:03:09] Trying to determine system requirements for the package(s) 'BiocGenerics' from sysreqs online DB
+## INFO [2019-07-18 19:03:11] Adding Bioconductor packages: BiocGenerics
+## INFO [2019-07-18 19:03:12] Created Dockerfile-Object based on sessionInfo</code></pre>
 <p>A shortcut to this is provided with the function <code><a href="../reference/clean_session.html">containerit::clean_session(..)</a></code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/clean_session">clean_session</a></span>(<span class="dt">expr =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/substitute">quote</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"BiocGenerics"</span>)))</a></code></pre></div>
 <p>The created <code>Dockerfile</code> is:</p>
@@ -128,7 +128,7 @@ LABEL maintainer="daniel"
 RUN ["install2.r", "-r https://bioconductor.org/packages/3.9/bioc -r https://bioconductor.org/packages/3.9/data/annotation -r https://bioconductor.org/packages/3.9/data/experiment -r https://bioconductor.org/packages/3.9/workflows", "BiocGenerics"]
 WORKDIR /payload/
 CMD ["R"]</code></pre>
-<p>Using a specific <a href="https://bioconductor.org/about/release-announcements/"><em>Bioconductor</em> version</a> is <strong>not supported</strong>.</p>
+<p>Using a specific <a href="https://bioconductor.org/about/release-announcements/"><em>Bioconductor</em> version</a> or installing versioned packages is <strong>not supported</strong>.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

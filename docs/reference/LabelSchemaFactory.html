@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
       </span>
     </div>
 
@@ -89,13 +89,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/basic.html">Introduction to package `containerit`</a>
+      <a href="../articles/basic.html">Basic introduction to package containerit</a>
     </li>
     <li>
-      <a href="../articles/bioconductor.html">Using Bioconductor with `containerit`</a>
+      <a href="../articles/bioconductor.html">Using Bioconductor with containerit</a>
     </li>
     <li>
-      <a href="../articles/container.html">Using `containerit` Docker image</a>
+      <a href="../articles/container.html">Using the containerit Docker image</a>
     </li>
   </ul>
 </li>
@@ -156,15 +156,15 @@ docker.cmd.test, docker.debug, docker.cmd.help, docker.params, rkt.cmd, rkt.cmd.
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='empty_session.html'>empty_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:24] Creating an R session with the following expressions:
-#&gt; 	  
-#&gt; INFO [2019-07-16 16:50:25] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='no'>factory</span> <span class='kw'>&lt;-</span> <span class='fu'>LabelSchemaFactory</span>()</div><div class='output co'>#&gt; INFO [2019-07-16 16:50:25] According to Label Schema Convention 1.0.0-rc.1 you can use the following arguments for constructing metadata labels:</div><div class='input'><span class='no'>label</span> <span class='kw'>&lt;-</span> <span class='fu'>factory</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"ImageName"</span>,
+    <pre class="examples"><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-07-18 19:02:04] Creating an R session with the following expressions:
+#&gt; 
+#&gt; INFO [2019-07-18 19:02:06] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='no'>factory</span> <span class='kw'>&lt;-</span> <span class='fu'>LabelSchemaFactory</span>()</div><div class='output co'>#&gt; INFO [2019-07-18 19:02:06] According to Label Schema Convention 1.0.0-rc.1 you can use the following arguments for constructing metadata labels:</div><div class='input'><span class='no'>label</span> <span class='kw'>&lt;-</span> <span class='fu'>factory</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"ImageName"</span>,
   <span class='kw'>description</span> <span class='kw'>=</span> <span class='st'>"Description of the image"</span>,
   <span class='kw'>build_date</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Sys.time'>Sys.time</a></span>()
  )
 <span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='no'>label</span>
 <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>the_dockerfile</span>))</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1                                                                                                                                                                                               LABEL maintainer="daniel"                                                                                                                                                                                             WORKDIR /payload/                                                                                                                                                                                                     LABEL org.label-schema.schema-version="1.0.0-rc.1" \
-#&gt; 	org.label-schema.build-date="2019-07-16T16:50:25+0200" \
+#&gt; 	org.label-schema.build-date="2019-07-18T19:02:06+0200" \
 #&gt; 	org.label-schema.name="ImageName" \
 #&gt; 	org.label-schema.description="Description of the image" CMD ["R"]                                                                                                                                                                                                            </div><div class='input'>
 
