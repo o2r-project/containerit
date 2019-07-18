@@ -97,3 +97,15 @@ test_that("The package containerit can be packaged (add_self = TRUE)", {
   })
   expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
 })
+
+test_that("a character string as command works",{
+  output <- capture_output({
+    the_dockerfile <- dockerfile(expression(cat("test")),
+                                 cmd = "my_binary",
+                                 maintainer = "o2r",
+                                 image = getImageForVersion("3.3.2"))
+  })
+  expect_s4_class(the_dockerfile, "Dockerfile")
+  df_string <- toString(the_dockerfile)
+  expect_equal(df_string[length(df_string)], 'CMD [\"my_binary\"]')
+})

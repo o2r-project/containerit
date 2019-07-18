@@ -40,7 +40,7 @@
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
 #' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
-#' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
+#' @param cmd The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
 #' @param silent Whether or not to print information during execution
@@ -73,7 +73,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        # nolint start
                        container_workdir = "/payload/",
                        # nolint end
-                       cmd = Cmd("R"),
+                       cmd = "R",
                        entrypoint = NULL,
                        add_self = FALSE,
                        silent = FALSE,
@@ -100,10 +100,15 @@ dockerfile <- function(from = utils::sessionInfo(),
       maintainer <- .label
     }
 
-    # check CMD instruction
-    if (!inherits(x = cmd, "Cmd")) {
-      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
-        class(cmd))
+    # create/check CMD instruction
+    if (is.character(cmd)) {
+      command <- Cmd(cmd)
+      futile.logger::flog.debug("Turned cmd character string '%s' into command: %s", cmd, toString(command))
+    } else {
+      command <- cmd
+    }
+    if (!inherits(x = command, "Cmd")) {
+      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(command))
     }
 
     # check ENTRYPOINT instruction
@@ -142,7 +147,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                                 maintainer = maintainer,
                                 image = image,
                                 entrypoint = entrypoint,
-                                cmd = cmd)
+                                cmd = command)
 
     # handle different "from" cases
     if (is.null(from)) {

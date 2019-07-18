@@ -10,8 +10,8 @@ dockerfile(from = utils::sessionInfo(),
   envir = .GlobalEnv, env = list(generator = paste("containerit",
   utils::packageVersion("containerit"))), soft = FALSE,
   offline = FALSE, copy = NA, container_workdir = "/payload/",
-  cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE,
-  silent = FALSE, predetect = TRUE, versioned_libs = FALSE,
+  cmd = "R", entrypoint = NULL, add_self = FALSE, silent = FALSE,
+  predetect = TRUE, versioned_libs = FALSE,
   versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)
 }
 \arguments{
@@ -38,7 +38,7 @@ By default, the image is determinded from the given session. Alternatively, use 
 
 \item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 
-\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
+\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.}
 
 \item{entrypoint}{the ENTRYPOINT statement for the Dockerfile}
 
