@@ -94,7 +94,7 @@ addInstruction <- function(dockerfileObject, value) {
 #' @export
 #'
 #' @examples
-#' the_dockerfile <- dockerfile(empty_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' addInstruction(the_dockerfile) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
 
@@ -351,17 +351,6 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
   return(unlist(as.character(expr)))
 }
 
-#' Creates an empty R session
-#'
-#' @return An object of class \code{sessionInfo}
-#'
-#' @details Uses \code{\link{clean_session}}
-#'
-#' @export
-empty_session <- function() {
-  clean_session()
-}
-
 #' Obtains a \code{sessionInfo} from a local R session
 #'
 #' The function may also execute provided expressions or files.
@@ -407,31 +396,47 @@ clean_session <- function(expr = c(),
     }
   }
 
+  temp_lib_path <- NULL
   if (predetect && length(required_pkgs) > 0) {
     installing_pkgs <- stringr::str_remove_all(required_pkgs, "\"")
     installing_pkgs <- setdiff(installing_pkgs, rownames(installed.packages()))
+
+    temp_lib_path <- tempfile("test_lib_")
+    dir.create(temp_lib_path)
+
     if (length(installing_pkgs) > 0) {
-      futile.logger::flog.info("Missing packages installed before running file using repos %s: %s",
+      futile.logger::flog.info("Missing packages will be installed to %s before running file using repos %s: %s",
+                               temp_lib_path,
                                toString(repos),
                                toString(installing_pkgs))
 
-      install.packages(pkgs = installing_pkgs, repos = repos)
+      install_log <- capture.output({
+        install.packages(pkgs = installing_pkgs, lib = c(temp_lib_path), repos = repos,
+                         quiet = TRUE)
+      })
+      futile.logger::flog.debug("Installation log:\n%s", toString(install_log))
     } else {
       futile.logger::flog.debug("No missing packages to install before running file")
     }
   }
 
-  futile.logger::flog.info(paste("Creating an R session with the following expressions:\n\t ", toString(expr)))
+  futile.logger::flog.info("Creating an R session with the following expressions:\n%s", toString(expr))
 
-  info <- callr::r_vanilla(function(expressions) {
+  the_info <- callr::r_vanilla(function(expressions) {
     for (e in expressions) {
       eval(e)
     }
     sessionInfo()
-  }, args = list(expressions = expr), libpath = .libPaths(), repos = repos)
+  }, args = list(expressions = expr), libpath = c(temp_lib_path, .libPaths()), repos = repos)
 
-  if (is.null(info))
+  if (is.null(the_info))
     stop("Failed to determine a sessionInfo in a new R session.")
+  else futile.logger::flog.debug("Captured sessionInfo:\n%s", capture.output(print(the_info)))
 
-  return(info)
+  if ( !is.null(temp_lib_path)) {
+    futile.logger::flog.debug("Deleting temp library at %s", temp_lib_path)
+    unlink(temp_lib_path)
+  }
+
+  return(the_info)
 }

@@ -337,7 +337,7 @@ As shown in section 2, the maintainer label is set by default to the top as the 
 The maintainer can be changed with the `maintainer` argument of `dockerfile()`:
 
 ```{r maintainer}
-labeled_dockerfile <- dockerfile(from = empty_session(), maintainer = "Jon_Doe@example.com")
+labeled_dockerfile <- dockerfile(from = clean_session(), maintainer = "Jon_Doe@example.com")
 ```
 
 Labels can be applied to the existing Dockerfile object using the `addInstructions()` function, which adds any newly created instructions to the end of the Dockerfile but before the CMD statement.
@@ -368,7 +368,7 @@ addInstruction(labeled_dockerfile) <- label
 You can also put session information, using either base R or `devtools`, into a label as plain text or as json:
 
 ```{r label_json}
-addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = empty_session())
+addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = clean_session())
 addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = devtools::session_info(), as_json = TRUE)
 ```
 

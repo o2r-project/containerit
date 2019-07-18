@@ -32,7 +32,7 @@ test_that("Expose instructions can be created and added to a Dockerfile", {
 
   expect_error(Expose(port = "1/cat"), "protocol of container must be")
 
-  output <- capture_output(the_dockerfile <- dockerfile(empty_session()))
+  output <- capture_output(the_dockerfile <- dockerfile(clean_session()))
   addInstruction(the_dockerfile) <- list(expose1, expose2c)
   df_str <- toString(the_dockerfile)
   expect_true(toString(expose1) %in% df_str)

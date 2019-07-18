@@ -136,27 +136,39 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
+test_that("packaging fails if library from script is missing without predetection", {
+  skip_on_cran() # CRAN knows all the packages
+
+  # package should still not be in this session library
+  expect_error(library("boxoffice"))
+
+  expect_error({
+    output <- capture_output({
+      callr::r_vanilla(function() {
+        containerit::dockerfile(from = "package_script/needs_predetect/",
+                                predetect = FALSE)
+        },
+        libpath = .libPaths(),
+        repos = "https://cloud.r-project.org")
+    })
+  })
+})
+
 test_that("packaging works if library from script is missing but predetection is enabled", {
   skip_on_cran() # CRAN knows all the packages
 
-  # install package to new library path
-  test_lib_path <- tempfile("test_lib_")
-  dir.create(test_lib_path)
   output <- capture_output({
-    generated_file <- callr::r_vanilla(function() {
-      library("containerit")
-      the_dockerfile <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r",
-                                   image = getImageForVersion("3.4.4"),
-                                   predetect = TRUE)
-      generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
-      generated_file
-    }, libpath = c(test_lib_path, .libPaths()), repos = "https://cloud.r-project.org")
+    predetected_df <- dockerfile(from = "package_script/needs_predetect/",
+                               maintainer = "o2r",
+                               image = getImageForVersion("3.4.4"),
+                               predetect = TRUE)
   })
+  # write(predetected_df, "package_script/needs_predetect/Dockerfile")
 
-  expect_equal(list.files(test_lib_path), c("boxoffice"))
+  # package should still not be in this session's library
+  expect_error(library("boxoffice"))
+
+  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = capture.output(print(predetected_df)))))
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
-  expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
-
-  unlink(test_lib_path)
+  expect_equal(capture.output(print(predetected_df)), expected_file)
 })

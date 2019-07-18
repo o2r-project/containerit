@@ -54,7 +54,7 @@ add_install_instructions <- function(dockerfile,
 
   if (nrow(pkgs) > 0) {
     # 1. get system dependencies if packages must be installed (if applicable by given platform)
-    package_reqs <- .find_system_dependencies(pkgs$name,
+    package_reqs <- .find_system_dependencies(stringr::str_sort(as.character(unlist(pkgs$name))),
                                               platform = platform,
                                               soft = soft,
                                               offline = offline)
@@ -175,7 +175,6 @@ versioned_install_instructions <- function(pkgs) {
 
   # slower, because it analyzes all package DESCRIPTION files of attached / loaded packages.
   # That causes an overhead of database-requests, because dependent packages appear in the sessionInfo as well as in the DESCRIPTION files
-
   if (method == "sysreq-package") {
     .dependencies <- .find_by_sysreqs_pkg(
       package = package,

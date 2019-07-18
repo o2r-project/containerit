@@ -55,8 +55,7 @@ Suggests:
     ggplot2,
     lattice,
     codetools,
-    BiocGenerics,
-    abe
+    BiocGenerics
 RoxygenNote: 6.1.1
 Collate:
     'Class-Instruction.R'

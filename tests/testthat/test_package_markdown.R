@@ -94,30 +94,18 @@ test_that("Packaging works if dependency is missing in the base image and predet
   skip_on_cran() # cannot remove packages on CRAN
   skip_on_ci()
 
-  expect_warning(if (require("abe")) remove.packages("abe"))
-
-  expect_error(library("abe"))
-
-  # install package to new library path
-  test_lib_path <- tempfile("test_lib_")
-  dir.create(test_lib_path)
   output <- capture_output({
-    the_dockerfile <- callr::r_vanilla(function() {
-      library("containerit")
-      the_dockerfile <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
-      the_dockerfile
-    },
-    libpath = c(test_lib_path, .libPaths()), repos = "https://cloud.r-project.org")
+    predetected_df <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
   })
 
-  expect_s4_class(the_dockerfile, "Dockerfile")
-  expect_equal(list.files(test_lib_path), c("abe", "boxoffice"))
+  expect_s4_class(predetected_df, "Dockerfile")
+  # package should still not be in this session library
   expect_error(library("abe"))
+  expect_error(library("boxoffice"))
 
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(predetected_df),"\n"))
   expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
   expect_true(object = any(grepl("^RUN.*install2.*\"abe\"", x = generated_file)), info = "Packages missing are detected")
 
-  unlink(test_lib_path)
   unlink("package_markdown/missing_dependency/*.md")
 })
