@@ -94,9 +94,9 @@ Base image: `` `r geospatial_base_image` ``
 ## RStudio Add-in
 
 [RStudio Addins](https://rstudio.github.io/rstudioaddins/) allow to create interactive user interfaces for the RStudio development environment.
-Courtesy of a great contribution by a [group of enthusiasts](https://github.com/o2r-project/containerit/issues/27#issuecomment-440869329) at the [ROpenSci OZ Unconference 2018](https://ozunconf18.ropensci.org/), there are a few 
+Courtesy of a great contribution by a [group of enthusiasts](https://github.com/o2r-project/containerit/issues/27#issuecomment-440869329) at the [ROpenSci OZ Unconference 2018](https://ozunconf18.ropensci.org/), there are several forms to quickly create `Dockefile`s from different use cases, e.g. the current session, a vector of expressions, or a script file.
 
-... #TODO
+![screenshots containerit RStudio Addin forms](https://user-images.githubusercontent.com/1325054/61534429-e1345980-aa2f-11e9-8f5d-e6f67e5d7dde.png)
 
 ## Contribute
 
