@@ -56,7 +56,7 @@ Suggests:
     remotes,
     ggplot2,
     lattice
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'
@@ -88,8 +88,8 @@ Collate:
     'dockerfile.R'
     'package-installation-bespoke.R'
     'package-installation-methods.R'
+    'rstudio_containerit.R'
     'utility-functions.R'
     'utils.R'
-    'rstudio_containerit.R'
 Remotes: github::r-hub/sysreqs,
     github::richfitz/stevedore

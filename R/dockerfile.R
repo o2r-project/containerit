@@ -422,7 +422,7 @@ dockerfileFromFile <- function(file,
       stop("The given file is not inside the context directory!")
 
     # make sure that the path is relative to context
-    rel_path <- .makeRelative(file, context)
+    rel_path <- .makeRelative(normalizePath(file), context)
 
     # execute script / markdowns or read Rdata file to obtain sessioninfo
     if (stringr::str_detect(string = file,

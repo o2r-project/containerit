@@ -1,12 +1,19 @@
-interactive_addin = function() {
+common_addin <- function() {
+  sys.source(pkg_file('scripts','common.R'))
+}
+
+fromSession_addin <- function() {
+  common_addin()
   sys.source(pkg_file('scripts','package-interactive-session.R'))
 }
 
-fromfile_addin = function() {
+fromFile_addin <- function() {
+  common_addin()
   sys.source(pkg_file('scripts','package-load-file.R'))
 }
 
-fromexpressions_addin = function() {
+fromExpressions_addin <- function() {
+  common_addin()
   sys.source(pkg_file('scripts','package-expressions.R'))
 }
 

@@ -1,19 +1,19 @@
-Name: From interactive session
-Description: Create dockerfile from interactive session
-Binding: interactive_addin
+Name: Dockerfile from interactive session
+Description: Create Dockerfile from an interactive session
+Binding: fromSession_addin
 Interactive: true
 
-Name: From file
-Description: Create dockerfile from file
-Binding: fromfile_addin
+Name: Dockerfile from file
+Description: Create Dockerfile from a file (R script, R Markdown document)
+Binding: fromFile_addin
 Interactive: true
 
-Name: From list of expressions
-Description: Create dockerfile from a list of expressions
-Binding: fromexpressions_addin
+Name: Dockerfile from expressions
+Description: Create Dockerfile from a list of expressions
+Binding: fromExpressions_addin
 Interactive: true
 
-Name: From workspace directory
-Description: Create dockerfile from a workspace directory
-Binding: workspaceDirectory_addin
+Name: Dockerfile from workspace
+Description: Create Dockerfile from a workspace directory
+Binding: fromWorkspaceDirectory_addin
 Interactive: true

@@ -1,110 +1,107 @@
 ## GUI - package_load_file
-fromFileAddIn <- function(){
-  
+fromFile <- function(){
+
+  # This function takes a fileinfo object returned from shinyFiles::parseFilePaths(..)
+  # and, depending on the file type, a filename with .dockerfile extension
+  # and the other required calls to containerit::dockerfile,
+  # returns a list of the arguments
   determineDockerFunctionArguments <- function(input_filename) {
-    # This function takes fileinfo, returned from parseFilePaths
-    # and, depending on the file type, a filename with .dockerfile extension
-    # and the other required calls to containerit::dockerfile
-    # Return type is a list of the arguments
-    
-    # Determine the file type
     output <- list()
-    if (grepl(".R$",input_filename)) {
+
+    output[["output_filename"]] <- "Dockerfile"
+
+    # Determine the file type and create CMD accordingly
+    if (grepl(".R$", input_filename)) {
       output[['output_filename']] <- gsub(".R$",".dockerfile",input_filename)
-      output[['cmd']] <- containerit::CMD_Rscript(basename(input_filename))
-      
+      output[["cmd"]] <- containerit::CMD_Rscript(basename(input_filename))
     } else if (grepl(".Rmd$",input_filename)) {
       output[['output_filename']] <- gsub(".Rmd$",".dockerfile",input_filename)
-      output[['cmd']] <- containerit::CMD_Render(basename(input_filename))
-      
+      output[["cmd"]] <- containerit::CMD_Render(basename(input_filename))
     } else if (grepl("RData$|Rdata$",input_filename)) {
-      output[['output_filename']] <- gsub(".RData|.Rdata$",".dockerfile",input_filename)
-      output[['cmd']] <- containerit::Cmd("R")
-    }
-    else {
+      output[['output_filename']] <- gsub(".RData|.Rdata$",".Dockerfile",input_filename)
+      output[["cmd"]] <- containerit::Cmd("R")
+    } else {
       stop("File type not recognised")
     }
+
     return(output)
   }
-  
-  
+
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Dockerfile creation"),
     miniUI::miniContentPanel(
       shiny::fillCol(
-        flex = c(1,2,1,8),
-        shiny::p(shiny::strong("Create a .dockerfile file from a file input.")),
-        shiny::p("Inputs accepted are; R scripts (.R), R markdown files (.Rmd), 
-          or stored sessionInfo (sessionInfo.RData, sessioninfo.RData, 
-          or session_info.RData). For more information see the getting
-          started page at https://o2r.info/containerit/articles/containerit.html."),
-      shiny::fillRow(
-        shiny::textInput("filename",NULL),
-        shinyFiles::shinyFilesButton("load", "Select file", "Load file",multiple=F),
-        height = '50px'
-      ),
-      shiny::textOutput('outputfile')
+        flex = c(1,2,1,1,1),
+        shiny::p(shiny::strong("Create a"), shiny::code("Dockerfile"), shiny::strong("from a workflow file")),
+        shiny::p(shiny::em("Accepted inputs:"), shiny::br(),
+                 "R scripts (.R)", shiny::br(),
+                 "R markdown files (.Rmd)", shiny::br(),
+                 "Stored sessionInfo (R object named 'info' in a file sessionInfo.RData, sessioninfo.RData, or session_info.RData)"),
+        shiny::p("For more information see the ", shiny::a(href = "https://o2r.info/containerit/articles/containerit.html", "package Vignette"), "."),
+        shiny::fillRow(
+          shiny::textInput(inputId = "filename",
+                           label = NULL),
+          shinyFiles::shinyFilesButton(id = "load",
+                                       label = "Select file",
+                                       title = "Load file",
+                                       multiple = F),
+          height = "50px"
+        ),
+        shiny::textOutput("outputfile")
       )
     )
   )
-  
-  
-  
+
   server <- function(input, output, session){
-    volumes <- c("Working directory"=getwd(),"Home Directory"="~")
     shiny::observe({
-      shinyFiles::shinyFileChoose(input,'load', roots = volumes,
-                                  filetypes=c("R","Rmd","Rdata","RData"))
-      fileinfo <- shinyFiles::parseFilePaths(volumes, input$load)
+      shinyFiles::shinyFileChoose(input = input,
+                                  id = 'load',
+                                  roots = file_dialog_volumes,
+                                  filetypes = c("R","Rmd","Rdata","RData"))
+      fileinfo <- shinyFiles::parseFilePaths(roots = file_dialog_volumes,
+                                             selection = input$load)
       if (length(fileinfo$datapath) != 0) {
-        shiny::updateTextInput(session, "filename", value = fileinfo$datapath)
+        shiny::updateTextInput(session = session,
+                               inputId = "filename",
+                               value = fileinfo$datapath)
         docker_output <- determineDockerFunctionArguments(fileinfo$datapath)
         output$outputfile <- shiny::renderText({
-          paste("Output will be written to:",docker_output[['output_filename']])
+          paste("Output will be written to:", file.path(dirname(fileinfo$datapath), docker_output[['output_filename']]))
         })
       }
     })
+
     shiny::observeEvent(input$done, {
-      
-      # Here is where your Shiny application might now go an affect the
-      # contents of a document open in RStudio, using the `rstudioapi` package.
-      #
-      # At the end, your application should call 'stopApp()' here, to ensure that
-      # the gadget is closed after 'done' is clicked.
-      
+      # Exit app to ensure that the gadget is closed after 'done' is clicked.
+      shiny::stopApp()
+
       # Throw error if nothing entered
       if (nchar(input$filename) == 0) {
-         stop("No file selected")
-       }
+        stop("No file selected")
+      }
 
       # Convert to an output file
-      fn_args <- determineDockerFunctionArguments(input$filename)
+      function_arguments <- determineDockerFunctionArguments(input$filename)
       # Store current directory
       curr_dir <- getwd()
       # Change to script directory
       setwd(dirname(input$filename))
       # Create docker file
-      dockerfile_object <- containerit::dockerfile(from=basename(input$filename),
+      dockerfile_object <- containerit::dockerfile(from = basename(input$filename),
                                                    copy = "script",
-                                                   cmd=fn_args[['cmd']]
-                                                   )
+                                                   cmd = function_arguments[['cmd']])
       # Output to desired path
-      containerit::write(dockerfile_object, file = fn_args[['output_filename']])
+      containerit::write(dockerfile_object, file = function_arguments[['output_filename']])
       # Change back to original directory
       setwd(curr_dir)
-      # Output docker instructions
-      cat(paste0("\nInstructions to run docker container from command line:\n
-          >> docker build . -t [tag] -f ", basename(fn_args[['output_filename']])), "\n
-          >> docker run -t [tag]")
-      # Exit app
-      shiny::stopApp()
+
+      print_docker_instructions(function_arguments[['output_filename']])
     })
-    
+
   }
-  
-  
-  viewer <- shiny::dialogViewer(dialogName = "containerit")
-  shiny::runGadget(ui, server, viewer = viewer)
+
+  viewer <- shiny::dialogViewer(dialogName = "containerit", height = 400)
+  shiny::runGadget(app = ui, server = server, viewer = viewer)
 }
 
-fromFileAddIn()
+fromFile()
