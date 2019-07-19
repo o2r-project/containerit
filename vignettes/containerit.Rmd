@@ -120,12 +120,7 @@ containerit::write(dockerfile_object, file = tempfile(fileext = "_dockerfile"))
 
 There also is a convenience function to build the `Dockerfile` object with `stevedore`:
 
-```{r pre_build_df, include=FALSE}
-# run command once so the next cell just uses cache!
-containerit::docker_build(dockerfile_object)
-```
-
-```{r build_df}
+```{r build_df, eval=FALSE}
 containerit::docker_build(dockerfile_object)
 ```
 
