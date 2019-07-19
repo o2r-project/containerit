@@ -16,7 +16,25 @@ Authors@R:
       person(given = "Patrick",
              family = "Schratz",
              role = "ctb",
-             comment = c(ORCID = "0000-0003-0748-6624")))
+             comment = c(ORCID = "0000-0003-0748-6624")),
+      person(given = "Mark",
+             family = "Edmondson",
+             role = "ctb"),
+      person(given = "Ben",
+             family = "Marwick",
+             role = "ctb",
+             comment = c(ORCID = "0000-0001-7879-4531")),
+      person(given = "Claire",
+             family = "Miller",
+             role = "ctb",
+             comment = c(ORCID = "0000-0003-0758-9447")),
+      person(given = "Elise",
+             family = "Gould",
+             role = "ctb",
+             comment = c(ORCID = "0000-0002-6585-538X")),
+      person(given = "Marc",
+             family = "Greenaway",
+             role = "ctb"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Description: Package R sessions, scripts, workspaces and vignettes
