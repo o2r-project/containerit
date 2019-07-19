@@ -75,15 +75,16 @@ Suggests:
     dplyr,
     fortunes,
     ggplot2,
-    ggplot2,
     gstat,
     knitr,
-    lattice,
     lattice,
     lintr,
     magrittr,
     maptools,
-    remotes
+    remotes,
+    rmarkdown,
+    sf,
+    sp
 VignetteBuilder: 
     knitr
 Remotes: 
