@@ -4,12 +4,12 @@ common_addin <- function() {
 
 fromSession_addin <- function() {
   common_addin()
-  sys.source(pkg_file('scripts','package-interactive-session.R'))
+  sys.source(pkg_file('scripts','package-session.R'))
 }
 
 fromFile_addin <- function() {
   common_addin()
-  sys.source(pkg_file('scripts','package-load-file.R'))
+  sys.source(pkg_file('scripts','package-file.R'))
 }
 
 fromExpressions_addin <- function() {
@@ -17,6 +17,7 @@ fromExpressions_addin <- function() {
   sys.source(pkg_file('scripts','package-expressions.R'))
 }
 
-workspaceDirectory_addin = function() {
-  sys.source(pkg_file('scripts','package-workspace-directory.R'))
+fromWorkspace_addin = function() {
+  common_addin()
+  sys.source(pkg_file('scripts','package-workspace.R'))
 }

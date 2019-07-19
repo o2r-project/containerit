@@ -15,5 +15,5 @@ Interactive: true
 
 Name: Dockerfile from workspace
 Description: Create Dockerfile from a workspace directory
-Binding: fromWorkspaceDirectory_addin
+Binding: fromWorkspace_addin
 Interactive: true

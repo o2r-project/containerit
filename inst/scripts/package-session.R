@@ -45,7 +45,7 @@ fromSession <- function(){
                         })
   }
 
-  viewer <- shiny::dialogViewer(dialogName = "containerit")
+  viewer <- shiny::dialogViewer(dialogName = "containerit", height = 120)
   shiny::runGadget(app = ui, server = server, viewer = viewer)
 }
 
