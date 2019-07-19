@@ -4,24 +4,24 @@
   "identifier": "containerit",
   "description": "Package R sessions, scripts, workspaces and vignettes together with\n    all dependencies to execute them in Docker containers. This package is supported\n    by the project Opening Reproducible Research (https://o2r.info).",
   "name": "containerit: Package R in Docker Containers",
-  "codeRepository": "https://github.com/o2r-project/containerit/",
-  "issueTracker": "https://github.com/o2r-project/containerit/issues",
+  "codeRepository": "https://github.com/o2r/containerit/",
+  "issueTracker": "https://github.com/o2r/containerit/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.5.0.9004",
+  "version": "0.5.0.9003",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
-    "version": "3.5.2",
+    "version": "3.6.1",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 3.5.2 (2018-12-20)",
+  "runtimePlatform": "R version 3.6.1 (2019-07-05)",
   "author": [
     {
       "@type": "Person",
       "givenName": "Daniel",
       "familyName": "Nuest",
       "email": "daniel.nuest@uni-muenster.de",
-      "@id": "https://orcid.org/0000-0002-0024-5046"
+      "@id": "https://orcid.org/0000-0003-2392-6140"
     },
     {
       "@type": "Person",
@@ -31,13 +31,16 @@
       "@id": "https://orcid.org/0000-0001-6837-9406"
     }
   ],
+  "contributor": {},
+  "copyrightHolder": {},
+  "funder": {},
   "maintainer": [
     {
       "@type": "Person",
       "givenName": "Daniel",
       "familyName": "Nuest",
       "email": "daniel.nuest@uni-muenster.de",
-      "@id": "https://orcid.org/0000-0002-0024-5046"
+      "@id": "https://orcid.org/0000-0003-2392-6140"
     }
   ],
   "softwareSuggestions": [
@@ -327,7 +330,7 @@
       "@type": "SoftwareApplication",
       "identifier": "sysreqs",
       "name": "sysreqs",
-      "sameAs": "https://github.com/github::r-hub/sysreqs"
+      "sameAs": "https://github.com/r-hub/sysreqs"
     },
     {
       "@type": "SoftwareApplication",
@@ -399,7 +402,7 @@
         "name": "Comprehensive R Archive Network (CRAN)",
         "url": "https://cran.r-project.org"
       },
-      "sameAs": "https://CRAN.R-project.org/package=stevedore"
+      "sameAs": "https://github.com/richfitz/stevedore"
     },
     {
       "@type": "SoftwareApplication",
@@ -424,9 +427,56 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=callr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "rstudioapi",
+      "name": "rstudioapi",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rstudioapi"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "shiny",
+      "name": "shiny",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=shiny"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "miniUI",
+      "name": "miniUI",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=miniUI"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "shinyFiles",
+      "name": "shinyFiles",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=shinyFiles"
     }
   ],
-  "keywords": ["docker", "reproducible-research", "reproducible-science", "r", "dockerfile"],
   "citation": [
     {
       "@type": "SoftwareSourceCode",
@@ -436,7 +486,7 @@
           "givenName": "Daniel",
           "familyName": "Nuest",
           "email": "daniel.nuest@uni-muenster.de",
-          "@id": "https://orcid.org/0000-0002-0024-5046"
+          "@id": "https://orcid.org/0000-0003-2392-6140"
         },
         {
           "@type": "Person",
@@ -447,8 +497,8 @@
         }
       ],
       "name": "containerit: Package R in Docker Containers",
-      "url": "https://github.com/o2r-project/containerit/",
-      "description": "R package version 0.5.0.9004"
+      "url": "https://github.com/o2r/containerit/",
+      "description": "R package version 0.5.0.9003"
     }
   ]
 }

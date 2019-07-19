@@ -38,10 +38,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-07-19 14:27:51] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-07-19 14:27:51] Trying to determine system requirements for the package(s) 'Rcpp,digest,futile.options,semver,formatR,magrittr,evaluate,stringi,curl,futile.logger,rmarkdown,lambda.r,stringr,xfun,yaml,stevedore,htmltools,knitr' from sysreqs online DB
-#> INFO [2019-07-19 14:27:53] Adding CRAN packages: curl, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, Rcpp, rmarkdown, semver, stevedore, stringi, stringr, xfun, yaml
-#> INFO [2019-07-19 14:27:53] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-07-19 14:58:49] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-07-19 14:58:49] Trying to determine system requirements for the package(s) 'Rcpp,digest,futile.options,semver,formatR,magrittr,evaluate,stringi,curl,futile.logger,rmarkdown,lambda.r,stringr,xfun,yaml,stevedore,htmltools,knitr' from sysreqs online DB
+#> INFO [2019-07-19 14:58:56] Adding CRAN packages: curl, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, Rcpp, rmarkdown, semver, stevedore, stringi, stringr, xfun, yaml
+#> INFO [2019-07-19 14:58:56] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
@@ -347,12 +347,16 @@ You can use [`pre-commit`
 hooks](https://github.com/lorenzwalthert/pre-commit-hooks) to avoid some
 mistakes.
 
-A [codemeta](https://codemeta.github.io/) file, `codemeta.json` with
+A [codemeta](https://codemeta.github.io/) file, `codemeta.json`, with
 metadata about the package and its dependencies is generated
 automatically when this document is compiled.
 
 ``` r
 codemetar::write_codemeta("containerit")
+#> Some elements could be improved, see our opinions via give_opinions('/home/daniel/R/x86_64-pc-linux-gnu-library/3.6/containerit/.')
+#> Registered S3 method overwritten by 'httr':
+#>   method                 from
+#>   as.character.form_file crul
 ```
 
 ## License
