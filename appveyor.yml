@@ -44,7 +44,7 @@ build_script:
 before_test:
   - ps: >-
       if (-Not (Test-Path "C:\Program Files (x86)\Pandoc\")) {
-        cinst pandoc
+        cinst pandoc --no-progress
       }
   - ps: $env:Path += ";C:\Program Files (x86)\Pandoc\"
   - pandoc -v
