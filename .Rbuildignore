@@ -8,3 +8,4 @@
 ^CONDUCT\.md$
 .lintr
 docs
+^appveyor\.yml$

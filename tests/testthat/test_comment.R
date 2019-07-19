@@ -1,16 +1,16 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
-context("comment instruction")
+library("containerit")
+context("Adding comments to Dockerfile")
 
-test_that("can create comments",{
+test_that("Can create comments objects with text", {
   cmt1 <- Comment(text = "the text")
   str1 <- toString(cmt1)
   expect_equal(str1, "# the text")
 })
 
-test_that("can add comments to a Dockerfile", {
-  the_dockerfile <- dockerfile(empty_session())
+test_that("Can add comments to a Dockerfile", {
+  output <- capture_output(the_dockerfile <- dockerfile(clean_session()))
   addInstruction(the_dockerfile) <- Comment(text = "the text")
   addInstruction(the_dockerfile) <- Label(foo = "bar")
   addInstruction(the_dockerfile) <- Comment(text = "after foo bar")

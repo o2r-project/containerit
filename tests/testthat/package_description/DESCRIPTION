@@ -1,0 +1,21 @@
+Package: containerittest
+Version: 1.2.3
+Title: Simple Features for R
+Authors@R: c(person(given = "o2",
+             family = "r",
+             role = c("aut", "cre"),
+             email = "o2r-team@uni-muenster.de"))
+Description: Test description
+License: file LICENSE
+URL: https://test.com
+Depends: methods, R (>= 3.3.0)
+Imports: graphics, grDevices, grid, Rcpp (>= 0.12.18), units (>= 0.6-0), utils
+Suggests: covr, dplyr (>= 0.8-0), ggplot2, knitr, lwgeom (>= 0.1-5), maps
+Encoding: UTF-8
+SystemRequirements: C++11, GDAL (>= 2.0.1), GEOS (>= 3.4.0), PROJ (>= 4.8.0)
+Collate: 'code.R'
+NeedsCompilation: yes
+Author: o2 r [aut, cre]
+Maintainer: o2 r <o2r-team@uni-muenster.de>
+Remotes: github::r-hub/sysreqs,gitlab::test/pkg
+biocViews: Sequencing, RNASeq

@@ -46,17 +46,19 @@ sessionInfo = test_info
 save(sessionInfo, file = rdata_file)
 
 test_that("can create dockerfile object from the file with sessionInfo (with a warning)", {
-  expect_warning(the_dockerfile <- dockerfile(from = rdata_file), "for the given R version")
+  output <- capture_output(expect_warning(the_dockerfile <- dockerfile(from = rdata_file), "for the given R version"))
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 test_that("can extract the session from the file (used within dockerfile)", {
-  the_session <- extract_session_file(rdata_file)
+  output <- capture_output(the_session <- extract_session_file(rdata_file))
   expect_s3_class(the_session, "sessionInfo")
   expect_equal(the_session, test_info)
 })
 
-expect_warning(df_test <- dockerfile(from = rdata_file))
+output <- capture_output(
+  expect_warning(df_test <- dockerfile(from = rdata_file))
+)
 
 test_that("dockerfile object contains expected R version", {
   expect_equal(toString(df_test)[1], "FROM rocker/r-ver:3.1.0")
@@ -96,12 +98,13 @@ test_that("R version can be retrieved from session_info", {
   expect_equal(ver3, paste0(R.version$major, ".", R.version$minor), "version extraction from devtools::session_info")
 })
 
-test_that("error if Rdata file contains more than one object", {
-  file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
+test_that("error if RData file contains more than one object", {
+  the_file <- tempfile(tmpdir = tempdir(), fileext = ".RData")
   a <- "1"
   b <- "2"
-  save(a, test_info, b, file = file)
-  expect_error(extract_session_file(file), "exactly one")
+  save(a, test_info, b, file = the_file)
+  output <- capture_output(expect_error(extract_session_file(the_file), "exactly one"))
+  expect_match(object = output, the_file)
 })
 
 test_that("Matching image can be retrieved from sessionInfo, with a warning", {
@@ -110,7 +113,7 @@ test_that("Matching image can be retrieved from sessionInfo, with a warning", {
 })
 
 test_that("Version tag can be retrieved from sessionInfo.RData file", {
-  ver <- getRVersionTag(rdata_file)
+  output <- capture_output(ver <- getRVersionTag(rdata_file))
   expect_equal(ver, "1.2.3")
 })
 
@@ -119,7 +122,7 @@ test_that("Object name 'sessioninfo' is accepted.", {
   sessioninfo <- test_info
   sessioninfo$R.version <- list(major = "3", minor = "3.3")
   save(sessioninfo, file = rdata_file)
-  the_dockerfile <- dockerfile(from = rdata_file)
+  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
@@ -128,20 +131,23 @@ test_that("Object name 'session_info' is accepted.", {
   session_info <- test_info
   session_info$R.version <- list(major = "3", minor = "3.3")
   save(session_info, file = rdata_file)
-  the_dockerfile <- dockerfile(from = rdata_file)
+  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
-test_that("Version tag can be retrieved from .RData file with session_info", {
+test_that("Version tag can be retrieved from .RData file with sessioninfo::session_info", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
-  ver <- getRVersionTag(rdata_file)
+  output <- capture_output(ver <- getRVersionTag(rdata_file))
   expect_equal(ver, paste0(R.version$major, ".", R.version$minor))
+})
 
+test_that("Version tag can be retrieved from .RData file with devtools::session_info", {
+  rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
-  ver2 <- getRVersionTag(rdata_file)
+  output <- capture_output(ver2 <- getRVersionTag(rdata_file))
   expect_equal(ver2, paste0(R.version$major, ".", R.version$minor))
 })
 
@@ -149,7 +155,7 @@ test_that("sessioninfo::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
-  the_dockerfile <- dockerfile(from = rdata_file)
+  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
@@ -157,6 +163,6 @@ test_that("devtools::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
-  the_dockerfile <- dockerfile(from = rdata_file)
+  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
   expect_s4_class(the_dockerfile,"Dockerfile")
 })

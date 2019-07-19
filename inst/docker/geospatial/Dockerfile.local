@@ -1,13 +1,9 @@
-FROM rocker/geospatial:3.4.4
-LABEL maintainer="o2r project <http://o2r.info>"
+# Dockerfile part of https://github.com/o2r-project/containerit/
+FROM rocker/geospatial:3.5.3
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     libapparmor-dev
-
-RUN ["install2.r", "rjson", "futile.logger"]
-
-RUN ["R", "-e", "devtools::install_github('richfitz/stevedore')"]
 
 RUN echo 'old <- getOption("defaultPackages");\n \
 options(defaultPackages = c(old, "containerit"));\n \

@@ -1,9 +1,9 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library(containerit)
-context("from instruction")
+library("containerit")
+context("FROM instruction")
 
-test_that("A From instruction can be created", {
+test_that("A FROM instruction can be created", {
   obj <- methods::new("From", image = "myimage")
   instruction <- toString(obj)
   expect_equal(instruction, "FROM myimage")

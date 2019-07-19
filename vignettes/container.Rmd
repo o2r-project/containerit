@@ -1,11 +1,11 @@
 ---
-title: "Using `containerit` Docker image"
+title: "Using the containerit Docker image"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Introduction to package \texttt{containerit}}
+  %\VignetteIndexEntry{Using \texttt{containerit} Docker image}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -13,15 +13,16 @@ vignette: >
 
 ## Introduction
 
-Containerit is also available itself as a ready-to-use Docker image.
-This is useful if you do not want to install a full stack of packages in your local machine, but still trace a specific R session/script/document.
+Containerit is also available itself as a ready-to-use Docker image from [Docker Hub](https://hub.docker.com/r/o2rproject/containerit/).
+This is useful if you do not want to install a full stack of packages in your local machine, but still trace a specific R session/script/document using a regular command line interface.
 
 ## tl;dr - pull image and show Dockerfile on console
 
-The following example pulls the `geospatial` variant of the containerit images and prints out the created Dockerfile to the console.
+The following example pulls the `geospatial` variant of the containerit images, runs two R commands, and prints out the created Dockerfile to the console.
 
 ```{bash tldr}
-docker run --rm o2rproject/containerit:geospatial R -e "the_dockerfile <- dockerfile(); print(the_dockerfile);"
+docker pull o2rproject/containerit:geospatial
+docker run --rm o2rproject/containerit:geospatial R -e "library(sf); the_dockerfile <- containerit::dockerfile(); print(the_dockerfile);"
 ```
 
 ## Control output
@@ -76,13 +77,14 @@ cat /tmp/containerit/Dockerfile
 rm -r /tmp/containerit
 ```
 
-## Build image
+## Build image locally
 
 With the following commands you can build an image from the local source code.
-The following command executed in the `containerit` source directory creates an image `containerit`:
+The following commands executed in the `containerit` source directory create an image `containerit:geo-manual` and run it to create a `Dockerfile`:
 
 ```{bash build_local, eval=FALSE}
-docker build --file inst/docker/Dockerfile --tag containerit .
+docker build --file ../inst/docker/geospatial/Dockerfile --tag containerit:geo-manual .
+docker run --rm containerit:geo-manual R -e "library(sf); the_dockerfile <- containerit::dockerfile(); print(the_dockerfile);"
 ```
 
 You can try the `predetect` feature by packaging the R Markdown file of the second spacetime vignette with the non-`geospatial` image of containerit that was just built.

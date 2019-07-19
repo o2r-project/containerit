@@ -1,0 +1,19 @@
+---
+title: "containerit demo R Markdown file with sf"
+author: "Daniel Nüst"
+date: "16/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r sf}
+library("sf")
+```
+
+```{r sf_plot}
+demo(nc, ask = FALSE, echo = FALSE)
+plot(st_geometry(nc))
+```

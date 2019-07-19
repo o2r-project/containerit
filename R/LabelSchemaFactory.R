@@ -19,7 +19,7 @@
 #' @family label
 #'
 #' @examples
-#' the_dockerfile <- dockerfile(empty_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' factory <- LabelSchemaFactory()
 #' label <- factory(name = "ImageName",
 #'   description = "Description of the image",

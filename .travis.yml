@@ -14,7 +14,7 @@ r:
 
 cache: packages
 sudo: required
-dist: trusty
+dist: xenial
 
 addons:
   apt:
@@ -29,6 +29,12 @@ before_install:
   - sudo apt-get install --yes libudunits2-dev libproj-dev libgeos-dev libgdal-dev
   # activate liblwgeom by:
   - sudo ldconfig
-  - Rscript -e 'update.packages(ask = FALSE)' # https://github.com/travis-ci/travis-ci/issues/6850
+  - "Rscript -e 'update.packages(ask = FALSE)'" # https://github.com/travis-ci/travis-ci/issues/6850
+  - "Rscript -e 'install.packages(\"BiocManager\")'"
+  - "Rscript -e 'BiocManager::install(\"BiocGenerics\")'"
+  # pull baseimage for tests:
+  - "docker pull rocker/r-ver:latest"
+  - "docker pull rocker/r-ver:3.6.0"
+  - "docker pull rocker/geospatial:3.4.3"
 
 warnings_are_errors: true

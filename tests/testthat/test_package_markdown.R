@@ -3,32 +3,34 @@
 context("Package R markdown files")
 
 test_that("A markdown file can be packaged (using units expample)", {
-  skip("FIXME, works when run single, but not when run with full package check")
-
-  the_dockerfile <- dockerfile(from = "package_markdown/units/",
+  skip("Results differ from execution with all tests and manual")
+  output <- capture_output({
+    the_dockerfile <- dockerfile(from = "package_markdown/units/",
                    maintainer = "Ted Tester",
-                   image = getImageForVersion("3.3.2"),
+                   image = "rocker/verse:3.5.2",
                    copy = "script_dir",
                    cmd = CMD_Render("package_markdown/units/2016-09-29-plot_units.Rmd"))
+  })
   #write(the_dockerfile,"package_markdown/units_Dockerfile")
+  cat("\n"); print(the_dockerfile)
   expected_file <- readLines("package_markdown/units_Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- capture.output(print(the_dockerfile))
   expect_equal(generated_file, expected_file)
 })
 
 test_that("The sf3 markdown file can be packaged", {
-  skip("issue with libwlgeom-2.3 in sf")
-
   md_file <- system.file("doc/sf3.Rmd", package = "sf")
   dir <- file.path(tempdir(), "sf")
   dir.create(dir)
   tmpfile <- tempfile(tmpdir = dir, fileext = ".Rmd")
   file.copy(from = md_file, to = tmpfile)
-  the_dockerfile <- dockerfile(dir,
+  output <- capture_output(
+    the_dockerfile <- dockerfile(dir,
                    maintainer = "o2r",
                    image = "rocker/geospatial",
                    copy = "script_dir",
                    cmd = CMD_Render(dir, output_dir = "/output"))
+  )
   #write(the_dockerfile,"package_markdown/sf_vignette_Dockerfile")
   expected_file <- readLines("package_markdown/sf_vignette_Dockerfile")
   expected_file <- stringr::str_replace(string = expected_file, pattern = "###TEMPDIR###", replacement = dir)
@@ -37,7 +39,7 @@ test_that("The sf3 markdown file can be packaged", {
 
   # here we can build and run the actual container to see if the resulting file is matching
   #expect_true(file.exists(file.path(dir, "sf3.html")))
-  unlink(dir,recursive = TRUE)
+  unlink(dir, recursive = TRUE)
 })
 
 test_that("The render command supports output directory", {
@@ -59,54 +61,60 @@ test_that("The render command supports output directory and output file at the s
 })
 
 test_that("The file is copied", {
-  df_copy <- dockerfile(from = "package_markdown/units/", copy = "script")
+  output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = "script"))
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
 })
 
 test_that("File copying is disabled by default", {
-  df_copy <- dockerfile(from = "package_markdown/units/")
+  output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/"))
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NA/NA_character", {
-  df_copy <- dockerfile(from = "package_markdown/units/", copy = NA_character_)
-  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
-  df_copy2 <- dockerfile(from = "package_markdown/units/", copy = NA_character_)
-  expect_false(object = any(sapply(df_copy2@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
+  output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = NA_character_))
+  expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction if NA_charachter_")
+
+  output <- capture_output(df_copy2 <- dockerfile(from = "package_markdown/units/", copy = NA))
+  expect_false(object = any(sapply(df_copy2@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction if NA")
 })
 
 test_that("File copying can be disabled with NULL", {
-  df_copy <- dockerfile(from = "package_markdown/units/", copy = NULL)
+  output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = NULL))
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("Packaging fails if dependency is missing and predetection is disabled", {
   skip_on_cran() # CRAN knows all packages
-  expect_error(dockerfile(from = "package_markdown/missing_dependency/", predetect = FALSE), "there is no package")
+  output <- capture_output(
+    expect_warning( # Gets a warning: "generated a condition with class packageNotFoundError/error/condition. It is less fragile to test custom conditions with `class`"
+      expect_error(dockerfile(from = "package_markdown/missing_dependency/", predetect = FALSE), "there is no package")
+    )
+  )
 })
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
   skip_on_cran() # cannot remove packages on CRAN
+  skip_on_ci()
 
+  output <- capture_output({
+    predetected_df <- dockerfile(from = "package_markdown/missing_dependency/",
+                                 maintainer = "o2r",
+                                 image = getImageForVersion("3.4.4"),
+                                 predetect = TRUE)
+  })
+  # write(predetected_df, "package_markdown/missing_dependency/Dockerfile")
+
+  expect_s4_class(predetected_df, "Dockerfile")
+  # package should still not be in this session library
   expect_error(library("abe"))
+  expect_error(library("boxoffice"))
 
-  # install package to new library path
-  test_lib_path <- tempfile("test_lib_")
-  dir.create(test_lib_path)
-  the_dockerfile <- callr::r_vanilla(function() {
-    library("containerit")
-    the_dockerfile <- dockerfile(from = "package_markdown/missing_dependency/", maintainer = "o2r", predetect = TRUE)
-    the_dockerfile
-  }, libpath = c(test_lib_path, .libPaths()), repos = "http://cloud.r-project.org")
-
-  expect_s4_class(the_dockerfile, "Dockerfile")
-  expect_equal(list.files(test_lib_path), c("abe", "boxoffice"))
-  expect_error(library("abe"))
-
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- unlist(stringr::str_split(toString(predetected_df),"\n"))
   expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
   expect_true(object = any(grepl("^RUN.*install2.*\"abe\"", x = generated_file)), info = "Packages missing are detected")
 
-  unlink(test_lib_path)
+  expected_file <- readLines("package_markdown/missing_dependency/Dockerfile")
+  expect_equal(capture.output(print(predetected_df)), expected_file)
+
   unlink("package_markdown/missing_dependency/*.md")
 })

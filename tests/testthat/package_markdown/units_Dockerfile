@@ -1,11 +1,11 @@
-FROM rocker/r-ver:3.3.2
+FROM rocker/verse:3.5.2
 LABEL maintainer="Ted Tester"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
   && apt-get install -y git-core \
 	libudunits2-dev \
 	pandoc \
 	pandoc-citeproc
-RUN ["install2.r", "backports", "colorspace", "digest", "evaluate", "ggplot2", "gtable", "htmltools", "knitr", "labeling", "lazyeval", "magrittr", "munsell", "plyr", "Rcpp", "rlang", "rmarkdown", "rprojroot", "scales", "stringi", "stringr", "tibble", "udunits2", "units", "yaml"]
+RUN ["install2.r", "assertthat", "colorspace", "crayon", "digest", "dplyr", "evaluate", "ggplot2", "glue", "gtable", "htmltools", "knitr", "labeling", "lazyeval", "magrittr", "munsell", "pillar", "pkgconfig", "purrr", "R6", "Rcpp", "rlang", "rmarkdown", "scales", "stringi", "stringr", "tibble", "tidyselect", "units", "withr", "xfun", "yaml"]
 WORKDIR /payload/
-COPY ["package_markdown/units", "package_markdown/units/"]
+COPY ["package_markdown/units/", "package_markdown/units/"]
 CMD ["R", "--vanilla", "-e", "rmarkdown::render(input = \"package_markdown/units/2016-09-29-plot_units.Rmd\", output_format = rmarkdown::html_document())"]

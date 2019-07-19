@@ -27,7 +27,7 @@
 #' Given an executable \code{R} script or document, create a Dockerfile to execute this file.
 #' This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
 #'
-#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.
+#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.
 #' @param image (\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 #'      By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.
 #' @param maintainer Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
@@ -40,14 +40,14 @@
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
 #' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
-#' @param cmd The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup
+#' @param cmd The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
 #' @param add_self Whether to add the package containerit itself if loaded/attached to the session
 #' @param silent Whether or not to print information during execution
 #' @param predetect Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages [EXPERIMENTAL] Whether it shall be attempted to match versions of R packages
-#' @param filter_baseimage_pkgs Whether it shall be attempted to match versions of R packages
+#' @param filter_baseimage_pkgs Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.
 #'
 #' @return An object of class Dockerfile
 #'
@@ -56,6 +56,7 @@
 #' @import futile.logger
 #' @importFrom utils capture.output
 #' @importFrom stringr str_detect regex str_extract str_length str_sub
+#' @importFrom desc desc
 #'
 #' @examples
 #' dockerfile <- dockerfile()
@@ -73,7 +74,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        # nolint start
                        container_workdir = "/payload/",
                        # nolint end
-                       cmd = Cmd("R"),
+                       cmd = "R",
                        entrypoint = NULL,
                        add_self = FALSE,
                        silent = FALSE,
@@ -85,14 +86,15 @@ dockerfile <- function(from = utils::sessionInfo(),
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
 
-    .dockerfile <- NA
-    .originalFrom <- class(from)
+    the_dockerfile <- NA
+    originalFrom <- class(from)
 
     #parse From-object from string if necessary
     if (is.character(image)) {
       image <- parseFrom(image)
     }
-    futile.logger::flog.debug("Creating a new Dockerfile from '%s' with base image %s", from, toString(image))
+
+    futile.logger::flog.debug("Creating a new Dockerfile from object of class '%s' with base image %s", class(from), toString(image))
 
     if (is.character(maintainer)) {
       .label <- Label_Maintainer(maintainer)
@@ -100,10 +102,15 @@ dockerfile <- function(from = utils::sessionInfo(),
       maintainer <- .label
     }
 
-    # check CMD instruction
-    if (!inherits(x = cmd, "Cmd")) {
-      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :",
-        class(cmd))
+    # create/check CMD instruction
+    if (is.character(cmd)) {
+      command <- Cmd(cmd)
+      futile.logger::flog.debug("Turned cmd character string '%s' into command: %s", cmd, toString(command))
+    } else {
+      command <- cmd
+    }
+    if (!inherits(x = command, "Cmd")) {
+      stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(command))
     }
 
     # check ENTRYPOINT instruction
@@ -129,7 +136,7 @@ dockerfile <- function(from = utils::sessionInfo(),
       }
     }
 
-    # whether image is supported
+    # check whether image is supported
     image_name <- image@image
     if (!image_name %in% .supported_images) {
       warning("Unsupported base image. Proceed at your own risk. The following base images are supported:\n",
@@ -137,22 +144,37 @@ dockerfile <- function(from = utils::sessionInfo(),
     }
 
     # base dockerfile
-    .dockerfile <- methods::new("Dockerfile",
+    the_dockerfile <- methods::new("Dockerfile",
                                 instructions = list(),
                                 maintainer = maintainer,
                                 image = image,
                                 entrypoint = entrypoint,
-                                cmd = cmd)
+                                cmd = command)
 
-    # handle differe "from" cases
+    # handle different "from" cases
     if (is.null(from)) {
       futile.logger::flog.debug("from is NULL, not deriving any information at all")
       if (!is.null(workdir))
-        addInstruction(.dockerfile) <- workdir
+        addInstruction(the_dockerfile) <- workdir
+    } else if (inherits(from, "expression")
+               || (is.list(from) && all(sapply(from, is.expression))) ) {
+      futile.logger::flog.debug("Creating from expression object with a clean session %s", toString(from))
+      the_session <- clean_session(expr = from,
+                               predetect = predetect,
+                               echo = !silent)
+      the_dockerfile <- dockerfileFromSession(session = the_session,
+                                              dockerfile = the_dockerfile,
+                                              soft = soft,
+                                              offline = offline,
+                                              add_self = add_self,
+                                              versioned_libs = versioned_libs,
+                                              versioned_packages = versioned_packages,
+                                              filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                              workdir = workdir)
     } else if (inherits(x = from, "sessionInfo")) {
       futile.logger::flog.debug("Creating from sessionInfo object")
-      .dockerfile <- dockerfileFromSession(session = from,
-                                           dockerfile = .dockerfile,
+      the_dockerfile <- dockerfileFromSession(session = from,
+                                           dockerfile = the_dockerfile,
                                            soft = soft,
                                            offline = offline,
                                            add_self = add_self,
@@ -160,14 +182,25 @@ dockerfile <- function(from = utils::sessionInfo(),
                                            versioned_packages = versioned_packages,
                                            filter_baseimage_pkgs = filter_baseimage_pkgs,
                                            workdir = workdir)
+    } else if (inherits(x = from, "description")) {
+      futile.logger::flog.debug("Creating from description object")
+      the_dockerfile <- dockerfileFromDescription(description = from,
+                                                  dockerfile = the_dockerfile,
+                                                  soft = soft,
+                                                  offline = offline,
+                                                  copy = copy,
+                                                  versioned_libs = versioned_libs,
+                                                  versioned_packages = versioned_packages,
+                                                  filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                                  workdir = workdir)
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
 
       if (dir.exists(from)) {
         futile.logger::flog.debug("'%s' is a directory", from)
-        .originalFrom <- from
-        .dockerfile <- dockerfileFromWorkspace(path = from,
-                                               dockerfile = .dockerfile,
+        originalFrom <- from
+        the_dockerfile <- dockerfileFromWorkspace(path = from,
+                                               dockerfile = the_dockerfile,
                                                soft = soft,
                                                offline = offline,
                                                add_self = add_self,
@@ -180,41 +213,41 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                workdir = workdir)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
-        .originalFrom <- from
-        .dockerfile <- dockerfileFromFile(file = from,
-                                          dockerfile = .dockerfile,
-                                          soft = soft,
-                                          offline = offline,
-                                          add_self = add_self,
-                                          copy = copy,
-                                          silent = silent,
-                                          predetect = predetect,
-                                          versioned_libs = versioned_libs,
-                                          versioned_packages = versioned_packages,
-                                          filter_baseimage_pkgs = filter_baseimage_pkgs,
-                                          workdir = workdir)
+        originalFrom <- from
+
+        if (basename(from) == "DESCRIPTION") {
+          description <- desc::desc(file = from)
+          the_dockerfile <- dockerfileFromDescription(description = description,
+                                               dockerfile = the_dockerfile,
+                                               soft = soft,
+                                               offline = offline,
+                                               copy = copy,
+                                               versioned_libs = versioned_libs,
+                                               versioned_packages = versioned_packages,
+                                               filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                               workdir = workdir)
+        } else {
+          the_dockerfile <- dockerfileFromFile(file = from,
+                                            dockerfile = the_dockerfile,
+                                            soft = soft,
+                                            offline = offline,
+                                            add_self = add_self,
+                                            copy = copy,
+                                            silent = silent,
+                                            predetect = predetect,
+                                            versioned_libs = versioned_libs,
+                                            versioned_packages = versioned_packages,
+                                            filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                            workdir = workdir)
+        }
       } else {
         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
       }
-    } else if (is.expression(from) ||
-               (is.list(from) && all(sapply(from, is.expression)))) {
-      futile.logger::flog.debug("Creating from expession: '%s' with a clean session", toString(from))
-
-      .sessionInfo <- clean_session(expr = from)
-      .dockerfile <- dockerfileFromSession(session = .sessionInfo,
-                                           dockerfile = .dockerfile,
-                                           soft = soft,
-                                           offline = offline,
-                                           add_self = add_self,
-                                           versioned_libs = versioned_libs,
-                                           versioned_packages = versioned_packages,
-                                           filter_baseimage_pkgs = filter_baseimage_pkgs,
-                                           workdir = workdir)
     } else {
       stop("Unsupported 'from': ", class(from), " ", from)
     }
 
-    # copy additional objects into the container in an Rdata file
+    # copy additional objects into the container in an RData file
     .filename = ".RData"
     if ("save_image_filename" %in% names(save_image)) {
       .filename <- save_image$save_image_filename
@@ -224,16 +257,16 @@ dockerfile <- function(from = utils::sessionInfo(),
                                 .filename, toString(ls(envir = envir)),
                                 utils::capture.output(envir))
       save(list = ls(envir = envir), file = .filename, envir = envir)
-      addInstruction(.dockerfile) <- Copy(src = .filename, dest = .filename)
+      addInstruction(the_dockerfile) <- Copy(src = .filename, dest = .filename)
     } else if (is.list(save_image)) {
       futile.logger::flog.debug("Saving image using to file %s and adding COPY instruction based on %s",
                                 .filename, toString(save_image))
       save(list = unlist(save_image[names(save_image) != "save_image_filename"]), file = .filename, envir = envir)
-      addInstruction(.dockerfile) <- Copy(src = .filename, dest = .filename)
+      addInstruction(the_dockerfile) <- Copy(src = .filename, dest = .filename)
     }
 
-    futile.logger::flog.info("Created Dockerfile-Object based on %s", .originalFrom)
-    return(.dockerfile)
+    futile.logger::flog.info("Created Dockerfile-Object based on %s", originalFrom)
+    return(the_dockerfile)
 }
 
 dockerfileFromPackages <- function(pkgs,
@@ -256,7 +289,7 @@ dockerfileFromPackages <- function(pkgs,
   }
   futile.logger::flog.debug("Detected platform: %s", platform)
 
-  .dockerfile <- add_install_instructions(dockerfile = dockerfile,
+  the_dockerfile <- add_install_instructions(dockerfile = dockerfile,
                                      pkgs = pkgs,
                                      platform = platform,
                                      soft = soft,
@@ -266,9 +299,9 @@ dockerfileFromPackages <- function(pkgs,
                                      filter_baseimage_pkgs = filter_baseimage_pkgs)
 
   # after all installation is done, set the workdir
-  addInstruction(.dockerfile) <- workdir
+  addInstruction(the_dockerfile) <- workdir
 
-  return(.dockerfile)
+  return(the_dockerfile)
 }
 
 dockerfileFromSession <- function(session, ...) {
@@ -290,7 +323,7 @@ dockerfileFromSession.sessionInfo <- function(session,
   lpks <- session$loadedOnly
   pkgs <- append(apks, lpks) # packages to be installed
 
-  if (!add_self) {
+  if (!add_self && !is.null(pkgs$containerit)) {
     futile.logger::flog.debug("Removing self from the list of packages")
     pkgs$containerit <- NULL
   }
@@ -311,7 +344,7 @@ dockerfileFromSession.sessionInfo <- function(session,
              version <- NA
              source <- NA
 
-             #check if package come from CRAN or GitHub
+             #check if package come from CRAN, GitHub or Bioconductor
              if ("Repository" %in% names(pkg) &&
                  stringr::str_detect(pkg$Repository, "(?i)CRAN")) {
                source <- "CRAN"
@@ -320,7 +353,11 @@ dockerfileFromSession.sessionInfo <- function(session,
                         stringr::str_detect(pkg$RemoteType, "(?i)github")) {
                source <- "github"
                version <- getGitHubRef(name, pkgs)
-             } else {
+             } else if ("biocViews" %in% names(pkg)) {
+               source <- "Bioconductor"
+               version <- pkg$Version
+             }
+               else {
                warning("Failed to identify a source for package ", name,
                        ". Therefore the package cannot be installed in the Docker image.\n")
              }
@@ -335,7 +372,7 @@ dockerfileFromSession.sessionInfo <- function(session,
   packages_df <- do.call("rbind", lapply(pkgs_list, as.data.frame))
   futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
 
-  .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+  the_dockerfile <- dockerfileFromPackages(pkgs = packages_df,
                                         dockerfile = dockerfile,
                                         soft = soft,
                                         offline = offline,
@@ -343,7 +380,7 @@ dockerfileFromSession.sessionInfo <- function(session,
                                         versioned_packages = versioned_packages,
                                         filter_baseimage_pkgs = filter_baseimage_pkgs,
                                         workdir = workdir)
-  return(.dockerfile)
+  return(the_dockerfile)
 }
 
 dockerfileFromSession.session_info <- function(session,
@@ -384,7 +421,7 @@ dockerfileFromSession.session_info <- function(session,
     }
   }
 
-  .dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+  the_dockerfile <- dockerfileFromPackages(pkgs = packages_df,
                                         dockerfile = dockerfile,
                                         soft = soft,
                                         offline = offline,
@@ -392,7 +429,7 @@ dockerfileFromSession.session_info <- function(session,
                                         versioned_packages = versioned_packages,
                                         filter_baseimage_pkgs = filter_baseimage_pkgs,
                                         workdir = workdir)
-  return(.dockerfile)
+  return(the_dockerfile)
 }
 
 dockerfileFromFile <- function(file,
@@ -401,7 +438,6 @@ dockerfileFromFile <- function(file,
                                copy,
                                offline,
                                add_self,
-                               vanilla,
                                silent,
                                predetect,
                                versioned_libs,
@@ -424,7 +460,7 @@ dockerfileFromFile <- function(file,
     # make sure that the path is relative to context
     rel_path <- .makeRelative(normalizePath(file), context)
 
-    # execute script / markdowns or read Rdata file to obtain sessioninfo
+    # execute script / markdowns or read RData file to obtain sessioninfo
     if (stringr::str_detect(string = file,
                             pattern = stringr::regex(".R$", ignore_case = TRUE))) {
       futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
@@ -446,7 +482,7 @@ dockerfileFromFile <- function(file,
     }
 
     # append system dependencies and package installation instructions
-    .dockerfile <- dockerfileFromSession(session = sessionInfo,
+    the_dockerfile <- dockerfileFromSession(session = sessionInfo,
                                          dockerfile = dockerfile,
                                          soft = soft,
                                          offline = offline,
@@ -463,16 +499,14 @@ dockerfileFromFile <- function(file,
         stop("Invalid argument given for 'copy'")
       } else if (length(copy) == 1 && copy == "script") {
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_path_dest <-
-          stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-        addInstruction(.dockerfile) <- Copy(rel_path, rel_path_dest)
+        rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+        addInstruction(the_dockerfile) <- Copy(rel_path, rel_path_dest)
       } else if (length(copy) == 1 && copy == "script_dir") {
         script_dir <- normalizePath(dirname(file))
         rel_dir <- .makeRelative(script_dir, context)
 
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_dir_dest <-
-          stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
+        rel_dir_dest <- stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
 
         # directories given as destination must have a trailing slash in dockerfiles
         if (!stringr::str_detect(rel_dir_dest, "/$"))
@@ -482,28 +516,26 @@ dockerfileFromFile <- function(file,
         if (!stringr::str_detect(rel_dir, "/$"))
           rel_dir <- paste0(rel_dir, "/")
 
-        addInstruction(.dockerfile) <- Copy(rel_dir, rel_dir_dest)
+        addInstruction(the_dockerfile) <- Copy(rel_dir, rel_dir_dest)
       } else {
-        ## assume that a list or vector of paths is given
+        futile.logger::flog.debug("Seems we have a list of paths/files in 'copy': ", toString(file))
         sapply(copy, function(file) {
           if (file.exists(file)) {
+            futile.logger::flog.debug("Adding copy command for file ", file)
             rel_path <- .makeRelative(normalizePath(file), context)
             rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-            if (dir.exists(file) &&
-                !stringr::str_detect(rel_path_dest, "/$"))
+            if (dir.exists(file) && !stringr::str_detect(rel_path_dest, "/$"))
               rel_path_dest <- paste0(rel_dir_dest, "/")
-            addInstruction(.dockerfile) <<-
-              Copy(rel_path, rel_path_dest)
+
+            addInstruction(the_dockerfile) <<- Copy(rel_path, rel_path_dest)
           } else {
-            stop("The file ",
-                 file,
-                 ", given by 'copy', does not exist! Invalid argument.")
+            warning("The file ", file, ", given by 'copy', does not exist! Invalid argument.")
           }
         })
       }
     }
 
-    return(.dockerfile)
+    return(the_dockerfile)
   }
 
 dockerfileFromWorkspace <- function(path,
@@ -555,7 +587,7 @@ dockerfileFromWorkspace <- function(path,
     else
       futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
 
-    .dockerfile <- dockerfileFromFile(target_file,
+    the_dockerfile <- dockerfileFromFile(target_file,
                               dockerfile = dockerfile,
                               soft = soft,
                               offline = offline,
@@ -567,76 +599,76 @@ dockerfileFromWorkspace <- function(path,
                               versioned_packages = versioned_packages,
                               filter_baseimage_pkgs = filter_baseimage_pkgs,
                               workdir = workdir)
-    return(.dockerfile)
+    return(the_dockerfile)
   }
 
+dockerfileFromDescription <- function(description,
+                                   dockerfile,
+                                   soft,
+                                   offline,
+                                   copy = copy,
+                                   versioned_libs,
+                                   versioned_packages,
+                                   filter_baseimage_pkgs,
+                                   workdir) {
+  futile.logger::flog.debug("Creating from description")
+  stopifnot(inherits(x = description, "description"))
 
-#' getImageForVersion-method
-#'
-#' Get a suitable Rocker image based on the R version.
-#' Needs network access to retrieve the available images.
-#'
-#' If there was no matching image found, a warning is issued.
-#'
-#' @param r_version A string representation of the R version, e.g. "3.4.2"
-#' @param nearest A boolean, should the closest version be returned if there is no match?
-#'
-#' @return A string with the name of the Docker image
-#' @export
-#' @examples
-#' getImageForVersion(getRVersionTag(utils::sessionInfo()))
-#' getImageForVersion("3.4.3")
-#'
-#' @importFrom semver parse_version
-getImageForVersion <- function(r_version, nearest = TRUE) {
-  #check if dockerized R version is available (maybe check other repositories too?)
-  tags <- .tagsfromRemoteImage(.rocker_images[["versioned"]])
-  image <- From(.rocker_images[["versioned"]], tag = r_version)
+  # only add imported packages
+  pkgs <- subset(description$get_deps(), type == "Imports")$package
+  pkgs <- c(description$get_field("Package"), pkgs)
 
-  closestMatch <- function(version, versions) {
-    if (version %in% versions) return(version);
+  # parse remotes with remotes internal functions
+  remote_pkgs <- remotes:::split_remotes(description$get_remotes())
 
-    factors <- list(major = 1000000, minor = 1000, patch = 1)
+  # add CRAN packages
+  pkgs_list <- lapply(pkgs, function(pkg) {
+    name <- pkg
+    source <- "CRAN"
+    version <- NA
+    if (description$get_field("Package") == pkg)
+      version <- as.character(description$get_version())
+    return(list(name = name, version = version, source = source))
+  })
 
-    semver <- semver::parse_version(version)[[1]]
-    semver_num <- semver$major * factors[["major"]] +
-      semver$minor * factors[["minor"]] +
-      semver$patch * factors[["patch"]]
-
-    sorted_semvers <- sort(semver::parse_version(versions))
-
-    offsets <- sapply(X = sorted_semvers, FUN = function(v) {
-      v_num <- v$major * factors[["major"]] +
-        v$minor * factors[["minor"]] +
-        v$patch * factors[["patch"]]
-      return(abs(semver_num - v_num))
-    })
-
-    min_offset = min(offsets)
-    return(sorted_semvers[which(offsets == min_offset)])
-  }
-
-  if (!r_version %in% tags) {
-    if (nearest) {
-      # get numeric versions with all parts (maj.min.minor), i.e. two dots
-      numeric_tags <- tags[which(grepl("\\d.\\d.\\d", tags))]
-      closest <- as.character(closestMatch(r_version, numeric_tags))
-      image <- From(.rocker_images[["versioned"]], tag = closest)
-
-      warning("No Docker image found for the given R version, returning closest match: ",
-              closest,
-              " Existing tags (list only available when online): ",
-              paste(tags, collapse = " ")
-      )
+  # add remote packages
+  pkgs_list <- append(pkgs_list, lapply(remote_pkgs, function(remote) {
+    remote_pkg <- remotes:::parse_one_remote(remote)
+    if (inherits(remote_pkg, "github_remote")) {
+      # assume package name == repo name !
+      name <- remote_pkg$repo
+      source <- "github"
+      version <- paste0(remote_pkg$username, "/", remote_pkg$repo, "@", remote_pkg$ref)
+      return(list(name = name, version = version, source = source))
     } else {
-      warning("No Docker image found for the given R version, returning input. ",
-              "Existing tags (list only available when online): ",
-              paste(tags, collapse = " ")
-      )
+      futile.logger::flog.warn("Unsupported remote found in DESCRIPTION file: %s", toString(remote))
+      return(NULL)
     }
-  }
+  }))
+  # remove NULLs
+  pkgs_list <- pkgs_list[!vapply(pkgs_list, is.null, logical(1))]
 
-  return(image)
+  packages_df <- do.call("rbind", lapply(pkgs_list, as.data.frame))
+  futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
+
+  platform = NULL
+  image_name = dockerfile@image@image
+  if (image_name %in% .debian_images) {
+    platform = .debian_platform
+    futile.logger::flog.debug("Found image %s in list of Debian images", image_name)
+  }
+  futile.logger::flog.debug("Detected platform: %s", platform)
+
+  the_dockerfile <- dockerfileFromPackages(pkgs = packages_df,
+                                           dockerfile = dockerfile,
+                                           soft = soft,
+                                           offline = offline,
+                                           versioned_libs = versioned_libs,
+                                           versioned_packages = versioned_packages,
+                                           filter_baseimage_pkgs = filter_baseimage_pkgs,
+                                           workdir = workdir)
+
+  return(the_dockerfile)
 }
 
 .tagsfromRemoteImage <- function(image) {
@@ -651,7 +683,7 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
     str <- readLines(con, warn = FALSE)
     },
     error = function(e) {
-      warning("Could not retrieve existing tags (offline?), error: ", e)
+      stop("Could not retrieve existing tags from ", urlstr, " (offline?), error: ", e)
     },
     finally = close(con))
 

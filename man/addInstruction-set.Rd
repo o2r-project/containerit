@@ -18,6 +18,6 @@ Returns the modified Dockerfile object (replacement method)
 Add one or more instructions to a Dockerfile
 }
 \examples{
-the_dockerfile <- dockerfile(empty_session())
+the_dockerfile <- dockerfile(clean_session())
 addInstruction(the_dockerfile) <- Label(myKey = "myContent")
 }
