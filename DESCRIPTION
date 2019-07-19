@@ -1,7 +1,7 @@
 Type: Package
 Package: containerit
 Title: Package R in Docker Containers
-Version: 0.5.0.9007
+Version: 0.5.0.9008
 Authors@R: 
     c(person(given = "Daniel",
              family = "Nuest",
@@ -16,7 +16,25 @@ Authors@R:
       person(given = "Patrick",
              family = "Schratz",
              role = "ctb",
-             comment = c(ORCID = "0000-0003-0748-6624")))
+             comment = c(ORCID = "0000-0003-0748-6624")),
+      person(given = "Mark",
+             family = "Edmondson",
+             role = "ctb"),
+      person(given = "Ben",
+             family = "Marwick",
+             role = "ctb",
+             comment = c(ORCID = "0000-0001-7879-4531")),
+      person(given = "Claire",
+             family = "Miller",
+             role = "ctb",
+             comment = c(ORCID = "0000-0003-0758-9447")),
+      person(given = "Elise",
+             family = "Gould",
+             role = "ctb",
+             comment = c(ORCID = "0000-0002-6585-538X")),
+      person(given = "Marc",
+             family = "Greenaway",
+             role = "ctb"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Description: Package R sessions, scripts, workspaces and vignettes
@@ -37,9 +55,13 @@ Imports:
     futile.logger,
     jsonlite,
     methods,
+    miniUI,
     rjson,
+    rstudioapi,
     semver,
     sessioninfo,
+    shiny,
+    shinyFiles,
     stevedore,
     stringr,
     sysreqs,
@@ -53,23 +75,20 @@ Suggests:
     dplyr,
     fortunes,
     ggplot2,
+    ggplot2,
     gstat,
     knitr,
+    lattice,
     lattice,
     lintr,
     magrittr,
     maptools,
-    remotes,
-    rgdal,
-    rmarkdown,
-    sf,
-    sp,
-    testthat,
-    units
+    remotes
 VignetteBuilder: 
     knitr
 Remotes: 
-    github::r-hub/sysreqs
+    github::r-hub/sysreqs,
+    github::richfitz/stevedore
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 6.1.1
@@ -96,6 +115,7 @@ Collate:
     'Class-Volume.R'
     'Class-Workdir.R'
     'LabelSchemaFactory.R'
+    'addin.R'
     'baseimages.R'
     'containerit-config.R'
     'containerit.R'
@@ -103,4 +123,6 @@ Collate:
     'dockerfile.R'
     'package-installation-bespoke.R'
     'package-installation-methods.R'
+    'rstudio_containerit.R'
     'utility-functions.R'
+    'utils.R'

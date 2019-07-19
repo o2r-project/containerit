@@ -91,6 +91,13 @@ Base image: `` `r geospatial_base_image` ``
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
 
+## RStudio Add-in
+
+[RStudio Addins](https://rstudio.github.io/rstudioaddins/) allow to create interactive user interfaces for the RStudio development environment.
+Courtesy of a great contribution by a [group of enthusiasts](https://github.com/o2r-project/containerit/issues/27#issuecomment-440869329) at the [ROpenSci OZ Unconference 2018](https://ozunconf18.ropensci.org/), there are several forms to quickly create `Dockefile`s from different use cases, e.g. the current session, a vector of expressions, or a script file.
+
+![screenshots containerit RStudio Addin forms](https://user-images.githubusercontent.com/1325054/61534429-e1345980-aa2f-11e9-8f5d-e6f67e5d7dde.png)
+
 ## Contribute
 
 All help is welcome: asking questions, providing documentation, testing, or even programming.
