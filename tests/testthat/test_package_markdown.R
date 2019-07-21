@@ -93,7 +93,7 @@ test_that("Packaging fails if dependency is missing and predetection is disabled
 })
 
 test_that("Packaging works if dependency is missing in the base image and predetection is enabled", {
-  skip_on_cran() # cannot remove packages on CRAN
+  skip_on_cran() # no missing packages on on CRAN
   skip_on_ci()
 
   output <- capture_output({
@@ -106,12 +106,11 @@ test_that("Packaging works if dependency is missing in the base image and predet
 
   expect_s4_class(predetected_df, "Dockerfile")
   # package should still not be in this session library
-  expect_error(library("abe"))
   expect_error(library("boxoffice"))
 
   generated_file <- unlist(stringr::str_split(toString(predetected_df),"\n"))
   expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
-  expect_true(object = any(grepl("^RUN.*install2.*\"abe\"", x = generated_file)), info = "Packages missing are detected")
+  expect_true(object = any(grepl("^RUN.*install2.*\"rprojroot\"", x = generated_file)), info = "Packages missing are detected")
 
   expected_file <- readLines("package_markdown/missing_dependency/Dockerfile")
   expect_equal(capture.output(print(predetected_df)), expected_file)

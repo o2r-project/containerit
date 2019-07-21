@@ -159,7 +159,6 @@ CMD_Rscript <-
 #' @seealso \link[rmarkdown]{render}
 #'
 #' @return A CMD instruction
-#' @importFrom rmarkdown html_document render
 #' @export
 CMD_Render <-
   function(path,

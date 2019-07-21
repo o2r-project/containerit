@@ -9,3 +9,5 @@
 .lintr
 docs
 ^appveyor\.yml$
+^\.pre-commit-config\.yaml$
+^\.git$

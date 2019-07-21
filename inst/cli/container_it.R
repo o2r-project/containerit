@@ -1,8 +1,7 @@
 #!/usr/bin/Rscript
 
 "container_it.R is a command-line interface to the R package containerit.
-It packages R sessions, scripts, workspaces and vignettes together with all dependencies
-to execute them in Docker containers.
+It packages R sessions, scripts, workspace directories and R Markdown documents with all dependencies to execute them in Docker containers.
 
 Usage:  container_it.R dir [options] [--copy arg] [-d <DIR>]
         container_it.R file [options] [--copy arg] [--cmd-render <FORMAT> | --cmd-R-file] <FILE>

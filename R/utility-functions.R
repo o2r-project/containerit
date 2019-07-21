@@ -363,7 +363,6 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
 #' @param predetect whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file
 #' @param repos Repository to use, requried if \code{expr} incluedes install statements
 #' @importFrom utils installed.packages install.packages
-#' @importFrom rmarkdown render
 #' @export
 #' @examples
 #' clean_session(c(quote(library('lattice'))))

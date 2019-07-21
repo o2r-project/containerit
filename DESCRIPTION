@@ -37,13 +37,13 @@ Authors@R:
              role = "ctb"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
-Description: Package R sessions, scripts, workspaces and vignettes
-    together with all dependencies to execute them in Docker containers.
-    This package is supported by the project Opening Reproducible Research
-    (https://o2r.info).
+Description: Package R sessions, scripts, workspace directories, and R
+    Markdown documents together with all dependencies to execute them in
+    Docker containers.  This package is supported by the project Opening
+    Reproducible Research (<https://o2r.info>).
 License: GPL-3 + file LICENSE
-URL: https://github.com/o2r/containerit/
-BugReports: https://github.com/o2r/containerit/issues
+URL: https://o2r.info/containerit/
+BugReports: https://github.com/o2r-project/containerit/issues
 Depends:
     R (>= 3.5.0)
 Imports:
@@ -69,6 +69,7 @@ Imports:
     versions
 Suggests:
     BiocGenerics,
+    boxoffice,
     codetools,
     covr,
     docopt,
@@ -83,8 +84,10 @@ Suggests:
     maptools,
     remotes,
     rmarkdown,
+    rprojroot,
     sf,
-    sp
+    sp,
+    testthat
 VignetteBuilder: 
     knitr
 Remotes: 

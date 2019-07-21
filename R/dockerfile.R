@@ -70,7 +70,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
                        soft = FALSE,
                        offline = FALSE,
-                       copy = NA, # "script",
+                       copy = NULL,
                        # nolint start
                        container_workdir = "/payload/",
                        # nolint end
@@ -492,8 +492,8 @@ dockerfileFromFile <- function(file,
                                          filter_baseimage_pkgs = filter_baseimage_pkgs,
                                          workdir = workdir)
 
-    ## working directory must be set before. Now add copy instructions
-    if (!is.null(copy) && !is.na(copy)) {
+    ## working directory must be set before. Now add COPY instructions
+    if (!all(is.null(copy)) && !all(is.na(copy))) {
       copy = unlist(copy)
       if (!is.character(copy)) {
         stop("Invalid argument given for 'copy'")
@@ -518,7 +518,7 @@ dockerfileFromFile <- function(file,
 
         addInstruction(the_dockerfile) <- Copy(rel_dir, rel_dir_dest)
       } else {
-        futile.logger::flog.debug("Seems we have a list of paths/files in 'copy': ", toString(file))
+        futile.logger::flog.debug("We have a list of paths/files in 'copy': ", toString(copy))
         sapply(copy, function(file) {
           if (file.exists(file)) {
             futile.logger::flog.debug("Adding copy command for file ", file)
@@ -533,6 +533,8 @@ dockerfileFromFile <- function(file,
           }
         })
       }
+    } else {
+      futile.logger::flog.debug("All paths in copy are NULL or NA, not adding any COPY instructions: ", toString(copy))
     }
 
     return(the_dockerfile)
@@ -615,6 +617,7 @@ dockerfileFromDescription <- function(description,
   stopifnot(inherits(x = description, "description"))
 
   # only add imported packages
+  type = NULL # avoid NOTE, see https://stackoverflow.com/a/8096882/261210
   pkgs <- subset(description$get_deps(), type == "Imports")$package
   pkgs <- c(description$get_field("Package"), pkgs)
 

@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -70,14 +70,7 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/o2r/containerit">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -92,9 +85,9 @@
       <h1>Basic introduction to package containerit</h1>
                         <h4 class="author">Daniel Nüst</h4>
             
-            <h4 class="date">2019-07-18</h4>
+            <h4 class="date">2019-07-21</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/o2r/containerit/blob/master/vignettes/basic.Rmd"><code>vignettes/basic.Rmd</code></a></small>
+      
       <div class="hidden name"><code>basic.Rmd</code></div>
 
     </div>
@@ -131,10 +124,10 @@
 <a class="sourceLine" id="cb1-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/graphics/topics/plot">plot</a></span>(v, <span class="dt">model =</span> m)</a></code></pre></div>
 <p><img src="basic_files/figure-html/tldr-1.png" width="700"></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">my_environment &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dockerfile.html">dockerfile</a></span>(<span class="dt">from =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a></code></pre></div>
-<pre><code>## INFO [2019-07-18 19:02:38] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-18 19:02:38] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,FNN,formatR,fs,futile.logger,futile.options,gstat,htmltools,intervals,knitr,lambda.r,lattice,magrittr,MASS,memoise,pkgdown,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sp,spacetime,stevedore,stringi,stringr,xfun,xml2,xts,yaml,zoo' from sysreqs online DB
-## INFO [2019-07-18 19:02:40] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, FNN, formatR, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, MASS, memoise, pkgdown, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stevedore, stringi, stringr, xfun, xml2, xts, yaml, zoo
-## INFO [2019-07-18 19:02:40] Created Dockerfile-Object based on sessionInfo</code></pre>
+<pre><code>## INFO [2019-07-21 14:21:42] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-21 14:21:42] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,FNN,formatR,fs,futile.logger,futile.options,gstat,htmltools,intervals,knitr,lambda.r,lattice,magrittr,MASS,memoise,pkgdown,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sp,spacetime,stevedore,stringi,stringr,xfun,xml2,xts,yaml,zoo' from sysreqs online DB
+## INFO [2019-07-21 14:21:44] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, FNN, formatR, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, MASS, memoise, pkgdown, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stevedore, stringi, stringr, xfun, xml2, xts, yaml, zoo
+## INFO [2019-07-21 14:21:44] Created Dockerfile-Object based on sessionInfo</code></pre>
 <p>The Dockerfile object can be saved to a file or printed out.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/character">as.character</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(my_environment)), <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</a></code></pre></div>
 <pre><code>FALSE FROM rocker/r-ver:3.6.1                                                                                                                                                                                                                                                                                                                                                                                                                                             
@@ -161,10 +154,10 @@ FALSE CMD ["R"]</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a></code></pre></div>
 <pre><code>## [1] "sessionInfo"</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>(), <span class="dt">env =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ls">ls</a></span>())</a></code></pre></div>
-<pre><code>## INFO [2019-07-18 19:02:41] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-18 19:02:41] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,FNN,formatR,fs,futile.logger,futile.options,gstat,htmltools,intervals,knitr,lambda.r,lattice,magrittr,MASS,memoise,pkgdown,R6,Rcpp,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sp,spacetime,stevedore,stringi,stringr,xfun,xml2,xts,yaml,zoo' from sysreqs online DB
-## INFO [2019-07-18 19:02:43] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, FNN, formatR, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, MASS, memoise, pkgdown, R6, Rcpp, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stevedore, stringi, stringr, xfun, xml2, xts, yaml, zoo
-## INFO [2019-07-18 19:02:43] Created Dockerfile-Object based on sessionInfo</code></pre>
+<pre><code>## INFO [2019-07-21 14:21:45] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-21 14:21:45] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,FNN,formatR,fs,futile.logger,futile.options,gstat,htmltools,intervals,knitr,lambda.r,lattice,magrittr,MASS,memoise,pkgdown,R6,Rcpp,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sp,spacetime,stevedore,stringi,stringr,xfun,xml2,xts,yaml,zoo' from sysreqs online DB
+## INFO [2019-07-21 14:21:47] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, FNN, formatR, fs, futile.logger, futile.options, gstat, htmltools, intervals, knitr, lambda.r, lattice, magrittr, MASS, memoise, pkgdown, R6, Rcpp, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sp, spacetime, stevedore, stringi, stringr, xfun, xml2, xts, yaml, zoo
+## INFO [2019-07-21 14:21:47] Created Dockerfile-Object based on sessionInfo</code></pre>
 <pre><code>## An object of class "Dockerfile"
 ## Slot "image":
 ## An object of class "From"
@@ -238,7 +231,7 @@ FALSE CMD ["R"]</code></pre>
 <div id="create-dockerfile-from-script" class="section level3">
 <h3 class="hasAnchor">
 <a href="#create-dockerfile-from-script" class="anchor"></a>Create Dockerfile from script</h3>
-<p>This example uses the <a href="https://cran.r-project.org/web/packages/rgdal/index.html">rgdal</a> package because it has system library dependencies, namely GDAL and PROJ. Code snippets are taken from the <a href="http://edzer.github.io/sp/">sp gallery</a>. Here is some regular R code loading a file and plotting it.</p>
+<p>This example uses the <a href="https://CRAN.R-project.org/package=rgdal">rgdal</a> package because it has system library dependencies, namely GDAL and PROJ. Code snippets are taken from the <a href="http://edzer.github.io/sp/">sp gallery</a>. Here is some regular R code loading a file and plotting it.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rgdal"</span>)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"maptools"</span>)</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">nc &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/rgdal/topics/readOGR">readOGR</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"shapes/"</span>, <span class="dt">package =</span> <span class="st">"maptools"</span>), <span class="st">"sids"</span>, <span class="dt">verbose =</span> <span class="ot">FALSE</span>)</a>
@@ -256,13 +249,15 @@ FALSE CMD ["R"]</code></pre>
 <a class="sourceLine" id="cb13-9" data-line-number="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(</a>
 <a class="sourceLine" id="cb13-10" data-line-number="10">  containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> scriptFile)</a>
 <a class="sourceLine" id="cb13-11" data-line-number="11">)</a></code></pre></div>
-<pre><code>## INFO [2019-07-18 19:02:44] Processing R script file '.' locally.
-## INFO [2019-07-18 19:02:45] Creating an R session with the following expressions:
-## source(file = "/tmp/Rtmpf4jCGQ/containerit_2ac7f57d169.R", echo = TRUE)
-## INFO [2019-07-18 19:02:46] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-18 19:02:46] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,formatR,futile.logger,futile.options,lambda.r,lattice,magrittr,R6,Rcpp,rgdal,rprojroot,rstudioapi,semver,sp,stevedore,stringi,stringr' from sysreqs online DB
-## INFO [2019-07-18 19:02:48] Adding CRAN packages: assertthat, backports, crayon, curl, desc, formatR, futile.logger, futile.options, lambda.r, lattice, magrittr, R6, Rcpp, rgdal, rprojroot, rstudioapi, semver, sp, stevedore, stringi, stringr
-## INFO [2019-07-18 19:02:48] Created Dockerfile-Object based on /tmp/Rtmpf4jCGQ/containerit_2ac7f57d169.R
+<pre><code>## INFO [2019-07-21 14:21:48] Processing R script file '.' locally.
+## INFO [2019-07-21 14:21:48] Creating an R session with the following expressions:
+## source(file = "/tmp/Rtmp3VikRz/containerit_5ec85b3262a.R", echo = TRUE)
+## INFO [2019-07-21 14:21:50] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-21 14:21:50] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,formatR,futile.logger,futile.options,lambda.r,lattice,magrittr,R6,Rcpp,rgdal,rprojroot,rstudioapi,semver,sp,stevedore,stringi,stringr' from sysreqs online DB
+## INFO [2019-07-21 14:21:51] Adding CRAN packages: assertthat, backports, crayon, curl, desc, formatR, futile.logger, futile.options, lambda.r, lattice, magrittr, R6, Rcpp, rgdal, rprojroot, rstudioapi, semver, sp, stevedore, stringi, stringr</code></pre>
+<pre><code>## Warning in dockerfileFromFile(file = from, dockerfile = the_dockerfile, :
+## All paths in copy are NULL or NA, not adding any COPY instructions: NA</code></pre>
+<pre><code>## INFO [2019-07-21 14:21:51] Created Dockerfile-Object based on /tmp/Rtmp3VikRz/containerit_5ec85b3262a.R
 ## FROM rocker/r-ver:3.6.1
 ## LABEL maintainer="daniel"
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
@@ -279,26 +274,30 @@ FALSE CMD ["R"]</code></pre>
 <h3 class="hasAnchor">
 <a href="#create-dockerfile-from-directory" class="anchor"></a>Create Dockerfile from directory</h3>
 <p>This examples packages a workspace directory.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="st">"../inst"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list.files">list.files</a></span>(<span class="st">"../inst"</span>)</a></code></pre></div>
 <pre><code>##  [1] "cli"                          "containerit_config.json"     
 ##  [3] "demo_sf.html"                 "demo_sf.Rmd"                 
 ##  [5] "demo.html"                    "demo.Rmd"                    
 ##  [7] "docker"                       "label-schema_1.0.0-rc.1.txt" 
 ##  [9] "logo.png"                     "logo.svg"                    
-## [11] "simple_test_script_resources"</code></pre>
+## [11] "rstudio"                      "scripts"                     
+## [13] "simple_test_script_resources"</code></pre>
 <p><code>containerit</code> looks for files in a directory that can be executed and creates a Dockerfile based on the first document found, in this case an R Markdown document.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">df &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"../inst"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">df &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"../inst"</span>)</a></code></pre></div>
 <pre><code>## Warning in dockerfileFromWorkspace(path = from, dockerfile = the_dockerfile, : Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: 
 ##  ../inst/demo_sf.Rmd</code></pre>
-<pre><code>## INFO [2019-07-18 19:02:49] Found file for packaging in workspace: ../inst/demo_sf.Rmd
-## INFO [2019-07-18 19:02:49] Processing Rmd file '_sf.Rmd' locally using rmarkdown::render(...)
-## INFO [2019-07-18 19:02:49] Creating an R session with the following expressions:
+<pre><code>## INFO [2019-07-21 14:21:52] Found file for packaging in workspace: ../inst/demo_sf.Rmd
+## INFO [2019-07-21 14:21:52] Processing Rmd file '_sf.Rmd' locally using rmarkdown::render(...)
+## INFO [2019-07-21 14:21:52] Creating an R session with the following expressions:
 ## rmarkdown::render("/home/daniel/git/o2r/containerit/inst/demo_sf.Rmd")
-## INFO [2019-07-18 19:02:51] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-18 19:02:51] Trying to determine system requirements for the package(s) 'assertthat,backports,class,classInt,crayon,curl,DBI,desc,digest,e1071,evaluate,formatR,futile.logger,futile.options,htmltools,KernSmooth,knitr,lambda.r,magrittr,R6,Rcpp,rmarkdown,rprojroot,rstudioapi,semver,sf,stevedore,stringi,stringr,units,xfun,yaml' from sysreqs online DB
-## INFO [2019-07-18 19:02:53] Adding CRAN packages: assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, evaluate, formatR, futile.logger, futile.options, htmltools, KernSmooth, knitr, lambda.r, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, semver, sf, stevedore, stringi, stringr, units, xfun, yaml
-## INFO [2019-07-18 19:02:53] Created Dockerfile-Object based on ../inst</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(df)</a></code></pre></div>
+## INFO [2019-07-21 14:21:54] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-21 14:21:54] Trying to determine system requirements for the package(s) 'assertthat,backports,class,classInt,crayon,curl,DBI,desc,digest,e1071,evaluate,formatR,futile.logger,futile.options,htmltools,KernSmooth,knitr,lambda.r,magrittr,R6,Rcpp,rmarkdown,rprojroot,rstudioapi,semver,sf,stevedore,stringi,stringr,units,xfun,yaml' from sysreqs online DB
+## INFO [2019-07-21 14:21:56] Adding CRAN packages: assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, evaluate, formatR, futile.logger, futile.options, htmltools, KernSmooth, knitr, lambda.r, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, semver, sf, stevedore, stringi, stringr, units, xfun, yaml</code></pre>
+<pre><code>## Warning in dockerfileFromFile(target_file, dockerfile = dockerfile, soft =
+## soft, : All paths in copy are NULL or NA, not adding any COPY instructions:
+## NA</code></pre>
+<pre><code>## INFO [2019-07-21 14:21:56] Created Dockerfile-Object based on ../inst</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(df)</a></code></pre></div>
 <pre><code>## FROM rocker/r-ver:3.6.1
 ## LABEL maintainer="daniel"
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
@@ -321,19 +320,22 @@ FALSE CMD ["R"]</code></pre>
 <a href="#configure-dockerfile" class="anchor"></a>Configure <code>Dockerfile</code>
 </h3>
 <p>You can skip available packages and choose your own base image.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">df &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"../inst"</span>, <span class="dt">image =</span> <span class="st">"rocker/geospatial:3.5.2"</span>, <span class="dt">filter_baseimage_pkgs =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">df &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"../inst"</span>, <span class="dt">image =</span> <span class="st">"rocker/geospatial:3.5.2"</span>, <span class="dt">filter_baseimage_pkgs =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>## Warning in dockerfileFromWorkspace(path = from, dockerfile = the_dockerfile, : Found both scripts and weaved documents (Rmd) in the given directory. Using the first document for packaging: 
 ##  ../inst/demo_sf.Rmd</code></pre>
-<pre><code>## INFO [2019-07-18 19:02:55] Found file for packaging in workspace: ../inst/demo_sf.Rmd
-## INFO [2019-07-18 19:02:55] Processing Rmd file '_sf.Rmd' locally using rmarkdown::render(...)
-## INFO [2019-07-18 19:02:55] Creating an R session with the following expressions:
+<pre><code>## INFO [2019-07-21 14:21:58] Found file for packaging in workspace: ../inst/demo_sf.Rmd
+## INFO [2019-07-21 14:21:58] Processing Rmd file '_sf.Rmd' locally using rmarkdown::render(...)
+## INFO [2019-07-21 14:21:58] Creating an R session with the following expressions:
 ## rmarkdown::render("/home/daniel/git/o2r/containerit/inst/demo_sf.Rmd")
-## INFO [2019-07-18 19:03:02] Skipping packages for image rocker/geospatial:3.5.2 (packages are unversioned): assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, evaluate, formatR, htmltools, KernSmooth, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sf, stringi, stringr, units, xfun, yaml
-## INFO [2019-07-18 19:03:02] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-07-18 19:03:02] Trying to determine system requirements for the package(s) 'futile.logger,futile.options,lambda.r,semver,stevedore' from sysreqs online DB
-## INFO [2019-07-18 19:03:03] Adding CRAN packages: futile.logger, futile.options, lambda.r, semver, stevedore
-## INFO [2019-07-18 19:03:03] Created Dockerfile-Object based on ../inst</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(df)</a></code></pre></div>
+## INFO [2019-07-21 14:22:02] Skipping packages for image rocker/geospatial:3.5.2 (packages are unversioned): assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, evaluate, formatR, htmltools, KernSmooth, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sf, stringi, stringr, units, xfun, yaml
+## INFO [2019-07-21 14:22:02] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-07-21 14:22:02] Trying to determine system requirements for the package(s) 'futile.logger,futile.options,lambda.r,semver,stevedore' from sysreqs online DB
+## INFO [2019-07-21 14:22:03] Adding CRAN packages: futile.logger, futile.options, lambda.r, semver, stevedore</code></pre>
+<pre><code>## Warning in dockerfileFromFile(target_file, dockerfile = dockerfile, soft =
+## soft, : All paths in copy are NULL or NA, not adding any COPY instructions:
+## NA</code></pre>
+<pre><code>## INFO [2019-07-21 14:22:03] Created Dockerfile-Object based on ../inst</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(df)</a></code></pre></div>
 <pre><code>## FROM rocker/geospatial:3.5.2
 ## LABEL maintainer="daniel"
 ## # CRAN packages skipped because they are in the base image: assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, evaluate, formatR, htmltools, KernSmooth, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sf, stringi, stringr, units, xfun, yaml

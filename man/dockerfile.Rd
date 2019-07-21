@@ -9,7 +9,7 @@ dockerfile(from = utils::sessionInfo(),
   maintainer = Sys.info()[["user"]], save_image = FALSE,
   envir = .GlobalEnv, env = list(generator = paste("containerit",
   utils::packageVersion("containerit"))), soft = FALSE,
-  offline = FALSE, copy = NA, container_workdir = "/payload/",
+  offline = FALSE, copy = NULL, container_workdir = "/payload/",
   cmd = "R", entrypoint = NULL, add_self = FALSE, silent = FALSE,
   predetect = TRUE, versioned_libs = FALSE,
   versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)

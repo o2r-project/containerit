@@ -67,7 +67,7 @@ add_install_instructions <- function(dockerfile,
     }
 
     # remove duplicate system requirements and sort (to increase own reproducibility)
-    package_reqs <- sort(unique(package_reqs))
+    package_reqs <- stringr::str_sort(unique(package_reqs))
 
     # if platform is debian and system dependencies need to be installed, add the commands
     if (length(package_reqs) > 0) {

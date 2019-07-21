@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -105,12 +105,7 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://github.com/o2r/containerit">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+        
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -124,7 +119,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>dockerfile-method</h1>
-    <small class="dont-index">Source: <a href='https://github.com/o2r/containerit/blob/master/R/dockerfile.R'><code>R/dockerfile.R</code></a></small>
+    
     <div class="hidden name"><code>dockerfile.Rd</code></div>
     </div>
 
@@ -139,7 +134,7 @@
   <span class='kw'>maintainer</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Sys.info'>Sys.info</a></span>()<span class='kw'>[[</span><span class='st'>"user"</span>]], <span class='kw'>save_image</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>envir</span> <span class='kw'>=</span> <span class='no'>.GlobalEnv</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>generator</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste</a></span>(<span class='st'>"containerit"</span>,
   <span class='kw pkg'>utils</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/packageDescription'>packageVersion</a></span>(<span class='st'>"containerit"</span>))), <span class='kw'>soft</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>offline</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>container_workdir</span> <span class='kw'>=</span> <span class='st'>"/payload/"</span>,
+  <span class='kw'>offline</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>copy</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>container_workdir</span> <span class='kw'>=</span> <span class='st'>"/payload/"</span>,
   <span class='kw'>cmd</span> <span class='kw'>=</span> <span class='st'>"R"</span>, <span class='kw'>entrypoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>add_self</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>silent</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>predetect</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>versioned_libs</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>versioned_packages</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>filter_baseimage_pkgs</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
@@ -254,11 +249,11 @@ This executes the whole file to obtain a complete <code>sessionInfo</code> objec
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-07-18 19:02:14] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#&gt; INFO [2019-07-18 19:02:14] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httr,jsonlite,knitr,lambda.r,magrittr,MASS,memoise,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,yaml' from sysreqs online DB
-#&gt; INFO [2019-07-18 19:02:19] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httr, jsonlite, knitr, lambda.r, magrittr, MASS, memoise, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, yaml
-#&gt; INFO [2019-07-18 19:02:19] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
-#&gt; INFO [2019-07-18 19:02:19] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
+    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-07-21 14:21:26] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#&gt; INFO [2019-07-21 14:21:26] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httpuv,httr,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,promises,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,shiny,shinyFiles,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,xtable,yaml' from sysreqs online DB
+#&gt; INFO [2019-07-21 14:21:29] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httpuv, httr, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, promises, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, shiny, shinyFiles, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, xtable, yaml
+#&gt; INFO [2019-07-21 14:21:29] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
+#&gt; INFO [2019-07-21 14:21:29] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
 #&gt; LABEL maintainer="daniel"
 #&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 #&gt;   &amp;&amp; apt-get install -y git-core \
@@ -268,7 +263,7 @@ This executes the whole file to obtain a complete <code>sessionInfo</code> objec
 #&gt; 	make \
 #&gt; 	pandoc \
 #&gt; 	pandoc-citeproc
-#&gt; RUN ["install2.r", "assertthat", "automagic", "backports", "BiocManager", "callr", "cli", "codetools", "commonmark", "crayon", "curl", "debugme", "desc", "devtools", "digest", "evaluate", "fansi", "formatR", "fs", "futile.logger", "futile.options", "glue", "highlight", "htmltools", "httr", "jsonlite", "knitr", "lambda.r", "magrittr", "MASS", "memoise", "pillar", "pkgbuild", "pkgconfig", "pkgdown", "pkgload", "prettyunits", "processx", "ps", "purrr", "R6", "Rcpp", "rematch2", "remotes", "rjson", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "semver", "sessioninfo", "stevedore", "stringi", "stringr", "testthat", "tibble", "usethis", "versions", "whisker", "withr", "xfun", "xml2", "yaml"]
+#&gt; RUN ["install2.r", "assertthat", "automagic", "backports", "BiocManager", "callr", "cli", "codetools", "commonmark", "crayon", "curl", "debugme", "desc", "devtools", "digest", "evaluate", "fansi", "formatR", "fs", "futile.logger", "futile.options", "glue", "highlight", "htmltools", "httpuv", "httr", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "MASS", "memoise", "mime", "miniUI", "pillar", "pkgbuild", "pkgconfig", "pkgdown", "pkgload", "prettyunits", "processx", "promises", "ps", "purrr", "R6", "Rcpp", "rematch2", "remotes", "rjson", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "semver", "sessioninfo", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "testthat", "tibble", "usethis", "versions", "whisker", "withr", "xfun", "xml2", "xtable", "yaml"]
 #&gt; RUN ["installGithub.r", "r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048"]
 #&gt; WORKDIR /payload/
 #&gt; CMD ["R"]</div><div class='input'>

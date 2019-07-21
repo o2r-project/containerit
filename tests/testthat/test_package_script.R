@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-context("Packaging R-Scripts and workspaces.")
+context("Packaging R-Scripts and workspace directories.")
 
 test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
@@ -73,10 +73,18 @@ test_that("a list of resources can be packaged ", {
   expect_equal(generated_file, expected_file)
 })
 
-test_that("there is a warning if non-existing resources are to be packages", {
+test_that("there is a warning if non-existing resources are to be copied", {
   output <- capture_output(
     expect_warning(dockerfile("package_script/resources/simple_test.R",
                             copy = c("does_not_exist.R")))
+  )
+})
+
+test_that("there is a warning if NA resources are to be copied", {
+  output <- capture_output(
+    expect_warning(dockerfile("package_script/resources/simple_test.R",
+                              copy = c(NA, "package_script/resources/simple_test.R", NA)),
+                   "The file NA, given by 'copy', does not exist!")
   )
 })
 
@@ -95,7 +103,7 @@ test_that("The gstat demo 'zonal' can be packaged ", {
 
   #test execution would be similar to the test above; don't do it to save time
   expected_file = readLines("package_script/gstat/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- capture.output(print(the_dockerfile))
   expect_equal(generated_file, expected_file)
 })
 
@@ -133,7 +141,7 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
                    cmd = CMD_Rscript("package_script/resources/simple_test.R"))
   )
   expected_file = readLines("package_script/resources/Dockerfile3")
-  expect_equal(toString(the_dockerfile), expected_file)
+  expect_equal(capture.output(print(the_dockerfile)), expected_file)
 })
 
 test_that("packaging fails if library from script is missing without predetection", {

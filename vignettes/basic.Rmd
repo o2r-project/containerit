@@ -113,7 +113,7 @@ clear_all()
 
 ### Create Dockerfile from script
 
-This example uses the [rgdal](https://cran.r-project.org/web/packages/rgdal/index.html) package because it has system library dependencies, namely GDAL and PROJ.
+This example uses the [rgdal](https://CRAN.R-project.org/package=rgdal) package because it has system library dependencies, namely GDAL and PROJ.
 Code snippets are taken from the [sp gallery](http://edzer.github.io/sp/).
 Here is some regular R code loading a file and plotting it.
 
