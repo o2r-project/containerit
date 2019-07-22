@@ -52,6 +52,9 @@ test_that("The R version is the current version if not specified otherwise", {
 })
 
 test_that("The package containerit is not packaged by default", {
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
     the_dockerfile <- dockerfile(info)

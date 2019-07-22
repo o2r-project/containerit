@@ -15,7 +15,7 @@ branches:
 version: 1.0.{build}
 
 image:
-  - Visual Studio 2017
+  - Visual Studio 2017 # to have Docker
   #- Ubuntu # https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/
 
 install:
