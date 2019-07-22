@@ -11,3 +11,6 @@ docs
 ^appveyor\.yml$
 ^\.pre-commit-config\.yaml$
 ^\.git$
+^paper\.bib$
+^paper\.md$
+^codemeta\.json$

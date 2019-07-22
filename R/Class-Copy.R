@@ -34,7 +34,7 @@ setClass("Copy",
 Copy <- function(src, dest, addTrailingSlashes = TRUE) {
   # directories given as destination must have a trailing slash in Dockerfiles, add it if missing
   sources <- sapply(X = src, FUN = function(source) {
-    if (dir.exists(source) && !stringr::str_detect(src, "/$"))
+    if (dir.exists(source) && !stringr::str_detect(source, "/$"))
         return(paste0(source, "/"))
     else return(source)
     })
