@@ -79,7 +79,21 @@ test_that("The package containerit can be packaged (add_self = TRUE)", {
 
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
+    # manually add the source of the package
+    info$otherPkgs[[1]][["Repository"]] <- "CRAN"
     the_dockerfile <- dockerfile(info, add_self = TRUE)
   })
   expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
+})
+
+test_that("There is a warning if the source of a package cannot be determined", {
+  output <- capture_output({
+    info <- clean_session(expr = c(expression(library("fortunes")), expression(library("rprojroot"))))
+    # manually add the source of the package
+    info$otherPkgs[[2]][["Repository"]] <- NULL
+    expect_warning(the_dockerfile <- dockerfile(info),
+                   "Failed to identify a source for package fortunes.")
+  })
+
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*fortunes")))
 })

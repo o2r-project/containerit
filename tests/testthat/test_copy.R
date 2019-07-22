@@ -4,8 +4,8 @@ library("containerit")
 context("COPY instruction")
 
 test_that("A valid COPY instruction can be created" , {
-  obj <- Copy(c("script.R","exampleFolder"), "path/to/destination")
-  expect_equal(toString(obj), "COPY [\"script.R\", \"exampleFolder\", \"path/to/destination\"]")
+  obj <- Copy(c("script.R","package_description"), "path/to/destination")
+  expect_equal(toString(obj), "COPY [\"script.R\", \"package_description/\", \"path/to/destination/\"]")
 })
 
 test_that("Error with empty constructor" , {

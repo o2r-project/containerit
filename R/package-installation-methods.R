@@ -1,7 +1,7 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
 # pkgs is a data.frame of packages with the columns name, version, and source (either "CRAN" or "github")
-# function returns a the dockerfile with the required instructions
+# function returns the given Dockerfile object with the required instructions
 add_install_instructions <- function(dockerfile,
                                      pkgs,
                                      platform,

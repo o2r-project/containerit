@@ -26,7 +26,9 @@ setClass("Workdir",
 #' instruction <- Workdir("~/myDir/subdir/")
 #' toString(instruction)
 Workdir <- function(path) {
-  methods::new("Workdir", path = path)
+  methods::new("Workdir",
+               # directories given as destination must have a trailing slash in Dockerfiles
+               path = ifelse(stringr::str_detect(path, "/$"), yes = path, no = paste0(path, "/")))
 }
 
 setMethod("docker_arguments",

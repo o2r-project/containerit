@@ -6,6 +6,15 @@ test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
 
+test_that("warning if R script location is notwithin the working directory", {
+  tmpfile <- tempfile(fileext = ".R")
+  output <- capture_output({
+    file.copy(from = "package_script/resources/simple_test.R", to = tmpfile, overwrite = TRUE)
+    expect_warning(dockerfile(from = tmpfile), "not inside the working directory")
+  })
+  unlink(tmpfile)
+})
+
 test_that("an R script can be created with resources of the same folder ", {
   skip_if_not(stevedore::docker_available())
 
@@ -60,7 +69,7 @@ test_that("a workspace with one R script can be packaged if the script file has 
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
-test_that("a list of resources can be packaged ", {
+test_that("a list of resources can be packaged", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                                  copy = c("package_script/resources/simple_test.R",
@@ -80,6 +89,21 @@ test_that("there is a warning if non-existing resources are to be copied", {
     expect_warning(dockerfile("package_script/resources/simple_test.R",
                             copy = c("does_not_exist.R")))
   )
+})
+
+test_that("trailing slashes are added to directories if missing", {
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "package_script/resources/simple_test.R",
+                                 copy = c("package_script/resources",
+                                          "package_script/resources/",
+                                          "package_script/resources/test_subfolder"),
+                                 maintainer = "o2r",
+                                 image = getImageForVersion("3.3.2"))
+  )
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  expect_equal(generated_file[4], "COPY [\"package_script/resources/\", \"package_script/resources/\"]")
+  expect_equal(generated_file[5], "COPY [\"package_script/resources/\", \"package_script/resources/\"]")
+  expect_equal(generated_file[6], "COPY [\"package_script/resources/test_subfolder/\", \"package_script/resources/test_subfolder/\"]")
 })
 
 test_that("there is a warning if NA resources are to be copied", {

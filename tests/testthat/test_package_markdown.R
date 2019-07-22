@@ -20,12 +20,15 @@ test_that("A markdown file can be packaged (using units expample)", {
 
 test_that("The sf3 markdown file can be packaged", {
   skip_on_ci()
+  skip_on_cran()
 
-  md_file <- system.file("doc/sf3.Rmd", package = "sf")
   dir <- file.path(tempdir(), "sf")
   dir.create(dir)
   tmpfile <- tempfile(tmpdir = dir, fileext = ".Rmd")
-  file.copy(from = md_file, to = tmpfile)
+  file.copy(from = system.file("doc/sf3.Rmd", package = "sf"), to = tmpfile)
+
+  oldWd <- getwd()
+  setwd(dir)
   output <- capture_output(
     the_dockerfile <- dockerfile(dir,
                    maintainer = "o2r",
@@ -34,9 +37,12 @@ test_that("The sf3 markdown file can be packaged", {
                    cmd = CMD_Render(dir, output_dir = "/output"))
   )
   #write(the_dockerfile,"package_markdown/sf_vignette_Dockerfile")
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+
+  setwd(oldWd)
+
   expected_file <- readLines("package_markdown/sf_vignette_Dockerfile")
   expected_file <- stringr::str_replace(string = expected_file, pattern = "###TEMPDIR###", replacement = dir)
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
   expect_equal(generated_file, expected_file)
 
   # here we can build and run the actual container to see if the resulting file is matching

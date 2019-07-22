@@ -27,10 +27,10 @@
 #' Given an executable \code{R} script or document, create a Dockerfile to execute this file.
 #' This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
 #'
-#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.
+#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.
 #' @param image (\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 #'      By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.
-#' @param maintainer Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
+#' @param maintainer Specify the maintainer of the Dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
 #' @param save_image When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
 #'  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.RData")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
 #' \code{save} will be called with \code{envir}.
@@ -125,13 +125,6 @@ dockerfile <- function(from = utils::sessionInfo(),
       if ( !is.character(container_workdir)) {
         stop("Unsupported parameter for 'container_workdir', expected a character string or NULL")
       } else {
-        # nolint start
-        if (!stringr::str_detect(container_workdir, "/$")) {
-          # nolint end
-          # directories given as destination must have a trailing slash in dockerfiles
-          container_workdir <- paste0(container_workdir, "/")
-          futile.logger::flog.info("Appended trailing slash, workdir is '%s'", container_workdir)
-        }
         workdir <- Workdir(container_workdir)
       }
     }
@@ -356,10 +349,10 @@ dockerfileFromSession.sessionInfo <- function(session,
              } else if ("biocViews" %in% names(pkg)) {
                source <- "Bioconductor"
                version <- pkg$Version
-             }
-               else {
+             } else {
                warning("Failed to identify a source for package ", name,
                        ". Therefore the package cannot be installed in the Docker image.\n")
+               return(NULL)
              }
 
              return(list(name = name, version = version, source = source))
@@ -371,6 +364,8 @@ dockerfileFromSession.sessionInfo <- function(session,
 
   packages_df <- do.call("rbind", lapply(pkgs_list, as.data.frame))
   futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
+  futile.logger::flog.debug("Did not add packages because no source or included in base:",
+                            toString(names(pkgs)[!((names(pkgs) %in% packages_df$name))]))
 
   the_dockerfile <- dockerfileFromPackages(pkgs = packages_df,
                                         dockerfile = dockerfile,
@@ -432,6 +427,7 @@ dockerfileFromSession.session_info <- function(session,
   return(the_dockerfile)
 }
 
+#' @importFrom fs path_has_parent path_rel path_norm
 dockerfileFromFile <- function(file,
                                dockerfile,
                                soft,
@@ -447,18 +443,15 @@ dockerfileFromFile <- function(file,
     futile.logger::flog.debug("Creating from file")
 
     # prepare context ( = working directory) and normalize paths:
-    context = normalizePath(getwd())
-    file = normalizePath(file)
+    context = fs::path_norm(getwd())
+    file = fs::path_norm(file)
     futile.logger::flog.debug("Working with file %s in working directory %s", file, context)
 
-    #Is the file within the context?
-    len = stringr::str_length(context)
-    substr = stringr::str_sub(context, end = len)
-    if (context != substr)
-      stop("The given file is not inside the context directory!")
+    if ( !fs::path_has_parent(file, context))
+      warning("The given file is not inside the working directory! This may lead to incorrect COPY instructions.")
 
     # make sure that the path is relative to context
-    rel_path <- .makeRelative(normalizePath(file), context)
+    rel_path <- fs::path_rel(file, context)
 
     # execute script / markdowns or read RData file to obtain sessioninfo
     if (stringr::str_detect(string = file,
@@ -492,7 +485,7 @@ dockerfileFromFile <- function(file,
                                          filter_baseimage_pkgs = filter_baseimage_pkgs,
                                          workdir = workdir)
 
-    ## working directory must be set before. Now add COPY instructions
+    ## WORKDIR must be set before, now add COPY instructions
     if (!all(is.null(copy)) && !all(is.na(copy))) {
       copy = unlist(copy)
       if (!is.character(copy)) {
@@ -500,38 +493,34 @@ dockerfileFromFile <- function(file,
       } else if (length(copy) == 1 && copy == "script") {
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
         rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-        addInstruction(the_dockerfile) <- Copy(rel_path, rel_path_dest)
+        rel_path_source <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+        addInstruction(the_dockerfile) <- Copy(rel_path_source, rel_path_dest)
       } else if (length(copy) == 1 && copy == "script_dir") {
         script_dir <- normalizePath(dirname(file))
-        rel_dir <- .makeRelative(script_dir, context)
+        rel_dir <- fs::path_rel(script_dir, context)
 
         #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
         rel_dir_dest <- stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
 
-        # directories given as destination must have a trailing slash in dockerfiles
-        if (!stringr::str_detect(rel_dir_dest, "/$"))
-          rel_dir_dest <- paste0(rel_dir_dest, "/")
-
-        # let's also add a trailing slash to the source dir
-        if (!stringr::str_detect(rel_dir, "/$"))
-          rel_dir <- paste0(rel_dir, "/")
-
         addInstruction(the_dockerfile) <- Copy(rel_dir, rel_dir_dest)
       } else {
         futile.logger::flog.debug("We have a list of paths/files in 'copy': ", toString(copy))
-        sapply(copy, function(file) {
+        copy_instructions <- sapply(copy, function(file) {
           if (file.exists(file)) {
-            futile.logger::flog.debug("Adding copy command for file ", file)
-            rel_path <- .makeRelative(normalizePath(file), context)
+            futile.logger::flog.debug("Adding COPY instruction for file ", file)
+            rel_path <- fs::path_rel(file, context)
+            # turn into unix path
             rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-            if (dir.exists(file) && !stringr::str_detect(rel_path_dest, "/$"))
-              rel_path_dest <- paste0(rel_dir_dest, "/")
 
-            addInstruction(the_dockerfile) <<- Copy(rel_path, rel_path_dest)
+            return(Copy(rel_path, rel_path_dest))
           } else {
             warning("The file ", file, ", given by 'copy', does not exist! Invalid argument.")
+            return(NULL)
           }
         })
+
+        copy_instructions[sapply(copy_instructions, is.null)] <- NULL
+        addInstruction(the_dockerfile) <- copy_instructions
       }
     } else {
       futile.logger::flog.debug("All paths in copy are NULL or NA, not adding any COPY instructions: ", toString(copy))
@@ -700,17 +689,4 @@ dockerfileFromDescription <- function(description,
     })
     return(tags)
   }
-}
-
-.makeRelative <- function(files, from) {
-  out <- sapply(files, function(file) {
-    len = stringr::str_length(from)
-    rel_path = stringr::str_sub(file, start = len + 1)
-    if (stringr::str_detect(rel_path, "^[\\/]"))
-      rel_path = stringr::str_sub(rel_path, start = 2)
-    if (stringr::str_length(rel_path) == 0)
-      rel_path <- "."
-    return(rel_path)
-  })
-  as.character(out)
 }
