@@ -2,6 +2,9 @@
 
 context("Packaging R-Scripts and workspace directories.")
 
+# need to list boxoffice in DESCRIPTION for R CMD check
+capture_warnings(ifelse(require("boxoffice"), remove.packages("boxoffice"), function() {}))
+
 test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
@@ -89,8 +92,7 @@ test_that("there is a warning if NA resources are to be copied", {
 })
 
 test_that("The gstat demo 'zonal' can be packaged ", {
-  skip_if_not_installed("sp")
-  skip_if_not_installed("gstat")
+  skip_on_ci()
 
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/gstat/zonal.R",
