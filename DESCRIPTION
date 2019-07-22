@@ -92,8 +92,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    github::r-hub/sysreqs,
-    github::richfitz/stevedore
+    github::r-hub/sysreqs
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 6.1.1
