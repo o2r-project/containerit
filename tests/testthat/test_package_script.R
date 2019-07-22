@@ -7,6 +7,8 @@ test_that("the R script location is checked ", {
 })
 
 test_that("an R script can be created with resources of the same folder ", {
+  skip_if_not(stevedore::docker_available())
+
   output <- capture_output({
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                 copy = "script_dir",

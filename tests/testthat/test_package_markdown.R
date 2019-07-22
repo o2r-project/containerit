@@ -19,6 +19,8 @@ test_that("A markdown file can be packaged (using units expample)", {
 })
 
 test_that("The sf3 markdown file can be packaged", {
+  skip_on_ci()
+
   md_file <- system.file("doc/sf3.Rmd", package = "sf")
   dir <- file.path(tempdir(), "sf")
   dir.create(dir)
@@ -61,16 +63,22 @@ test_that("The render command supports output directory and output file at the s
 })
 
 test_that("The file is copied", {
+  skip_on_ci()
+
   output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = "script"))
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "at least one Copy instruction")
 })
 
 test_that("File copying is disabled by default", {
+  skip_on_ci()
+
   output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/"))
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
 
 test_that("File copying can be disabled with NA/NA_character", {
+  skip_on_ci()
+
   output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = NA_character_))
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction if NA_charachter_")
 
@@ -79,6 +87,8 @@ test_that("File copying can be disabled with NA/NA_character", {
 })
 
 test_that("File copying can be disabled with NULL", {
+  skip_on_ci()
+
   output <- capture_output(df_copy <- dockerfile(from = "package_markdown/units/", copy = NULL))
   expect_false(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })), info = "no Copy instruction")
 })
