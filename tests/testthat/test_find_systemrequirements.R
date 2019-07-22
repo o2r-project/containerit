@@ -2,7 +2,7 @@
 
 context("Find system requrirements")
 
-test_that("System requirements for sp can be determinded OFFLINE and soft", {
+test_that("System requirements for sp can be detected OFFLINE and soft", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("sp",
                                       platform = containerit:::.debian_platform,
@@ -14,7 +14,7 @@ test_that("System requirements for sp can be determinded OFFLINE and soft", {
   expect_true(all(deps_expected %in% deps))
 })
 
-test_that("System requirements for sp can be determinded OFFLINE and unsoft", {
+test_that("System requirements for sp can be detected OFFLINE and unsoft", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("sp",
                                                     platform = containerit:::.debian_platform,
@@ -24,7 +24,7 @@ test_that("System requirements for sp can be determinded OFFLINE and unsoft", {
   expect_equal(deps, character(0)) #no direct dependencies
 })
 
-test_that("System requirements for rgdal can be determinded OFFLINE", {
+test_that("System requirements for rgdal can be detected OFFLINE", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("rgdal",
                                                     platform = containerit:::.debian_platform,
@@ -45,7 +45,7 @@ test_that("System requirements for rgdal can be determinded OFFLINE", {
   expect_true(all(deps_expected %in% deps))
 })
 
-test_that("System requirements for sp can be determinded ONLINE", {
+test_that("System requirements for sp can be detected ONLINE", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("sp",
                                                     platform = containerit:::.debian_platform,
@@ -54,7 +54,7 @@ test_that("System requirements for sp can be determinded ONLINE", {
   expect_equal(deps, character(0)) #no direct dependencies
 })
 
-test_that("System requirements for rgdal can be determinded ONLINE", {
+test_that("System requirements for rgdal can be detected ONLINE", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("rgdal",
                                                     platform = containerit:::.debian_platform)

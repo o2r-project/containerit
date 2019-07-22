@@ -17,7 +17,7 @@ Modes:
 Options (for all modes):
   --force -f          Force writing output even if a file of the same name already exists
   --image <ARG>       Specify the Docker image that shall be used for the Docker container (FROM-statement)
-                      By default, the image is determinded from the given r_version,
+                      By default, the image is extracted from the given r_version,
                       while the version is matched with tags from the base image rocker/r-ver
                       see details about the rocker/r-ver at https://hub.docker.com/r/rocker/r-ver/'
   --maintainer -m <ARG>   Name / email of the dockerfile's maintainer

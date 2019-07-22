@@ -18,7 +18,7 @@ dockerfile(from = utils::sessionInfo(),
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.}
 
 \item{image}{(\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
-By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
+By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
 
 \item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
