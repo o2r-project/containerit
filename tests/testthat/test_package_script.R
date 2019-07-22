@@ -2,9 +2,6 @@
 
 context("Packaging R-Scripts and workspace directories.")
 
-# need to list boxoffice in DESCRIPTION for R CMD check
-capture_warnings(ifelse(require("boxoffice"), remove.packages("boxoffice"), function() {}))
-
 test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
@@ -148,6 +145,7 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
 
 test_that("packaging fails if library from script is missing without predetection", {
   skip_on_cran() # CRAN knows all the packages
+  skip_on_ci()
 
   # package should still not be in this session library
   expect_error(library("boxoffice"))
@@ -166,6 +164,7 @@ test_that("packaging fails if library from script is missing without predetectio
 
 test_that("packaging works if library from script is missing but predetection is enabled", {
   skip_on_cran() # CRAN knows all the packages
+  skip_on_ci()
 
   output <- capture_output({
     predetected_df <- dockerfile(from = "package_script/needs_predetect/",

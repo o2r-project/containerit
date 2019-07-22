@@ -2,9 +2,6 @@
 
 context("Package R markdown files")
 
-# need to list boxoffice in DESCRIPTION for R CMD check
-capture_warnings(ifelse(require("boxoffice"), remove.packages("boxoffice"), function() {}))
-
 test_that("A markdown file can be packaged (using units expample)", {
   skip("Results differ from execution with all tests and single/manual execution")
   output <- capture_output({
@@ -88,6 +85,7 @@ test_that("File copying can be disabled with NULL", {
 
 test_that("Packaging fails if dependency is missing and predetection is disabled", {
   skip_on_cran() # CRAN knows all packages
+  skip_on_ci()
 
   output <- capture_output(
     expect_warning( # Gets a warning: "generated a condition with class packageNotFoundError/error/condition. It is less fragile to test custom conditions with `class`"

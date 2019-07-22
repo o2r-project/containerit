@@ -63,6 +63,9 @@ test_that("The package containerit is not packaged by default", {
 })
 
 test_that("The package containerit is not packaged (add_self = FALSE)", {
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
     the_dockerfile <- dockerfile(info, add_self = FALSE)
@@ -71,7 +74,9 @@ test_that("The package containerit is not packaged (add_self = FALSE)", {
 })
 
 test_that("The package containerit can be packaged (add_self = TRUE)", {
-  skip("containerit not yet available from CRAN")
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
     the_dockerfile <- dockerfile(info, add_self = TRUE)
