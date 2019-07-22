@@ -94,14 +94,14 @@ test_that("there is a warning if non-existing resources are to be copied", {
 test_that("trailing slashes are added to directories if missing", {
   output <- capture_output(
     the_dockerfile <- dockerfile(from = "package_script/resources/simple_test.R",
-                                 copy = c("package_script/resources",
+                                 copy = c("package_script",
                                           "package_script/resources/",
                                           "package_script/resources/test_subfolder"),
                                  maintainer = "o2r",
                                  image = getImageForVersion("3.3.2"))
   )
   generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
-  expect_equal(generated_file[4], "COPY [\"package_script/resources/\", \"package_script/resources/\"]")
+  expect_equal(generated_file[4], "COPY [\"package_script/\", \"package_script/\"]")
   expect_equal(generated_file[5], "COPY [\"package_script/resources/\", \"package_script/resources/\"]")
   expect_equal(generated_file[6], "COPY [\"package_script/resources/test_subfolder/\", \"package_script/resources/test_subfolder/\"]")
 })

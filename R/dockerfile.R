@@ -514,7 +514,7 @@ dockerfileFromFile <- function(file,
 
             return(Copy(rel_path, rel_path_dest))
           } else {
-            warning("The file ", file, ", given by 'copy', does not exist! Invalid argument.")
+            warning("The file ", file, ", given by 'copy', does not exist!")
             return(NULL)
           }
         })
