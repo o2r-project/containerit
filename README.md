@@ -39,10 +39,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-07-21 14:07:25] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-07-21 14:07:25] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,futile.logger,futile.options,htmltools,knitr,lambda.r,magrittr,R6,Rcpp,rmarkdown,rprojroot,semver,stevedore,stringi,stringr,xfun,yaml' from sysreqs online DB
-#> INFO [2019-07-21 14:07:27] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, R6, Rcpp, rmarkdown, rprojroot, semver, stevedore, stringi, stringr, xfun, yaml
-#> INFO [2019-07-21 14:07:27] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-07-22 15:06:33] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-07-22 15:06:33] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,knitr,lambda.r,magrittr,R6,Rcpp,rmarkdown,rprojroot,semver,stevedore,stringi,stringr,xfun,yaml' from sysreqs online DB
+#> INFO [2019-07-22 15:06:34] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, R6, Rcpp, rmarkdown, rprojroot, semver, stevedore, stringi, stringr, xfun, yaml
+#> INFO [2019-07-22 15:06:34] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
@@ -53,9 +53,10 @@ print(my_dockerfile)
 #>   && apt-get install -y git-core \
 #>  libcurl4-openssl-dev \
 #>  libssl-dev \
+#>  make \
 #>  pandoc \
 #>  pandoc-citeproc
-#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "futile.logger", "futile.options", "htmltools", "knitr", "lambda.r", "magrittr", "R6", "Rcpp", "rmarkdown", "rprojroot", "semver", "stevedore", "stringi", "stringr", "xfun", "yaml"]
+#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "knitr", "lambda.r", "magrittr", "R6", "Rcpp", "rmarkdown", "rprojroot", "semver", "stevedore", "stringi", "stringr", "xfun", "yaml"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -72,12 +73,10 @@ image:
 
 ``` r
 rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
-#> Warning in dockerfileFromFile(file = from, dockerfile = the_dockerfile, :
-#> All paths in copy are NULL or NA, not adding any COPY instructions: NA
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
-#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, htmltools, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sessioninfo, stringi, stringr, withr, xfun, yaml
+#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sessioninfo, stringi, stringr, withr, xfun, yaml
 #> RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "stevedore"]
 #> WORKDIR /payload/
 #> CMD ["R"]
@@ -161,6 +160,14 @@ docker build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dock
 You can use [`pre-commit`
 hooks](https://github.com/lorenzwalthert/pre-commit-hooks) to avoid some
 mistakes.
+
+A [codemeta](https://codemeta.github.io/) file, `codemeta.json`, with
+metadata about the package and its dependencies is generated
+automatically when this document is compiled.
+
+``` r
+codemetar::write_codemeta("containerit")
+```
 
 ## License
 
