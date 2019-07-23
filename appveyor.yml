@@ -33,7 +33,6 @@ cache:
 
 environment:
   global:
-    WARNINGS_ARE_ERRORS: 1
     NOT_CRAN: true
     # env vars that may need to be set, at least temporarily, from time to time
     # see https://github.com/krlmlr/r-appveyor#readme for details
@@ -46,11 +45,12 @@ environment:
     R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
 
   matrix:
-    - R_VERSION: devel
     - R_VERSION: release
-
-matrix:
-  fast_finish: true
+      WARNINGS_ARE_ERRORS: 1
+    - R_VERSION: devel
+      WARNINGS_ARE_ERRORS: 0
+#matrix:
+#  fast_finish: true
 
 build_script:
   - docker --version

@@ -91,6 +91,8 @@ test_that("R version can be retrieved from session_info", {
   ver <- getRVersionTag(info)
   expect_equal(ver, "7.8.9")
 
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   ver2 <- getRVersionTag(sessioninfo::session_info())
   expect_equal(ver2, paste0(R.version$major, ".", R.version$minor), "version extraction from sessioninfo::session_info")
 
@@ -133,6 +135,8 @@ test_that("Object name 'session_info' is accepted.", {
 })
 
 test_that("Version tag can be retrieved from .RData file with sessioninfo::session_info", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
@@ -141,6 +145,8 @@ test_that("Version tag can be retrieved from .RData file with sessioninfo::sessi
 })
 
 test_that("Version tag can be retrieved from .RData file with devtools::session_info", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)

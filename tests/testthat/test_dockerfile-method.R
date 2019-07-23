@@ -45,6 +45,8 @@ test_that("Users are warned if an unsupported R version is set", {
 })
 
 test_that("The R version is the current version if not specified otherwise", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   output <- capture_output(dfile <- dockerfile(NULL))
   #expect that image string contains the current R version
   expect_equal(as.character(slot(slot(dfile, "image"), "postfix")),

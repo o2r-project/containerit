@@ -2,10 +2,13 @@
 % Please edit documentation in R/package-installation-methods.R
 \name{versioned_install_instructions}
 \alias{versioned_install_instructions}
-\title{helper function, expects a data.frame with columns name and version}
+\title{Helper function for installing versioned R packages}
 \usage{
 versioned_install_instructions(pkgs)
 }
+\value{
+A list of objects of class \code{Run}: one with versioned installs based on \pkg{versions}, (optionally) one with unversioned installs of packages without version information (e.g. local packages).
+}
 \description{
-helper function, expects a data.frame with columns name and version
+Based on \pkg{versions}.
 }

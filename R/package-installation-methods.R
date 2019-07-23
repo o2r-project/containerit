@@ -132,7 +132,12 @@ add_install_instructions <- function(dockerfile,
   return(dockerfile)
 }
 
-#' helper function, expects a data.frame with columns name and version
+#' Helper function for installing versioned R packages
+#'
+#' Based on \pkg{versions}.
+#'
+#' @param pkgs A \code{data.frame} with columns \code{name} and \code{version
+#' @return A list of objects of class \code{Run}: one with versioned installs based on \pkg{versions}, (optionally) one with unversioned installs of packages without version information (e.g. local packages).
 #' @importFrom versions install.versions
 versioned_install_instructions <- function(pkgs) {
   pkgs_sorted <- pkgs[order(pkgs$name),] # sort, to increase own reproducibility
