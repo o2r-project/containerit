@@ -39,6 +39,9 @@ environment:
   # R_REMOTES_STANDALONE: true
   BIOC_USE_DEVEL: FALSE
   PYTHON: "C:\\Python36-x64"
+  # Do not build/test vignettes, because stevedore is missing
+  R_BUILD_ARGS: "--no-manual --no-build-vignettes"
+  R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
 
 # Adapt as necessary starting from here
 
@@ -55,7 +58,8 @@ before_test:
       }
   - ps: $env:Path += ";C:\Program Files (x86)\Pandoc\"
   - pandoc -v
-  - Rscript -e "stevedore::docker_available(); stevedore::docker_client()$api_version()"
+  # Doesn't work yet: https://github.com/o2r-project/containerit/issues/151
+  #- Rscript -e "stevedore::docker_available(); stevedore::docker_client()$api_version()"
 
 test_script:
   - Rscript -e "devtools::test()" # run tests beforehand to see full output
