@@ -130,4 +130,3 @@ Collate:
     'package-installation-methods.R'
     'rstudio_containerit.R'
     'utility-functions.R'
-    'utils.R'

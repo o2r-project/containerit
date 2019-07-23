@@ -10,10 +10,6 @@ object
 \description{
 S4 Class representing a WORKDIR instruction
 }
-\examples{
-instruction <- Workdir("~/myDir/subdir/")
-toString(instruction)
-}
 \seealso{
 Other instruction classes: \code{\link{Add-class}},
   \code{\link{Arg-class}}, \code{\link{Cmd-class}},

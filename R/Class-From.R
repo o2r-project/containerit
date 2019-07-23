@@ -13,9 +13,7 @@ setClassUnion("Postfix", c("Tag", "Digest", "NULL"))
 #' @slot postfix tag or digest
 #'
 #' @family instruction classes
-#'
 #' @return an object of class \code{Docker From}
-#' @export
 setClass(
   "From",
   slots = list(image = "character",
@@ -29,11 +27,8 @@ setClass(
 #' @param image image name or image-id
 #' @param tag optional image tag (character) - will be ignored if digest is given
 #' @param digest optional image digest (character)
-#'
+
 #' @return From-object
-#' @export
-#'
-#'
 From <- function(image, tag = NULL, digest = NULL) {
   if (!is.null(digest)) {
     return(new(
@@ -54,8 +49,6 @@ From <- function(image, tag = NULL, digest = NULL) {
 #' @param string Single character string that specifies an image in docker-syntax, e.g. \code{image}, \code{image@digest}, \code{image:tag}
 #'
 #' @return From instruction object
-#' @export
-#'
 parseFrom <- function(string) {
   if (stringr::str_detect(string, "@")) {
     split <- stringr::str_split(string, "@")

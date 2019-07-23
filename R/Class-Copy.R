@@ -10,24 +10,22 @@
 #' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
 #'
 #' @return object
-#' @export
-#'
 #' @family instruction classes
-#'
 #' @examples
 #' #no example yet
 setClass("Copy",
          slots = list(src = "character", dest = "character"),
          contains = "Instruction")
 
-#' Copy one or more files or directories to a Docker image
+#' Constructor for COPY instruction
+#'
+#' Copy one or more files or directories to a Docker image.
 #'
 #' @param src (character vector) list of files or directories to be copied
 #' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
 #' @param addTrailingSlashes (boolean) add trailing slashes to the given paths if the source is an existing directory
 #'
 #' @return the object
-#' @export
 #' @importFrom fs dir_exists
 #' @importFrom stringr str_detect
 Copy <- function(src, dest, addTrailingSlashes = TRUE) {

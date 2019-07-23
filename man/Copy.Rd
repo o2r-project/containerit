@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Copy.R
 \name{Copy}
 \alias{Copy}
-\title{Copy one or more files or directories to a Docker image}
+\title{Constructor for COPY instruction}
 \usage{
 Copy(src, dest, addTrailingSlashes = TRUE)
 }
@@ -17,5 +17,5 @@ Copy(src, dest, addTrailingSlashes = TRUE)
 the object
 }
 \description{
-Copy one or more files or directories to a Docker image
+Copy one or more files or directories to a Docker image.
 }

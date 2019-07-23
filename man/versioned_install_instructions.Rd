@@ -6,6 +6,9 @@
 \usage{
 versioned_install_instructions(pkgs)
 }
+\arguments{
+\item{pkgs}{A \code{data.frame} with columns \code{name} and \code{version}}
+}
 \value{
 A list of objects of class \code{Run}: one with versioned installs based on \pkg{versions}, (optionally) one with unversioned installs of packages without version information (e.g. local packages).
 }

@@ -5,9 +5,7 @@
 #' See Dockerfile reference at https://docs.docker.com/engine/reference/builder/#format
 #'
 #' @include Class-Instruction.R
-#'
 #' @return object
-#' @export
 #' @family instruction classes
 #'
 setClass("Comment",

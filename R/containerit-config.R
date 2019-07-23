@@ -39,8 +39,6 @@ if (FALSE) {
 #' @param output Path or connection to write the configuration to
 #' @param config The configuration object to be written
 #'
-#' @export
-#'
 #' @examples
 #' containerit_write_config(output = stdout())
 #' \dontrun{

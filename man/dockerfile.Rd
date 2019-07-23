@@ -50,7 +50,7 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
 
-\item{versioned_packages}{[EXPERIMENTAL] Whether it shall be attempted to match versions of R packages}
+\item{versioned_packages}{Whether it shall be attempted to match versions of R packages}
 
 \item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.}
 }

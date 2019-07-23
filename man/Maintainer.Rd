@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Maintainer.R
 \name{Maintainer}
 \alias{Maintainer}
-\title{create objects of class Maintainer}
+\title{Create MAINTAINER instructions}
 \usage{
 Maintainer(name, email = NA_character_)
 }
@@ -15,7 +15,7 @@ Maintainer(name, email = NA_character_)
 Maintainer object
 }
 \description{
-create objects of class Maintainer
+The MAINTAINER instruction is deprecated!
 }
 \seealso{
 Other maintainer: \code{\link{Label_Maintainer}},

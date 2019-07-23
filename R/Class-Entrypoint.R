@@ -7,7 +7,6 @@
 #' @slot program character, name or path of the executable or command.
 #' @slot params list of parameters.
 #' @slot form form to render the instruction to (exec or shell)
-#' @export
 #'
 #' @family instruction classes
 #'
@@ -23,7 +22,7 @@ setClass("Entrypoint",
 setClassUnion("NullOrEntrypoint",
               members = c("Entrypoint", "NULL"))
 
-#' Constructor for Entrypoint yet to be implemented
+#' Constructor for ENTRYPOINT instruction
 #'
 #' @param program the executable or command
 #' @param params the parameters provided to the executable or command

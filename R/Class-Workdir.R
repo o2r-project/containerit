@@ -6,11 +6,7 @@
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#workdir}.
 #'
 #' @return object
-#' @export
 #' @family instruction classes
-#' @examples
-#' instruction <- Workdir("~/myDir/subdir/")
-#' toString(instruction)
 setClass("Workdir",
          slots = list(path = "character"),
          contains = "Instruction")
@@ -20,7 +16,6 @@ setClass("Workdir",
 #' @param path The path of the working directory
 #'
 #' @return the object
-#' @export
 #'
 #' @examples
 #' instruction <- Workdir("~/myDir/subdir/")

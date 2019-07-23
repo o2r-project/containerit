@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Entrypoint.R
 \name{Entrypoint}
 \alias{Entrypoint}
-\title{Constructor for Entrypoint yet to be implemented}
+\title{Constructor for ENTRYPOINT instruction}
 \usage{
 Entrypoint(program, params = list(), form = "exec")
 }
@@ -17,7 +17,7 @@ Entrypoint(program, params = list(), form = "exec")
 an object of class \linkS4class{Entrypoint}
 }
 \description{
-Constructor for Entrypoint yet to be implemented
+Constructor for ENTRYPOINT instruction
 }
 \examples{
 toString(Entrypoint("Rscript", params = list("sum", "1", "2")))
