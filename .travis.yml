@@ -1,8 +1,3 @@
-# Based on https://github.com/edzer/sfr/blob/master/.travis.yml and https://docs.travis-ci.com/user/languages/r/
-#
-# See also https://docs.travis-ci.com/user/languages/r and https://github.com/hadley/devtools/blob/master/.travis.yml
-# For a potential alternative configuration see https://github.com/metacran/r-builder
-
 language: r
 services:
   - docker
@@ -32,9 +27,16 @@ before_install:
   - "Rscript -e 'update.packages(ask = FALSE)'" # https://github.com/travis-ci/travis-ci/issues/6850
   - "Rscript -e 'install.packages(\"BiocManager\")'"
   - "Rscript -e 'BiocManager::install(\"BiocGenerics\")'"
+  # for stevedore, see https://github.com/richfitz/stevedore/blob/master/.travis.yml
+  - sudo pip install -U setuptools
+  - sudo pip install -U docker
   # pull baseimage for tests:
   - "docker pull rocker/r-ver:latest"
   - "docker pull rocker/r-ver:3.6.0"
   - "docker pull rocker/geospatial:3.4.3"
+
+# don't do vignettes (relevant when trying to get on CRAN)
+r_build_args: "--no-manual --no-build-vignettes"
+r_check_args: "--no-manual --ignore-vignettes" # --as-cran
 
 warnings_are_errors: true
