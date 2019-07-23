@@ -132,8 +132,8 @@ add_install_instructions <- function(dockerfile,
   return(dockerfile)
 }
 
-# RUN ["Rscript", "-e", "versions::install.versions(\"fortunes\", \"1.5-3\")", "-e", "versions::install.versions(\"cowsay\", \"0.5.0\")"]
-# expects a data.frame with columns name and version
+#' helper function, expects a data.frame with columns name and version
+#' @importFrom versions install.versions
 versioned_install_instructions <- function(pkgs) {
   pkgs_sorted <- pkgs[order(pkgs$name),] # sort, to increase own reproducibility
 

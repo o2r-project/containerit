@@ -57,6 +57,7 @@
 #' @importFrom utils capture.output
 #' @importFrom stringr str_detect regex str_extract str_length str_sub
 #' @importFrom desc desc
+#' @importFrom fs dir_exists
 #'
 #' @examples
 #' dockerfile <- dockerfile()
@@ -189,7 +190,7 @@ dockerfile <- function(from = utils::sessionInfo(),
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
 
-      if (dir.exists(from)) {
+      if (fs::dir_exists(from)) {
         futile.logger::flog.debug("'%s' is a directory", from)
         originalFrom <- from
         the_dockerfile <- dockerfileFromWorkspace(path = from,

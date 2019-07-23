@@ -60,7 +60,6 @@ Imports:
     rjson,
     rstudioapi,
     semver,
-    sessioninfo,
     shiny,
     shinyFiles,
     stevedore,
@@ -87,6 +86,7 @@ Suggests:
     rgdal,
     rmarkdown,
     rprojroot,
+    sessioninfo,
     sf,
     sp,
     testthat

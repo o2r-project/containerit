@@ -1,3 +1,10 @@
+
+#' Configure required imports here
+#' @importFrom miniUI miniPage gadgetTitleBar miniContentPanel
+#' @importFrom shinyFiles shinyFileSave shinyFilesButton shinyFileChoose parseFilePaths shinySaveButton parseSavePath
+#' @import shiny
+NULL
+
 common_addin <- function() {
   sys.source(pkg_file('scripts','common.R'))
 }

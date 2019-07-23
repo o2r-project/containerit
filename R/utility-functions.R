@@ -269,6 +269,7 @@ extract_session_file <- function(file) {
 #' @export
 #' @examples
 #' extract_session_image("rocker/geospatial:3.3.3")
+#' @importFrom fs dir_exists
 extract_session_image <- function(docker_image,
                                   expr = c(),
                                   container_dir = "/tmp",
@@ -278,7 +279,7 @@ extract_session_image <- function(docker_image,
   result = tryCatch({
     #create local temporary directory
     dir.create(local_dir)
-    if (!dir.exists(local_dir))
+    if (!fs::dir_exists(local_dir))
       stop("Unable to locate temporary directory: ", local_dir)
 
     #rdata file to which session info shall be written

@@ -28,19 +28,19 @@ setClass("Copy",
 #'
 #' @return the object
 #' @export
-#'
-#' @examples
-#' #no example yet
+#' @importFrom fs dir_exists
+#' @importFrom stringr str_detect
 Copy <- function(src, dest, addTrailingSlashes = TRUE) {
   # directories given as destination must have a trailing slash in Dockerfiles, add it if missing
   sources <- sapply(X = src, FUN = function(source) {
-    if (dir.exists(source) && !stringr::str_detect(source, "/$"))
+    if (addTrailingSlashes && fs::dir_exists(source) && !stringr::str_detect(source, "/$"))
         return(paste0(source, "/"))
     else return(source)
     })
+  names(sources) <- sources
 
   destination <- dest
-  if (any(dir.exists(src))) {
+  if (addTrailingSlashes && any(fs::dir_exists(src))) {
     if ( !stringr::str_detect(dest, "/$"))
       destination <- paste0(dest, "/")
   }
