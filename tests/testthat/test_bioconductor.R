@@ -4,6 +4,8 @@ library("containerit")
 context("Install packages from Bioconductor")
 
 test_that("installation instruction for Bioconductor package is created", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   if (!require("BiocGenerics", character.only = TRUE)) BiocManager::install(c("BiocGenerics"))
 
   output <- capture_output({
