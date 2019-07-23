@@ -45,9 +45,10 @@ environment:
     R_BUILD_ARGS: "--no-manual --no-build-vignettes"
     R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
 
-matrix:
-  - R_VERSION: devel
-  - R_VERSION: release
+  matrix:
+    - R_VERSION: devel
+    - R_VERSION: release
+
 matrix:
   fast_finish: true
 
