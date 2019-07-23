@@ -13,10 +13,10 @@ post](http://o2r.info/2017/05/30/containerit-package/).
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
-[![Build
-Status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/containerit-rrvpq/containerit?branch=master&svg=true)](https://ci.appveyor.com/project/containerit-rrvpq/containeRit)
+[![Travis CI build
+status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
+[![Appveyor build
+status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](https://ci.appveyor.com/project/nuest/containerit-rrvpq)
 [![](https://www.r-pkg.org/badges/version/containerit)](#)
 <!-- https://www.r-pkg.org/pkg/containerit -->
 
