@@ -1,0 +1,97 @@
+# DO NOT CHANGE the "init" and "install" sections below
+
+# Download script file from GitHub
+init:
+  ps: |
+        $ErrorActionPreference = "Stop"
+        Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
+        Import-Module '..\appveyor-tool.ps1'
+
+branches:
+  only:
+    - master
+    - dev
+
+version: 1.0.{build}
+
+image:
+  - Visual Studio 2017 # to have Docker
+  #- Ubuntu # https://stefanscherer.github.io/use-appveyor-to-build-multi-arch-docker-image/
+
+install:
+  - ps: Bootstrap
+  # based on https://github.com/pypa/pip/blob/master/.appveyor.yml
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python --version"
+  - "python -m pip install --upgrade --disable-pip-version-check pip setuptools wheel"
+  - "python -m pip install docker"
+  - Rscript -e "install.packages('reticulate', repos = 'https://cloud.r-project.org')"
+
+cache:
+  - C:\RLibrary
+  - C:\Program Files (x86)\Pandoc\
+
+environment:
+  global:
+    NOT_CRAN: true
+    # env vars that may need to be set, at least temporarily, from time to time
+    # see https://github.com/krlmlr/r-appveyor#readme for details
+    USE_RTOOLS: true
+    # R_REMOTES_STANDALONE: true
+    BIOC_USE_DEVEL: FALSE
+    PYTHON: "C:\\Python36-x64"
+    # Do not build/test vignettes, because stevedore is missing
+    R_BUILD_ARGS: "--no-manual --no-build-vignettes"
+    R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
+
+  matrix:
+    - R_VERSION: release
+      WARNINGS_ARE_ERRORS: 1
+    #- R_VERSION: devel
+    #  WARNINGS_ARE_ERRORS: ""
+
+matrix:
+  fast_finish: true
+
+build_script:
+  - docker --version
+  - travis-tool.sh install_bioc BiocGenerics
+  - travis-tool.sh install_deps
+
+# https://github.com/krlmlr/r-appveyor/issues/82#issuecomment-261695154
+before_test:
+  - ps: >-
+      if (-Not (Test-Path "C:\Program Files (x86)\Pandoc\")) {
+        cinst pandoc --no-progress
+      }
+  - ps: $env:Path += ";C:\Program Files (x86)\Pandoc\"
+  - pandoc -v
+  # Doesn't work yet: https://github.com/o2r-project/containerit/issues/151
+  #- Rscript -e "stevedore::docker_available(); stevedore::docker_client()$api_version()"
+
+test_script:
+  - Rscript -e "devtools::test()" # run tests beforehand to see full output
+  - travis-tool.sh run_tests
+
+on_failure:
+  - 7z a failure.zip *.Rcheck\*
+  - appveyor PushArtifact failure.zip
+
+artifacts:
+  - path: '*.Rcheck\**\*.log'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.out'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.fail'
+    name: Logs
+
+  - path: '*.Rcheck\**\*.Rout'
+    name: Logs
+
+  - path: '\*_*.tar.gz'
+    name: Bits
+
+  - path: '\*_*.zip'
+    name: Bits

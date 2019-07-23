@@ -94,19 +94,88 @@ addInstruction <- function(dockerfileObject, value) {
 #' @export
 #'
 #' @examples
-#' the_dockerfile <- dockerfile(empty_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' addInstruction(the_dockerfile) <- Label(myKey = "myContent")
 "addInstruction<-" <- addInstruction
+
+#' getImageForVersion-method
+#'
+#' Get a suitable Rocker image based on the R version.
+#' Needs network access to retrieve the available images.
+#'
+#' If there was no matching image found, a warning is issued.
+#'
+#' @param r_version A string representation of the R version, e.g. "3.4.2"
+#' @param nearest A boolean, should the closest version be returned if there is no match?
+#'
+#' @return A string with the name of the Docker image
+#' @export
+#' @examples
+#' getImageForVersion(getRVersionTag(utils::sessionInfo()))
+#' getImageForVersion("3.4.3")
+#'
+#' @importFrom semver parse_version
+getImageForVersion <- function(r_version, nearest = TRUE) {
+  #check if dockerized R version is available (maybe check other repositories too?)
+  tags <- .tagsfromRemoteImage(.rocker_images[["versioned"]])
+  image <- From(.rocker_images[["versioned"]], tag = r_version)
+
+  closestMatch <- function(version, versions) {
+    if (version %in% versions) return(version);
+
+    factors <- list(major = 1000000, minor = 1000, patch = 1)
+
+    semver <- semver::parse_version(version)[[1]]
+    semver_num <- semver$major * factors[["major"]] +
+      semver$minor * factors[["minor"]] +
+      semver$patch * factors[["patch"]]
+
+    sorted_semvers <- sort(semver::parse_version(versions))
+
+    offsets <- sapply(X = sorted_semvers, FUN = function(v) {
+      v_num <- v$major * factors[["major"]] +
+        v$minor * factors[["minor"]] +
+        v$patch * factors[["patch"]]
+      return(abs(semver_num - v_num))
+    })
+
+    min_offset = min(offsets)
+    return(sorted_semvers[which(offsets == min_offset)])
+  }
+
+  if (!r_version %in% tags) {
+    if (nearest) {
+      # get numeric versions with all parts (maj.min.minor), i.e. two dots
+      numeric_tags <- tags[which(grepl("\\d.\\d.\\d", tags))]
+      closest <- as.character(closestMatch(r_version, numeric_tags))
+      image <- From(.rocker_images[["versioned"]], tag = closest)
+
+      warning("No Docker image found for the given R version, returning closest match: ",
+              closest,
+              " Existing tags (list only available when online): ",
+              paste(tags, collapse = " ")
+      )
+    } else {
+      warning("No Docker image found for the given R version, returning input. ",
+              "Existing tags (list only available when online): ",
+              paste(tags, collapse = " ")
+      )
+    }
+  }
+
+  return(image)
+}
 
 #' Get R version in string format used for image tags
 #'
 #' Returns either a version extracted from a given object or the default version.
 #'
-#' @param from the source to extract an R version: a `sessionInfo()` or `session_info()` object, or an \code{RData} file with a session info object
+#' @param from the source to extract an R version: a `sessionInfo()` or `session_info()` object, a `description` object, or an `RData` file with a session info object
 #' @param default if 'from' does not contain version information (e.g. its an Rscript), use this default version information.
 #'
 #' @export
 #' @importFrom stringr str_detect regex
+#' @importFrom desc desc
 #'
 #' @examples
 #' getRVersionTag(from = sessionInfo())
@@ -118,15 +187,29 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
   } else if (inherits(from, "session_info")) {
     r_version <- stringr::str_extract(pattern = "\\d+(\\.\\d+)+", string = from$platform$version)
     futile.logger::flog.debug("Got R version from session_info: %s", r_version)
+  } else if (inherits(from, "description")) {
+    # get R: stringr::str_extract(string = "methods, R (1.2.3,test), test (9.9)", pattern = "R( \\(.*?\\))?")
+    # get version: stringr::str_extract(string = "R (1.2.3)", pattern = "(?<=\\().+?(?=\\))")
+    r_depends <- stringr::str_extract(string = from$get_field("Depends"), pattern = "R( \\(.*?\\))?")
+    r_version <- stringr::str_extract(string = stringr::str_extract(string = r_depends,
+                                                                    pattern = "(?<=\\().+?(?=\\))"),
+                                      pattern = "(\\d).*") # everything after the first digit
   } else if (!is.null(from)
+             && !is.expression(from)
              && !is.na(from)
-             && file.exists(from)
-             && stringr::str_detect(string = from,
+             && file.exists(from)) {
+    if (basename(from) == "DESCRIPTION") {
+      description <- desc::desc(file = from)
+      return(getRVersionTag(from = description))
+    } else if (stringr::str_detect(string = from,
                                     pattern = stringr::regex(".rdata$", ignore_case = TRUE))) {
-    sessionInfo <- extract_session_file(from)
-    r_version <- getRVersionTag(sessionInfo)
+      sessionInfo <- extract_session_file(from)
+      r_version <- getRVersionTag(sessionInfo)
+    }
     futile.logger::flog.debug("Got R version from file %s: %s", from, r_version)
-  } else {
+  }
+
+  if (is.null(r_version)) {
     r_version <- default
     futile.logger::flog.debug("Falling back to default R version: %s", r_version)
   }
@@ -186,6 +269,7 @@ extract_session_file <- function(file) {
 #' @export
 #' @examples
 #' extract_session_image("rocker/geospatial:3.3.3")
+#' @importFrom fs dir_exists
 extract_session_image <- function(docker_image,
                                   expr = c(),
                                   container_dir = "/tmp",
@@ -195,7 +279,7 @@ extract_session_image <- function(docker_image,
   result = tryCatch({
     #create local temporary directory
     dir.create(local_dir)
-    if (!dir.exists(local_dir))
+    if (!fs::dir_exists(local_dir))
       stop("Unable to locate temporary directory: ", local_dir)
 
     #rdata file to which session info shall be written
@@ -226,8 +310,7 @@ extract_session_image <- function(docker_image,
                                       name = container_name)
 
     if (!file.exists(local_docker_tempfile))
-      stop("Sessioninfo was not written to file (file missing): ",
-           local_docker_tempfile)
+      stop("Sessioninfo was not written to file (file missing): ", local_docker_tempfile)
 
     futile.logger::flog.info("Wrote sessioninfo from Docker to %s", local_docker_tempfile)
     load(local_docker_tempfile)
@@ -269,17 +352,6 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
   return(unlist(as.character(expr)))
 }
 
-#' Creates an empty R session
-#'
-#' @return An object of class \code{sessionInfo}
-#'
-#' @details Uses \code{\link{clean_session}}
-#'
-#' @export
-empty_session <- function() {
-  clean_session()
-}
-
 #' Obtains a \code{sessionInfo} from a local R session
 #'
 #' The function may also execute provided expressions or files.
@@ -300,7 +372,7 @@ clean_session <- function(expr = c(),
                           rmd_file = NULL,
                           echo = FALSE,
                           predetect = TRUE,
-                          repos = "http://cloud.r-project.org") {
+                          repos = "https://cloud.r-project.org") {
   #append commands to create a local sessionInfo
   required_pkgs <- c()
   if (!is.null(script_file) && file.exists(script_file)) {
@@ -325,31 +397,47 @@ clean_session <- function(expr = c(),
     }
   }
 
+  temp_lib_path <- NULL
   if (predetect && length(required_pkgs) > 0) {
     installing_pkgs <- stringr::str_remove_all(required_pkgs, "\"")
     installing_pkgs <- setdiff(installing_pkgs, rownames(installed.packages()))
+
+    temp_lib_path <- tempfile("test_lib_")
+    dir.create(temp_lib_path)
+
     if (length(installing_pkgs) > 0) {
-      futile.logger::flog.info("Missing packages installed before running file using repos %s: %s",
+      futile.logger::flog.info("Missing packages will be installed to %s before running file using repos %s: %s",
+                               temp_lib_path,
                                toString(repos),
                                toString(installing_pkgs))
 
-      install.packages(pkgs = installing_pkgs, repos = repos)
+      install_log <- capture.output({
+        install.packages(pkgs = installing_pkgs, lib = c(temp_lib_path), repos = repos,
+                         quiet = TRUE)
+      })
+      futile.logger::flog.debug("Installation log:\n%s", toString(install_log))
     } else {
       futile.logger::flog.debug("No missing packages to install before running file")
     }
   }
 
-  futile.logger::flog.info(paste("Creating an R session with the following expressions:\n\t ", toString(expr)))
+  futile.logger::flog.info("Creating an R session with the following expressions:\n%s", toString(expr))
 
-  info <- callr::r_vanilla(function(expressions) {
+  the_info <- callr::r_vanilla(function(expressions) {
     for (e in expressions) {
       eval(e)
     }
     sessionInfo()
-  }, args = list(expressions = expr), libpath = .libPaths(), repos = repos)
+  }, args = list(expressions = expr), libpath = c(temp_lib_path, .libPaths()), repos = repos)
 
-  if (is.null(info))
+  if (is.null(the_info))
     stop("Failed to determine a sessionInfo in a new R session.")
+  else futile.logger::flog.debug("Captured sessionInfo:\n%s", capture.output(print(the_info)))
 
-  return(info)
+  if ( !is.null(temp_lib_path)) {
+    futile.logger::flog.debug("Deleting temp library at %s", temp_lib_path)
+    unlink(temp_lib_path)
+  }
+
+  return(the_info)
 }

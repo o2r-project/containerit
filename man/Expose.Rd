@@ -2,7 +2,7 @@
 % Please edit documentation in R/Class-Expose.R
 \name{Expose}
 \alias{Expose}
-\title{Constructor for Expose}
+\title{Constructor for EXPOSE instruction}
 \usage{
 Expose(port, host = NA_integer_)
 }
@@ -15,7 +15,7 @@ Expose(port, host = NA_integer_)
 the object
 }
 \description{
-Constructor for Expose
+Constructor for EXPOSE instruction
 }
 \examples{
 #no example yet

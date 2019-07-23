@@ -2,21 +2,20 @@
 % Please edit documentation in R/Class-Copy.R
 \name{Copy}
 \alias{Copy}
-\title{Copy one or more files or directories to a Docker image}
+\title{Constructor for COPY instruction}
 \usage{
-Copy(src, dest)
+Copy(src, dest, addTrailingSlashes = TRUE)
 }
 \arguments{
 \item{src}{(character vector) list of files or directories to be copied}
 
 \item{dest}{(character string) destination directory on the Docker image (either absolute or relative to working directory)}
+
+\item{addTrailingSlashes}{(boolean) add trailing slashes to the given paths if the source is an existing directory}
 }
 \value{
 the object
 }
 \description{
-Copy one or more files or directories to a Docker image
-}
-\examples{
-#no example yet
+Copy one or more files or directories to a Docker image.
 }

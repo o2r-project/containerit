@@ -1,5 +1,5 @@
 ---
-title: "Generating Dockerfiles for reproducible research with R"
+title: "Generating Dockerfiles for Reproducible Research with R"
 author: "Matthias Hinz, Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -49,7 +49,9 @@ The image can be shared and archived and works anywhere with a compatible Docker
 
 To build images and run containers, the package integrates with the [stevedore](https://github.com/richfitz/stevedore) package and adds a few convenience functions for interacting with Docker images and containers.
 For concrete details on reading, loading, or installing the _exact_ versions of R packages including their system dependencies/libraries, this project focuses on the geospatial domain.
-`containerit` uses the package [`futile.logger`](https://cran.r-project.org/web/packages/futile.logger/) to provide information to the user at a configurable level of detail, see [futile.logger documentation](https://cran.r-project.org/web/packages/futile.logger/README.html).
+`containerit` uses the package [`futile.logger`](https://CRAN.R-project.org/package=futile.logger) to provide information to the user at a configurable level of detail, see [futile.logger documentation](https://cran.r-project.org/web/packages/futile.logger/README.html).
+
+The related package [`liftr`](https://liftr.me/) creates Dockerfiles for rendering R Markdown documents, but relies on manually created metadata in the document's YAML header.
 
 In the remainder of this vignette, we first introduce the main usage scenarios for `containerit` and document current challenges as well as directions for future work.
 
@@ -112,15 +114,20 @@ print(dockerfile_object)
 
 Instead of printing out to the console, you can also write to a file:
 
-```{r write_df}
-containerit::write(dockerfile_object, file = tempfile(fileext = ".dockerfile"))
+```{r write_df, eval=FALSE}
+containerit::write(dockerfile_object, file = tempfile(fileext = "_dockerfile"))
 ```
 
+There also is a convenience function to build the `Dockerfile` object with `stevedore`:
+
+```{r build_df, eval=FALSE}
+containerit::docker_build(dockerfile_object)
+```
 
 ### 2.3 Packaging an external session
 
 Packaging an interactive session has the disadvantage that unnecessary dependencies might be added to the Dockerfile and subsequently to the container.
-For instance the package `futile.logger` is a dependency of `containerit`, and it will be added to the container because it was loaded into the same session were the analyses was executed.
+For instance the package `futile.logger` is a dependency of `containerit`, and it _will_ be added to the container because it was loaded into the same session were the analyses was executed.
 It cannot be removed by default, because other packages in the session _might_ use it as well (even unintentionally in case of generic methods).
 Therefore, it is safer not to tamper with the current session, but to run the analysis in an isolated _vanilla_ session, which does not have `containerit` in it.
 The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`.
@@ -133,8 +140,7 @@ The following code creates a Dockerfile for a list of expressions in a vanilla s
 exp <- c(expression(library(sp)),
          expression(data(meuse)), 
          expression(mean(meuse[["zinc"]])))
-session <- clean_session(exp, echo = TRUE)
-dockerfile_object <- dockerfile(from = session)
+dockerfile_object <- dockerfile(from = exp)
 ```
 
 ```{r print_clean_df, results='markup', comment=NA}
@@ -182,7 +188,7 @@ dockerfile_object <- dockerfile(from = file.path(temp_workspace, "sf6.Rmd"),
                                 cmd = CMD_Render("sf6.Rmd"))
 ```
 
-```{r print_sf_vignette, comment=NA}
+```{r print_sf_vignette, results='markup', comment=NA}
 print(dockerfile_object)
 ```
 
@@ -231,13 +237,42 @@ df_sessioninfo <- dockerfile(from = file.path(temp_workspace, "session_info.RDat
 df_devtools <- dockerfile(from = file.path(temp_workspace, "session_info_devtools.RData"))
 ```
 
-```{r sessioninfo_print}
+**`sessioninfo::session_info()`**
 
+```{r sessioninfo_print, results='markup', comment=NA}
 print(df_sessioninfo)
 ```
 
-```{r session_info_devtools_print}
+**`devtools::session_info()`**
+
+```{r session_info_devtools_print, results='markup', comment=NA}
 print(df_devtools)
+```
+
+### 2.8 Packaging a `DESCRIPTION` file or object
+
+The [`DESCRIPTION` file format](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file) contains basic information about R extension packages and their dependencies.
+`containerit` can also create `Dockerfile`s based on a `DESCRIPTION` file or ob `description` objects from the [`desc`](https://cran.r-project.org/package=desc) package.
+Unless specified otherwise, it uses the minimal R version mentioned in the `Depends`-field for the base image.
+
+```{r description_file}
+df_description <- dockerfile(from = system.file("DESCRIPTION", package = "dplyr"))
+```
+
+```{r description_file_print, results='markup', comment=NA}
+print(df_description)
+```
+
+Use this to quickly create a container that contains everything needed to run your package, including system dependencies and installing the actual package in a specific version:
+
+```{r description_object}
+df_description_sf <- dockerfile(from = desc::desc(package = "sf"),
+                                 maintainer = "o2r",
+                                 versioned_packages = TRUE)
+```
+
+```{r description_object_print, results='markup', comment=NA}
+print(df_description_sf)
 ```
 
 ## 3. Including resources
@@ -269,7 +304,7 @@ print(the_dockerfile)
 Alternatively, a object names as well as other arguments can be passed as a list, which then are passed to the `save()` function.
 
 ```{r save_image_list}
-require(fortunes)
+require("fortunes")
 rm(list = ls())
 calculation <- 41 + 1
 frtn <- fortunes::fortune()
@@ -297,7 +332,7 @@ As shown in section 2, the maintainer label is set by default to the top as the 
 The maintainer can be changed with the `maintainer` argument of `dockerfile()`:
 
 ```{r maintainer}
-labeled_dockerfile <- dockerfile(from = empty_session(), maintainer = "Jon_Doe@example.com")
+labeled_dockerfile <- dockerfile(from = clean_session(), maintainer = "Jon_Doe@example.com")
 ```
 
 Labels can be applied to the existing Dockerfile object using the `addInstructions()` function, which adds any newly created instructions to the end of the Dockerfile but before the CMD statement.
@@ -328,7 +363,7 @@ addInstruction(labeled_dockerfile) <- label
 You can also put session information, using either base R or `devtools`, into a label as plain text or as json:
 
 ```{r label_json}
-addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = empty_session())
+addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = clean_session())
 addInstruction(labeled_dockerfile) <- Label_SessionInfo(session = devtools::session_info(), as_json = TRUE)
 ```
 

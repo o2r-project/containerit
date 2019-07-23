@@ -1,9 +1,10 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library("containerit")
-context("baseimage helper functions")
+context("Base image helper functions")
 
-test_that("installed packages can be read from a Docker image", {
+test_that("Installed packages can be read from a Docker image", {
+  skip_if_not(stevedore::docker_available())
+
   output <- capture_output(pkgs <- get_installed_packages(image = "rocker/geospatial:3.4.4"))
 
   expect_equal(dim(pkgs), c(257,2))
@@ -15,7 +16,9 @@ test_that("installed packages can be read from a Docker image", {
   expect_false("cshapes" %in% pkgs$pkg)
 })
 
-test_that("installed packages are a data.frame with the image as an attribute", {
+test_that("Installed packages are a data.frame with the image as an attribute", {
+  skip_if_not(stevedore::docker_available())
+
   .image <- "rocker/geospatial:3.4.4"
   output <- capture_output(pkgs <- get_installed_packages(image = .image))
 
@@ -24,7 +27,9 @@ test_that("installed packages are a data.frame with the image as an attribute", 
   expect_equal(.image, attributes(pkgs)$image)
 })
 
-test_that("list of installed packages can be filtered when creating a Dockerfile", {
+test_that("List of installed packages can be filtered when creating a Dockerfile", {
+  skip_if_not(stevedore::docker_available())
+
   output <- capture_output(the_dockerfile <- dockerfile(from = "package_markdown/sfr/",
                    maintainer = "o2r",
                    image = "rocker/geospatial:3.4.4",
@@ -40,7 +45,9 @@ test_that("list of installed packages can be filtered when creating a Dockerfile
   unlink("package_markdown/sfr/sf2_files", recursive = TRUE)
 })
 
-test_that("filtered list of installed packages does not filter GitHub packages", {
+test_that("Filtered list of installed packages does not filter GitHub packages", {
+  skip_if_not(stevedore::docker_available())
+
   # created sessionInfo file:
   # $  docker run --rm -it -v $(pwd):/data rocker/geospatial:3.5.1 R
   # R> devtools::install_github("o2r-project/containerit")
@@ -59,7 +66,9 @@ test_that("filtered list of installed packages does not filter GitHub packages",
   expect_true(object = any(grepl("^RUN.*installGithub.*tidyverse/ggplot2", x = the_dockerfile_string)), info = "ggplot is in installGithub command")
 })
 
-test_that("filtered list of installed packages is alphabetical", {
+test_that("Filtered list of installed packages is alphabetical", {
+  skip_if_not(stevedore::docker_available())
+
   output <- capture_output(the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
                                maintainer = "o2r",
                                image = "rocker/geospatial:3.5.1",

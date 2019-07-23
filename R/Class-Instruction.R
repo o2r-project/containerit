@@ -4,9 +4,6 @@
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#format}.
 #' @family instruction classes
-#'
-#' @export
-#'
 Instruction <- setClass("Instruction", contains = "VIRTUAL")
 
 setGeneric("docker_key", function(obj)
@@ -47,8 +44,6 @@ setMethod("docker_arguments",
 #' @param ... Arguments to be passed down to toString
 #'
 #' @return A single character string in Dockerfile syntax
-#' @export
-#'
 setMethod("toString",
           signature(x = "Instruction"),
           .toString.Instruction)
@@ -59,8 +54,6 @@ setMethod("toString",
 #' @param ... Arguments to be passed down to toString
 #'
 #' @return A single character string in Dockerfile syntax
-#' @export
-#'
 setMethod("as.character",
           signature(x = "Instruction"),
           .toString.Instruction)
@@ -74,9 +67,6 @@ print.Instruction <- function(x, ...) {
 #'
 #' @param x Instruction.
 #' @param ... Arguments to be passed down to toString
-#'
-#' @export
-#'
 setMethod("print",
           signature(x = "Instruction"),
           print.Instruction)

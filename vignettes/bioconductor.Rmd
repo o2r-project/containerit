@@ -1,5 +1,5 @@
 ---
-title: "Using Bioconductor with `containerit`"
+title: "Using Bioconductor with containerit"
 author: "Daniel Nüst"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -46,4 +46,4 @@ The created `Dockerfile` is:
 containerit::print(df)
 ```
 
-Using a specific [_Bioconductor_ version](https://bioconductor.org/about/release-announcements/) is **not supported**. 
+Using a specific [_Bioconductor_ version](https://bioconductor.org/about/release-announcements/) or installing versioned packages is **not supported**. 

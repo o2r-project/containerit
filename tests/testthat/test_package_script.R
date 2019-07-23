@@ -1,12 +1,23 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-context("Packaging R-Scripts and workspaces.")
+context("Packaging R-Scripts and workspace directories.")
 
-test_that("the R script location is checked ",{
+test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
 
-test_that("an R script can be created with resources of the same folder ",{
+test_that("warning if R script location is notwithin the working directory", {
+  tmpfile <- tempfile(fileext = ".R")
+  output <- capture_output({
+    file.copy(from = "package_script/resources/simple_test.R", to = tmpfile, overwrite = TRUE)
+    expect_warning(dockerfile(from = tmpfile), "not inside the working directory")
+  })
+  unlink(tmpfile)
+})
+
+test_that("an R script can be created with resources of the same folder ", {
+  skip_if_not(stevedore::docker_available())
+
   output <- capture_output({
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                 copy = "script_dir",
@@ -33,7 +44,7 @@ test_that("an R script can be created with resources of the same folder ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("a workspace with one R script can be packaged",{
+test_that("a workspace with one R script can be packaged", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/resources/",
                 copy = "script_dir",
@@ -46,7 +57,7 @@ test_that("a workspace with one R script can be packaged",{
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
-test_that("a workspace with one R script can be packaged if the script file has .r (lowercase) extension",{
+test_that("a workspace with one R script can be packaged if the script file has .r (lowercase) extension", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/simple_lowercase/",
                                  copy = "script_dir",
@@ -58,7 +69,7 @@ test_that("a workspace with one R script can be packaged if the script file has 
   expect_equal(toString(the_dockerfile), expected_file)
 })
 
-test_that("a list of resources can be packaged ",{
+test_that("a list of resources can be packaged", {
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/resources/simple_test.R",
                                  copy = c("package_script/resources/simple_test.R",
@@ -73,16 +84,40 @@ test_that("a list of resources can be packaged ",{
   expect_equal(generated_file, expected_file)
 })
 
-test_that("there is an error if non-existing resources are to be packages",{
+test_that("there is a warning if non-existing resources are to be copied", {
   output <- capture_output(
-    expect_error(dockerfile("package_script/resources/simple_test.R",
+    expect_warning(dockerfile("package_script/resources/simple_test.R",
                             copy = c("does_not_exist.R")))
   )
 })
 
-test_that("The gstat demo 'zonal' can be packaged ",{
-  skip_if_not_installed("sp")
-  skip_if_not_installed("gstat")
+test_that("trailing slashes are added to directories if missing", {
+  skip_on_appveyor() # FIXME, need to do some tests on Windows machine
+
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "package_script/resources/simple_test.R",
+                                 copy = c("package_script",
+                                          "package_script/resources/",
+                                          "package_script/resources/test_subfolder"),
+                                 maintainer = "o2r",
+                                 image = getImageForVersion("3.3.2"))
+  )
+  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  expect_equal(generated_file[4], "COPY [\"package_script/\", \"package_script/\"]")
+  expect_equal(generated_file[5], "COPY [\"package_script/resources/\", \"package_script/resources/\"]")
+  expect_equal(generated_file[6], "COPY [\"package_script/resources/test_subfolder/\", \"package_script/resources/test_subfolder/\"]")
+})
+
+test_that("there is a warning if NA resources are to be copied", {
+  output <- capture_output(
+    expect_warning(dockerfile("package_script/resources/simple_test.R",
+                              copy = c(NA, "package_script/resources/simple_test.R", NA)),
+                   "The file NA, given by 'copy', does not exist!")
+  )
+})
+
+test_that("The gstat demo 'zonal' can be packaged ", {
+  skip_on_ci()
 
   output <- capture_output(
     the_dockerfile <- dockerfile("package_script/gstat/zonal.R",
@@ -95,7 +130,7 @@ test_that("The gstat demo 'zonal' can be packaged ",{
 
   #test execution would be similar to the test above; don't do it to save time
   expected_file = readLines("package_script/gstat/Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  generated_file <- capture.output(print(the_dockerfile))
   expect_equal(generated_file, expected_file)
 })
 
@@ -133,30 +168,44 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
                    cmd = CMD_Rscript("package_script/resources/simple_test.R"))
   )
   expected_file = readLines("package_script/resources/Dockerfile3")
-  expect_equal(toString(the_dockerfile), expected_file)
+  expect_equal(capture.output(print(the_dockerfile)), expected_file)
+})
+
+test_that("packaging fails if library from script is missing without predetection", {
+  skip_on_cran() # CRAN knows all the packages
+  skip_on_ci()
+
+  # package should still not be in this session library
+  expect_error(library("boxoffice"))
+
+  expect_error({
+    output <- capture_output({
+      callr::r_vanilla(function() {
+        containerit::dockerfile(from = "package_script/needs_predetect/",
+                                predetect = FALSE)
+        },
+        libpath = .libPaths(),
+        repos = "https://cloud.r-project.org")
+    })
+  })
 })
 
 test_that("packaging works if library from script is missing but predetection is enabled", {
   skip_on_cran() # CRAN knows all the packages
+  skip_on_ci()
 
-  # install package to new library path
-  test_lib_path <- tempfile("test_lib_")
-  dir.create(test_lib_path)
   output <- capture_output({
-    generated_file <- callr::r_vanilla(function() {
-      library("containerit")
-      the_dockerfile <- dockerfile(from = "package_script/needs_predetect/", maintainer = "o2r",
-                                   image = getImageForVersion("3.4.4"),
-                                   predetect = TRUE)
-      generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
-      generated_file
-    }, libpath = c(test_lib_path, .libPaths()), repos = "https://cloud.r-project.org")
+    predetected_df <- dockerfile(from = "package_script/needs_predetect/",
+                               maintainer = "o2r",
+                               image = getImageForVersion("3.4.4"),
+                               predetect = TRUE)
   })
+  # write(predetected_df, "package_script/needs_predetect/Dockerfile")
 
-  expect_equal(list.files(test_lib_path), c("boxoffice"))
+  # package should still not be in this session's library
+  expect_error(library("boxoffice"))
+
+  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = capture.output(print(predetected_df)))))
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
-  expect_equal(generated_file, expected_file)
-  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
-
-  unlink(test_lib_path)
+  expect_equal(capture.output(print(predetected_df)), expected_file)
 })

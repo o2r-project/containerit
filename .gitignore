@@ -41,3 +41,8 @@ tests/testthat/v.*\.yaml
 v1.*\.yaml
 
 tests/testthat/package_markdown/sfr/nc1.*
+vignettes/basic_files/
+
+inst/demo\.html
+
+inst/demo_sf\.html

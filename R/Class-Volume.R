@@ -6,7 +6,6 @@
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#volume}.
 #'
 #' @return object
-#' @export
 #' @family instruction classes
 #'
 #' @examples
@@ -18,8 +17,6 @@ setClass("Volume", contains = "Instruction")
 #' @param ... fields yet to be implemented
 #'
 #' @return the object
-#' @export
-#'
 #' @examples
 #' #no example yet
 Volume <- function(...) {

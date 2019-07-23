@@ -9,18 +9,18 @@ dockerfile(from = utils::sessionInfo(),
   maintainer = Sys.info()[["user"]], save_image = FALSE,
   envir = .GlobalEnv, env = list(generator = paste("containerit",
   utils::packageVersion("containerit"))), soft = FALSE,
-  offline = FALSE, copy = NA, container_workdir = "/payload/",
-  cmd = Cmd("R"), entrypoint = NULL, add_self = FALSE,
-  silent = FALSE, predetect = TRUE, versioned_libs = FALSE,
+  offline = FALSE, copy = NULL, container_workdir = "/payload/",
+  cmd = "R", entrypoint = NULL, add_self = FALSE, silent = FALSE,
+  predetect = TRUE, versioned_libs = FALSE,
   versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)
 }
 \arguments{
-\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens.}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.}
 
 \item{image}{(\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
-By default, the image is determinded from the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
+By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
 
-\item{maintainer}{Specify the maintainer of the dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
+\item{maintainer}{Specify the maintainer of the Dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
 \item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.RData")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
@@ -38,7 +38,7 @@ By default, the image is determinded from the given session. Alternatively, use 
 
 \item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 
-\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use cmd_Rscript(path) in order to reference an R script to be executed on startup}
+\item{cmd}{The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.}
 
 \item{entrypoint}{the ENTRYPOINT statement for the Dockerfile}
 
@@ -50,7 +50,7 @@ By default, the image is determinded from the given session. Alternatively, use 
 
 \item{versioned_libs}{[EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries}
 
-\item{versioned_packages}{[EXPERIMENTAL] Whether it shall be attempted to match versions of R packages}
+\item{versioned_packages}{Whether it shall be attempted to match versions of R packages}
 
 \item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.}
 }

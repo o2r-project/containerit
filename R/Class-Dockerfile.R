@@ -29,7 +29,6 @@ Dockerfile <- setClass("Dockerfile",
                                  cmd = "Cmd")
 )
 
-
 toString.Dockerfile <- function(x, ...) {
   #initialize dockerfile with from
   output <- c()
@@ -70,7 +69,6 @@ format.Dockerfile <- function(x, ...) {
 #' Format a Dockerfile
 #'
 #' @param x Dockerfile
-#'
 #' @param ... Arguments to be passed down to format.default
 #'
 #' @export
@@ -83,7 +81,6 @@ setMethod("format", signature(x = "Dockerfile"), format.Dockerfile)
 #' @param ... Other params (not in use currently)
 #'
 #' @export
-#'
 setMethod("toString",
           signature(x = "Dockerfile"),
           toString.Dockerfile)
@@ -95,7 +92,6 @@ setMethod("toString",
 #' @param ... Arguments to be passed down to toString
 #'
 #' @export
-#'
 setMethod("as.character",
           signature(x = "Dockerfile"),
           toString.Dockerfile)
@@ -104,9 +100,9 @@ setMethod("as.character",
 #' Print a Dockerfile
 #'
 #' @param x The Dockerfile to be printed
-#'
 #' @param ... Parameters to be passed down to toString
 #'
+#' @export
 setMethod("print",
           signature(x = "Dockerfile"),
           print.Dockerfile)
@@ -117,12 +113,11 @@ setMethod("print",
 #' @param x Dockerfile object to be serialized
 #' @param file optional argument specifying a costum file path
 #'
-#' @export
-#'
 #' @examples
 #' # write a dockerfile with default parameters to temporary file and show content:
 #' temp = tempfile()
 #' write(dockerfile(), file=temp)
 #' print(readLines(temp))
 #'
+#' @export
 setMethod("write", signature(x = "Dockerfile"), .write.Dockerfile)

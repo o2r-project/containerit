@@ -2,19 +2,15 @@
 
 context("Packaging with explicit versioning")
 
-test_that("generation function for single package works", {
-  instruction <- containerit:::versioned_install_instruction(name = "fortunes", version = "1.0-2")
-  expect_s4_class(instruction,"Instruction")
-
-  instr_string <- utils::capture.output(print(instruction))
-  expect_equal(instr_string, "RUN [\"Rscript\", \"-e\", \"versions::install.versions('fortunes', '1.0-2')\"]")
-})
-
 test_that("error during build when installing too old a version", {
   skip_if_not(stevedore::docker_available())
 
-  instruction <- containerit:::versioned_install_instruction(name = "fortunes", version = "1.0-2")
-  instruction_string <- toString(instruction)
+  pkgs <- data.frame(name = c("fortunes", "sf"), version = c("1.0-2", "0.2-0"), source = c("CRAN", "CRAN"))
+  instruction <- containerit:::versioned_install_instructions(pkgs)
+  expect_length(instruction, 1)
+  expect_s4_class(instruction[[1]], "Instruction")
+
+  instruction_string <- toString(instruction[[1]])
   the_dockerfile_dir <- tempdir()
   writeLines(c("FROM rocker/geospatial:3.4.3", "RUN install2.r versions", instruction_string),
              con = file.path(the_dockerfile_dir, "Dockerfile"))
@@ -27,10 +23,26 @@ test_that("generation function for multiple packages works", {
   pkgs <- data.frame(name = c("fortunes", "sf"), version = c("1.2-1", "0.2-0"), source = c("CRAN", "CRAN"))
 
   instruction <- containerit:::versioned_install_instructions(pkgs)
-  expect_s4_class(instruction,"Instruction")
+  expect_type(instruction, "list")
+  expect_length(instruction, 1)
+  expect_s4_class(instruction[[1]], "Instruction")
 
-  instr_string <- toString(instruction)
+  instr_string <- toString(instruction[[1]])
   expect_equal(instr_string, "RUN [\"Rscript\", \"-e\", \"versions::install.versions('fortunes', '1.2-1')\", \"-e\", \"versions::install.versions('sf', '0.2-0')\"]")
+})
+
+test_that("generation function works if some packages are missing version", {
+  pkgs <- data.frame(name = c("fortunes", "testb", "testa", "sf"), version = c("1.2-1", NA, NA, "0.2-0"), source = c("CRAN", "CRAN", "CRAN", "CRAN"))
+
+  expect_output(instruction <- containerit:::versioned_install_instructions(pkgs),
+                "No version information found")
+  expect_type(instruction, "list")
+  expect_length(instruction, 2)
+  expect_s4_class(instruction[[1]], "Instruction")
+  expect_s4_class(instruction[[2]], "Instruction")
+
+  expect_equal(toString(instruction[[1]]), "RUN [\"install2.r\", \"testa\", \"testb\"]")
+  expect_equal(toString(instruction[[2]]), "RUN [\"Rscript\", \"-e\", \"versions::install.versions('fortunes', '1.2-1')\", \"-e\", \"versions::install.versions('sf', '0.2-0')\"]")
 })
 
 test_info <- list()
@@ -53,7 +65,7 @@ test_that("dockerfile with versions has only one unversioned install2.r for vers
   output <- capture_output(the_dockerfile <- dockerfile(from = test_info,
                                                         maintainer = "o2r",
                                                         versioned_packages = TRUE))
-  expect_s4_class(the_dockerfile,"Dockerfile")
+  expect_s4_class(the_dockerfile, "Dockerfile")
 
   expected_file <- readLines("package_versions/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
@@ -63,7 +75,7 @@ test_that("dockerfile with versions has only one unversioned install2.r for vers
 test_that("versions install commands are sorted by package name", {
   pkgs <- data.frame(name = c("a", "f", "c", "b"), version = c("1", "2", "3", "4"))
 
-  instruction <- containerit:::versioned_install_instructions(pkgs)
+  instruction <- containerit:::versioned_install_instructions(pkgs)[[1]]
 
   params <- instruction@params # uneven params are '-e'
   expect_equal(params[2], "versions::install.versions('a', '1')")

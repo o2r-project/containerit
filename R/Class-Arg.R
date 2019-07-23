@@ -6,9 +6,7 @@
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#arg}.
 #'
 #' @return object
-#' @export
 #' @family instruction classes
-#'
 #' @examples
 #' #no example yet
 setClass("Arg", contains = "Instruction")
@@ -18,8 +16,6 @@ setClass("Arg", contains = "Instruction")
 #' @param ... fields yet to be implemented
 #'
 #' @return the object
-#' @export
-#'
 #' @examples
 #' #no example yet
 Arg <- function(...) {

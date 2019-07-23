@@ -16,6 +16,6 @@ the object
 Constructor for a WORKDIR instruction
 }
 \examples{
-instruction <- Workdir("~/myDir/subdir/")
+instruction <- containerit:::Workdir("~/myDir/subdir/")
 toString(instruction)
 }

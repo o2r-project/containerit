@@ -12,8 +12,6 @@
 #'
 #' @family instruction classes
 #' @return object
-#' @export
-#'
 #' @examples
 #' #no example yet
 setClass("Expose",
@@ -21,7 +19,7 @@ setClass("Expose",
          contains = "Instruction")
 
 
-#' Constructor for Expose
+#' Constructor for EXPOSE instruction
 #'
 #' @param port (character or numeric, required) the port of the container to be exposed
 #' @param host (numeric, optional) port of the host, if missing the same port as in the container is exposed
@@ -32,7 +30,7 @@ setClass("Expose",
 #' @examples
 #' #no example yet
 Expose <- function(port, host = NA_integer_) {
-  if(is.numeric(port))
+  if (is.numeric(port))
     methods::new("Expose", port = as.integer(port), host = as.integer(host))
   else
     methods::new("Expose", port = as.character(port), host = as.integer(host))
@@ -49,7 +47,7 @@ setMethod("docker_arguments",
           signature(obj = "Expose"),
           function(obj) {
             out <- sprintf("%s", methods::slot(obj, "port"))
-            if(!is.na(obj@host)) {
+            if (!is.na(obj@host)) {
               out <- append(sprintf('%s', methods::slot(obj, "host")), out)
             }
             out <- paste(out, collapse = " ")
@@ -73,7 +71,7 @@ setValidity(
       protocol <- stringr::str_split(string = port, pattern = "/")[[1]][2]
       protocol <- stringr::str_to_lower(protocol)
       str
-      if(!(protocol == "udp" || protocol == "tcp")) {
+      if (!(protocol == "udp" || protocol == "tcp")) {
         return("Invalid EXPOSE instruction: protocol of container must be 'tcp' or 'udp'")
       }
     }

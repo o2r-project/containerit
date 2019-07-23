@@ -12,7 +12,6 @@
 #' @family instruction classes
 #' @family maintainer
 #' @return an object of class \code{Maintainer}
-#' @export
 setClass(
   "Maintainer",
   slots = list(name = "character",
@@ -20,15 +19,15 @@ setClass(
   contains = "Instruction"
 )
 
-#' create objects of class Maintainer
+#' Create MAINTAINER instructions
+#'
+#' The MAINTAINER instruction is deprecated!
 #'
 #' @param name character name (by convention: "<given name> <last name>", e.g. "Matthias Hinz")
 #' @param email The email
 #'
 #' @family maintainer
 #' @return Maintainer object
-#' @export
-#'
 Maintainer <- function(name, email = NA_character_) {
   .Deprecated("Label_Maintainer")
   methods::new("Maintainer", name = name, email = email)

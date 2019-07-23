@@ -10,28 +10,40 @@
 #' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
 #'
 #' @return object
-#' @export
-#'
 #' @family instruction classes
-#'
 #' @examples
 #' #no example yet
 setClass("Copy",
          slots = list(src = "character", dest = "character"),
          contains = "Instruction")
 
-#' Copy one or more files or directories to a Docker image
+#' Constructor for COPY instruction
+#'
+#' Copy one or more files or directories to a Docker image.
 #'
 #' @param src (character vector) list of files or directories to be copied
 #' @param dest (character string) destination directory on the Docker image (either absolute or relative to working directory)
+#' @param addTrailingSlashes (boolean) add trailing slashes to the given paths if the source is an existing directory
 #'
 #' @return the object
-#' @export
-#'
-#' @examples
-#' #no example yet
-Copy <- function(src, dest) {
-  methods::new("Copy",  src = src, dest = dest)
+#' @importFrom fs dir_exists
+#' @importFrom stringr str_detect
+Copy <- function(src, dest, addTrailingSlashes = TRUE) {
+  # directories given as destination must have a trailing slash in Dockerfiles, add it if missing
+  sources <- sapply(X = src, FUN = function(source) {
+    if (addTrailingSlashes && fs::dir_exists(source) && !stringr::str_detect(source, "/$"))
+        return(paste0(source, "/"))
+    else return(source)
+    })
+  names(sources) <- sources
+
+  destination <- dest
+  if (addTrailingSlashes && any(fs::dir_exists(src))) {
+    if ( !stringr::str_detect(dest, "/$"))
+      destination <- paste0(dest, "/")
+  }
+
+  methods::new("Copy",  src = sources, dest = destination)
 }
 
 setMethod("docker_arguments",

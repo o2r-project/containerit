@@ -43,7 +43,7 @@ setValidity("Run_shell",
             method = function(object) {
               commands <- methods::slot(object, "commands")
 
-              if (is.na(commands) || length(commands) == 0 || any(stringr::str_length(commands) == 0))
+              if (any(is.na(commands)) || length(commands) == 0 || any(stringr::str_length(commands) == 0))
                 return(paste("Commands must have at least one string and empty strings are not alowed.",
                              "Given was: \n\t", paste(commands, collapse = "\n\t")))
               else

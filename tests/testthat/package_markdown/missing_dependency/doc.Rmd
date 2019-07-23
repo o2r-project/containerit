@@ -9,6 +9,6 @@ output: md_document
 library("boxoffice")
 ```
 
-```{r abe}
-library(abe)
+```{r rprojroot}
+library(rprojroot)
 ```

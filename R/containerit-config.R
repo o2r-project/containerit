@@ -39,13 +39,11 @@ if (FALSE) {
 #' @param output Path or connection to write the configuration to
 #' @param config The configuration object to be written
 #'
-#' @export
-#'
 #' @examples
-#' containerit_write_config(output = stdout())
+#' containerit:::containerit_write_config(output = stdout())
 #' \dontrun{
 #' #developers may want to initialize the default config with:
-#' containerit_write_config(output = "inst/containerit_config.json")
+#' containerit:::containerit_write_config(output = "inst/containerit_config.json")
 #' }
 containerit_write_config <-
   function(config = .getDefaultConfig(),

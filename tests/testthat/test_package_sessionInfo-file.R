@@ -3,7 +3,7 @@
 context("Packaging sessionInfo saved in .RData file")
 
 # create the test data, also a good way to understand what information from session info is actually used!
-rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
+test_rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
 
 test_info <- list()
 test_info$R.version <- list()
@@ -43,45 +43,45 @@ test_info$loadedOnly$loadedB$Repository <- "CRAN"
 
 class(test_info) <- "sessionInfo"
 sessionInfo = test_info
-save(sessionInfo, file = rdata_file)
-
-test_that("can create dockerfile object from the file with sessionInfo (with a warning)", {
-  output <- capture_output(expect_warning(the_dockerfile <- dockerfile(from = rdata_file), "for the given R version"))
-  expect_s4_class(the_dockerfile,"Dockerfile")
-})
-
-test_that("can extract the session from the file (used within dockerfile)", {
-  output <- capture_output(the_session <- extract_session_file(rdata_file))
-  expect_s3_class(the_session, "sessionInfo")
-  expect_equal(the_session, test_info)
-})
-
-output <- capture_output(
-  expect_warning(df_test <- dockerfile(from = rdata_file))
-)
-
-test_that("dockerfile object contains expected R version", {
-  expect_equal(toString(df_test)[1], "FROM rocker/r-ver:3.1.0")
-})
-
-test_that("dockerfile contains CRAN packages", {
-  expect_true(any(stringr::str_detect(toString(df_test),
-                                      "^RUN \\[\"install2.r\", \"loadedA\", \"loadedB\", \"remotes\", \"testpkg2\"\\]$")))
-})
-
-test_that("dockerfile contains GitHub packages", {
-  expect_true(any(stringr::str_detect(toString(df_test),
-                                      "^RUN \\[\"installGithub.r\", \"test/pkg1@123456abcdef\", \"test/pkg3@a1b2c3d4e5f6\"\\]$")))
-})
-
-test_that("GitHub reference can be retrieved from sessionInfo", {
-  ref <- getGitHubRef("testpkg1", c(test_info$otherPkgs, test_info$loadedOnly))
-  expect_equal(ref, "test/pkg1@123456abcdef")
-})
+save(sessionInfo, file = test_rdata_file)
 
 test_that("R version can be retrieved from sessionInfo", {
   ver <- getRVersionTag(test_info)
   expect_equal(ver, "1.2.3")
+})
+
+test_that("can create Dockerfile object from the file with sessionInfo (with a warning)", {
+  output <- capture_output(expect_warning(the_dockerfile <- dockerfile(from = test_rdata_file), "for the given R version"))
+  expect_s4_class(the_dockerfile,"Dockerfile")
+})
+
+test_that("can extract the session from the file (used within Dockerfile)", {
+  output <- capture_output(the_session <- extract_session_file(test_rdata_file))
+  expect_s3_class(the_session, "sessionInfo")
+  expect_equal(the_session, test_info)
+})
+
+test_that("can retrieve version from sessionInfo in file", {
+  output <- capture_output(ver <- getRVersionTag(test_rdata_file))
+  expect_equal(ver, "1.2.3")
+})
+
+test_that("created Dockerfile content is as expected", {
+  output <- capture_output(
+    expect_warning(df_test <- dockerfile(from = test_rdata_file))
+  )
+
+  # contains expected R version
+  expect_equal(toString(df_test)[1], "FROM rocker/r-ver:3.1.0")
+  # contains CRAN packages
+  expect_true(any(stringr::str_detect(toString(df_test),
+                                      "^RUN \\[\"install2.r\", \"loadedA\", \"loadedB\", \"remotes\", \"testpkg2\"\\]$")))
+  # contains GitHub packages
+  expect_true(any(stringr::str_detect(toString(df_test),
+                                      "^RUN \\[\"installGithub.r\", \"test/pkg1@123456abcdef\", \"test/pkg3@a1b2c3d4e5f6\"\\]$")))
+  # GitHub reference can be retrieved
+  ref <- getGitHubRef("testpkg1", c(test_info$otherPkgs, test_info$loadedOnly))
+  expect_equal(ref, "test/pkg1@123456abcdef")
 })
 
 test_that("R version can be retrieved from session_info", {
@@ -90,6 +90,8 @@ test_that("R version can be retrieved from session_info", {
   class(info) <- c("session_info")
   ver <- getRVersionTag(info)
   expect_equal(ver, "7.8.9")
+
+  skip_if(Sys.getenv("R_VERSION") == "devel")
 
   ver2 <- getRVersionTag(sessioninfo::session_info())
   expect_equal(ver2, paste0(R.version$major, ".", R.version$minor), "version extraction from sessioninfo::session_info")
@@ -104,7 +106,7 @@ test_that("error if RData file contains more than one object", {
   b <- "2"
   save(a, test_info, b, file = the_file)
   output <- capture_output(expect_error(extract_session_file(the_file), "exactly one"))
-  expect_match(object = output, the_file)
+  expect_match(object = output, paste0("Reading object(.*)", basename(the_file), "$"))
 })
 
 test_that("Matching image can be retrieved from sessionInfo, with a warning", {
@@ -112,17 +114,13 @@ test_that("Matching image can be retrieved from sessionInfo, with a warning", {
   expect_equal(toString(image), "FROM rocker/r-ver:3.1.0")
 })
 
-test_that("Version tag can be retrieved from sessionInfo.RData file", {
-  output <- capture_output(ver <- getRVersionTag(rdata_file))
-  expect_equal(ver, "1.2.3")
-})
-
 test_that("Object name 'sessioninfo' is accepted.", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   sessioninfo <- test_info
   sessioninfo$R.version <- list(major = "3", minor = "3.3")
   save(sessioninfo, file = rdata_file)
-  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
+  expect_warning(output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file)),
+                 "not inside the working directory")
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
@@ -131,11 +129,14 @@ test_that("Object name 'session_info' is accepted.", {
   session_info <- test_info
   session_info$R.version <- list(major = "3", minor = "3.3")
   save(session_info, file = rdata_file)
-  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
+  expect_warning(output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file)),
+                 "not inside the working directory")
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
 test_that("Version tag can be retrieved from .RData file with sessioninfo::session_info", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
@@ -144,6 +145,8 @@ test_that("Version tag can be retrieved from .RData file with sessioninfo::sessi
 })
 
 test_that("Version tag can be retrieved from .RData file with devtools::session_info", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
@@ -155,7 +158,8 @@ test_that("sessioninfo::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- sessioninfo::session_info()
   save(session_info, file = rdata_file)
-  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
+  expect_warning(output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file)),
+                 "not inside the working directory")
   expect_s4_class(the_dockerfile,"Dockerfile")
 })
 
@@ -163,6 +167,7 @@ test_that("devtools::session_info() is supported", {
   rdata_file <- tempfile(pattern = "containerit_", tmpdir = tempdir(), fileext = ".RData")
   session_info <- devtools::session_info()
   save(session_info, file = rdata_file)
-  output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file))
+  expect_warning(output <- capture_output(the_dockerfile <- dockerfile(from = rdata_file)),
+                 "not inside the working directory")
   expect_s4_class(the_dockerfile,"Dockerfile")
 })

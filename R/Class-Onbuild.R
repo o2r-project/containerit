@@ -6,9 +6,7 @@
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#onbuild}.
 #'
 #' @return object
-#' @export
 #' @family instruction classes
-#'
 #' @examples
 #' #no example yet
 setClass("Onbuild", contains = "Instruction")
@@ -18,8 +16,6 @@ setClass("Onbuild", contains = "Instruction")
 #' @param ... fields yet to be implemented
 #'
 #' @return the object
-#' @export
-#'
 #' @examples
 #' #no example yet
 Onbuild <- function(...) {

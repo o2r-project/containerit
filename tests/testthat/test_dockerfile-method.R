@@ -1,9 +1,8 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-library("containerit")
-context("dockerfile generation")
+context("Dockerfile generation")
 
-test_that("dockerfile object can be saved to file", {
+test_that("Dockerfile object can be saved to file", {
   t_dir <- tempfile(pattern = "dir")
   dir.create(t_dir)
 
@@ -22,29 +21,7 @@ test_that("dockerfile object can be saved to file", {
   unlink(t_dir, recursive = TRUE)
 })
 
-test_that("users can specify the maintainer", {
-  maintainer <- methods::new("Maintainer", name = "Matthias Hinz", email = "matthias.m.hinz@gmail.com")
-  output <- capture_output(dfile <- dockerfile(NULL, maintainer = maintainer))
-
-  expect_is(slot(dfile, "maintainer"), "Maintainer")
-  mslot = methods::slot(dfile, "maintainer")
-  expect_equal(attr(class(mslot), "package"), "containerit")
-  expect_equal(slot(mslot, "name"), "Matthias Hinz")
-  expect_equal(slot(mslot, "email"), "matthias.m.hinz@gmail.com")
-  expect_equal(toString(mslot),
-               "MAINTAINER \"Matthias Hinz\" matthias.m.hinz@gmail.com")
-})
-
-test_that("the default of maintainer is the current system user, and the default is a label-maintainer", {
-  output <- capture_output(dfile <- dockerfile())
-
-  expect_is(slot(dfile, "maintainer"), "Label")
-  mslot = methods::slot(dfile, "maintainer")
-  expect_equal(slot(mslot, "data")[["maintainer"]], Sys.info()[["user"]])
-  expect_equal(toString(mslot), paste0("LABEL maintainer=\"", Sys.info()[["user"]], "\""))
-})
-
-test_that("users can specify the base image", {
+test_that("Users can specify the base image", {
   imagestr <- "rocker/r-ver:3.0.0"
   fromstr <- paste("FROM", imagestr)
   output <- capture_output(dfile1 <- dockerfile(from = NULL, image = imagestr))
@@ -53,7 +30,7 @@ test_that("users can specify the base image", {
   expect_length(which(toString(dfile1) == fromstr), 1)
 })
 
-test_that("users can specify the R version", {
+test_that("Users can specify the R version", {
   versionstr <- "3.1.0"
   output <- capture_output(dfile <- dockerfile(from = NULL, image = getImageForVersion(versionstr)))
   #check content of image and instructions slots
@@ -61,13 +38,15 @@ test_that("users can specify the R version", {
   expect_match(toString(dfile), versionstr, all = FALSE)
 })
 
-test_that("users are warned if an unsupported R version is set", {
+test_that("Users are warned if an unsupported R version is set", {
   output <- capture_output({
     expect_warning(dockerfile(from = NULL, image = getImageForVersion("2.0.0")), "returning closest match")
   })
 })
 
-test_that("R version is the current version if not specified otherwise", {
+test_that("The R version is the current version if not specified otherwise", {
+  skip_if(Sys.getenv("R_VERSION") == "devel")
+
   output <- capture_output(dfile <- dockerfile(NULL))
   #expect that image string contains the current R version
   expect_equal(as.character(slot(slot(dfile, "image"), "postfix")),
@@ -75,6 +54,9 @@ test_that("R version is the current version if not specified otherwise", {
 })
 
 test_that("The package containerit is not packaged by default", {
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
     the_dockerfile <- dockerfile(info)
@@ -83,6 +65,9 @@ test_that("The package containerit is not packaged by default", {
 })
 
 test_that("The package containerit is not packaged (add_self = FALSE)", {
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
     the_dockerfile <- dockerfile(info, add_self = FALSE)
@@ -91,10 +76,26 @@ test_that("The package containerit is not packaged (add_self = FALSE)", {
 })
 
 test_that("The package containerit can be packaged (add_self = TRUE)", {
-  skip("containerit not yet available from CRAN")
+  skip_on_cran()
+  skip_on_ci()
+
   output <- capture_output({
     info <- clean_session(expr = quote(library("containerit")))
+    # manually add the source of the package
+    info$otherPkgs[[1]][["Repository"]] <- "CRAN"
     the_dockerfile <- dockerfile(info, add_self = TRUE)
   })
   expect_true(any(stringr::str_detect(format(the_dockerfile), "^RUN.*containerit")))
+})
+
+test_that("There is a warning if the source of a package cannot be determined", {
+  output <- capture_output({
+    info <- clean_session(expr = c(expression(library("fortunes")), expression(library("rprojroot"))))
+    # manually add the source of the package
+    info$otherPkgs[[2]][["Repository"]] <- NULL
+    expect_warning(the_dockerfile <- dockerfile(info),
+                   "Failed to identify a source for package fortunes.")
+  })
+
+  expect_false(any(stringr::str_detect(format(the_dockerfile), "^RUN.*fortunes")))
 })

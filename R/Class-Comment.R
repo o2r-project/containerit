@@ -5,9 +5,7 @@
 #' See Dockerfile reference at https://docs.docker.com/engine/reference/builder/#format
 #'
 #' @include Class-Instruction.R
-#'
 #' @return object
-#' @export
 #' @family instruction classes
 #'
 setClass("Comment",
@@ -25,7 +23,7 @@ setClass("Comment",
 #' @examples
 #' # A simple label that occupies one line:
 #' comment <- Comment(text = "this is important to note")
-#' the_dockerfile <- dockerfile(empty_session())
+#' the_dockerfile <- dockerfile(clean_session())
 #' addInstruction(the_dockerfile) <- comment
 #' print(the_dockerfile)
 #'
