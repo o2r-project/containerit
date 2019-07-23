@@ -32,18 +32,24 @@ cache:
   - C:\Program Files (x86)\Pandoc\
 
 environment:
-  NOT_CRAN: true
-  # env vars that may need to be set, at least temporarily, from time to time
-  # see https://github.com/krlmlr/r-appveyor#readme for details
-  USE_RTOOLS: true
-  # R_REMOTES_STANDALONE: true
-  BIOC_USE_DEVEL: FALSE
-  PYTHON: "C:\\Python36-x64"
-  # Do not build/test vignettes, because stevedore is missing
-  R_BUILD_ARGS: "--no-manual --no-build-vignettes"
-  R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
+  global:
+    WARNINGS_ARE_ERRORS: 1
+    NOT_CRAN: true
+    # env vars that may need to be set, at least temporarily, from time to time
+    # see https://github.com/krlmlr/r-appveyor#readme for details
+    USE_RTOOLS: true
+    # R_REMOTES_STANDALONE: true
+    BIOC_USE_DEVEL: FALSE
+    PYTHON: "C:\\Python36-x64"
+    # Do not build/test vignettes, because stevedore is missing
+    R_BUILD_ARGS: "--no-manual --no-build-vignettes"
+    R_CHECK_ARGS: "--no-manual --ignore-vignettes" # --as-cran
 
-# Adapt as necessary starting from here
+matrix:
+  - R_VERSION: devel
+  - R_VERSION: release
+matrix:
+  fast_finish: true
 
 build_script:
   - docker --version
