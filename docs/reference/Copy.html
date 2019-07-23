@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Copy one or more files or directories to a Docker image — Copy • containerit</title>
+<title>Constructor for COPY instruction — Copy • containerit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Copy one or more files or directories to a Docker image — Copy" />
+<meta property="og:title" content="Constructor for COPY instruction — Copy" />
 
-<meta property="og:description" content="Copy one or more files or directories to a Docker image" />
+<meta property="og:description" content="Copy one or more files or directories to a Docker image." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,18 +118,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Copy one or more files or directories to a Docker image</h1>
+    <h1>Constructor for COPY instruction</h1>
     
     <div class="hidden name"><code>Copy.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Copy one or more files or directories to a Docker image</p>
+    <p>Copy one or more files or directories to a Docker image.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>Copy</span>(<span class='no'>src</span>, <span class='no'>dest</span>)</pre>
+    <pre class="usage"><span class='fu'>Copy</span>(<span class='no'>src</span>, <span class='no'>dest</span>, <span class='kw'>addTrailingSlashes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,6 +142,10 @@
       <th>dest</th>
       <td><p>(character string) destination directory on the Docker image (either absolute or relative to working directory)</p></td>
     </tr>
+    <tr>
+      <th>addTrailingSlashes</th>
+      <td><p>(boolean) add trailing slashes to the given paths if the source is an existing directory</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -149,9 +153,6 @@
     <p>the object</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#no example yet
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -159,9 +160,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

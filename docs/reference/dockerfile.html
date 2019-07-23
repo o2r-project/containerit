@@ -144,16 +144,16 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>from</th>
-      <td><p>The source of the information to construct the Dockerfile. Can be a <code>sessionInfo</code> object, a path to a file, a <code>DESCRIPTION</code> file, or the path to a workspace). If <code>NULL</code> then no automatic derivation of dependencies happens. If a <code>DESCRIPTION</code> file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.</p></td>
+      <td><p>The source of the information to construct the Dockerfile. Can be a <code>sessionInfo</code> object, a path to a file within the working direcotry, a <code>DESCRIPTION</code> file, or the path to a workspace). If <code>NULL</code> then no automatic derivation of dependencies happens. If a <code>DESCRIPTION</code> file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.</p></td>
     </tr>
     <tr>
       <th>image</th>
       <td><p>(<a href='From-class.html'>From</a>-object or character) Specifes the image that shall be used for the Docker container (<code>FROM</code> instruction).
-By default, the image is determinded from the given session. Alternatively, use <code><a href='getImageForVersion.html'>getImageForVersion(..)</a></code> to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at <a href=''https://hub.docker.com/r/rocker/r-ver/''>'https://hub.docker.com/r/rocker/r-ver/'</a>). Or provide a correct image name yourself.</p></td>
+By default, the image selection is based on the given session. Alternatively, use <code><a href='getImageForVersion.html'>getImageForVersion(..)</a></code> to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at <a href=''https://hub.docker.com/r/rocker/r-ver/''>'https://hub.docker.com/r/rocker/r-ver/'</a>). Or provide a correct image name yourself.</p></td>
     </tr>
     <tr>
       <th>maintainer</th>
-      <td><p>Specify the maintainer of the dockerfile. See documentation at <a href=''https://docs.docker.com/engine/reference/builder/#maintainer''>'https://docs.docker.com/engine/reference/builder/#maintainer'</a>. Defaults to <code>Sys.info()[["user"]]</code>. Can be removed with <code>NULL</code>.</p></td>
+      <td><p>Specify the maintainer of the Dockerfile. See documentation at <a href=''https://docs.docker.com/engine/reference/builder/#maintainer''>'https://docs.docker.com/engine/reference/builder/#maintainer'</a>. Defaults to <code>Sys.info()[["user"]]</code>. Can be removed with <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>save_image</th>
@@ -211,7 +211,7 @@ By default, the image is determinded from the given session. Alternatively, use 
     </tr>
     <tr>
       <th>versioned_packages</th>
-      <td><p>[EXPERIMENTAL] Whether it shall be attempted to match versions of R packages</p></td>
+      <td><p>Whether it shall be attempted to match versions of R packages</p></td>
     </tr>
     <tr>
       <th>filter_baseimage_pkgs</th>
@@ -249,11 +249,11 @@ This executes the whole file to obtain a complete <code>sessionInfo</code> objec
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-07-21 14:21:26] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#&gt; INFO [2019-07-21 14:21:26] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httpuv,httr,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,promises,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,shiny,shinyFiles,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,xtable,yaml' from sysreqs online DB
-#&gt; INFO [2019-07-21 14:21:29] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httpuv, httr, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, promises, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, shiny, shinyFiles, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, xtable, yaml
-#&gt; INFO [2019-07-21 14:21:29] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
-#&gt; INFO [2019-07-21 14:21:29] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
+    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:30] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#&gt; INFO [2019-07-23 13:33:30] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httpuv,httr,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,promises,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,shiny,shinyFiles,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,xtable,yaml' from sysreqs online DB
+#&gt; INFO [2019-07-23 13:33:33] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httpuv, httr, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, promises, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, shiny, shinyFiles, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, xtable, yaml
+#&gt; INFO [2019-07-23 13:33:33] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
+#&gt; INFO [2019-07-23 13:33:33] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
 #&gt; LABEL maintainer="daniel"
 #&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 #&gt;   &amp;&amp; apt-get install -y git-core \
