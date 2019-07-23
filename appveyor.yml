@@ -48,7 +48,7 @@ environment:
     - R_VERSION: release
       WARNINGS_ARE_ERRORS: 1
     - R_VERSION: devel
-      WARNINGS_ARE_ERRORS: 0
+      WARNINGS_ARE_ERRORS: ""
 #matrix:
 #  fast_finish: true
 
