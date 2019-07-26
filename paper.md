@@ -6,7 +6,7 @@ tags:
   - sandbox
   - reproducibility
   - reproducible research
-author:
+authors:
   - name: Daniel Nüst
     orcid: 0000-0002-0024-5046
     affiliation: 1
