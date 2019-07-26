@@ -61,7 +61,11 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 	libssl-dev \
 	pandoc \
 	pandoc-citeproc
-RUN ["install2.r", "curl", "digest", "evaluate", "formatR", "futile.logger", "futile.options", "htmltools", "jsonlite", "knitr", "lambda.r", "magrittr", "Rcpp", "rjson", "rmarkdown", "rsconnect", "semver", "stevedore", "stringi", "stringr", "xfun", "yaml"]
+RUN ["install2.r", "curl", "digest", "evaluate", "formatR", \
+  "futile.logger", "futile.options", "htmltools", "jsonlite", \
+  "knitr", "lambda.r", "magrittr", "Rcpp", "rjson", \
+  "rmarkdown", "rsconnect", "semver", "stevedore", "stringi", \
+  "stringr", "xfun", "yaml"]
 WORKDIR /payload/
 CMD ["R"]
 ```
