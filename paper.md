@@ -37,11 +37,11 @@ The duality between recipee and binary is an important advantage over a [virtual
 
 The `Dockerfile` and image can be published alongside a scientific paper to support peer review and to some extend preservation [@nust_opening_2017].
 Even if an image cannot be executed, or a `Dockerfile` cannot be built anymore, the instructions in the `Dockerfile` are human-readable and files in the image can be extracted to recreate an environment resembling the original as closely as possible.
-Further useful features are (a) portability thanks to a single runtime dependency, which allows readers to explore an author's virtual laboratory including complex dependencies or bespoke code either on their machines or in cloud-based infrastructures [e.g by using Binder, see @jupyter_binder_2018], and (b) transparency because an image's filesystem can be easily inspected.
+Further useful features are (a) portability thanks to a single runtime dependency, which allows readers to explore an author's virtual laboratory including complex dependencies or bespoke code either on their machines or in cloud-based infrastructures [e.g., by using Binder, see @jupyter_binder_2018], and (b) transparency because an image's filesystem can be easily inspected.
 This way containers have been shown to enable verification of reproducibility and auditing without requiring reviewers to manually download, install, and re-run analyses [@beaulieu-jones_reproducibility_2017].
 
 Container preservation is an active field of research [@rechert_preserving_2017; @emsley_framework_2018].
-It is reasonable to assume that the operation of a container runtime at a time scale comparable to data storage requirements by funding agencies, e.g. 10 years in case of the [German DFG](http://www.dfg.de/en/research_funding/proposal_review_decision/applicants/research_data/index.html) or [British EPSRC](https://epsrc.ukri.org/about/standards/researchdata/expectations/), is feasible for stakeholders such as universities or scientific publishers.
+It is reasonable to assume that the operation of a container runtime at a time scale comparable to data storage requirements by funding agencies, e.g., 10 years in case of the [German DFG](http://www.dfg.de/en/research_funding/proposal_review_decision/applicants/research_data/index.html) or [British EPSRC](https://epsrc.ukri.org/about/standards/researchdata/expectations/), is feasible for stakeholders such as universities or scientific publishers.
 To leverage this infrastructure, container creation must become more widespread and easier.
 
 # Summary
@@ -76,14 +76,14 @@ These images use [MRAN](https://mran.microsoft.com/) snapshots to control instal
 The system dependencies required by these packages are identified using the `sysreqs` package [@csardi_sysreqs_2019] and the corresponding [database and API](http://sysreqs.r-hub.io/).
 
 `dockerfile(..)` is the package's main user function and accepts session information objects, session information saved in a file, a set of R commands, an R script file, a [`DESCRIPTION`](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file) file, or an R Markdown document [@allaire_rmarkdown_2018].
-[Static program analysis](https://en.wikipedia.org/wiki/Static_program_analysis) using the package `automagic` [@brokamp_automagic_2017] is used to make sure the capturing environment has all required packages available, e.g. when creating Dockerfiles for R Markdown documents provided by a third party as a service [@nust_reproducibility_2018].
+[Static program analysis](https://en.wikipedia.org/wiki/Static_program_analysis) using the package `automagic` [@brokamp_automagic_2017] is used to make sure the capturing environment has all required packages available, e.g., when creating Dockerfiles for R Markdown documents provided by a third party as a service [@nust_reproducibility_2018].
 To capture the workflow environment, `containerit` executes the whole workflow a new R session using the package `callr` [@csardi_callr_2018], because static program analysis can be broken by using helper functions, such as `xfun::pkg_attach()` [@xie_xfun_2018], by unintended side-effects, or by seemingly clever or user-friendly ways to load packages (cf. first lines in R script file `tgis_a_1579333_sm7524.r` in [https://doi.org/10.6084/m9.figshare.7757069.v1](https://doi.org/10.6084/m9.figshare.7757069.v1)).
 Further parameters to the function comprise for example image metadata, base image, versioned installations, and filtering of R packages already installed in the base image.
 
 The package `containerit`'s main contribution is the automated capturing of runtime environments as `Dockerfile`s based on literate programming workflows [@gentleman_statistical_2007] to support reproducible research.
 Together with `stevedore` [@fitzjohn_stevedore_2019] it enables a completely R-based creation and manipulation of Docker containers.
 The impact on researcher's workflow using `containerit` is small because it can be applied after completing a workflow, but the captured snapshots can enhance the scholarly publication process (in particular review, interaction, and preservation) and may form a basis for more re-usable and transparent publications.
-In the future, `containerit` may support alternative container software, such as Singularity [@kurtzer_singularity_2017], enable parametrisation of container executions and pipelines as demonstrated by Kliko [@molenaar_klikoscientific_2018], or support proper creditation of software [@codemeta, @katz_software_2018].
+In the future, `containerit` may support alternative container software, such as Singularity [@kurtzer_singularity_2017], enable parametrisation of container executions and pipelines as demonstrated by Kliko [@molenaar_klikoscientific_2018], or support proper creditation of software [@codemeta; @katz_software_2018].
 
 **Related Work**
 
