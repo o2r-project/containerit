@@ -10,6 +10,7 @@ a suitable `Dockerfile`. The packages’s website at
 can be found in this [o2r project blog
 post](http://o2r.info/2017/05/30/containerit-package/).
 
+[![status](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
@@ -39,10 +40,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-07-22 15:06:33] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-07-22 15:06:33] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,knitr,lambda.r,magrittr,R6,Rcpp,rmarkdown,rprojroot,semver,stevedore,stringi,stringr,xfun,yaml' from sysreqs online DB
-#> INFO [2019-07-22 15:06:34] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, knitr, lambda.r, magrittr, R6, Rcpp, rmarkdown, rprojroot, semver, stevedore, stringi, stringr, xfun, yaml
-#> INFO [2019-07-22 15:06:34] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-08 16:20:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-08 16:20:52] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-08 16:20:54] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-08 16:20:54] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
@@ -56,7 +57,7 @@ print(my_dockerfile)
 #>  make \
 #>  pandoc \
 #>  pandoc-citeproc
-#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "knitr", "lambda.r", "magrittr", "R6", "Rcpp", "rmarkdown", "rprojroot", "semver", "stevedore", "stringi", "stringr", "xfun", "yaml"]
+#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xtable", "yaml"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -73,11 +74,13 @@ image:
 
 ``` r
 rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
+#> Detected API version '1.40' is above max version '1.39'; downgrading
+#> Detected API version '1.40' is above max version '1.39'; downgrading
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
-#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, knitr, magrittr, R6, Rcpp, rmarkdown, rprojroot, rstudioapi, sessioninfo, stringi, stringr, withr, xfun, yaml
-#> RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "stevedore"]
+#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml
+#> RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "shinyFiles", "stevedore", "versions"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
