@@ -23,13 +23,43 @@ status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](
 
 ![containerit logo](inst/logo.png)
 
+## Prerequisites
+
+  - `containerit` only fully works if you have
+    [Docker](https://en.wikipedia.org/wiki/Docker_\(software\))
+    installed and is only tested with [Docker Engine -
+    Community](https://docs.docker.com/install/overview/) (previously
+    called Docker Community Editionm, Docker CE).
+  - `R (>= 3.5.0)` is needed so that some dependencies
+    (e.g. BiocManager) are available; older versions of R predate the
+    development of the package and were never tested.
+
 ## Quick start
+
+### Try out `containerit` in a container
+
+You can spin up a Docker container with `containerit` pre-installed if
+you want to try out the package. The default of the [`containerit`
+images on Docker Hub](#images) is to start plain R, but you can also
+start an with [RStudio](https://www.rstudio.com/products/rstudio/)
+session in a
+browser.
+
+``` bash
+docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
+```
+
+No go to <http://localhost:8787> and log in with the user `rstudio` and
+password `o2r`. Continue in section [Use](#use).
 
 ### Install
 
 Installation is only possible from GitHub:
 
-    remotes::install_github("o2r-project/containerit")
+``` r
+# install.packages("remotes")
+remotes::install_github("o2r-project/containerit")
+```
 
 ### Use
 
@@ -40,10 +70,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-08 16:20:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-08 16:20:52] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-08 16:20:54] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-08 16:20:54] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-15 17:46:18] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-15 17:46:18] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-15 17:46:20] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-15 17:46:20] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
@@ -68,8 +98,8 @@ You can disable logging:
 futile.logger::flog.threshold(futile.logger::ERROR)
 ```
 
-Now create a Dockerfile for a specific R version and R Markdown file and
-do not add any packages already available in the base
+Now we create a Dockerfile for a specific R version and R Markdown file
+and do not add any packages already available in the base
 image:
 
 ``` r
@@ -89,12 +119,19 @@ For extended instructions, see the vignettes at in the directory
 `vignettes/`, which are readable online at
 <https://o2r.info/containerit/articles/>.
 
-### Containers
+## Images
 
 Images are available starting from different base images. All images are
 also available with version tags.
 
-#### verse
+The `Dockerfile`s are available in the directory
+`inst/docker/Dockerfile`.
+
+### verse
+
+``` bash
+docker inspect o2rproject/containerit
+```
 
 Base image:
 `rocker/verse:3.5.3`
@@ -103,7 +140,11 @@ Base image:
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
 [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
 
-#### geospatial
+### geospatial
+
+``` bash
+docker inspect o2rproject/containerit:geospatial
+```
 
 Base image:
 `rocker/geospatial:3.5.3`

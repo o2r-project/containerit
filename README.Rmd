@@ -26,13 +26,31 @@ A good summary of what the package does can be found in this [o2r project blog p
 
 ![containerit logo](inst/logo.png)
 
+## Prerequisites
+
+- `containerit` only fully works if you have [Docker](https://en.wikipedia.org/wiki/Docker_(software)) installed and is only tested with [Docker Engine - Community](https://docs.docker.com/install/overview/) (previously called Docker Community Editionm, Docker CE).
+- `R (>= 3.5.0)` is needed so that some dependencies (e.g. BiocManager) are available; older versions of R predate the development of the package and were never tested.
+
 ## Quick start
+
+### Try out `containerit` in a container
+
+You can spin up a Docker container with `containerit` pre-installed if you want to try out the package.
+The default of the [`containerit` images on Docker Hub](#images) is to start plain R, but you can also start an with [RStudio](https://www.rstudio.com/products/rstudio/) session in a browser.
+
+```{bash, eval=FALSE}
+docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
+```
+
+No go to http://localhost:8787 and log in with the user `rstudio` and password `o2r`.
+Continue in section [Use](#use).
 
 ### Install
 
 Installation is only possible from GitHub:
 
-```
+```{r, eval=FALSE}
+# install.packages("remotes")
 remotes::install_github("o2r-project/containerit")
 ```
 
@@ -55,7 +73,7 @@ You can disable logging:
 futile.logger::flog.threshold(futile.logger::ERROR)
 ```
 
-Now create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:
+Now we create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:
 
 ```{bash pull, include=FALSE}
 docker pull rocker/verse:3.5.2
@@ -68,11 +86,12 @@ print(rmd_dockerfile)
 
 For extended instructions, see the vignettes at in the directory `vignettes/`, which are readable online at https://o2r.info/containerit/articles/.
 
-### Containers
+## Images
 
 ```{r image_names, echo=FALSE, results='hide'}
+dockerfiles_path <- "inst/docker/Dockerfile"
 suppressPackageStartupMessages(library("here"))
-dockerfile_latest <- readLines(here("inst/docker/Dockerfile"))
+dockerfile_latest <- readLines(here(dockerfiles_path))
 base_image = sub(".*? (.+)", "\\1", dockerfile_latest[[2]])
 dockerfile_geospatial <- readLines(here("inst/docker/geospatial/Dockerfile"))
 geospatial_base_image = sub(".*? (.+)", "\\1", dockerfile_geospatial[[2]])
@@ -81,13 +100,23 @@ geospatial_base_image = sub(".*? (.+)", "\\1", dockerfile_geospatial[[2]])
 Images are available starting from different base images.
 All images are also available with version tags.
 
-#### verse
+The `Dockerfile`s are available in the directory `` `r dockerfiles_path` ``.
+
+### verse
+
+```{bash, eval=FALSE}
+docker inspect o2rproject/containerit
+```
 
 Base image: `` `r base_image` ``
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
 
-#### geospatial
+### geospatial
+
+```{bash eval=FALSE}
+docker inspect o2rproject/containerit:geospatial
+```
 
 Base image: `` `r geospatial_base_image` ``
 
