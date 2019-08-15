@@ -27,7 +27,7 @@ bibliography: paper.bib
 [Linux containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization) have become a promising tool to increase transparency, portability, and reproducibility of research in several domains and use cases: data science [@boettiger_introduction_2015], software engineering research [@cito_using_2016], multi-step bioinformatics pipelines [@kim_bio-docklets_2017], standardised environments for exchangeable software [@belmann_bioboxes_2015], computational archaeology [@marwick_computational_2017], packaging algorithms [@hosny_algorun_2016], or geographic object-based image analysis [@knoth_reproducibility_2017].
 Running an analysis in a container increases reliability of a workflow, as it can execute packaged code independently of the author's computer and its available configurations and dependencies.
 However, capturing a computational environment in containers can be complex, making container use difficult for domain scientists with limited programming experience.
-`containerit` opens up the advantages of containerisation to a much larger user base by assisting researchers in packaging workflows based on R [@r_2018] in containers with user-friendly R commands.
+`containerit` opens up the advantages of containerisation to a much larger user base by assisting researchers, who are unfamiliar with containerisation, in packaging workflows based on R [@r_2018] in container images by using only user-friendly R commands.
 
 Recently containerisation took off as a technology for packaging applications and their dependencies for fast, scalable, and secure [sandboxed](https://en.wikipedia.org/wiki/Sandbox_%28computer_security%29) deployments in cloud-based infrastructures [cf. @osnat_brief_2018].
 The most widely used containerisation software is [Docker](https://en.wikipedia.org/wiki/Docker_%28software%29) with the following core building blocks (cf. [Docker: Get Started](https://docs.docker.com/get-started/)):
@@ -90,6 +90,7 @@ In the future, `containerit` may support alternative container software such as 
 
 **Related Work**
 
+[`renv`](https://github.com/rstudio/renv/) is an R package for managing reproducible environments for R providing isolation, portability, and pinned versions of R packages, but it does not handle system dependencies.
 [The Experiment Factory](https://expfactory.github.io/) similarly focuses on ease of use for creating `Dockerfile`s for behavioural experiments, yet it uses a CLI-based interaction and generates extra shell scripts to be included in the images.
 [ReproZip](https://www.reprozip.org/) [@ChirigatiRSF16] packages files identified by [tracing](https://en.wikipedia.org/wiki/Tracing_(software)) in a self-contained bundle, which can be unpacked to a Docker container/`Dockerfile`.
 In the R domain, the package `dockerfiler` [@fay_dockerfiler_2018] provides an object-oriented API for manual Dockerfile creation, and `liftr` [@xiao_liftr_2018] creates a `Dockerfile` based on fields added to the metadata header of an R Markdown document.
