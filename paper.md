@@ -37,10 +37,10 @@ An image can be moved between systems as a file (image tarball) or based on an _
 A `Dockerfile` may use the image created by another `Dockerfile` as the starting point, a so-called _base image_.
 While containers can be manually altered, the common practice is to conduct all configurations with the scripts and instructions originating in the `Dockerfile`.
 
-An important advantage of containers over [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) is that their duality between recipee and image provides and additional layer of transparency and safeguarding.
+An important advantage of containers over [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) is that their duality between recipe and image provides and additional layer of transparency and safeguarding.
 The `Dockerfile` and image can be published alongside a scientific paper to support peer review and, to some extent, preserve the original results [@nust_opening_2017].
 Even if an image cannot be executed or a `Dockerfile` can no longer be built, the instructions in the `Dockerfile` are human-readable, and files in the image can be extracted to recreate an environment that closely resembles the original.
-Further useful features are (a) portability, thanks to a single runtime dependency, which allows readers to explore an author's virtual laboratory, including complex dependencies or bespoke code, either on their machines or in cloud-based infrastructures [e.g., by using Binder, see @jupyter_binder_2018], and (b) transparency, because an image's filesystem can be easily inspected.
+Further useful features are (a) portability, thanks to a single runtime dependency, which allows readers to explore an author's virtual laboratory, including complex dependencies or custom-made code, either on their machines or in cloud-based infrastructures [e.g., by using Binder, see @jupyter_binder_2018], and (b) transparency, because an image's filesystem can be easily inspected.
 This way, containers can enable verification of reproducibility and auditing without requiring reviewers to manually download, install, and re-run analyses [@beaulieu-jones_reproducibility_2017].
 
 Container preservation is an active field of research [@rechert_preserving_2017; @emsley_framework_2018].
@@ -80,7 +80,7 @@ The system dependencies required by these packages are identified using the `sys
 
 `dockerfile(..)` is the package's main user function and accepts session information objects, session information saved in a file, a set of R commands, an R script file, a [`DESCRIPTION`](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file) file, or an R Markdown document [@allaire_rmarkdown_2018].
 [Static program analysis](https://en.wikipedia.org/wiki/Static_program_analysis) using the package `automagic` [@brokamp_automagic_2017] is used to increase the chances that the capturing environment has all required packages available, such as when creating Dockerfiles for R Markdown documents as a service [@nust_reproducibility_2018].
-To capture the workflow environment, `containerit` executes the whole workflow in a new R session using the package `callr` [@csardi_callr_2018], because static program analysis can be broken by using helper functions, such as `xfun::pkg_attach()` [@xie_xfun_2018], by unintended side effects, or by seemingly clever or user-friendly yet bespoke ways of loeading packages (cf. first lines in R script file `tgis_a_1579333_sm7524.r` in [https://doi.org/10.6084/m9.figshare.7757069.v1](https://doi.org/10.6084/m9.figshare.7757069.v1)).
+To capture the workflow environment, `containerit` executes the whole workflow in a new R session using the package `callr` [@csardi_callr_2018], because static program analysis can be broken by using helper functions, such as `xfun::pkg_attach()` [@xie_xfun_2018], by unintended side effects, or by seemingly clever or user-friendly yet customised ways of loeading packages (cf. first lines in R script file `tgis_a_1579333_sm7524.r` in [https://doi.org/10.6084/m9.figshare.7757069.v1](https://doi.org/10.6084/m9.figshare.7757069.v1)).
 Further parameters for the function comprise, for example, image metadata, base image, versioned installations, and filtering of R packages already installed in the base image.
 
 The package `containerit`'s main contribution is that it allows for automated capturing of runtime environments as `Dockerfile`s based on literate programming workflows [@gentleman_statistical_2007] to support reproducible research.
@@ -94,7 +94,7 @@ In the future, `containerit` may support alternative container software such as 
 [ReproZip](https://www.reprozip.org/) [@ChirigatiRSF16] packages files identified by [tracing](https://en.wikipedia.org/wiki/Tracing_(software)) in a self-contained bundle, which can be unpacked to a Docker container/`Dockerfile`.
 In the R domain, the package `dockerfiler` [@fay_dockerfiler_2018] provides an object-oriented API for manual Dockerfile creation, and `liftr` [@xiao_liftr_2018] creates a `Dockerfile` based on fields added to the metadata header of an R Markdown document.
 `automagic` [@brokamp_automagic_2017], [Whales](https://github.com/Gueils/whales), [`dockter`](https://github.com/stencila/dockter/), and [`repo2docker`](https://github.com/jupyter/repo2docker) use static program analysis to create environment descriptions from common project configuration files for multiple programming languages.
-Namerly, `automagic` analyses R code and can store dependencies in a bespoke [YAML](https://en.wikipedia.org/wiki/YAML) format.
+Namely, `automagic` analyses R code and can store dependencies in a bespoke [YAML](https://en.wikipedia.org/wiki/YAML) format.
 Whales and `dockter` provide different formats, including `Dockerfile`.
 Finally, `repo2docker` primarily creates containers for interactive notebooks to run as a Binder [@jupyter_binder_2018] but does not actively expose a `Dockerfile`.
 None of them apply the strict code execution approach as `containerit` does.
