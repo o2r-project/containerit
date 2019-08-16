@@ -18,7 +18,9 @@ public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus
 status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 [![Appveyor build
 status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](https://ci.appveyor.com/project/nuest/containerit-rrvpq)
-[![](https://www.r-pkg.org/badges/version/containerit)](#)
+[![](https://www.r-pkg.org/badges/version/containerit)](#) [![Join the
+chat at
+https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
 <!-- https://www.r-pkg.org/pkg/containerit -->
 
 ![containerit logo](inst/logo.png)
@@ -70,10 +72,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-15 17:46:18] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-15 17:46:18] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-15 17:46:20] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-15 17:46:20] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-16 09:35:48] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-16 09:35:48] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-16 09:35:51] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-16 09:35:51] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
@@ -170,11 +172,13 @@ forms](https://user-images.githubusercontent.com/1325054/61534429-e1345980-aa2f-
 ## Contribute
 
 All help is welcome: asking questions, providing documentation, testing,
-or even programming.
+or even development.
 
 Please note that this project is released with a [Contributor Code of
 Conduct](CONDUCT.md). By participating in this project you agree to
 abide by its terms.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## Development
 
