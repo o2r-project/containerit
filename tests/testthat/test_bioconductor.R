@@ -6,9 +6,10 @@ context("Install packages from Bioconductor")
 test_that("installation instruction for Bioconductor package is created", {
   skip_if(Sys.getenv("R_VERSION") == "devel")
 
-  if (!require("BiocGenerics", character.only = TRUE)) BiocManager::install(c("BiocGenerics"))
-
   output <- capture_output({
+    capture_warnings({
+      if (!require("BiocGenerics", character.only = TRUE)) BiocManager::install(c("BiocGenerics"))
+    })
     info <- containerit::clean_session(expr = quote(library("BiocGenerics")))
     the_dockerfile <- dockerfile(info, maintainer = "o2r", image = getImageForVersion("3.3.2"))
   })
