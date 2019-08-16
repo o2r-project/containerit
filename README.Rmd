@@ -39,6 +39,9 @@ A good summary of what the package does can be found in this [o2r project blog p
 You can spin up a Docker container with `containerit` pre-installed if you want to try out the package.
 The default of the [`containerit` images on Docker Hub](#images) is to start plain R, but you can also start an with [RStudio](https://www.rstudio.com/products/rstudio/) session in a browser.
 
+**Note**: The `geospatial` variant is used so that examples from `containerit` vignettes are likely to work.
+For a minimal `Dockerfile` to run `containerit`, see `inst/docker/minimal/Dockerfile`.
+
 ```{bash, eval=FALSE}
 docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
 ```

@@ -44,8 +44,12 @@ You can spin up a Docker container with `containerit` pre-installed if
 you want to try out the package. The default of the [`containerit`
 images on Docker Hub](#images) is to start plain R, but you can also
 start an with [RStudio](https://www.rstudio.com/products/rstudio/)
-session in a
-browser.
+session in a browser.
+
+**Note**: The `geospatial` variant is used so that examples from
+`containerit` vignettes are likely to work. For a minimal `Dockerfile`
+to run `containerit`, see
+`inst/docker/minimal/Dockerfile`.
 
 ``` bash
 docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
@@ -72,10 +76,10 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-16 09:35:48] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-16 09:35:48] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-16 09:35:51] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-16 09:35:51] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-16 12:25:19] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-16 12:25:19] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-16 12:25:27] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-16 12:25:27] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
