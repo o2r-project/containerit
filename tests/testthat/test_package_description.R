@@ -5,7 +5,7 @@ context("Packaging a DESCRIPTION file")
 test_that("version tag can be extracted from DESCRIPTION object", {
   description <- desc::desc(file = "package_description/DESCRIPTION")
   version <- getRVersionTag(description)
-  expect_equal(version, "3.3.0")
+  expect_equal(version, "3.4.0")
 })
 
 test_that("a DESCRIPTION file can be packaged", {
@@ -59,4 +59,29 @@ test_that("the version of the packaged DESCRIPTION package can be installed for 
   # write(the_dockerfile, file = "package_description/Dockerfile.sf.versioned")
   expected_file <- readLines("package_description/Dockerfile.sf.versioned")
   expect_equal(capture.output(print(the_dockerfile)), expected_file)
+})
+
+test_that("the Dockerfile (unversioned) can be built and run", {
+  skip_if_not(stevedore::docker_available())
+
+  output <- capture_output(the_dockerfile <- dockerfile(from = "package_description/DESCRIPTION",
+                                                        maintainer = "o2r"))
+
+  the_dockerfile_dir <- tempdir()
+  write(x = the_dockerfile, file = file.path(the_dockerfile_dir, "Dockerfile"))
+
+  output <- capture_output({
+    client <- stevedore::docker_client()
+    build <- client$image$build(context = the_dockerfile_dir,
+                                dockerfile = "Dockerfile",
+                                tag = "containerit_test_versioned_packages")
+    run <- client$container$run(image = build$id(), rm = TRUE, cmd = c('Rscript',
+                                                                       '-e', 'library(\"here\");',
+                                                                       '-e', 'library(\"yaml\");',
+                                                                       '-e', 'sessionInfo();'))
+  })
+
+  expect_match(toString(run$logs), "R version 3.4.0")
+  expect_match(toString(run$logs), "here_")
+  expect_match(toString(run$logs), "yaml_2.1.17")
 })

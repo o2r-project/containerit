@@ -1,0 +1,18 @@
+Package: containerittest
+Version: 1.2.3
+Title: Simple Features for R
+Authors@R: c(person(given = "o2",
+             family = "r",
+             role = c("aut", "cre"),
+             email = "o2r-team@uni-muenster.de"))
+Description: Test description
+License: file LICENSE
+URL: https://test.com
+Depends: methods, R (>= 3.5.0)
+Imports: graphics
+Encoding: UTF-8
+Collate: 'code.R'
+NeedsCompilation: yes
+Author: o2 r [aut, cre]
+Maintainer: o2 r <o2r-team@uni-muenster.de>
+Remotes: github::some-org/the_package

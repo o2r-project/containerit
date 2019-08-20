@@ -1,6 +1,6 @@
-Package: containerittest
+Package: here
 Version: 1.2.3
-Title: Simple Features for R
+Title: Fake DESCRIPTION file for containerit testing
 Authors@R: c(person(given = "o2",
              family = "r",
              role = c("aut", "cre"),
@@ -8,7 +8,7 @@ Authors@R: c(person(given = "o2",
 Description: Test description
 License: file LICENSE
 URL: https://test.com
-Depends: methods, R (>= 3.3.0)
+Depends: methods, R (>= 3.4.0)
 Imports: graphics, grDevices, grid, Rcpp (>= 0.12.18), units (>= 0.6-0), utils
 Suggests: covr, dplyr (>= 0.8-0), ggplot2, knitr, lwgeom (>= 0.1-5), maps
 Encoding: UTF-8
@@ -17,5 +17,5 @@ Collate: 'code.R'
 NeedsCompilation: yes
 Author: o2 r [aut, cre]
 Maintainer: o2 r <o2r-team@uni-muenster.de>
-Remotes: github::r-hub/sysreqs,gitlab::test/pkg
+Remotes: github::r-hub/sysreqs,gitlab::test/pkg,github::viking/r-yaml@v2.1.17
 biocViews: Sequencing, RNASeq

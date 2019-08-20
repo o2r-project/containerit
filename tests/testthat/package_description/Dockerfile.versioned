@@ -1,11 +1,11 @@
-FROM rocker/r-ver:3.3.0
+FROM rocker/r-ver:3.4.0
 LABEL maintainer="o2r"
 RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
   && apt-get install -y git-core \
 	libudunits2-dev
 RUN ["install2.r", "versions"]
 RUN ["install2.r", "graphics", "grDevices", "grid", "Rcpp", "units", "utils"]
-RUN ["Rscript", "-e", "versions::install.versions('containerittest', '1.2.3')", "-e", "versions::install.versions('remotes', '1.1.1')"]
-RUN ["installGithub.r", "r-hub/sysreqs@master"]
+RUN ["Rscript", "-e", "versions::install.versions('here', '1.2.3')", "-e", "versions::install.versions('remotes', '1.1.1')"]
+RUN ["installGithub.r", "r-hub/sysreqs@master", "viking/r-yaml@v2.1.17"]
 WORKDIR /payload/
 CMD ["R"]

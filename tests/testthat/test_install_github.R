@@ -23,3 +23,24 @@ test_that("GitHub references can be retrieved for package sysreqs (test fails if
   ref <- getGitHubRef("sysreqs", c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
   expect_match(ref, "r-hub/sysreqs@([a-f0-9]{7})")
 })
+
+test_that("the package remotes is installed if not already in the list of packages", {
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "github/DESCRIPTION",
+                                 maintainer = "o2r")
+  )
+  expect_true(any(stringr::str_detect(toString(the_dockerfile),
+                                      "^RUN \\[\"install2.r\", \"containerittest\", \"graphics\", \"remotes\"\\]$")))
+  expect_true(any(stringr::str_detect(toString(the_dockerfile),
+                                      "^RUN \\[\"installGithub.r\", \"some-org/the_package@master\"\\]$")))
+})
+
+test_that("the package remotes is installed in the correct version if not already in the list of packages", {
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "github/DESCRIPTION",
+                                 maintainer = "o2r",
+                                 versioned_packages = TRUE)
+  )
+  expect_true(any(stringr::str_detect(toString(the_dockerfile),
+                                      "versions::install.versions\\('remotes', '1.1.1'\\)")))
+})

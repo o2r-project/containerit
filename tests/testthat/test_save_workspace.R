@@ -3,7 +3,6 @@
 context("Save workspace and R objects (save_image - argument)")
 
 test_that("Session objects with default file name can be containerized", {
-  rm(list = ls(envir = environment()), envir = environment()) # start clean
   expect_false(file.exists(".RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
@@ -37,7 +36,6 @@ test_that("Session objects with default file name can be containerized", {
 })
 
 test_that("Selected session objects with configured file name can be containerized", {
-  rm(list = ls(envir = environment()), envir = environment()) # start clean
   expect_false(file.exists("test_file.RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
 
   test_text <- "test"
@@ -69,6 +67,8 @@ test_that("Selected session objects with configured file name can be containeriz
 })
 
 test_that("Program ignores unsupported input for save_image", {
+  expect_false(file.exists(".RData"), "RData file already exists in testthat folder. Remove manually and restart test.")
+
   output <- capture_output(
     expect_s4_class(dockerfile(from = sessionInfo(), save_image = data.frame()), "Dockerfile")
   )
