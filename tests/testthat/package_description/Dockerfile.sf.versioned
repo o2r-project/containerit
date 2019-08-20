@@ -8,6 +8,6 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 	libudunits2-dev
 RUN ["install2.r", "versions"]
 RUN ["install2.r", "classInt", "DBI", "graphics", "grDevices", "grid", "magrittr", "Rcpp", "stats", "tools", "units", "utils"]
-RUN ["Rscript", "-e", "versions::install.versions('sf', '0.7.6')"]
+RUN ["Rscript", "-e", "versions::install.versions('sf', '0.7.7')"]
 WORKDIR /payload/
 CMD ["R"]
