@@ -4,7 +4,8 @@
   "identifier": "containerit",
   "description": "Package R sessions, scripts, workspace directories, and R\n    Markdown documents together with all dependencies to execute them in\n    Docker containers.  This package is supported by the project Opening\n    Reproducible Research (<https://o2r.info>).",
   "name": "containerit: Package R in Docker Containers",
-  "codeRepository": "https://o2r.info/containerit/",
+  "codeRepository": "https://github.com/o2r-project/containerit/",
+  "relatedLink": "https://o2r.info/containerit/",
   "issueTracker": "https://github.com/o2r-project/containerit/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
   "version": "0.5.0",
@@ -572,6 +573,7 @@
       "sameAs": "https://CRAN.R-project.org/package=versions"
     }
   ],
+  "keywords": ["docker", "reproducible-research", "reproducible-science", "r", "dockerfile"],
   "citation": [
     {
       "@type": "SoftwareSourceCode",
@@ -592,8 +594,7 @@
         }
       ],
       "name": "containerit: Package R in Docker Containers",
-      "url": "https://o2r.info/containerit/",
-      "description": "R package version 0.5.0"
+      "description": "https://o2r.info/containerit/,\nhttps://github.com/o2r-project/containerit/"
     }
   ]
 }
