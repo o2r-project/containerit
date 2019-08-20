@@ -14,6 +14,7 @@
     Markdown documents together with all dependencies to execute them in
     Docker containers.  This package is supported by the project Opening
     Reproducible Research (&lt;https://o2r.info&gt;).">
+<meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -73,7 +74,14 @@
   <a href="news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/o2r-project/containerit">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -91,74 +99,100 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <div id="containerit" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#containerit" class="anchor"></a>containerit</h1></div>
-<p><code>containerit</code> packages R script/session/workspace and all dependencies as a <a href="http://docker.com/">Docker</a> container by automagically generating a suitable <code>Dockerfile</code>. The packages’s website at <a href="https://o2r.info/containerit/">https://o2r.info/containerit/</a>. A good summary of what the package does can be found in this <a href="http://o2r.info/2017/05/30/containerit-package/">o2r project blog post</a>.</p>
-<p><a href="http://www.repostatus.org/#wip"><img src="http://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a> <a href="https://travis-ci.org/o2r-project/containerit"><img src="https://travis-ci.org/o2r-project/containerit.svg?branch=master" alt="Travis CI build status"></a> <a href="https://ci.appveyor.com/project/nuest/containerit-rrvpq"><img src="https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true" alt="Appveyor build status"></a> <a href="#"><img src="https://www.r-pkg.org/badges/version/containerit"></a> <!-- https://www.r-pkg.org/pkg/containerit --></p>
-<div class="figure">
-<img src="inst/logo.png" alt="containerit logo"><p class="caption">containerit logo</p>
+<a href="#containerit" class="anchor"></a>containerit <img src="reference/figures/logo.png" align="right" alt="containerit logo" width="200" style="padding: 0 0 10px 10px;">
+</h1></div>
+<!-- badges: start -->
+
+<p><code>containerit</code> packages R script/session/workspace and all dependencies as a <a href="https://docker.com/">Docker</a> container by automagically generating a suitable <code>Dockerfile</code>. The package’s website is <a href="https://o2r.info/containerit/">https://o2r.info/containerit/</a>.</p>
+<div id="prerequisites" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
+<ul>
+<li>
+<code>containerit</code> only fully works if you have <a href="https://en.wikipedia.org/wiki/Docker_(software)">Docker</a> installed and is only tested with <a href="https://docs.docker.com/install/overview/">Docker Engine - Community</a> (previously called Docker Community Edition or Docker CE).</li>
+<li>
+<code>R (&gt;= 3.5.0)</code> is needed so that some dependencies (e.g. BiocManager) are available; older versions of R predate the development of the package and were never tested.</li>
+</ul>
 </div>
 <div id="quick-start" class="section level2">
 <h2 class="hasAnchor">
 <a href="#quick-start" class="anchor"></a>Quick start</h2>
+<div id="try-out-containerit-in-a-container" class="section level3">
+<h3 class="hasAnchor">
+<a href="#try-out-containerit-in-a-container" class="anchor"></a>Try out <code>containerit</code> in a container</h3>
+<p>You can spin up a Docker container with <code>containerit</code> pre-installed if you want to try out the package. The default of the <a href="#images"><code>containerit</code> images on Docker Hub</a> is to start plain R, but you can also start an with <a href="https://www.rstudio.com/products/rstudio/">RStudio</a> session in a browser.</p>
+<p><strong>Note</strong>: The <code>geospatial</code> variant is used so that examples from <code>containerit</code> vignettes are likely to work. For a minimal <code>Dockerfile</code> to run <code>containerit</code>, see <code>inst/docker/minimal/Dockerfile</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ex">docker</span> run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init</a></code></pre></div>
+<p>Now go to <a href="http://localhost:8787" class="uri">http://localhost:8787</a> and log in with the user <code>rstudio</code> and password <code>o2r</code>. Continue in section <a href="#use">Use</a>.</p>
+</div>
 <div id="install" class="section level3">
 <h3 class="hasAnchor">
 <a href="#install" class="anchor"></a>Install</h3>
 <p>Installation is only possible from GitHub:</p>
-<pre><code><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">remotes::install_github("o2r-project/containerit")</a></code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># install.packages("remotes")</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"o2r-project/containerit"</span>)</a></code></pre></div>
 </div>
 <div id="use" class="section level3">
 <h3 class="hasAnchor">
 <a href="#use" class="anchor"></a>Use</h3>
 <p><code>containerit</code> can create <code>Dockerfile</code> objects in R and render them as <code>Dockerfile</code> instructions based on session information objects or runnable R files (<code>.R</code>, <code>.Rmd</code>).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"containerit"</span>))</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">my_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; INFO [2019-07-23 13:32:49] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; INFO [2019-07-23 13:32:49] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co">#&gt; INFO [2019-07-23 13:32:51] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">#&gt; INFO [2019-07-23 13:32:51] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(my_dockerfile)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt; FROM rocker/r-ver:3.6.1</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; LABEL maintainer="daniel"</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt;   &amp;&amp; apt-get install -y git-core \</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;  libcurl4-openssl-dev \</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt;  libssl-dev \</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt;  libxml2-dev \</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt;  make \</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt;  pandoc \</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt;  pandoc-citeproc</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co">#&gt; RUN ["install2.r", "assertthat", "backports", "commonmark", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "MASS", "memoise", "mime", "miniUI", "pillar", "pkgconfig", "pkgdown", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xml2", "xtable", "yaml"]</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co">#&gt; WORKDIR /payload/</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="co">#&gt; CMD ["R"]</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"containerit"</span>))</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">my_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; INFO [2019-08-20 10:17:58] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; INFO [2019-08-20 10:17:58] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; INFO [2019-08-20 10:18:13] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; INFO [2019-08-20 10:18:13] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(my_dockerfile)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt; FROM rocker/r-ver:3.6.1</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; LABEL maintainer="daniel"</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt;   &amp;&amp; apt-get install -y git-core \</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt;  libcurl4-openssl-dev \</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt;  libssl-dev \</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt;  libxml2-dev \</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co">#&gt;  make \</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt;  pandoc \</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt;  pandoc-citeproc</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt; RUN ["install2.r", "assertthat", "backports", "commonmark", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "MASS", "memoise", "mime", "miniUI", "pillar", "pkgconfig", "pkgdown", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "roxygen2", "rprojroot", "rstudioapi", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xml2", "xtable", "yaml"]</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; WORKDIR /payload/</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; CMD ["R"]</span></a></code></pre></div>
 <p>You can disable logging:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">futile.logger<span class="op">::</span><span class="kw">flog.threshold</span>(futile.logger<span class="op">::</span>ERROR)</a></code></pre></div>
-<p>Now create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">rmd_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"inst/demo.Rmd"</span>, <span class="dt">image =</span> <span class="st">"rocker/verse:3.5.2"</span>, <span class="dt">maintainer =</span> <span class="st">"o2r"</span>, <span class="dt">filter_baseimage_pkgs =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(rmd_dockerfile)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt; FROM rocker/verse:3.5.2</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; LABEL maintainer="o2r"</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "shinyFiles", "stevedore", "versions"]</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; WORKDIR /payload/</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt; CMD ["R"]</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">futile.logger<span class="op">::</span><span class="kw">flog.threshold</span>(futile.logger<span class="op">::</span>ERROR)</a></code></pre></div>
+<p>Now we create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">rmd_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> <span class="st">"inst/demo.Rmd"</span>,</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">                                          <span class="dt">image =</span> <span class="st">"rocker/verse:3.5.2"</span>,</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">                                          <span class="dt">maintainer =</span> <span class="st">"o2r"</span>,</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">                                          <span class="dt">filter_baseimage_pkgs =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; Detected API version '1.40' is above max version '1.39'; downgrading</span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; Detected API version '1.40' is above max version '1.39'; downgrading</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(rmd_dockerfile)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; FROM rocker/verse:3.5.2</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; LABEL maintainer="o2r"</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "shinyFiles", "stevedore", "versions"]</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; WORKDIR /payload/</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; CMD ["R"]</span></a></code></pre></div>
 <p>For extended instructions, see the vignettes at in the directory <code>vignettes/</code>, which are readable online at <a href="https://o2r.info/containerit/articles/" class="uri">https://o2r.info/containerit/articles/</a>.</p>
 </div>
-<div id="containers" class="section level3">
-<h3 class="hasAnchor">
-<a href="#containers" class="anchor"></a>Containers</h3>
+</div>
+<div id="images" class="section level2">
+<h2 class="hasAnchor">
+<a href="#images" class="anchor"></a>Images</h2>
 <p>Images are available starting from different base images. All images are also available with version tags.</p>
-<div id="verse" class="section level4">
-<h4 class="hasAnchor">
-<a href="#verse" class="anchor"></a>verse</h4>
+<p>The <code>Dockerfile</code>s are available in the directory <code>inst/docker/Dockerfile</code>.</p>
+<div id="verse" class="section level3">
+<h3 class="hasAnchor">
+<a href="#verse" class="anchor"></a>verse</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ex">docker</span> inspect o2rproject/containerit</a></code></pre></div>
 <p>Base image: <code>rocker/verse:3.5.3</code></p>
 <p><a href="https://microbadger.com/images/o2rproject/containerit" title="Get your own version badge on microbadger.com"><img src="https://images.microbadger.com/badges/version/o2rproject/containerit.svg"></a> <a href="https://microbadger.com/images/o2rproject/containerit" title="Get your own image badge on microbadger.com"><img src="https://images.microbadger.com/badges/image/o2rproject/containerit.svg"></a> <a href="https://microbadger.com/images/o2rproject/containerit" title="Get your own commit badge on microbadger.com"><img src="https://images.microbadger.com/badges/commit/o2rproject/containerit.svg"></a></p>
 </div>
-<div id="geospatial" class="section level4">
-<h4 class="hasAnchor">
-<a href="#geospatial" class="anchor"></a>geospatial</h4>
+<div id="geospatial" class="section level3">
+<h3 class="hasAnchor">
+<a href="#geospatial" class="anchor"></a>geospatial</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ex">docker</span> inspect o2rproject/containerit:geospatial</a></code></pre></div>
 <p>Base image: <code>rocker/geospatial:3.5.3</code></p>
 <p><a href="https://microbadger.com/images/o2rproject/containerit:geospatial" title="Get your own version badge on microbadger.com"><img src="https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg"></a> <a href="https://microbadger.com/images/o2rproject/containerit:geospatial" title="Get your own image badge on microbadger.com"><img src="https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg"></a> <a href="https://microbadger.com/images/o2rproject/containerit:geospatial" title="Get your own commit badge on microbadger.com"><img src="https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg"></a></p>
-</div>
 </div>
 </div>
 <div id="rstudio-add-in" class="section level2">
@@ -172,24 +206,25 @@
 <div id="contribute" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contribute" class="anchor"></a>Contribute</h2>
-<p>All help is welcome: asking questions, providing documentation, testing, or even programming.</p>
+<p>All help is welcome: asking questions, providing documentation, testing, or even development.</p>
 <p>Please note that this project is released with a <a href="CONDUCT.html">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
+<p>See <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> for details.</p>
 </div>
 <div id="development" class="section level2">
 <h2 class="hasAnchor">
 <a href="#development" class="anchor"></a>Development</h2>
 <p><a href="https://builder.r-hub.io/">r-hub builder</a> is great for running checks, e.g. before submitting to CRAN and on other operating systems.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rhub"</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">rhub<span class="op">::</span><span class="kw"><a href="https://r-hub.github.io/rhub/reference/check_for_cran.html">check_for_cran</a></span>()</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">rhub<span class="op">::</span><span class="kw"><a href="https://r-hub.github.io/rhub/reference/check_shortcuts.html">check_on_windows</a></span>()</a></code></pre></div>
-<p>You can build the <a href="http://pkgdown.r-lib.org/"><code>pkgdown</code></a> site with</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rhub"</span>)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">rhub<span class="op">::</span><span class="kw"><a href="https://r-hub.github.io/rhub/reference/check_for_cran.html">check_for_cran</a></span>()</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">rhub<span class="op">::</span><span class="kw"><a href="https://r-hub.github.io/rhub/reference/check_shortcuts.html">check_on_windows</a></span>()</a></code></pre></div>
+<p>You can build the <a href="https://pkgdown.r-lib.org/"><code>pkgdown</code></a> site with</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">pkgdown<span class="op">::</span><span class="kw"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>()</a></code></pre></div>
 <p>You can build the Docker images locally with the current development version using the following commands.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ex">docker</span> build --tag containerit:dev --file inst/docker/Dockerfile.local .</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ex">docker</span> build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ex">docker</span> build --tag containerit:dev --file inst/docker/Dockerfile.local .</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ex">docker</span> build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .</a></code></pre></div>
 <p>You can use <a href="https://github.com/lorenzwalthert/pre-commit-hooks"><code>pre-commit</code> hooks</a> to avoid some mistakes.</p>
 <p>A <a href="https://codemeta.github.io/">codemeta</a> file, <code>codemeta.json</code>, with metadata about the package and its dependencies is generated automatically when this document is compiled.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">codemetar<span class="op">::</span><span class="kw"><a href="https://ropensci.github.io/codemetar/reference/write_codemeta.html">write_codemeta</a></span>(<span class="st">"containerit"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">codemetar<span class="op">::</span><span class="kw"><a href="https://ropensci.github.io/codemetar/reference/write_codemeta.html">write_codemeta</a></span>(<span class="st">"containerit"</span>)</a></code></pre></div>
 </div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
@@ -204,6 +239,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/o2r-project/containerit">https://​github.com/​o2r-project/​containerit</a>
+</li>
 <li>Report a bug at <br><a href="https://github.com/o2r-project/containerit/issues">https://​github.com/​o2r-project/​containerit/​issues</a>
 </li>
 </ul>
@@ -225,7 +262,18 @@
 </ul>
 </div>
 
-      </div>
+      <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d"><img src="https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg" alt="status"></a></li>
+<li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
+<li><a href="https://travis-ci.org/o2r-project/containerit"><img src="https://travis-ci.org/o2r-project/containerit.svg?branch=master" alt="Travis CI build status"></a></li>
+<li><a href="https://ci.appveyor.com/project/nuest/containerit-rrvpq"><img src="https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true" alt="Appveyor build status"></a></li>
+<li><a href="https://github.com/o2r-project/containerit/issues/68"><img src="https://www.r-pkg.org/badges/version/containerit"></a></li>
+<li><a href="https://gitter.im/o2r-project/containerit"><img src="https://badges.gitter.im/o2r-project/containerit.svg" alt="Join the chat at https://gitter.im/o2r-project/containerit"></a></li>
+</ul>
+</div>
+</div>
 
 </div>
 

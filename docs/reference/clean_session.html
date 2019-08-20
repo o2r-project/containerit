@@ -34,6 +34,8 @@
 
 <meta property="og:description" content="The function may also execute provided expressions or files.
 The implementation is based on r_vanilla." />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,7 +108,12 @@ The implementation is based on r_vanilla." />
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/o2r-project/containerit">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -120,7 +127,7 @@ The implementation is based on r_vanilla." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Obtains a <code>sessionInfo</code> from a local R session</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/o2r-project/containerit/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
     <div class="hidden name"><code>clean_session.Rd</code></div>
     </div>
 
@@ -166,19 +173,19 @@ The implementation is based on <code><a href='https://www.rdocumentation.org/pac
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>clean_session</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/substitute'>quote</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='st'>'lattice'</span>))))</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:27] Creating an R session with the following expressions:
+    <pre class="examples"><div class='input'><span class='fu'>clean_session</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/substitute'>quote</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='st'>'lattice'</span>))))</div><div class='output co'>#&gt; INFO [2019-08-20 10:19:02] Creating an R session with the following expressions:
 #&gt; library("lattice")</div><div class='output co'>#&gt; R version 3.6.1 (2019-07-05)
 #&gt; Platform: x86_64-pc-linux-gnu (64-bit)
-#&gt; Running under: Ubuntu 18.04.2 LTS
+#&gt; Running under: Ubuntu 19.04
 #&gt; 
 #&gt; Matrix products: default
-#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
-#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.8.0
+#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.8.0
 #&gt; 
 #&gt; locale:
-#&gt;  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
-#&gt;  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_GB.UTF-8    
-#&gt;  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+#&gt;  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    
+#&gt;  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   
 #&gt;  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
 #&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
 #&gt; [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       

@@ -10,7 +10,7 @@ Check out the [existing issues](https://github.com/o2r-project/containerit/issue
 ## How to contribute
 
 The following steps assume you are familiar with R packages.
-If not, take a look at [R extension packages](http://r-pkgs.had.co.nz/) by Hadley Wickham and the [R extension manual](http://cran.r-project.org/doc/manuals/R-exts.html).
+If not, take a look at [R extension packages](https://r-pkgs.had.co.nz/) by Hadley Wickham and the [R extension manual](https://cran.r-project.org/doc/manuals/R-exts.html).
 
 [Fork](https://help.github.com/en/articles/fork-a-repo), then clone the repo:
 

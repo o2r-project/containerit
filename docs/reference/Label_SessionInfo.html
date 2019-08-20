@@ -33,6 +33,8 @@
 <meta property="og:title" content="Creates a label holding R session information — Label_SessionInfo" />
 
 <meta property="og:description" content="See https://docs.docker.com/engine/reference/builder/#label" />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,7 +107,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/o2r-project/containerit">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -119,7 +126,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Creates a label holding R session information</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/o2r-project/containerit/blob/master/R/Class-Label.R'><code>R/Class-Label.R</code></a></small>
     <div class="hidden name"><code>Label_SessionInfo.Rd</code></div>
     </div>
 
@@ -157,8 +164,8 @@ or alternatively a class 'session_info' as returned by devtools::session_info()<
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>the_session</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='clean_session.html'>clean_session</a></span>()</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:20] Creating an R session with the following expressions:
-#&gt; </div><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='no'>the_session</span>)</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:21] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'>Label_SessionInfo</span>(<span class='no'>the_session</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>the_session</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='clean_session.html'>clean_session</a></span>()</div><div class='output co'>#&gt; INFO [2019-08-20 10:18:54] Creating an R session with the following expressions:
+#&gt; </div><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='no'>the_session</span>)</div><div class='output co'>#&gt; INFO [2019-08-20 10:18:56] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'>Label_SessionInfo</span>(<span class='no'>the_session</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

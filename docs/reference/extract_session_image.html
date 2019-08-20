@@ -34,6 +34,8 @@
 
 <meta property="og:description" content="The function uses the given Docker image and executes the given expressions.
 To access the session information, a directory is mounted from the host into the container, to which the R session in the container saves an RData file with the sessionInfo object." />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,7 +108,12 @@ To access the session information, a directory is mounted from the host into the
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/o2r-project/containerit">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -120,7 +127,7 @@ To access the session information, a directory is mounted from the host into the
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Optains a session info from R executed in a container</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/o2r-project/containerit/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
     <div class="hidden name"><code>extract_session_image.Rd</code></div>
     </div>
 
@@ -174,8 +181,7 @@ To access the session information, a directory is mounted from the host into the
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>extract_session_image</span>(<span class='st'>"rocker/geospatial:3.3.3"</span>)</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:33] Running R in container to obtain a session info using image rocker/geospatial:3.3.3 and command R --vanilla -e info &lt;- sessionInfo() -e save(list = "info", file = "/tmp/capture.RData")
-#&gt; O&gt; 
+    <pre class="examples"><div class='input'><span class='fu'>extract_session_image</span>(<span class='st'>"rocker/geospatial:3.3.3"</span>)</div><div class='output co'>#&gt; INFO [2019-08-20 10:19:34] Running R in container to obtain a session info using image rocker/geospatial:3.3.3 and command R --vanilla -e info &lt;- sessionInfo() -e save(list = "info", file = "/tmp/capture.RData")</div><div class='output co'>#&gt; <span class='message'>Detected API version '1.40' is above max version '1.39'; downgrading</span></div><div class='output co'>#&gt; O&gt; 
 #&gt; O&gt; R version 3.3.3 (2017-03-06) -- "Another Canoe"
 #&gt; O&gt; Copyright (C) 2017 The R Foundation for Statistical Computing
 #&gt; O&gt; Platform: x86_64-pc-linux-gnu (64-bit)
@@ -196,7 +202,7 @@ To access the session information, a directory is mounted from the host into the
 #&gt; O&gt; &gt; save(list = "info", file = "/tmp/capture.RData")
 #&gt; O&gt; &gt; 
 #&gt; O&gt; &gt; 
-#&gt; INFO [2019-07-23 13:33:35] Wrote sessioninfo from Docker to /tmp/RtmpXbjDVN/extract_bind_5b9649232c28/capture.RData</div><div class='output co'>#&gt; R version 3.3.3 (2017-03-06)
+#&gt; INFO [2019-08-20 10:19:37] Wrote sessioninfo from Docker to /tmp/RtmpIKJpu1/extract_bind_553f7ccdad14/capture.RData</div><div class='output co'>#&gt; R version 3.3.3 (2017-03-06)
 #&gt; Platform: x86_64-pc-linux-gnu (64-bit)
 #&gt; Running under: Debian GNU/Linux 8 (jessie)
 #&gt; 
