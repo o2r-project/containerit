@@ -65,7 +65,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -256,11 +256,11 @@ This executes the whole file to obtain a complete <code>sessionInfo</code> objec
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-08-20 10:19:05] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#&gt; INFO [2019-08-20 10:19:05] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httpuv,httr,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,promises,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,shiny,shinyFiles,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,xtable,yaml' from sysreqs online DB
-#&gt; INFO [2019-08-20 10:19:34] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httpuv, httr, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, promises, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, shiny, shinyFiles, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, xtable, yaml
-#&gt; INFO [2019-08-20 10:19:34] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
-#&gt; INFO [2019-08-20 10:19:34] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
+    <pre class="examples"><div class='input'><span class='no'>dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'>dockerfile</span>()</div><div class='output co'>#&gt; INFO [2019-08-20 16:43:57] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#&gt; INFO [2019-08-20 16:43:57] Trying to determine system requirements for the package(s) 'assertthat,automagic,backports,BiocManager,callr,cli,codetools,commonmark,crayon,curl,debugme,desc,devtools,digest,evaluate,fansi,formatR,fs,futile.logger,futile.options,glue,highlight,htmltools,httpuv,httr,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgbuild,pkgconfig,pkgdown,pkgload,prettyunits,processx,promises,ps,purrr,R6,Rcpp,rematch2,remotes,rjson,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,sessioninfo,shiny,shinyFiles,stevedore,stringi,stringr,sysreqs,testthat,tibble,usethis,versions,whisker,withr,xfun,xml2,xtable,yaml' from sysreqs online DB
+#&gt; INFO [2019-08-20 16:44:01] Adding CRAN packages: assertthat, automagic, backports, BiocManager, callr, cli, codetools, commonmark, crayon, curl, debugme, desc, devtools, digest, evaluate, fansi, formatR, fs, futile.logger, futile.options, glue, highlight, htmltools, httpuv, httr, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgbuild, pkgconfig, pkgdown, pkgload, prettyunits, processx, promises, ps, purrr, R6, Rcpp, rematch2, remotes, rjson, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, sessioninfo, shiny, shinyFiles, stevedore, stringi, stringr, testthat, tibble, usethis, versions, whisker, withr, xfun, xml2, xtable, yaml
+#&gt; INFO [2019-08-20 16:44:01] Adding GitHub packages: r-hub/sysreqs@3860f2b512a9c3bd3db6791c2ff467a1158f4048
+#&gt; INFO [2019-08-20 16:44:01] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dockerfile</span>)</div><div class='output co'>#&gt; FROM rocker/r-ver:3.6.1
 #&gt; LABEL maintainer="daniel"
 #&gt; RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 #&gt;   &amp;&amp; apt-get install -y git-core \
