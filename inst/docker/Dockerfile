@@ -34,7 +34,7 @@ ARG META_VERSION
 
 LABEL maintainer="o2r-project <https://o2r.info>" \
   org.label-schema.vendor="o2r project" \
-  org.label-schema.url="http://o2r.info" \
+  org.label-schema.url="https://o2r.info" \
   org.label-schema.name="containerit" \
   org.label-schema.description="Package R in Docker Containers" \
   org.label-schema.version=$VERSION \

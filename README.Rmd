@@ -11,25 +11,23 @@ knitr::opts_chunk$set(
 )
 ```
 
-# containerit
+# containerit <img src="man/figures/logo.png" align="right" alt="containerit logo" width="200" style="padding: 0 0 10px 10px;" />
 
-`containerit` packages R script/session/workspace and all dependencies as a [Docker](http://docker.com/) container by automagically generating a suitable `Dockerfile`.
-The packages's website at [https://o2r.info/containerit/](https://o2r.info/containerit/).
-A good summary of what the package does can be found in this [o2r project blog post](http://o2r.info/2017/05/30/containerit-package/).
-
-[![status](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
-[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+<!-- badges: start -->
+[![status](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Travis CI build status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](https://ci.appveyor.com/project/nuest/containerit-rrvpq)
-[![](https://www.r-pkg.org/badges/version/containerit)](#)
+[![](https://www.r-pkg.org/badges/version/containerit)](https://github.com/o2r-project/containerit/issues/68)
 [![Join the chat at https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
-<!-- https://www.r-pkg.org/pkg/containerit -->
+<!-- badges: end -->
 
-![containerit logo](inst/logo.png)
+`containerit` packages R script/session/workspace and all dependencies as a [Docker](https://docker.com/) container by automagically generating a suitable `Dockerfile`.
+The package's website is [https://o2r.info/containerit/](https://o2r.info/containerit/).
 
 ## Prerequisites
 
-- `containerit` only fully works if you have [Docker](https://en.wikipedia.org/wiki/Docker_(software)) installed and is only tested with [Docker Engine - Community](https://docs.docker.com/install/overview/) (previously called Docker Community Editionm, Docker CE).
+- `containerit` only fully works if you have [Docker](https://en.wikipedia.org/wiki/Docker_(software)) installed and is only tested with [Docker Engine - Community](https://docs.docker.com/install/overview/) (previously called Docker Community Edition or Docker CE).
 - `R (>= 3.5.0)` is needed so that some dependencies (e.g. BiocManager) are available; older versions of R predate the development of the package and were never tested.
 
 ## Quick start
@@ -46,7 +44,7 @@ For a minimal `Dockerfile` to run `containerit`, see `inst/docker/minimal/Docker
 docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
 ```
 
-No go to http://localhost:8787 and log in with the user `rstudio` and password `o2r`.
+Now go to http://localhost:8787 and log in with the user `rstudio` and password `o2r`.
 Continue in section [Use](#use).
 
 ### Install
@@ -84,7 +82,10 @@ docker pull rocker/verse:3.5.2
 ```
 
 ```{r use_file}
-rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
+rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
+                                          image = "rocker/verse:3.5.2",
+                                          maintainer = "o2r",
+                                          filter_baseimage_pkgs = TRUE)
 print(rmd_dockerfile)
 ```
 
@@ -152,7 +153,7 @@ rhub::check_for_cran()
 rhub::check_on_windows()
 ```
 
-You can build the [`pkgdown`](http://pkgdown.r-lib.org/) site with
+You can build the [`pkgdown`](https://pkgdown.r-lib.org/) site with
 
 ```{r pkgdown, eval=FALSE}
 pkgdown::build_site()

@@ -1,29 +1,27 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# containerit
+# containerit <img src="man/figures/logo.png" align="right" alt="containerit logo" width="200" style="padding: 0 0 10px 10px;" />
 
-`containerit` packages R script/session/workspace and all dependencies
-as a [Docker](http://docker.com/) container by automagically generating
-a suitable `Dockerfile`. The packages’s website at
-<https://o2r.info/containerit/>. A good summary of what the package does
-can be found in this [o2r project blog
-post](http://o2r.info/2017/05/30/containerit-package/).
+<!-- badges: start -->
 
-[![status](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](http://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
+[![status](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
-public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Travis CI build
 status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 [![Appveyor build
 status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](https://ci.appveyor.com/project/nuest/containerit-rrvpq)
-[![](https://www.r-pkg.org/badges/version/containerit)](#) [![Join the
-chat at
+[![](https://www.r-pkg.org/badges/version/containerit)](https://github.com/o2r-project/containerit/issues/68)
+[![Join the chat at
 https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
-<!-- https://www.r-pkg.org/pkg/containerit -->
+<!-- badges: end -->
 
-![containerit logo](inst/logo.png)
+`containerit` packages R script/session/workspace and all dependencies
+as a [Docker](https://docker.com/) container by automagically generating
+a suitable `Dockerfile`. The package’s website is
+<https://o2r.info/containerit/>.
 
 ## Prerequisites
 
@@ -31,7 +29,7 @@ https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/
     [Docker](https://en.wikipedia.org/wiki/Docker_\(software\))
     installed and is only tested with [Docker Engine -
     Community](https://docs.docker.com/install/overview/) (previously
-    called Docker Community Editionm, Docker CE).
+    called Docker Community Edition or Docker CE).
   - `R (>= 3.5.0)` is needed so that some dependencies
     (e.g. BiocManager) are available; older versions of R predate the
     development of the package and were never tested.
@@ -55,7 +53,7 @@ to run `containerit`, see
 docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
 ```
 
-No go to <http://localhost:8787> and log in with the user `rstudio` and
+Now go to <http://localhost:8787> and log in with the user `rstudio` and
 password `o2r`. Continue in section [Use](#use).
 
 ### Install
@@ -76,23 +74,16 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-16 12:25:19] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-16 12:25:19] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-16 12:25:27] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-16 12:25:27] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-20 10:10:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-20 10:10:52] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-20 10:11:25] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-20 10:11:25] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
 #> FROM rocker/r-ver:3.6.1
 #> LABEL maintainer="daniel"
-#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
-#>   && apt-get install -y git-core \
-#>  libcurl4-openssl-dev \
-#>  libssl-dev \
-#>  make \
-#>  pandoc \
-#>  pandoc-citeproc
 #> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xtable", "yaml"]
 #> WORKDIR /payload/
 #> CMD ["R"]
@@ -105,11 +96,13 @@ futile.logger::flog.threshold(futile.logger::ERROR)
 ```
 
 Now we create a Dockerfile for a specific R version and R Markdown file
-and do not add any packages already available in the base
-image:
+and do not add any packages already available in the base image:
 
 ``` r
-rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd", image = "rocker/verse:3.5.2", maintainer = "o2r", filter_baseimage_pkgs = TRUE)
+rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
+                                          image = "rocker/verse:3.5.2",
+                                          maintainer = "o2r",
+                                          filter_baseimage_pkgs = TRUE)
 #> Detected API version '1.40' is above max version '1.39'; downgrading
 #> Detected API version '1.40' is above max version '1.39'; downgrading
 print(rmd_dockerfile)
@@ -195,7 +188,7 @@ rhub::check_for_cran()
 rhub::check_on_windows()
 ```
 
-You can build the [`pkgdown`](http://pkgdown.r-lib.org/) site with
+You can build the [`pkgdown`](https://pkgdown.r-lib.org/) site with
 
 ``` r
 pkgdown::build_site()

@@ -42,7 +42,8 @@ Description: Package R sessions, scripts, workspace directories, and R
     Docker containers.  This package is supported by the project Opening
     Reproducible Research (<https://o2r.info>).
 License: GPL-3 + file LICENSE
-URL: https://o2r.info/containerit/
+URL: https://o2r.info/containerit/,
+    https://github.com/o2r-project/containerit/
 BugReports: https://github.com/o2r-project/containerit/issues
 Depends:
     R (>= 3.5.0)

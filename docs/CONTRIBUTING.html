@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Authors • containerit</title>
+<title>Contributing • containerit</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Authors" />
+<meta property="og:title" content="Contributing" />
 
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
@@ -50,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-authors">
+    <div class="container template-title-body">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -123,43 +123,48 @@
 <div class="row">
   <div class="contents col-md-9">
     <div class="page-header">
-      <h1>Authors</h1>
+      <h1>Contributing</h1>
     </div>
 
-    <ul class="list-unstyled">
-      <li>
-        <p><strong>Daniel Nuest</strong>. Author, maintainer. <a href='https://orcid.org/0000-0003-2392-6140' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Matthias Hinz</strong>. Author. <a href='https://orcid.org/0000-0001-6837-9406' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Patrick Schratz</strong>. Contributor. <a href='https://orcid.org/0000-0003-0748-6624' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Mark Edmondson</strong>. Contributor. 
-        </p>
-      </li>
-      <li>
-        <p><strong>Ben Marwick</strong>. Contributor. <a href='https://orcid.org/0000-0001-7879-4531' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Claire Miller</strong>. Contributor. <a href='https://orcid.org/0000-0003-0758-9447' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Elise Gould</strong>. Contributor. <a href='https://orcid.org/0000-0002-6585-538X' target='orcid.widget'><img src='https://members.orcid.org/sites/default/files/vector_iD_icon.svg' class='orcid' alt='ORCID' height='16'></a>
-        </p>
-      </li>
-      <li>
-        <p><strong>Marc Greenaway</strong>. Contributor. 
-        </p>
-      </li>
-    </ul>
+<div id="contributing" class="section level1">
+
+<p>We welcome <a href="https://opensource.guide/how-to-contribute/">contributions of all kinds</a>, be it code, tests, or documentation. When contributing to this repository, please first discuss the change you wish to make via issue or in the chat room before making a change: <a href="https://gitter.im/o2r-project/containerit"><img src="https://badges.gitter.im/o2r-project/containerit.svg" alt="Join the chat at https://gitter.im/o2r-project/containerit"></a></p>
+<p>Check out the <a href="https://github.com/o2r-project/containerit/issues">existing issues</a> and the <a href="https://github.com/o2r-project/containerit/projects/1">project board</a>, where the development ist planned, for related or similar ideas and features.</p>
+<p><strong>Please note we have a <a href="CONDUCT.html">code of conduct</a>, please follow it in all your interactions with the project.</strong></p>
+<div id="how-to-contribute" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-contribute" class="anchor"></a>How to contribute</h2>
+<p>The following steps assume you are familiar with R packages. If not, take a look at <a href="https://r-pkgs.had.co.nz/">R extension packages</a> by Hadley Wickham and the <a href="https://cran.r-project.org/doc/manuals/R-exts.html">R extension manual</a>.</p>
+<p><a href="https://help.github.com/en/articles/fork-a-repo">Fork</a>, then clone the repo:</p>
+<pre><code>git clone https://github.com/o2r-project/containerit.git</code></pre>
+<p>Install the package from source and make sure the tests pass:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/install">install</a></span>()</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/test">test</a></span>()</a></code></pre></div>
+<ul>
+<li>Create a new feature branch from the current <code>master</code> branch.</li>
+<li>Make your change.</li>
+<li>Add documentation for your change (e.g. function documentation with <a href="https://roxygen2.r-lib.org/"><code>roxygen2</code></a>, a chapter in a vignette, a new vignette)</li>
+<li>Add tests for your change.</li>
+<li>Make the tests pass.</li>
+<li>Make <code>R CMD check</code> pass.</li>
+<li>Rebuild the documentation with <code><a href="https://pkgdown.r-lib.org/reference/build_site.html">pkgdown::build_site()</a></code>
+</li>
+<li>Add a note to <code>NEWS.md</code> about your change</li>
+<li>Add yourself to the contributor list and increment the <a href="http://r-pkgs.had.co.nz/description.html#version">development version</a> in <code>DESCRIPTION</code>
+</li>
+</ul>
+<p>Push your feature branch to your fork and <a href="https://help.github.com/en/articles/about-pull-requests">submit a pull request</a> to the upstream’s <code>master</code> branch. Please be patient until maintainers review your pull request. We may suggest some changes or improvements or alternatives. Feel free to ping <code>@nuest</code> if you don’t hear anything after a few weeks.</p>
+</div>
+<div id="acknowledgements" class="section level2">
+<h2 class="hasAnchor">
+<a href="#acknowledgements" class="anchor"></a>Acknowledgements</h2>
+<p>This guide builds upon the following document:</p>
+<ul>
+<li><a href="https://github.com/thoughtbot/factory_bot_rails/blob/master/CONTRIBUTING.md" class="uri">https://github.com/thoughtbot/factory_bot_rails/blob/master/CONTRIBUTING.md</a></li>
+<li><a href="https://github.com/52North/sos4R/blob/master/DEV-README.md" class="uri">https://github.com/52North/sos4R/blob/master/DEV-README.md</a></li>
+</ul>
+</div>
+</div>
 
   </div>
 

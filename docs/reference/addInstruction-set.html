@@ -33,6 +33,8 @@
 <meta property="og:title" content="Add one or more instructions to a Dockerfile — addInstruction&lt;-" />
 
 <meta property="og:description" content="Add one or more instructions to a Dockerfile" />
+
+<meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -105,7 +107,12 @@
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/o2r-project/containerit">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -119,7 +126,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Add one or more instructions to a Dockerfile</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/o2r-project/containerit/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
     <div class="hidden name"><code>addInstruction-set.Rd</code></div>
     </div>
 
@@ -150,9 +157,9 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-07-23 13:33:24] Creating an R session with the following expressions:
+    <pre class="examples"><div class='input'><span class='no'>the_dockerfile</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dockerfile.html'>dockerfile</a></span>(<span class='fu'><a href='clean_session.html'>clean_session</a></span>())</div><div class='output co'>#&gt; INFO [2019-08-20 10:18:59] Creating an R session with the following expressions:
 #&gt; 
-#&gt; INFO [2019-07-23 13:33:26] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='Label.html'>Label</a></span>(<span class='kw'>myKey</span> <span class='kw'>=</span> <span class='st'>"myContent"</span>)</div></pre>
+#&gt; INFO [2019-08-20 10:19:01] Created Dockerfile-Object based on sessionInfo</div><div class='input'><span class='fu'>addInstruction</span>(<span class='no'>the_dockerfile</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='Label.html'>Label</a></span>(<span class='kw'>myKey</span> <span class='kw'>=</span> <span class='st'>"myContent"</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
