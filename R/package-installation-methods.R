@@ -39,7 +39,7 @@ add_install_instructions <- function(dockerfile,
     pkgs <- rbind(cran_packages[!skipable,], pkgs[pkgs$source != "CRAN",])
   }
 
-  # 0. Installing github packages requires the package 'remotes'
+  # 0. Installing github packages requires the package 'remotes' (and devtools for R < 3.4, which is not suppoted), see https://github.com/eddelbuettel/littler/blob/master/inst/examples/installGithub.r#L12
   if (nrow(pkgs[pkgs$source == "github",]) > 0 && !"remotes" %in% pkgs$name) {
     pkgs <- rbind(pkgs, remotes = data.frame(name = "remotes", version = "1.1.1", source = "CRAN"))
     futile.logger::flog.debug("Added package 'remotes' to package list to be able to install from GitHub")
