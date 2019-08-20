@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -115,8 +115,35 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ex">docker</span> pull o2rproject/containerit:geospatial</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">docker</span> run --rm o2rproject/containerit:geospatial R -e <span class="st">"library(sf); the_dockerfile &lt;- containerit::dockerfile(); print(the_dockerfile);"</span></a></code></pre></div>
 <pre><code>## geospatial: Pulling from o2rproject/containerit
-## Digest: sha256:8720913480a65085829fc39cad9dd3742ecb32ac61768b7a999f767683256191
-## Status: Image is up to date for o2rproject/containerit:geospatial
+## c5e155d5a1d1: Already exists
+## 2524371be50d: Already exists
+## 03321dce714a: Already exists
+## f7183dc9df43: Already exists
+## 8a94f51ef612: Already exists
+## 0871071b8282: Already exists
+## d20d9e24f0ce: Already exists
+## ecd0c9d884a2: Already exists
+## 34198166c3ef: Already exists
+## 89978b67f5d2: Already exists
+## 005de089cb1e: Already exists
+## 5fe456ccc50f: Already exists
+## a4bbc4ae328f: Pulling fs layer
+## b648dceb1c63: Pulling fs layer
+## 2801e53bec76: Pulling fs layer
+## 9494b804300f: Pulling fs layer
+## 2801e53bec76: Verifying Checksum
+## 2801e53bec76: Download complete
+## a4bbc4ae328f: Verifying Checksum
+## a4bbc4ae328f: Download complete
+## a4bbc4ae328f: Pull complete
+## 9494b804300f: Download complete
+## b648dceb1c63: Verifying Checksum
+## b648dceb1c63: Download complete
+## b648dceb1c63: Pull complete
+## 2801e53bec76: Pull complete
+## 9494b804300f: Pull complete
+## Digest: sha256:98de04565b5c6df876a00f1283ed8d9f84d5ac3925ac7ddabfe0592b25b89724
+## Status: Downloaded newer image for o2rproject/containerit:geospatial
 ## docker.io/o2rproject/containerit:geospatial
 ## 
 ## R version 3.5.3 (2019-03-11) -- "Great Truth"
@@ -137,10 +164,10 @@
 ## 
 ## &gt; library(sf); the_dockerfile &lt;- containerit::dockerfile(); print(the_dockerfile);
 ## Linking to GEOS 3.5.1, GDAL 2.1.2, PROJ 4.9.3
-## INFO [2019-08-20 08:21:48] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-## INFO [2019-08-20 08:21:48] Trying to determine system requirements for the package(s) 'assertthat,backports,class,classInt,crayon,curl,DBI,desc,digest,e1071,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rprojroot,semver,sf,shiny,shinyFiles,stevedore,stringi,stringr,tibble,units,versions,xtable' from sysreqs online DB
-## INFO [2019-08-20 08:21:56] Adding CRAN packages: assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rprojroot, semver, sf, shiny, shinyFiles, stevedore, stringi, stringr, tibble, units, versions, xtable
-## INFO [2019-08-20 08:21:56] Created Dockerfile-Object based on sessionInfo
+## INFO [2019-08-20 14:45:10] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+## INFO [2019-08-20 14:45:10] Trying to determine system requirements for the package(s) 'assertthat,backports,class,classInt,crayon,curl,DBI,desc,digest,e1071,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rprojroot,semver,sf,shiny,shinyFiles,stevedore,stringi,stringr,tibble,units,versions,xtable' from sysreqs online DB
+## INFO [2019-08-20 14:45:13] Adding CRAN packages: assertthat, backports, class, classInt, crayon, curl, DBI, desc, digest, e1071, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rprojroot, semver, sf, shiny, shinyFiles, stevedore, stringi, stringr, tibble, units, versions, xtable
+## INFO [2019-08-20 14:45:13] Created Dockerfile-Object based on sessionInfo
 ## FROM rocker/r-ver:3.5.3
 ## LABEL maintainer="root"
 ## RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \

@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">containerit</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -138,10 +138,10 @@
 <p><code>containerit</code> can create <code>Dockerfile</code> objects in R and render them as <code>Dockerfile</code> instructions based on session information objects or runnable R files (<code>.R</code>, <code>.Rmd</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"containerit"</span>))</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">my_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; INFO [2019-08-20 10:17:58] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; INFO [2019-08-20 10:17:58] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; INFO [2019-08-20 10:18:13] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; INFO [2019-08-20 10:18:13] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; INFO [2019-08-20 16:43:13] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; INFO [2019-08-20 16:43:13] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; INFO [2019-08-20 16:43:15] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; INFO [2019-08-20 16:43:16] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(my_dockerfile)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt; FROM rocker/r-ver:3.6.1</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; LABEL maintainer="daniel"</span></a>
@@ -224,7 +224,10 @@
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="ex">docker</span> build --tag containerit:geospatial-dev --file inst/docker/geospatial/Dockerfile.local .</a></code></pre></div>
 <p>You can use <a href="https://github.com/lorenzwalthert/pre-commit-hooks"><code>pre-commit</code> hooks</a> to avoid some mistakes.</p>
 <p>A <a href="https://codemeta.github.io/">codemeta</a> file, <code>codemeta.json</code>, with metadata about the package and its dependencies is generated automatically when this document is compiled.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">codemetar<span class="op">::</span><span class="kw"><a href="https://ropensci.github.io/codemetar/reference/write_codemeta.html">write_codemeta</a></span>(<span class="st">"containerit"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">codemetar<span class="op">::</span><span class="kw"><a href="https://ropensci.github.io/codemetar/reference/write_codemeta.html">write_codemeta</a></span>(<span class="st">"containerit"</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co">#&gt; Registered S3 method overwritten by 'httr':</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">#&gt;   method                 from</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co">#&gt;   as.character.form_file crul</span></a></code></pre></div>
 </div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
