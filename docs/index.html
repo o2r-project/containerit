@@ -138,10 +138,10 @@
 <p><code>containerit</code> can create <code>Dockerfile</code> objects in R and render them as <code>Dockerfile</code> instructions based on session information objects or runnable R files (<code>.R</code>, <code>.Rmd</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/message">suppressPackageStartupMessages</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"containerit"</span>))</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">my_dockerfile &lt;-<span class="st"> </span>containerit<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/containerit/topics/dockerfile">dockerfile</a></span>(<span class="dt">from =</span> utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/sessionInfo">sessionInfo</a></span>())</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; INFO [2019-08-20 16:43:13] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; INFO [2019-08-20 16:43:13] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; INFO [2019-08-20 16:43:15] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; INFO [2019-08-20 16:43:16] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; INFO [2019-08-21 19:35:15] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; INFO [2019-08-21 19:35:15] Trying to determine system requirements for the package(s) 'assertthat,backports,commonmark,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,MASS,memoise,mime,miniUI,pillar,pkgconfig,pkgdown,promises,R6,Rcpp,rlang,rmarkdown,roxygen2,rprojroot,rstudioapi,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xml2,xtable,yaml' from sysreqs online DB</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; INFO [2019-08-21 19:35:18] Adding CRAN packages: assertthat, backports, commonmark, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, MASS, memoise, mime, miniUI, pillar, pkgconfig, pkgdown, promises, R6, Rcpp, rlang, rmarkdown, roxygen2, rprojroot, rstudioapi, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xml2, xtable, yaml</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; INFO [2019-08-21 19:35:18] Created Dockerfile-Object based on sessionInfo</span></a></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(my_dockerfile)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt; FROM rocker/r-ver:3.6.1</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; LABEL maintainer="daniel"</span></a>
@@ -229,6 +229,33 @@
 <a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">#&gt;   method                 from</span></a>
 <a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co">#&gt;   as.character.form_file crul</span></a></code></pre></div>
 </div>
+<div id="citation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#citation" class="anchor"></a>Citation</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/citation">citation</a></span>(<span class="st">"containerit"</span>)</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">#&gt; To cite containerit in publications use:</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">#&gt;   Nüst, D. and Hinz, M. (2019). containerit: Generating</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">#&gt;   Dockerfiles for reproducible research with R. Journal of Open</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">#&gt;   Source Software, 4(40), 1603,</span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">#&gt;   https://doi.org/10.21105/joss.01603</span></a>
+<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt;   @Article{,</span></a>
+<a class="sourceLine" id="cb13-13" data-line-number="13"><span class="co">#&gt;     title = {{containerit: Generating Dockerfiles for reproducible research with R}},</span></a>
+<a class="sourceLine" id="cb13-14" data-line-number="14"><span class="co">#&gt;     author = {Daniel Nüst and Matthias Hinz},</span></a>
+<a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt;     journal = {{Journal of Open Source Software}},</span></a>
+<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;     year = {2019},</span></a>
+<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt;     month = {8},</span></a>
+<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt;     volume = {4},</span></a>
+<a class="sourceLine" id="cb13-19" data-line-number="19"><span class="co">#&gt;     number = {40},</span></a>
+<a class="sourceLine" id="cb13-20" data-line-number="20"><span class="co">#&gt;     pages = {1603},</span></a>
+<a class="sourceLine" id="cb13-21" data-line-number="21"><span class="co">#&gt;     doi = {10.21105/joss.01603},</span></a>
+<a class="sourceLine" id="cb13-22" data-line-number="22"><span class="co">#&gt;     url = {https://doi.org/10.21105/joss.01603},</span></a>
+<a class="sourceLine" id="cb13-23" data-line-number="23"><span class="co">#&gt;   }</span></a></code></pre></div>
+</div>
 <div id="license" class="section level2">
 <h2 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h2>
@@ -256,6 +283,12 @@
 </li>
 </ul>
 </div>
+<div class="citation">
+<h2>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html">Citing containerit</a></li>
+</ul>
+</div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
@@ -268,7 +301,7 @@
       <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d"><img src="https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg" alt="status"></a></li>
+<li><a href="https://doi.org/10.21105/joss.01603"><img src="https://joss.theoj.org/papers/10.21105/joss.01603/status.svg" alt="DOI"></a></li>
 <li><a href="https://www.repostatus.org/#wip"><img src="https://www.repostatus.org/badges/latest/wip.svg" alt="Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public."></a></li>
 <li><a href="https://travis-ci.org/o2r-project/containerit"><img src="https://travis-ci.org/o2r-project/containerit.svg?branch=master" alt="Travis CI build status"></a></li>
 <li><a href="https://ci.appveyor.com/project/nuest/containerit-rrvpq"><img src="https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true" alt="Appveyor build status"></a></li>
