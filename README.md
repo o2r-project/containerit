@@ -5,7 +5,7 @@
 
 <!-- badges: start -->
 
-[![status](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.01603/status.svg)](https://doi.org/10.21105/joss.01603)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
@@ -74,16 +74,23 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-20 10:10:52] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-20 10:10:52] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-20 10:11:25] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-20 10:11:25] Created Dockerfile-Object based on sessionInfo
+#> INFO [2019-08-21 19:33:27] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2019-08-21 19:33:27] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2019-08-21 19:33:30] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
+#> INFO [2019-08-21 19:33:30] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
 #> FROM rocker/r-ver:3.6.1
 #> LABEL maintainer="daniel"
+#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+#>   && apt-get install -y git-core \
+#>  libcurl4-openssl-dev \
+#>  libssl-dev \
+#>  make \
+#>  pandoc \
+#>  pandoc-citeproc
 #> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xtable", "yaml"]
 #> WORKDIR /payload/
 #> CMD ["R"]
@@ -212,6 +219,37 @@ automatically when this document is compiled.
 
 ``` r
 codemetar::write_codemeta("containerit")
+#> Registered S3 method overwritten by 'httr':
+#>   method                 from
+#>   as.character.form_file crul
+```
+
+## Citation
+
+``` r
+citation("containerit")
+#> 
+#> To cite containerit in publications use:
+#> 
+#>   Nüst, D. and Hinz, M. (2019). containerit: Generating
+#>   Dockerfiles for reproducible research with R. Journal of Open
+#>   Source Software, 4(40), 1603,
+#>   https://doi.org/10.21105/joss.01603
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Article{,
+#>     title = {{containerit: Generating Dockerfiles for reproducible research with R}},
+#>     author = {Daniel Nüst and Matthias Hinz},
+#>     journal = {{Journal of Open Source Software}},
+#>     year = {2019},
+#>     month = {8},
+#>     volume = {4},
+#>     number = {40},
+#>     pages = {1603},
+#>     doi = {10.21105/joss.01603},
+#>     url = {https://doi.org/10.21105/joss.01603},
+#>   }
 ```
 
 ## License

@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 # containerit <img src="man/figures/logo.png" align="right" alt="containerit logo" width="200" style="padding: 0 0 10px 10px;" />
 
 <!-- badges: start -->
-[![status](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d/status.svg)](https://joss.theoj.org/papers/6f3b6a7cca0fa133966f13f260f0360d)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.01603/status.svg)](https://doi.org/10.21105/joss.01603)
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![Travis CI build status](https://travis-ci.org/o2r-project/containerit.svg?branch=master)](https://travis-ci.org/o2r-project/containerit)
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](https://ci.appveyor.com/project/nuest/containerit-rrvpq)
@@ -174,6 +174,11 @@ A [codemeta](https://codemeta.github.io/) file, `codemeta.json`, with metadata a
 codemetar::write_codemeta("containerit")
 ```
 
+## Citation
+
+```{r}
+citation("containerit")
+```
 
 ## License
 

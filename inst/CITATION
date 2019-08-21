@@ -1,0 +1,16 @@
+citHeader("To cite containerit in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "{containerit: Generating Dockerfiles for reproducible research with R}",
+  author   = "Daniel Nüst and Matthias Hinz",
+  journal  = "{Journal of Open Source Software}",
+  year     = 2019,
+  month    = 8,
+  volume   = 4,
+  number   = 40,
+  pages    = 1603,
+  doi      = "10.21105/joss.01603",
+  url      = "https://doi.org/10.21105/joss.01603",
+  textVersion = "Nüst, D. and Hinz, M. (2019). containerit: Generating Dockerfiles for reproducible research with R. Journal of Open Source Software, 4(40), 1603, https://doi.org/10.21105/joss.01603"
+)
