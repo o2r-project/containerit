@@ -44,7 +44,7 @@ Further useful features are (a) portability, thanks to a single runtime dependen
 This way, containers can enable verification of reproducibility and auditing without requiring reviewers to manually download, install, and re-run analyses [@beaulieu-jones_reproducibility_2017].
 
 Container preservation is an active field of research [@rechert_preserving_2017; @emsley_framework_2018].
-It is reasonable to assume that key stakeholders interested in workflow preservation, such as universities or scientific publishers, should be able to operate container runtimes on a time scale comparable to data storage requirements by funding agencies, e.g. 10 years in case of the [German DFG](http://www.dfg.de/en/research_funding/proposal_review_decision/applicants/research_data/index.html) or [British EPSRC](https://epsrc.ukri.org/about/standards/researchdata/expectations/).
+It is reasonable to assume that key stakeholders interested in workflow preservation, such as universities or scientific publishers, should be able to operate container runtimes on a time scale comparable to data storage requirements by funding agencies, e.g., 10 years in case of the [German DFG](http://www.dfg.de/en/research_funding/proposal_review_decision/applicants/research_data/index.html) or [British EPSRC](https://epsrc.ukri.org/about/standards/researchdata/expectations/).
 To enable and leverage the stakeholders' infrastructure, container creation must become easier and more widespread.
 
 # Summary
@@ -86,7 +86,7 @@ Further parameters for the function comprise, for example, image metadata, base 
 The package `containerit`'s main contribution is that it allows for automated capturing of runtime environments as `Dockerfile`s based on literate programming workflows [@gentleman_statistical_2007] to support reproducible research.
 Together with `stevedore` [@fitzjohn_stevedore_2019], `containerit` enables a completely R-based creation and manipulation of Docker containers.
 Using `containerit` only minimally affects researchers' workflows because it can be applied after completing a workflow, while at the same time the captured snapshots can enhance the scholarly publication process (in particular review, interaction, and preservation) and may form a basis for more reusable and transparent publications.
-In the future, `containerit` may support alternative container software such as Singularity [@kurtzer_singularity_2017], enable parametrisation of container executions and pipelines as demonstrated by Kliko [@molenaar_klikoscientific_2018], or support proper accreditation of software [@codemeta, @katz_software_2018].
+In the future, `containerit` may support alternative container software such as Singularity [@kurtzer_singularity_2017], enable parametrisation of container executions and pipelines as demonstrated by Kliko [@molenaar_klikoscientific_2018], or support proper accreditation of software [@codemeta; @katz_software_2018].
 
 **Related Work**
 
