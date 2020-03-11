@@ -32,8 +32,9 @@ before_install:
   - sudo pip install -U docker
   # pull baseimage for tests:
   - "docker pull rocker/r-ver:latest"
+  - "docker pull rocker/r-ver:3.4.3" # used in tests
   - "docker pull rocker/r-ver:3.6.0"
-  - "docker pull rocker/geospatial:3.4.3"
+  - "docker pull rocker/geospatial:3.6.2"
 
 # don't do vignettes (relevant when trying to get on CRAN)
 r_build_args: "--no-manual --no-build-vignettes"

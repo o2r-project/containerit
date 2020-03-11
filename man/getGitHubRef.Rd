@@ -4,8 +4,7 @@
 \alias{getGitHubRef}
 \title{Get GitHub reference from package}
 \usage{
-getGitHubRef(pkg, pkgs = c(sessionInfo()$otherPkgs,
-  sessionInfo()$loadedOnly))
+getGitHubRef(pkg, pkgs = c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
 }
 \arguments{
 \item{pkg}{The name of the package to retrieve the reference for}

@@ -4,9 +4,10 @@
 \alias{containerit_write_config}
 \title{Re - init (overwrite) current package configuration}
 \usage{
-containerit_write_config(config = .getDefaultConfig(),
-  output = file.path(find.package("containerit"),
-  "inst/containerit_config.json"))
+containerit_write_config(
+  config = .getDefaultConfig(),
+  output = file.path(find.package("containerit"), "inst/containerit_config.json")
+)
 }
 \arguments{
 \item{config}{The configuration object to be written}

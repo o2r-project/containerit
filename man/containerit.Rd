@@ -5,7 +5,6 @@
 \alias{containerit}
 \alias{containers,}
 \alias{containerization}
-\alias{containerit-package}
 \title{containerit: A package for packaging R objects and their dependencies in software containers}
 \description{
 The containerit package provides one core function: \code{dockerfile}.

@@ -4,15 +4,26 @@
 \alias{dockerfile}
 \title{dockerfile-method}
 \usage{
-dockerfile(from = utils::sessionInfo(),
+dockerfile(
+  from = utils::sessionInfo(),
   image = getImageForVersion(getRVersionTag(from)),
-  maintainer = Sys.info()[["user"]], save_image = FALSE,
-  envir = .GlobalEnv, env = list(generator = paste("containerit",
-  utils::packageVersion("containerit"))), soft = FALSE,
-  offline = FALSE, copy = NULL, container_workdir = "/payload/",
-  cmd = "R", entrypoint = NULL, add_self = FALSE, silent = FALSE,
-  predetect = TRUE, versioned_libs = FALSE,
-  versioned_packages = FALSE, filter_baseimage_pkgs = FALSE)
+  maintainer = Sys.info()[["user"]],
+  save_image = FALSE,
+  envir = .GlobalEnv,
+  env = list(generator = paste("containerit", utils::packageVersion("containerit"))),
+  soft = FALSE,
+  offline = FALSE,
+  copy = NULL,
+  container_workdir = "/payload/",
+  cmd = "R",
+  entrypoint = NULL,
+  add_self = FALSE,
+  silent = FALSE,
+  predetect = TRUE,
+  versioned_libs = FALSE,
+  versioned_packages = FALSE,
+  filter_baseimage_pkgs = FALSE
+)
 }
 \arguments{
 \item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.}
@@ -34,7 +45,7 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{offline}{(boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.}
 
-\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files}
+\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NULL} to disable copying of files}
 
 \item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 

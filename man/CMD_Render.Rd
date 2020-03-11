@@ -4,9 +4,14 @@
 \alias{CMD_Render}
 \title{Create CMD instruction for rendering a markdown file}
 \usage{
-CMD_Render(path, options = character(0),
-  output_format = rmarkdown::html_document(), output_dir = NULL,
-  output_file = NULL, vanilla = TRUE)
+CMD_Render(
+  path,
+  options = character(0),
+  output_format = rmarkdown::html_document(),
+  output_dir = NULL,
+  output_file = NULL,
+  vanilla = TRUE
+)
 }
 \arguments{
 \item{path}{The name of the R markdown file that should run on startup, or a path relative to the working directory}

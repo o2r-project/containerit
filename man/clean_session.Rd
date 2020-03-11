@@ -4,9 +4,14 @@
 \alias{clean_session}
 \title{Obtains a \code{sessionInfo} from a local R session}
 \usage{
-clean_session(expr = c(), script_file = NULL, rmd_file = NULL,
-  echo = FALSE, predetect = TRUE,
-  repos = "https://cloud.r-project.org")
+clean_session(
+  expr = c(),
+  script_file = NULL,
+  rmd_file = NULL,
+  echo = FALSE,
+  predetect = TRUE,
+  repos = "https://cloud.r-project.org"
+)
 }
 \arguments{
 \item{expr}{vector of expressions to be executed in the session (see \code{\link{quote}})}

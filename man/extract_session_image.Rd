@@ -4,9 +4,14 @@
 \alias{extract_session_image}
 \title{Optains a session info from R executed in a container}
 \usage{
-extract_session_image(docker_image, expr = c(), container_dir = "/tmp",
+extract_session_image(
+  docker_image,
+  expr = c(),
+  container_dir = "/tmp",
   local_dir = tempfile(pattern = "extract_bind_"),
-  deleteTempfiles = TRUE, container_name = "containerit_capturer")
+  deleteTempfiles = TRUE,
+  container_name = "containerit_capturer"
+)
 }
 \arguments{
 \item{docker_image}{The name of the Docker image to run}

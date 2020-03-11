@@ -38,7 +38,7 @@
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
-#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NA} ot disable copying of files
+#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NULL} to disable copying of files
 #' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
@@ -189,10 +189,10 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                   workdir = workdir)
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
+      originalFrom <- from
 
       if (fs::dir_exists(from)) {
         futile.logger::flog.debug("'%s' is a directory", from)
-        originalFrom <- from
         the_dockerfile <- dockerfileFromWorkspace(path = from,
                                                dockerfile = the_dockerfile,
                                                soft = soft,
@@ -207,7 +207,6 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                workdir = workdir)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
-        originalFrom <- from
 
         if (basename(from) == "DESCRIPTION") {
           description <- desc::desc(file = from)

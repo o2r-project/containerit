@@ -24,8 +24,10 @@ the_dockerfile <- dockerfile(the_session)
 addInstruction(the_dockerfile) <- Label_SessionInfo(the_session)
 }
 \seealso{
-Other label: \code{\link{Label-class}},
-  \code{\link{LabelSchemaFactory}},
-  \code{\link{Label_Maintainer}}, \code{\link{Label}}
+Other label: 
+\code{\link{Label-class}},
+\code{\link{LabelSchemaFactory}()},
+\code{\link{Label_Maintainer}()},
+\code{\link{Label}}
 }
 \concept{label}

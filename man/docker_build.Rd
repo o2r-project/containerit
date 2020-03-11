@@ -8,13 +8,20 @@
 \usage{
 docker_build(x, tag, ...)
 
-\method{docker_build}{character}(x, tag = strsplit(tempfile(pattern =
-  "containerit_", tmpdir = ""), "/")[[1]][2],
-  the_dockerfile = "Dockerfile", ...)
+\method{docker_build}{character}(
+  x,
+  tag = strsplit(tempfile(pattern = "containerit_", tmpdir = ""), "/")[[1]][2],
+  the_dockerfile = "Dockerfile",
+  ...
+)
 
-\method{docker_build}{Dockerfile}(x, tag = strsplit(tempfile(pattern =
-  "containerit_test_", tmpdir = ""), "/")[[1]][2], use_workdir = FALSE,
-  clean_up = TRUE, ...)
+\method{docker_build}{Dockerfile}(
+  x,
+  tag = strsplit(tempfile(pattern = "containerit_test_", tmpdir = ""), "/")[[1]][2],
+  use_workdir = FALSE,
+  clean_up = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{the path to a directory with a valid \code{Dockerfile} (i.e. the \code{context}), or a \code{Dockerfile} object}

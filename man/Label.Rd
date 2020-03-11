@@ -33,13 +33,14 @@ label2 <- Label(
 label3 <- Label("name"="A name", "description" = "A description", label_ns = "my.label.ns.")
 the_dockerfile <- dockerfile(clean_session())
 addInstruction(the_dockerfile) <- list(label1, label2, label3)
-cat(format(the_dockerfile),sep = "\\n")
+cat(format(the_dockerfile),sep = "\n")
 
 }
 \seealso{
-Other label: \code{\link{Label-class}},
-  \code{\link{LabelSchemaFactory}},
-  \code{\link{Label_Maintainer}},
-  \code{\link{Label_SessionInfo}}
+Other label: 
+\code{\link{Label-class}},
+\code{\link{LabelSchemaFactory}()},
+\code{\link{Label_Maintainer}()},
+\code{\link{Label_SessionInfo}()}
 }
 \concept{label}

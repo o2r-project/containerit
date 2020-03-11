@@ -49,8 +49,7 @@ session in a browser.
 
 **Note**: The `geospatial` variant is used so that examples from
 `containerit` vignettes are likely to work. For a minimal `Dockerfile`
-to run `containerit`, see
-`inst/docker/minimal/Dockerfile`.
+to run `containerit`, see `inst/docker/minimal/Dockerfile`.
 
 ``` bash
 docker run --rm -it -e PASSWORD=o2r -p 8787:8787 o2rproject/containerit:geospatial /init
@@ -77,15 +76,16 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2019-08-22 11:38:33] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2019-08-22 11:38:33] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2019-08-22 11:38:36] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, versions, xfun, xtable, yaml
-#> INFO [2019-08-22 11:38:36] Created Dockerfile-Object based on sessionInfo
+#> INFO [2020-03-11 23:17:01] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
+#> INFO [2020-03-11 23:17:01] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,fastmap,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,remotes,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
+#> INFO [2020-03-11 23:17:02] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, fastmap, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, remotes, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, xfun, xtable, yaml
+#> INFO [2020-03-11 23:17:02] Adding GitHub packages: goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa
+#> INFO [2020-03-11 23:17:02] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
-#> FROM rocker/r-ver:3.6.1
+#> FROM rocker/r-ver:3.6.2
 #> LABEL maintainer="daniel"
 #> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 #>   && apt-get install -y git-core \
@@ -94,7 +94,8 @@ print(my_dockerfile)
 #>  make \
 #>  pandoc \
 #>  pandoc-citeproc
-#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "versions", "xfun", "xtable", "yaml"]
+#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "fastmap", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "remotes", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "xfun", "xtable", "yaml"]
+#> RUN ["installGithub.r", "goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -115,11 +116,15 @@ rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
                                           filter_baseimage_pkgs = TRUE)
 #> Detected API version '1.40' is above max version '1.39'; downgrading
 #> Detected API version '1.40' is above max version '1.39'; downgrading
+#> Unable to find image 'rocker/verse:3.5.2' locally
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
-#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, formatR, fs, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml
-#> RUN ["install2.r", "fortunes", "futile.logger", "futile.options", "lambda.r", "semver", "shinyFiles", "stevedore", "versions"]
+#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, fansi, formatR, fs, glue, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml
+#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
+#>   && apt-get install -y git-core
+#> RUN ["install2.r", "fastmap", "fortunes", "futile.logger", "futile.options", "lambda.r", "remotes", "semver", "shinyFiles", "stevedore"]
+#> RUN ["installGithub.r", "goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -142,8 +147,7 @@ The `Dockerfile`s are available in the directory
 docker inspect o2rproject/containerit
 ```
 
-Base image:
-`rocker/verse:3.5.3`
+Base image: `rocker/verse:3.6.2`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
@@ -155,8 +159,7 @@ Base image:
 docker inspect o2rproject/containerit:geospatial
 ```
 
-Base image:
-`rocker/geospatial:3.5.3`
+Base image: `rocker/geospatial:3.6.2`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")
@@ -222,9 +225,6 @@ automatically when this document is compiled.
 
 ``` r
 codemetar::write_codemeta("containerit")
-#> Registered S3 method overwritten by 'httr':
-#>   method                 from
-#>   as.character.form_file crul
 ```
 
 ## Citation
@@ -234,10 +234,9 @@ citation("containerit")
 #> 
 #> To cite containerit in publications use:
 #> 
-#>   Nüst, D. and Hinz, M. (2019). containerit: Generating
-#>   Dockerfiles for reproducible research with R. Journal of Open
-#>   Source Software, 4(40), 1603,
-#>   https://doi.org/10.21105/joss.01603
+#>   Nüst, D. and Hinz, M. (2019). containerit: Generating Dockerfiles for
+#>   reproducible research with R. Journal of Open Source Software, 4(40),
+#>   1603, https://doi.org/10.21105/joss.01603
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 

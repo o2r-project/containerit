@@ -18,7 +18,8 @@ Maintainer object
 The MAINTAINER instruction is deprecated!
 }
 \seealso{
-Other maintainer: \code{\link{Label_Maintainer}},
-  \code{\link{Maintainer-class}}
+Other maintainer: 
+\code{\link{Label_Maintainer}()},
+\code{\link{Maintainer-class}}
 }
 \concept{maintainer}
