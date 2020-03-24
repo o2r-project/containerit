@@ -2,7 +2,7 @@
 
 context("Included Dockerfiles")
 
-test_that("minmal Dockerfile can be built and run", {
+test_that("minimal Dockerfile can be built and run", {
   skip_if_not(stevedore::docker_available())
 
   client <- stevedore::docker_client()

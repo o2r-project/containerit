@@ -76,26 +76,13 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2020-03-11 23:17:01] Going online? TRUE  ... to retrieve system dependencies (sysreq-api)
-#> INFO [2020-03-11 23:17:01] Trying to determine system requirements for the package(s) 'assertthat,backports,crayon,curl,desc,digest,evaluate,fastmap,formatR,fs,futile.logger,futile.options,htmltools,httpuv,jsonlite,knitr,lambda.r,later,magrittr,mime,miniUI,pillar,pkgconfig,promises,R6,Rcpp,remotes,rlang,rmarkdown,rprojroot,semver,shiny,shinyFiles,stevedore,stringi,stringr,tibble,versions,xfun,xtable,yaml' from sysreqs online DB
-#> INFO [2020-03-11 23:17:02] Adding CRAN packages: assertthat, backports, crayon, curl, desc, digest, evaluate, fastmap, formatR, fs, futile.logger, futile.options, htmltools, httpuv, jsonlite, knitr, lambda.r, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, remotes, rlang, rmarkdown, rprojroot, semver, shiny, shinyFiles, stevedore, stringi, stringr, tibble, xfun, xtable, yaml
-#> INFO [2020-03-11 23:17:02] Adding GitHub packages: goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa
-#> INFO [2020-03-11 23:17:02] Created Dockerfile-Object based on sessionInfo
+#> INFO [2020-03-24 15:30:50] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
 #> FROM rocker/r-ver:3.6.2
 #> LABEL maintainer="daniel"
-#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
-#>   && apt-get install -y git-core \
-#>  libcurl4-openssl-dev \
-#>  libssl-dev \
-#>  make \
-#>  pandoc \
-#>  pandoc-citeproc
-#> RUN ["install2.r", "assertthat", "backports", "crayon", "curl", "desc", "digest", "evaluate", "fastmap", "formatR", "fs", "futile.logger", "futile.options", "htmltools", "httpuv", "jsonlite", "knitr", "lambda.r", "later", "magrittr", "mime", "miniUI", "pillar", "pkgconfig", "promises", "R6", "Rcpp", "remotes", "rlang", "rmarkdown", "rprojroot", "semver", "shiny", "shinyFiles", "stevedore", "stringi", "stringr", "tibble", "xfun", "xtable", "yaml"]
-#> RUN ["installGithub.r", "goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -106,8 +93,10 @@ You can disable logging:
 futile.logger::flog.threshold(futile.logger::ERROR)
 ```
 
-Now we create a Dockerfile for a specific R version and R Markdown file
-and do not add any packages already available in the base image:
+Now we create a Dockerfile for a specific R version and a given R
+Markdown file. The option `filter_baseimage_pkgs` is used to not add any
+packages already available in the base image, which can save a lot of
+build time.
 
 ``` r
 rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
@@ -116,15 +105,11 @@ rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
                                           filter_baseimage_pkgs = TRUE)
 #> Detected API version '1.40' is above max version '1.39'; downgrading
 #> Detected API version '1.40' is above max version '1.39'; downgrading
-#> Unable to find image 'rocker/verse:3.5.2' locally
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
-#> # CRAN packages skipped because they are in the base image: assertthat, backports, cli, crayon, curl, desc, digest, evaluate, fansi, formatR, fs, glue, htmltools, httpuv, jsonlite, knitr, later, magrittr, mime, miniUI, pillar, pkgconfig, promises, R6, Rcpp, rlang, rmarkdown, rprojroot, rstudioapi, sessioninfo, shiny, stringi, stringr, tibble, withr, xfun, xtable, yaml
-#> RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
-#>   && apt-get install -y git-core
-#> RUN ["install2.r", "fastmap", "fortunes", "futile.logger", "futile.options", "lambda.r", "remotes", "semver", "shinyFiles", "stevedore"]
-#> RUN ["installGithub.r", "goldingn/versions@de231cb523aa9134a1bd4e947c8204a7a08f3daa"]
+#> # CRAN packages skipped because they are in the base image: knitr
+#> RUN ["install2.r", "fortunes"]
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```

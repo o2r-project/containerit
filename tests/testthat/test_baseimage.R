@@ -27,18 +27,22 @@ test_that("Installed packages are a data.frame with the image as an attribute", 
   expect_equal(.image, attributes(pkgs)$image)
 })
 
+packages_df <- data.frame(name = c("sp", "ggplot2", "rgdal", "coxrobust"),
+                          version = c("10.10.10", "tidyverse/ggplot2@abcdef", "3", "0"),
+                          source = c("CRAN", "github", "CRAN", "CRAN"),
+                          stringsAsFactors = FALSE)
+
 test_that("List of installed packages can be filtered when creating a Dockerfile", {
   skip_if_not(stevedore::docker_available())
 
   output <- capture_output(the_dockerfile <- dockerfile(from = "package_markdown/sfr/",
                    maintainer = "o2r",
-                   image = "rocker/geospatial:3.4.4",
+                   image = "rocker/geospatial:3.6.0",
                    filter_baseimage_pkgs = TRUE))
   the_dockerfile_string <- toString(the_dockerfile)
 
-  expect_true(object = any(grepl("# CRAN packages skipped", x = the_dockerfile_string)), info = "Packages skipped are mentioned in a comment")
+  expect_true(object = any(grepl("# CRAN packages skipped.*sf, sp, units", x = the_dockerfile_string)), info = "Packages skipped are mentioned in a comment")
   expect_true(object = any(grepl("^#.*units", x = the_dockerfile_string)), info = "units")
-  expect_true(object = any(grepl("^#.*Rcpp", x = the_dockerfile_string)), info = "Rcpp")
 
   unlink("package_markdown/sfr/nc1.*")
   unlink("package_markdown/sfr/*.html")
@@ -48,15 +52,7 @@ test_that("List of installed packages can be filtered when creating a Dockerfile
 test_that("Filtered list of installed packages does not filter GitHub packages", {
   skip_if_not(stevedore::docker_available())
 
-  # created sessionInfo file:
-  # $  docker run --rm -it -v $(pwd):/data rocker/geospatial:3.5.1 R
-  # R> devtools::install_github("o2r-project/containerit")
-  # R> devtools::install_github("tidyverse/ggplot2", ref ="v3.0.0")
-  # R> library("ggplot2")
-  # R> sessionInfo <- sessionInfo()
-  # R> save(sessionInfo, file = "/data/sessionInfo.RData")
-
-  output <- capture_output(the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
+  output <- capture_output(the_dockerfile <- dockerfile(from = packages_df,
                                maintainer = "o2r",
                                image = "rocker/geospatial:3.5.1",
                                filter_baseimage_pkgs = TRUE))
@@ -69,11 +65,19 @@ test_that("Filtered list of installed packages does not filter GitHub packages",
 test_that("Filtered list of installed packages is alphabetical", {
   skip_if_not(stevedore::docker_available())
 
-  output <- capture_output(the_dockerfile <- dockerfile(from = "github/sessionInfo1.RData",
+  output <- capture_output(the_dockerfile <- dockerfile(from = packages_df,
                                maintainer = "o2r",
                                image = "rocker/geospatial:3.5.1",
                                filter_baseimage_pkgs = TRUE))
-  the_dockerfile_string <- toString(the_dockerfile)
+  expect_true(object = any(grepl("^# CRAN packages skipped.*rgdal, sp", x = toString(the_dockerfile))))
+})
 
-  expect_true(object = any(grepl("^# CRAN packages skipped.*assertthat.*curl.*digest.*rlang.*withr", x = the_dockerfile_string)))
+test_that("System dependencies of filtered packages are not installed", {
+  skip_if_not(stevedore::docker_available())
+
+  output <- capture_output(the_dockerfile <- dockerfile(from = packages_df,
+                                                        maintainer = "o2r",
+                                                        image = "rocker/geospatial:3.6.0",
+                                                        filter_baseimage_pkgs = TRUE))
+  expect_false(object = any(grepl(".*gdal-bin.*", x = toString(the_dockerfile))))
 })

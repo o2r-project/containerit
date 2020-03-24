@@ -1,7 +1,7 @@
 Type: Package
 Package: containerit
 Title: Package R in Docker Containers
-Version: 0.6.0.9000
+Version: 0.6.0.9001
 Authors@R: 
     c(person(given = "Daniel",
              family = "Nuest",
@@ -70,9 +70,9 @@ Imports:
     versions
 Suggests:
     BiocGenerics,
-    boxoffice,
     codetools,
     covr,
+    coxrobust,
     docopt,
     dplyr,
     fortunes,

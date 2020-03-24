@@ -77,7 +77,8 @@ You can disable logging:
 futile.logger::flog.threshold(futile.logger::ERROR)
 ```
 
-Now we create a Dockerfile for a specific R version and R Markdown file and do not add any packages already available in the base image:
+Now we create a Dockerfile for a specific R version and a given R Markdown file.
+The option `filter_baseimage_pkgs` is used to not add any packages already available in the base image, which can save a lot of build time.
 
 ```{bash pull, include=FALSE}
 docker pull rocker/verse:3.6.2

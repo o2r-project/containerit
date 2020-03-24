@@ -2,7 +2,7 @@
 
 # pkgs is a data.frame of packages with the columns name, version, and source (either "CRAN" or "github")
 # function returns the given Dockerfile object with the required instructions
-add_install_instructions <- function(dockerfile,
+add_install_instructions <- function(base_dockerfile,
                                      pkgs,
                                      platform,
                                      soft,
@@ -13,15 +13,15 @@ add_install_instructions <- function(dockerfile,
                                      filter_deps_by_image = FALSE) {
   if (is.null(pkgs) || nrow(pkgs) < 1) {
     futile.logger::flog.debug("Input packages is %s - not adding any install instructions", toString(pkgs))
-    return(dockerfile)
+    return(base_dockerfile)
   }
 
   package_reqs <- character(0)
 
   # 0. Check if packages can be left out because they are pre-installed for given image
-  image_name <- dockerfile@image@image
+  image_name <- base_dockerfile@image@image
   if (filter_baseimage_pkgs && !versioned_packages) {
-    image <- docker_arguments(dockerfile@image)
+    image <- docker_arguments(base_dockerfile@image)
 
     no_log <- capture.output(available_pkgs <- get_installed_packages(image = image)$pkg)
     futile.logger::flog.debug("Detected packages: %s", toString(no_log))
@@ -32,7 +32,7 @@ add_install_instructions <- function(dockerfile,
     futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                              image, skipped_str)
 
-    addInstruction(dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
+    addInstruction(base_dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
                                                         skipped_str))
 
     # do not add skippable, add all non-CRAN packages
@@ -54,10 +54,12 @@ add_install_instructions <- function(dockerfile,
 
   if (nrow(pkgs) > 0) {
     # 1. get system dependencies if packages must be installed (if applicable by given platform)
-    package_reqs <- .find_system_dependencies(stringr::str_sort(as.character(unlist(pkgs$name))),
-                                              platform = platform,
-                                              soft = soft,
-                                              offline = offline)
+    package_reqs <- sapply(X = stringr::str_sort(as.character(unlist(pkgs$name))),
+                           FUN = .find_system_dependencies,
+                           platform = platform,
+                           soft = soft,
+                           offline = offline)
+    package_reqs <- unlist(package_reqs)
 
     # selected known dependencies that can be left out because they are pre-installed for given image
     if (filter_deps_by_image) {
@@ -76,7 +78,7 @@ add_install_instructions <- function(dockerfile,
         install_command <- paste("apt-get install -y",
                                  paste(package_reqs, collapse = " \\\n\t"))
         commands <- append(commands, install_command)
-        addInstruction(dockerfile)  <- Run_shell(commands)
+        addInstruction(base_dockerfile) <- Run_shell(commands)
       } else {
         warning("Platform ", platform, " not supported, cannot add installation commands for system requirements.")
       }
@@ -86,7 +88,7 @@ add_install_instructions <- function(dockerfile,
 
     if (versioned_packages) {
       futile.logger::flog.info("Versioned packages enabled, installing 'versions'")
-      addInstruction(dockerfile) <- Run("install2.r", "versions")
+      addInstruction(base_dockerfile) <- Run("install2.r", "versions")
     }
 
     # 2. add installation instruction for CRAN packages
@@ -94,11 +96,11 @@ add_install_instructions <- function(dockerfile,
     if (nrow(pkgs_cran) > 0) {
       if (versioned_packages) {
         futile.logger::flog.info("Adding versioned CRAN packages: %s", toString(pkgs_cran$name))
-        addInstruction(dockerfile) <- versioned_install_instructions(pkgs_cran)
+        addInstruction(base_dockerfile) <- versioned_install_instructions(pkgs_cran)
       } else {
         cran_packages <- stringr::str_sort(as.character(unlist(pkgs_cran$name))) # sort, to increase own reproducibility
         futile.logger::flog.info("Adding CRAN packages: %s", toString(cran_packages))
-        addInstruction(dockerfile) <- Run("install2.r", cran_packages)
+        addInstruction(base_dockerfile) <- Run("install2.r", cran_packages)
       }
     } else futile.logger::flog.debug("No CRAN packages to add.")
 
@@ -112,7 +114,7 @@ add_install_instructions <- function(dockerfile,
       bioc_packages <- stringr::str_sort(as.character(unlist(pkgs_bioc$name))) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
       repos = as.character(BiocManager::repositories())
-      addInstruction(dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
+      addInstruction(base_dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
                                                                          repos[1], repos[2],
                                                                          repos[3], repos[4]),
                                                                  bioc_packages))
@@ -123,13 +125,13 @@ add_install_instructions <- function(dockerfile,
     if (nrow(pkgs_gh) > 0) {
       github_packages <- stringr::str_sort(as.character(unlist(pkgs_gh$version))) # sort, to increase own reproducibility
       futile.logger::flog.info("Adding GitHub packages: %s", toString(github_packages))
-      addInstruction(dockerfile) <- Run("installGithub.r", github_packages)
+      addInstruction(base_dockerfile) <- Run("installGithub.r", github_packages)
     }
   } else {
     futile.logger::flog.debug("No packages found that must be installed")
   }
 
-  return(dockerfile)
+  return(base_dockerfile)
 }
 
 #' Helper function for installing versioned R packages
@@ -167,8 +169,9 @@ versioned_install_instructions <- function(pkgs) {
                                       platform,
                                       soft = TRUE,
                                       offline = FALSE,
-                                      package_version = utils::packageVersion(package)) {
-  method = if (offline == TRUE)
+                                      package_version = as.character(utils::packageVersion(package))) {
+  method = NA
+  if (offline)
     method = "sysreq-package"
   else
     method = "sysreq-api"

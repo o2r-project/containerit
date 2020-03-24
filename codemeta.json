@@ -8,7 +8,7 @@
   "relatedLink": "https://o2r.info/containerit/",
   "issueTracker": "https://github.com/o2r-project/containerit/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.6.0.9000",
+  "version": "0.6.0.9001",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -94,11 +94,6 @@
     },
     {
       "@type": "SoftwareApplication",
-      "identifier": "boxoffice",
-      "name": "boxoffice"
-    },
-    {
-      "@type": "SoftwareApplication",
       "identifier": "codetools",
       "name": "codetools",
       "provider": {
@@ -120,6 +115,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=covr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "coxrobust",
+      "name": "coxrobust",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=coxrobust"
     },
     {
       "@type": "SoftwareApplication",

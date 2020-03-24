@@ -66,6 +66,16 @@ test_that("can retrieve version from sessionInfo in file", {
   expect_equal(ver, "1.2.3")
 })
 
+test_that("created Dockerfile content is as expected when including 'loadedOnly' packages", {
+  output <- capture_output(
+    expect_warning(df_test <- dockerfile(from = test_rdata_file, add_loadedOnly = TRUE))
+  )
+
+  # contains attached AND the loaded packages
+  expect_true(any(stringr::str_detect(toString(df_test),
+                                      "^RUN \\[\"install2.r\", \"loadedA\", \"loadedB\", \"remotes\", \"testpkg2\"\\]$")))
+})
+
 test_that("created Dockerfile content is as expected", {
   output <- capture_output(
     expect_warning(df_test <- dockerfile(from = test_rdata_file))
@@ -73,9 +83,9 @@ test_that("created Dockerfile content is as expected", {
 
   # contains expected R version
   expect_equal(toString(df_test)[1], "FROM rocker/r-ver:3.1.0")
-  # contains CRAN packages
+  # contains attached but not the loaded packages
   expect_true(any(stringr::str_detect(toString(df_test),
-                                      "^RUN \\[\"install2.r\", \"loadedA\", \"loadedB\", \"remotes\", \"testpkg2\"\\]$")))
+                                      "^RUN \\[\"install2.r\", \"remotes\", \"testpkg2\"\\]$")))
   # contains GitHub packages
   expect_true(any(stringr::str_detect(toString(df_test),
                                       "^RUN \\[\"installGithub.r\", \"test/pkg1@123456abcdef\", \"test/pkg3@a1b2c3d4e5f6\"\\]$")))

@@ -1,3 +1,3 @@
-library("boxoffice")
-boxoffice::boxoffice(date = as.Date("2015-10-31"))
+library("coxrobust")
+coxrobust::gen_data(50, c(2,-2), cont = 0.05)
 sessionInfo()

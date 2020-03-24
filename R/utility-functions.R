@@ -421,7 +421,7 @@ clean_session <- function(expr = c(),
     }
   }
 
-  futile.logger::flog.info("Creating an R session with the following expressions:\n%s", toString(expr))
+  futile.logger::flog.debug("Creating an R session with the following expressions:\n%s", toString(expr))
 
   the_info <- callr::r_vanilla(function(expressions) {
     for (e in expressions) {

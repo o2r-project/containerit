@@ -66,7 +66,7 @@ test_that("System requirements for sp can be detected ONLINE", {
   expect_equal(deps, character(0)) #no direct dependencies
 })
 
-test_that("System requirements for rgdal can be detected ONLINE", {
+test_that("System requirements for rgdal can be detected ONLINE (with defaults)", {
   output <- capture_output(
     deps <- containerit:::.find_system_dependencies("rgdal",
                                                     platform = containerit:::.debian_platform)

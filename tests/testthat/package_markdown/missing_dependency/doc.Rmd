@@ -5,8 +5,8 @@ date: "August 17, 2018"
 output: md_document
 ---
 
-```{r boxoffice}
-library("boxoffice")
+```{r coxrobust}
+library("coxrobust")
 ```
 
 ```{r rprojroot}

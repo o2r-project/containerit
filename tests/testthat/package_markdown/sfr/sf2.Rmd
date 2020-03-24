@@ -37,3 +37,10 @@ m.sf = st_as_sf(meuse)
 opar = par(mar=rep(0,4))
 plot(m.sf)
 ```
+
+### units
+
+```{r}
+library("units")
+as_units("mm")
+```

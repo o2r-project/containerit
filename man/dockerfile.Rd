@@ -2,7 +2,9 @@
 % Please edit documentation in R/dockerfile.R
 \name{dockerfile}
 \alias{dockerfile}
-\title{dockerfile-method}
+\title{dockerfile-method
+^
+Create a Dockerfile based on either a sessionInfo, a workspace or a file.}
 \usage{
 dockerfile(
   from = utils::sessionInfo(),
@@ -18,6 +20,7 @@ dockerfile(
   cmd = "R",
   entrypoint = NULL,
   add_self = FALSE,
+  add_loadedOnly = FALSE,
   silent = FALSE,
   predetect = TRUE,
   versioned_libs = FALSE,
@@ -55,6 +58,8 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{add_self}{Whether to add the package containerit itself if loaded/attached to the session}
 
+\item{add_loadedOnly}{Whether to add the 'loadedOnly' packages if a sessionInfo is provided}
+
 \item{silent}{Whether or not to print information during execution}
 
 \item{predetect}{Extract the required libraries based on \code{library} calls using the package \code{automagic} before running a script/document}
@@ -63,12 +68,14 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{versioned_packages}{Whether it shall be attempted to match versions of R packages}
 
-\item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub.}
+\item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub, and does not check the package version.}
 }
 \value{
 An object of class Dockerfile
 }
 \description{
+dockerfile-method
+^
 Create a Dockerfile based on either a sessionInfo, a workspace or a file.
 }
 \section{Based on \code{sessionInfo}}{

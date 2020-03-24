@@ -3,13 +3,11 @@
 library("containerit")
 context("Install packages from GitHub")
 
-test_that("GitHub packages can be installed", {
-  #get session information from previous installation, created in a vanilla R session with these commands within package root directory:
-  #library(c("sysreqs")); github_test_sessionInfo <- sessionInfo(); save(github_test_sessionInfo, file = "tests/testthat/github/sessionInfo2.RData")
-  load("./github/sessionInfo2.RData")
+the_session <- clean_session(expr = quote(library("sysreqs")))
 
+test_that("GitHub packages can be installed", {
   output <- capture_output(
-    the_dockerfile <- dockerfile(github_test_sessionInfo, maintainer = "o2r", image = getImageForVersion("3.3.2"))
+    the_dockerfile <- dockerfile(the_session, maintainer = "o2r", image = getImageForVersion("3.3.2"))
   )
   #write(the_dockerfile,"./github/Dockerfile")
 
@@ -20,7 +18,7 @@ test_that("GitHub packages can be installed", {
 
 test_that("GitHub references can be retrieved for package sysreqs (test fails if sysreqs was installed from source)", {
   skip_if_not_installed("sysreqs")
-  ref <- getGitHubRef("sysreqs", c(sessionInfo()$otherPkgs, sessionInfo()$loadedOnly))
+  ref <- getGitHubRef("sysreqs", the_session$otherPkgs)
   expect_match(ref, "r-hub/sysreqs@([a-f0-9]{7})")
 })
 

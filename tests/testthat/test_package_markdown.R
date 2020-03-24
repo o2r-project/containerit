@@ -2,8 +2,7 @@
 
 context("Package R markdown files")
 
-test_that("A markdown file can be packaged (using units expample)", {
-  skip("Results differ from execution with all tests and single/manual execution")
+test_that("A markdown file can be packaged (using units example)", {
   output <- capture_output({
     the_dockerfile <- dockerfile(from = "package_markdown/units/",
                    maintainer = "Ted Tester",
@@ -11,43 +10,10 @@ test_that("A markdown file can be packaged (using units expample)", {
                    copy = "script_dir",
                    cmd = CMD_Render("package_markdown/units/2016-09-29-plot_units.Rmd"))
   })
-  #write(the_dockerfile,"package_markdown/units_Dockerfile")
-  cat("\n"); print(the_dockerfile)
-  expected_file <- readLines("package_markdown/units_Dockerfile")
+  #write(the_dockerfile,"package_markdown/units/Dockerfile")
+  expected_file <- readLines("package_markdown/units/Dockerfile")
   generated_file <- capture.output(print(the_dockerfile))
   expect_equal(generated_file, expected_file)
-})
-
-test_that("The sf3 markdown file can be packaged", {
-  skip_on_ci()
-  skip_on_cran()
-
-  dir <- file.path(tempdir(), "sf")
-  dir.create(dir)
-  tmpfile <- tempfile(tmpdir = dir, fileext = ".Rmd")
-  file.copy(from = system.file("doc/sf3.Rmd", package = "sf"), to = tmpfile)
-
-  oldWd <- getwd()
-  setwd(dir)
-  output <- capture_output(
-    the_dockerfile <- dockerfile(dir,
-                   maintainer = "o2r",
-                   image = "rocker/geospatial",
-                   copy = "script_dir",
-                   cmd = CMD_Render(dir, output_dir = "/output"))
-  )
-  #write(the_dockerfile,"package_markdown/sf_vignette_Dockerfile")
-  generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
-
-  setwd(oldWd)
-
-  expected_file <- readLines("package_markdown/sf_vignette_Dockerfile")
-  expected_file <- stringr::str_replace(string = expected_file, pattern = "###TEMPDIR###", replacement = dir)
-  expect_equal(generated_file, expected_file)
-
-  # here we can build and run the actual container to see if the resulting file is matching
-  #expect_true(file.exists(file.path(dir, "sf3.html")))
-  unlink(dir, recursive = TRUE)
 })
 
 test_that("The render command supports output directory", {
@@ -124,10 +90,10 @@ test_that("Packaging works if dependency is missing in the base image and predet
 
   expect_s4_class(predetected_df, "Dockerfile")
   # package should still not be in this session library
-  expect_error(library("boxoffice"))
+  expect_error(library("coxrobust"))
 
-  generated_file <- unlist(stringr::str_split(toString(predetected_df),"\n"))
-  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = generated_file)), info = "Packages missing are detected")
+  generated_file <- toString(predetected_df)
+  expect_true(object = any(grepl("^RUN.*install2.*\"coxrobust\"", x = generated_file)), info = "Packages missing are detected")
   expect_true(object = any(grepl("^RUN.*install2.*\"rprojroot\"", x = generated_file)), info = "Packages missing are detected")
 
   expected_file <- readLines("package_markdown/missing_dependency/Dockerfile")

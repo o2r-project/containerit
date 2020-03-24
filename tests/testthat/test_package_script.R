@@ -63,7 +63,8 @@ test_that("a workspace with one R script can be packaged if the script file has 
                                  copy = "script_dir",
                                  cmd = CMD_Rscript("package_script/simple_lowercase/simple_test.r"),
                                  maintainer = "o2r",
-                                 image = getImageForVersion("3.3.2"))
+                                 image = getImageForVersion("3.3.2"),
+                                 add_loadedOnly = TRUE)
   )
   expected_file <- readLines("package_script/simple_lowercase/Dockerfile")
   expect_equal(toString(the_dockerfile), expected_file)
@@ -116,24 +117,6 @@ test_that("there is a warning if NA resources are to be copied", {
   )
 })
 
-test_that("The gstat demo 'zonal' can be packaged ", {
-  skip_on_ci()
-
-  output <- capture_output(
-    the_dockerfile <- dockerfile("package_script/gstat/zonal.R",
-                                 cmd = CMD_Rscript("package_script/gstat/zonal.R"),
-                                 maintainer = "o2r",
-                                 image = getImageForVersion("3.3.2"),
-                                 copy = "script")
-  )
-  #write(the_dockerfile,"package_script/gstat/Dockerfile")
-
-  #test execution would be similar to the test above; don't do it to save time
-  expected_file = readLines("package_script/gstat/Dockerfile")
-  generated_file <- capture.output(print(the_dockerfile))
-  expect_equal(generated_file, expected_file)
-})
-
 test_that("The file can be copied", {
   output <- capture_output(df_copy <- dockerfile(from = "package_script/resources/simple_test.R", copy = "script"))
   expect_true(object = any(sapply(df_copy@instructions, function(x) { inherits(x, "Copy") })),
@@ -176,7 +159,7 @@ test_that("packaging fails if library from script is missing without predetectio
   skip_on_ci()
 
   # package should still not be in this session library
-  expect_error(library("boxoffice"))
+  expect_error(library("coxrobust"))
 
   expect_error({
     output <- capture_output({
@@ -203,9 +186,9 @@ test_that("packaging works if library from script is missing but predetection is
   # write(predetected_df, "package_script/needs_predetect/Dockerfile")
 
   # package should still not be in this session's library
-  expect_error(library("boxoffice"))
+  expect_error(library("coxrobust"))
 
-  expect_true(object = any(grepl("^RUN.*install2.*\"boxoffice\"", x = capture.output(print(predetected_df)))))
+  expect_true(object = any(grepl("^RUN.*install2.*\"coxrobust\"", x = capture.output(print(predetected_df)))))
   expected_file <- readLines("package_script/needs_predetect/Dockerfile")
   expect_equal(capture.output(print(predetected_df)), expected_file)
 })

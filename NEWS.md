@@ -1,3 +1,7 @@
+# containerit 0.7.0 (2020-xx-xx)
+
+* By default do not add 'loadedOnly' packages from sessionInfo objects/files
+
 # containerit 0.6.0 (2019-08-20)
 
 * Review feedback from JOSS, see https://github.com/openjournals/joss-reviews/issues/1603 (paper improvements, include quick instructions, harden tests when crandeps.r-pkg.org is not available, add CONTRIBUTING.md, improve pkgdown site)

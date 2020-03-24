@@ -18,6 +18,11 @@ library("fortunes")
 fortunes::fortune()
 ```
 
+```{r base_image_package}
+library("knitr")
+knitr::is_html_output()
+```
+
 ```{r session}
 sessioninfo::session_info()
 ```
