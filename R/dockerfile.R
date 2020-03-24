@@ -38,7 +38,7 @@
 #' @param env optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
-#' @param copy whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NULL} to disable copying of files
+#' @param copy whether and how a workspace should be copied; allowed values: "script", "script_dir" (paths relative to file, so only works for file-base \code{from} inputs, which (can be nested) within current working directory), a list of file paths relative to the current working directory to be copied into the payload directory, or \code{NULL} to disable copying of files
 #' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
@@ -235,7 +235,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                       filter_baseimage_pkgs,
                                                       workdir)
         } else {
-          the_dockerfile <- dockerfileFromFile(file = from,
+          the_dockerfile <- dockerfileFromFile(fromFile = from,
                                                base_dockerfile = the_dockerfile,
                                                soft,
                                                copy,
@@ -443,50 +443,51 @@ dockerfileFromSession.session_info <- function(session,
 }
 
 #' @importFrom fs path_has_parent path_rel path_norm
-dockerfileFromFile <- function(file,
-                               dockerfile,
+dockerfileFromFile <- function(fromFile,
+                               base_dockerfile,
                                soft,
                                copy,
                                offline,
                                add_self,
+                               add_loadedOnly,
                                silent,
                                predetect,
                                versioned_libs,
                                versioned_packages,
                                filter_baseimage_pkgs,
                                workdir) {
-    futile.logger::flog.debug("Creating from file")
+    futile.logger::flog.debug("Creating from file ", fromFile)
 
     # prepare context ( = working directory) and normalize paths:
     context = fs::path_norm(getwd())
-    file = fs::path_norm(file)
-    futile.logger::flog.debug("Working with file %s in working directory %s", file, context)
-
-    if ( !fs::path_has_parent(file, context))
+    if ( !fs::path_has_parent(fromFile, context))
       warning("The given file is not inside the working directory! This may lead to incorrect COPY instructions.")
 
-    # make sure that the path is relative to context
-    rel_path <- fs::path_rel(file, context)
+    rel_file = fs::path_rel(fromFile, context)
+    futile.logger::flog.debug("Working with file %s in working directory %s", rel_file, context)
 
     # execute script / markdowns or read RData file to obtain sessioninfo
-    if (stringr::str_detect(string = file,
+    if (stringr::str_detect(string = rel_file,
                             pattern = stringr::regex(".R$", ignore_case = TRUE))) {
-      futile.logger::flog.info("Processing R script file '%s' locally.", rel_path)
-      sessionInfo <- clean_session(script_file = file,
+      futile.logger::flog.info("Processing R script file '%s' locally.", rel_file)
+      sessionInfo <- clean_session(script_file = rel_file,
                                    echo = !silent,
                                    predetect = predetect)
-    } else if (stringr::str_detect(string = file,
+    } else if (stringr::str_detect(string = rel_file,
                                    pattern = stringr::regex(".rmd$", ignore_case = TRUE))) {
-      futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_path)
-      sessionInfo <- clean_session(rmd_file = file,
+      futile.logger::flog.info("Processing Rmd file '%s' locally using rmarkdown::render(...)", rel_file)
+      sessionInfo <- clean_session(rmd_file = rel_file,
                                    echo = !silent,
                                    predetect = predetect)
-    } else if (stringr::str_detect(string = file,
+    } else if (stringr::str_detect(string = rel_file,
                                    pattern = stringr::regex(".rdata$", ignore_case = TRUE))) {
-      futile.logger::flog.info("Extracting session object from RData file %s", rel_path)
-      sessionInfo <- extract_session_file(file)
+      futile.logger::flog.info("Extracting session object from RData file %s", rel_file)
+      sessionInfo <- extract_session_file(rel_file)
     } else{
-      futile.logger::flog.info("The supplied file %s has no known extension. containerit will handle it as an R script for packaging.", rel_path)
+      futile.logger::flog.info("The supplied file %s has no known extension. containerit will handle it as an R script for packaging.", file)
+      sessionInfo <- clean_session(script_file = rel_file,
+                                   echo = !silent,
+                                   predetect = predetect)
     }
 
     # append system dependencies and package installation instructions
@@ -501,46 +502,8 @@ dockerfileFromFile <- function(file,
                                             filter_baseimage_pkgs,
                                             workdir)
 
-    ## WORKDIR must be set before, now add COPY instructions
-    if (!all(is.null(copy)) && !all(is.na(copy))) {
-      copy = unlist(copy)
-      if (!is.character(copy)) {
-        stop("Invalid argument given for 'copy'")
-      } else if (length(copy) == 1 && copy == "script") {
-        #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-        rel_path_source <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-        addInstruction(the_dockerfile) <- Copy(rel_path_source, rel_path_dest)
-      } else if (length(copy) == 1 && copy == "script_dir") {
-        script_dir <- normalizePath(dirname(file))
-        rel_dir <- fs::path_rel(script_dir, context)
-
-        #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
-        rel_dir_dest <- stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
-
-        addInstruction(the_dockerfile) <- Copy(rel_dir, rel_dir_dest)
-      } else {
-        futile.logger::flog.debug("We have a list of paths/files in 'copy': ", toString(copy))
-        copy_instructions <- sapply(copy, function(file) {
-          if (file.exists(file)) {
-            futile.logger::flog.debug("Adding COPY instruction for file ", file)
-            rel_path <- fs::path_rel(file, context)
-            # turn into unix path
-            rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
-
-            return(Copy(rel_path, rel_path_dest))
-          } else {
-            warning("The file ", file, ", given by 'copy', does not exist!")
-            return(NULL)
-          }
-        })
-
-        copy_instructions[sapply(copy_instructions, is.null)] <- NULL
-        addInstruction(the_dockerfile) <- copy_instructions
-      }
-    } else {
-      futile.logger::flog.debug("All paths in copy are NULL or NA, not adding any COPY instructions: ", toString(copy))
-    }
+    # WORKDIR must be set before, now add COPY instructions
+    the_dockerfile <- .handleCopy(the_dockerfile, copy, context)
 
     return(the_dockerfile)
   }
@@ -678,6 +641,9 @@ dockerfileFromDescription <- function(description,
                                            filter_baseimage_pkgs,
                                            workdir)
 
+  # WORKDIR must be set before, now add COPY instructions
+  the_dockerfile <- .handleCopy(the_dockerfile, copy, fs::path_norm(getwd()))
+
   return(the_dockerfile)
 }
 
@@ -707,4 +673,49 @@ dockerfileFromDescription <- function(description,
     })
     return(tags)
   }
+}
+
+.handleCopy <- function(the_dockerfile, copy, context, file = NULL) {
+  futile.logger::flog.debug("Creating COPY with in working directory %s using: %s", context, toString(copy))
+
+  if (!all(is.null(copy)) && !all(is.na(copy))) {
+    copy = unlist(copy)
+    if (!is.character(copy)) {
+      stop("Invalid argument given for 'copy'")
+    } else if (length(copy) == 1 && copy == "script") {
+      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
+      rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+      rel_path_source <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+      addInstruction(the_dockerfile) <- Copy(rel_path_source, rel_path_dest)
+    } else if (length(copy) == 1 && copy == "script_dir") {
+      script_dir <- normalizePath(dirname(file))
+      rel_dir <- fs::path_rel(script_dir, context)
+
+      #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
+      rel_dir_dest <- stringr::str_replace_all(rel_dir, pattern = "\\\\", replacement = "/")
+      addInstruction(the_dockerfile) <- Copy(rel_dir, rel_dir_dest)
+    } else {
+      futile.logger::flog.debug("We have a list of paths/files in 'copy': ", toString(copy))
+      copy_instructions <- sapply(copy, function(the_file) {
+        if (file.exists(the_file)) {
+          futile.logger::flog.debug("Adding COPY instruction for file ", the_file)
+          rel_path <- fs::path_rel(the_file, context)
+          # turn into unix path
+          rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
+
+          return(Copy(rel_path, rel_path_dest))
+        } else {
+          warning("The file ", the_file, ", provided in 'copy', does not exist!")
+          return(NULL)
+        }
+      })
+
+      copy_instructions[sapply(copy_instructions, is.null)] <- NULL
+      addInstruction(the_dockerfile) <- copy_instructions
+    }
+  } else {
+    futile.logger::flog.debug("All paths in copy are NULL or NA, not adding any COPY instructions: ", toString(copy))
+  }
+
+  return(the_dockerfile)
 }

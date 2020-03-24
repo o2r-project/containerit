@@ -8,7 +8,7 @@
   "relatedLink": "https://o2r.info/containerit/",
   "issueTracker": "https://github.com/o2r-project/containerit/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.6.0.9001",
+  "version": "0.6.0.9002",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",

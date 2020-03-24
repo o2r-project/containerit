@@ -85,3 +85,15 @@ test_that("the Dockerfile (unversioned) can be built and run", {
   expect_match(toString(run$logs), "here_")
   expect_match(toString(run$logs), "yaml_2.1.17")
 })
+
+test_that("a DESCRIPTION can be used together with copy", {
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "package_description/DESCRIPTION",
+                                 maintainer = "o2r",
+                                 copy = c("package_description/hello.txt"))
+  )
+  # write(the_dockerfile, file = "package_description/Dockerfile.copy")
+
+  expected_file <- readLines("package_description/Dockerfile.copy")
+  expect_equal(capture.output(print(the_dockerfile)), expected_file)
+})

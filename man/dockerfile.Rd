@@ -48,7 +48,7 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{offline}{(boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.}
 
-\item{copy}{whether and how a workspace should be copied - values: "script", "script_dir" or a list of relative file paths to be copied, or \code{NULL} to disable copying of files}
+\item{copy}{whether and how a workspace should be copied; allowed values: "script", "script_dir" (paths relative to file, so only works for file-base \code{from} inputs, which (can be nested) within current working directory), a list of file paths relative to the current working directory to be copied into the payload directory, or \code{NULL} to disable copying of files}
 
 \item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 
