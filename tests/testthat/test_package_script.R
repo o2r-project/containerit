@@ -112,8 +112,8 @@ test_that("trailing slashes are added to directories if missing", {
 test_that("there is a warning if NA resources are to be copied", {
   output <- capture_output(
     expect_warning(dockerfile("package_script/resources/simple_test.R",
-                              copy = c(NA, "package_script/resources/simple_test.R", NA)),
-                   "The file NA, given by 'copy', does not exist!")
+                              copy = c(NA, "package_script/resources/simple_test.R", NULL, NA)),
+                   "The file NA.*does not exist!")
   )
 })
 

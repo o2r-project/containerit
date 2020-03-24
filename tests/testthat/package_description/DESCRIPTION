@@ -1,4 +1,4 @@
-Package: here
+Package: fakepkg
 Version: 1.2.3
 Title: Fake DESCRIPTION file for containerit testing
 Authors@R: c(person(given = "o2",
@@ -17,5 +17,5 @@ Collate: 'code.R'
 NeedsCompilation: yes
 Author: o2 r [aut, cre]
 Maintainer: o2 r <o2r-team@uni-muenster.de>
-Remotes: github::r-hub/sysreqs,gitlab::test/pkg,github::viking/r-yaml@v2.1.17
+Remotes: github::viking/r-yaml@v2.1.17
 biocViews: Sequencing, RNASeq

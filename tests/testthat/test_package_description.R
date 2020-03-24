@@ -8,7 +8,7 @@ test_that("version tag can be extracted from DESCRIPTION object", {
   expect_equal(version, "3.4.0")
 })
 
-test_that("a DESCRIPTION file can be packaged", {
+test_that("a DESCRIPTION _file_ can be packaged", {
   output <- capture_output(
     the_dockerfile <- dockerfile(from = "package_description/DESCRIPTION",
                                  maintainer = "o2r")
@@ -18,7 +18,7 @@ test_that("a DESCRIPTION file can be packaged", {
   expect_equal(capture.output(print(the_dockerfile)), expected_file)
 })
 
-test_that("a DESCRIPTION object can be packaged", {
+test_that("a DESCRIPTION _object_ can be packaged", {
   description <- desc::desc(file = "package_description/DESCRIPTION")
   output <- capture_output(
     the_dockerfile <- dockerfile(from = description,
@@ -50,7 +50,7 @@ test_that("the version of the packaged DESCRIPTION package can be installed", {
   expect_equal(capture.output(print(the_dockerfile)), expected_file)
 })
 
-test_that("the version of the packaged DESCRIPTION package can be installed for an installed package", {
+test_that("the version of the packaged DESCRIPTION's imports are be installed", {
   output <- capture_output(
     the_dockerfile <- dockerfile(from = desc::desc(package = "sf"),
                                  maintainer = "o2r",
@@ -64,8 +64,10 @@ test_that("the version of the packaged DESCRIPTION package can be installed for 
 test_that("the Dockerfile (unversioned) can be built and run", {
   skip_if_not(stevedore::docker_available())
 
-  output <- capture_output(the_dockerfile <- dockerfile(from = "package_description/DESCRIPTION",
-                                                        maintainer = "o2r"))
+  output <- capture_output(
+    the_dockerfile <- dockerfile(from = "package_description/DESCRIPTION",
+                                                        maintainer = "o2r")
+  )
 
   the_dockerfile_dir <- tempdir()
   write(x = the_dockerfile, file = file.path(the_dockerfile_dir, "Dockerfile"))
@@ -74,15 +76,15 @@ test_that("the Dockerfile (unversioned) can be built and run", {
     client <- stevedore::docker_client()
     build <- client$image$build(context = the_dockerfile_dir,
                                 dockerfile = "Dockerfile",
-                                tag = "containerit_test_versioned_packages")
+                                tag = "containerit_test_description_file")
     run <- client$container$run(image = build$id(), rm = TRUE, cmd = c('Rscript',
-                                                                       '-e', 'library(\"here\");',
+                                                                       '-e', 'library(\"units\");',
                                                                        '-e', 'library(\"yaml\");',
                                                                        '-e', 'sessionInfo();'))
   })
 
   expect_match(toString(run$logs), "R version 3.4.0")
-  expect_match(toString(run$logs), "here_")
+  expect_match(toString(run$logs), "units_")
   expect_match(toString(run$logs), "yaml_2.1.17")
 })
 

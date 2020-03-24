@@ -27,7 +27,7 @@
 #' Given an executable \code{R} script or document, create a Dockerfile to execute this file.
 #' This executes the whole file to obtain a complete \code{sessionInfo} object, see section "Based on \code{sessionInfo}", and copies required files and documents into the container.
 #'
-#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.
+#' @param from The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed; the package from the \code{DESCRIPTION} itself is only .
 #' @param image (\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 #'      By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{https://hub.docker.com/r/rocker/r-ver/}). Or provide a correct image name yourself.
 #' @param maintainer Specify the maintainer of the Dockerfile. See documentation at \url{https://docs.docker.com/engine/reference/builder/#maintainer}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.
@@ -503,7 +503,7 @@ dockerfileFromFile <- function(fromFile,
                                             workdir)
 
     # WORKDIR must be set before, now add COPY instructions
-    the_dockerfile <- .handleCopy(the_dockerfile, copy, context)
+    the_dockerfile <- .handleCopy(the_dockerfile, copy, context, fromFile)
 
     return(the_dockerfile)
   }
@@ -558,7 +558,7 @@ dockerfileFromWorkspace <- function(path,
     else
       futile.logger::flog.info("Found file for packaging in workspace: %s", target_file)
 
-    the_dockerfile <- dockerfileFromFile(file = target_file,
+    the_dockerfile <- dockerfileFromFile(fromFile = target_file,
                                          base_dockerfile,
                                          soft,
                                          copy,
@@ -587,9 +587,13 @@ dockerfileFromDescription <- function(description,
   stopifnot(inherits(x = description, "description"))
 
   # only add imported packages
-  type = NULL # avoid NOTE, see https://stackoverflow.com/a/8096882/261210
+  type <- NULL # avoid NOTE, see https://stackoverflow.com/a/8096882/261210
   pkgs <- subset(description$get_deps(), type == "Imports")$package
-  pkgs <- c(description$get_field("Package"), pkgs)
+
+  # only add itself when `Repository: CRAN`
+  if (!is.na(description$get_field("Repository", default = NA))
+      && description$get_field("Repository") == "CRAN")
+    pkgs <- c(description$get_field("Package"), pkgs)
 
   # parse remotes with remotes internal functions
   remote_pkgs <- remotes:::split_remotes(description$get_remotes())
@@ -675,7 +679,7 @@ dockerfileFromDescription <- function(description,
   }
 }
 
-.handleCopy <- function(the_dockerfile, copy, context, file = NULL) {
+.handleCopy <- function(the_dockerfile, copy, context, the_file = NULL) {
   futile.logger::flog.debug("Creating COPY with in working directory %s using: %s", context, toString(copy))
 
   if (!all(is.null(copy)) && !all(is.na(copy))) {
@@ -683,12 +687,15 @@ dockerfileFromDescription <- function(description,
     if (!is.character(copy)) {
       stop("Invalid argument given for 'copy'")
     } else if (length(copy) == 1 && copy == "script") {
+      if (is.null(the_file))
+        stop("If 'script' is used, the 'from' input must be a support file type")
+      rel_path <- fs::path_rel(the_file, context)
       #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:
       rel_path_dest <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
       rel_path_source <- stringr::str_replace_all(rel_path, pattern = "\\\\", replacement = "/")
       addInstruction(the_dockerfile) <- Copy(rel_path_source, rel_path_dest)
     } else if (length(copy) == 1 && copy == "script_dir") {
-      script_dir <- normalizePath(dirname(file))
+      script_dir <- normalizePath(dirname(the_file))
       rel_dir <- fs::path_rel(script_dir, context)
 
       #unless we use some kind of Windows-based Docker images, the destination path has to be unix compatible:

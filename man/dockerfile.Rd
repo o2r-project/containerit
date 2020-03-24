@@ -29,12 +29,12 @@ dockerfile(
 )
 }
 \arguments{
-\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed.}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed; the package from the \code{DESCRIPTION} itself is only .}
 
 \item{image}{(\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
-By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{'https://hub.docker.com/r/rocker/r-ver/'}). Or provide a correct image name yourself.}
+By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{https://hub.docker.com/r/rocker/r-ver/}). Or provide a correct image name yourself.}
 
-\item{maintainer}{Specify the maintainer of the Dockerfile. See documentation at \url{'https://docs.docker.com/engine/reference/builder/#maintainer'}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
+\item{maintainer}{Specify the maintainer of the Dockerfile. See documentation at \url{https://docs.docker.com/engine/reference/builder/#maintainer}. Defaults to \code{Sys.info()[["user"]]}. Can be removed with \code{NULL}.}
 
 \item{save_image}{When TRUE, it calls \link[base]{save.image} in the current working directory and copys the resulting \code{.RData} file to the container's working directory. The created file in the local working director will not be deleted.
  Alternatively, you can pass a list of objects to be saved, which may also include arguments to be passed down to \code{save}, e.g. \code{save_image = list("object1", "object2")}. You can configure the name of the file the objects are saved to by adding a file name to the list of arguments, e.g. \code{save_image = list("objectA", save_image_filename = "mydata.RData")}, in which case the file path must be in UNIX notation. Note that you may not use \code{save_image_filename} for other objects in your session!
@@ -42,7 +42,7 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{envir}{The environment for \code{save_image}.}
 
-\item{env}{optionally specify environment variables to be included in the image. See documentation: \url{'https://docs.docker.com/engine/reference/builder/#env}}
+\item{env}{optionally specify environment variables to be included in the image. See documentation: \url{https://docs.docker.com/engine/reference/builder/#env}}
 
 \item{soft}{(boolean) Whether to include soft dependencies when system dependencies are installed, default is no.}
 

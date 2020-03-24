@@ -32,7 +32,8 @@ add_install_instructions <- function(base_dockerfile,
     futile.logger::flog.info("Skipping packages for image %s (packages are unversioned): %s",
                              image, skipped_str)
 
-    addInstruction(base_dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
+    if (any(skipable))
+      addInstruction(base_dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
                                                         skipped_str))
 
     # do not add skippable, add all non-CRAN packages

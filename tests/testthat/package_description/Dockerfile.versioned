@@ -5,7 +5,7 @@ RUN export DEBIAN_FRONTEND=noninteractive; apt-get -y update \
 	libudunits2-dev
 RUN ["install2.r", "versions"]
 RUN ["install2.r", "graphics", "grDevices", "grid", "Rcpp", "units", "utils"]
-RUN ["Rscript", "-e", "versions::install.versions('here', '1.2.3')", "-e", "versions::install.versions('remotes', '1.1.1')"]
-RUN ["installGithub.r", "r-hub/sysreqs@master", "viking/r-yaml@v2.1.17"]
+RUN ["Rscript", "-e", "versions::install.versions('remotes', '1.1.1')"]
+RUN ["installGithub.r", "viking/r-yaml@v2.1.17"]
 WORKDIR /payload/
 CMD ["R"]
