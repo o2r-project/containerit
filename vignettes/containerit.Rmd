@@ -324,7 +324,7 @@ print(the_dockerfile)
 
 Metadata can be added to Docker images using [Label instructions](https://docs.docker.com/engine/reference/builder/#label).
 Label instructions are key-value pairs of arbitrary content.
-A dublicate key overwrites existing ones.
+A duplicate key overwrites existing ones.
 Although it is up to the user how many labels are created, it is recommended to bundle them into one Label instruction in the Dockerfile.
 Each use of the `Label()` function creates a seperate instruction in the Dockerfile.
 
