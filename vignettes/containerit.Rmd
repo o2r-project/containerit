@@ -27,7 +27,7 @@ opts_knit$set(root.dir = temp_workspace)
 Even though R is designed for open and reproducible research, users who want to share their work with others are facing challenges.
 Sharing merely the R script or R Markdown document should warrant reproducibility, but many analyses rely on additional resources and specific third party software as well.
 An R script may produce unexpected results or errors when executed under a different version of R or another platform. 
-Reproduciblility is only assured by providing complete setup instructions and resources.
+Reproducibility is only assured by providing complete setup instructions and resources.
 Long-term reproducibility can be achieved by either regular maintenance of the code, i.e. keeping it always working with the latest package versions from CRAN.
 It can be supported by packages such as [packrat](https://rstudio.github.io/packrat/) and platforms such as [MRAN](https://mran.microsoft.com/), which provide means to capture a specific combination of R packages.
 An alternative to updating or managing packages explicitly is providing the full runtime environment in its original state, using [virtual machines](https://en.wikipedia.org/wiki/Virtual_machine) or  [software containers](https://en.wikipedia.org/wiki/Operating-system-level_virtualization).
@@ -65,7 +65,7 @@ As shown in the example below, the result can be pretty-printed and written to a
 If no `file` argument is supplied to `write()`, the Dockerfile is written to the current working directory as `./Dockerfile`, following the typical naming convention of Docker.
 
 When packaging any resources, it is essential that the R working directory is the same as the build context, to which the Dockerfile refers.
-All resources must be located below this directory so that they can be refered to by relative paths (e.g. for copy instructions).
+All resources must be located below this directory so that they can be referred to by relative paths (e.g. for copy instructions).
 This must also be considered when packaging R scripts that use relative paths, e.g. for reading a file or sourcing another R script.
 
 ### 2.2 Packaging an interactive session
@@ -127,10 +127,10 @@ containerit::docker_build(dockerfile_object)
 ### 2.3 Packaging an external session
 
 Packaging an interactive session has the disadvantage that unnecessary dependencies might be added to the Dockerfile and subsequently to the container.
-For instance the package `futile.logger` is a dependency of `containerit`, and it _will_ be added to the container because it was loaded into the same session were the analyses was executed.
+For instance the package `futile.logger` is a dependency of `containerit`, and it _will_ be added to the container because it was loaded into the same session where the analysis was executed.
 It cannot be removed by default, because other packages in the session _might_ use it as well (even unintentionally in case of generic methods).
 Therefore, it is safer not to tamper with the current session, but to run the analysis in an isolated _vanilla_ session, which does not have `containerit` in it.
-The latter will batch-execute the commands in a seperate instance of R and retrieves an object of class `sessionInfo`.
+The latter will batch-execute the commands in a separate instance of R and retrieves an object of class `sessionInfo`.
 The session info is then used as input to `dockerfile()`.
 This is also how `dockerfile()` works internally when packaging either expressions, scripts or R markdown files.
 
@@ -149,7 +149,7 @@ print(dockerfile_object)
 
 ### 2.4 Packaging an R script
 
-R scripts are packaged by just supplying the file path or paths to the arguement `from` of `dockerfile()`.
+R scripts are packaged by just supplying the file path or paths to the argument `from` of `dockerfile()`.
 They are automatically copied into the container's working directory.
 In order to run the R script on start-up, rather than an interactive R session, a CMD instruction can be added by providing the value of the helper function `CMD_Rscript()` as an argument to `cmd`.
 
@@ -277,7 +277,7 @@ print(df_description_sf)
 
 ## 3. Including resources
 
-Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockefile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
+Analyses in R often rely on external files and resources that are located located in the workspace. When scripts or R markdown files are packaged, they are copied by default into the same location relative to the working directory. The argument `copy` influences how `dockerfile()` behaves in this matter. It can either have the values `script` (default behaviour), `script_dir` (copies the complete directory in which the input file is located), or a custom list of files and directories inside the current working directory
 
 ```{r resources}
 file.copy(from = system.file("simple_test_script_resources", 
@@ -324,9 +324,9 @@ print(the_dockerfile)
 
 Metadata can be added to Docker images using [Label instructions](https://docs.docker.com/engine/reference/builder/#label).
 Label instructions are key-value pairs of arbitrary content.
-A dublicate key overwrites existing ones.
+A duplicate key overwrites existing ones.
 Although it is up to the user how many labels are created, it is recommended to bundle them into one Label instruction in the Dockerfile.
-Each use of the `Label()` function creates a seperate instruction in the Dockerfile.
+Each use of the `Label()` function creates a separate instruction in the Dockerfile.
 
 As shown in section 2, the maintainer label is set by default to the top as the dockerfile and contains the username of the current host system.
 The maintainer can be changed with the `maintainer` argument of `dockerfile()`:
@@ -466,7 +466,7 @@ print(df_filtered)
 A command line interface to the package functions is also available for Linux based on [docopt.R](https://github.com/docopt/docopt.R).
 This allows integration into workflows and tools written in other programming languages than R.
 
-You can make the command `containerit` available on your maching by linking the R script file delivered with the package as follows:
+You can make the command `containerit` available on your machine by linking the R script file delivered with the package as follows:
 
 `ln -s $(Rscript -e "cat(system.file(\"cli/container_it.R\", package=\"containerit\"))") /usr/local/bin/containerit`
 
@@ -508,14 +508,14 @@ Although it is possible to use deviating versions of R or even create Dockerfile
 
 ## 8. Conclusions and future work
 
-`containerit` alows to create and costumize Dockerfiles with minimal effort, which are suitable for packaging R analyses in the persistant runtime environment of a software container.
+`containerit` allows to create and customize Dockerfiles with minimal effort, which are suitable for packaging R analyses in the persistent runtime environment of a software container.
 So far, we were able to reproduce complete R sessions regarding attached _but not "loaded only" packages and mitigate some challenges towards reproducible computational research.
 
 Although we are able to package different versions of R, we still do not fully support the installation of specific versions of R packages and external software libraries, which R itself does not support.
 This should be tested in the future by evaluating version-stable package repositories like MRAN and GRAN or utility packages such as packrat -- see the [GitHub issues](https://github.com/o2r-project/containerit/issues/new) for the status of these plans or provide your own ideas there.
 
 Related to installing specific versions is support for other package repositories, such as Bioconductor, git, BitBucket, or even local files.
-For now, it is recommended that users have all software up-to-date when building a software container, as the latest version are installed from CRAN during the image build, to have matching package versions between the creation runtime environment and the container.
+For now, it is recommended that users have all software up-to-date when building a software container, as the latest version is installed from CRAN during the image build, to have matching package versions between the creation runtime environment and the container.
 All Dockerfiles and instructions are adjusted to the Rocker image stack and assume a Debian/Linux operating system.
 As we are not yet supporting the build of Docker images from scratch, we are restricted to this setup.
 
