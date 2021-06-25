@@ -596,7 +596,7 @@ dockerfileFromDescription <- function(description,
     pkgs <- c(description$get_field("Package"), pkgs)
 
   # parse remotes with remotes internal functions
-  remote_pkgs <- remotes:::split_remotes(description$get_remotes())
+  remote_pkgs <- remotes:::split_extra_deps(description$get_remotes())
 
   # add CRAN packages
   pkgs_list <- lapply(pkgs, function(pkg) {
@@ -610,7 +610,7 @@ dockerfileFromDescription <- function(description,
 
   # add remote packages
   pkgs_list <- append(pkgs_list, lapply(remote_pkgs, function(remote) {
-    remote_pkg <- remotes:::parse_one_remote(remote)
+    remote_pkg <- remotes:::parse_one_extra(remote)
     if (inherits(remote_pkg, "github_remote")) {
       # assume package name == repo name !
       name <- remote_pkg$repo
