@@ -24,7 +24,7 @@ clean_session(
 
 \item{predetect}{whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file}
 
-\item{repos}{Repository to use, requried if \code{expr} incluedes install statements}
+\item{repos}{Repository to use, required if \code{expr} includes install statements}
 }
 \description{
 The function may also execute provided expressions or files.

@@ -362,7 +362,7 @@ exprToParam <- function(expr, e_append = append, to_string = FALSE) {
 #' @param rmd_file R Markdown file to rendered in the session, uses \code{\link[rmarkdown]{render}}
 #' @param echo print out detailed information from R
 #' @param predetect whether to use \pkg{automagic} to install missing packaging before executing the R script or R Markdown file
-#' @param repos Repository to use, requried if \code{expr} incluedes install statements
+#' @param repos Repository to use, required if \code{expr} includes install statements
 #' @importFrom utils installed.packages install.packages
 #' @export
 #' @examples
