@@ -34,7 +34,7 @@ before_install:
   - "docker pull rocker/r-ver:latest"
   - "docker pull rocker/r-ver:3.4.3" # used in tests
   - "docker pull rocker/r-ver:3.6.0"
-  - "docker pull rocker/geospatial:3.6.2"
+  - "docker pull rocker/geospatial:4.0.5"
 
 # don't do vignettes (relevant when trying to get on CRAN)
 r_build_args: "--no-manual --no-build-vignettes"

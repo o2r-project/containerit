@@ -4,7 +4,6 @@
 # containerit <img src="man/figures/logo.png" align="right" alt="containerit logo" width="200" style="padding: 0 0 10px 10px;" />
 
 <!-- badges: start -->
-
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.01603/status.svg)](https://doi.org/10.21105/joss.01603)
 [![Project Status: WIP - Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
@@ -16,9 +15,9 @@ status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](
 [![](https://www.r-pkg.org/badges/version/containerit)](https://github.com/o2r-project/containerit/issues/68)
 [![Join the chat at
 https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
-<span class="altmetric-embed" data-badge-popover="bottom" data-badge-type="2" data-doi="10.21105/joss.01603" data-condensed="true" data-hide-no-mentions="true"></span>
-<!-- badges: end -->
-
+<span class="altmetric-embed" data-badge-popover="bottom"
+data-badge-type="2" data-doi="10.21105/joss.01603" data-condensed="true"
+data-hide-no-mentions="true"></span> <!-- badges: end -->
 <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
 
 `containerit` packages R script/session/workspace and all dependencies
@@ -28,12 +27,12 @@ a suitable `Dockerfile`. The package’s website is
 
 ## Prerequisites
 
-  - `containerit` only fully works if you have
-    [Docker](https://en.wikipedia.org/wiki/Docker_\(software\))
-    installed and is only tested with [Docker Engine -
+-   `containerit` only fully works if you have
+    [Docker](https://en.wikipedia.org/wiki/Docker_(software)) installed
+    and is only tested with [Docker Engine -
     Community](https://docs.docker.com/install/overview/) (previously
     called Docker Community Edition or Docker CE).
-  - `R (>= 3.5.0)` is needed so that some dependencies
+-   `R (>= 3.5.0)` is needed so that some dependencies
     (e.g. BiocManager) are available; older versions of R predate the
     development of the package and were never tested.
 
@@ -76,12 +75,12 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2020-03-24 15:30:50] Created Dockerfile-Object based on sessionInfo
+#> INFO [2021-06-25 11:10:38] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
-#> FROM rocker/r-ver:3.6.2
+#> FROM rocker/r-ver:4.1.0
 #> LABEL maintainer="daniel"
 #> WORKDIR /payload/
 #> CMD ["R"]
@@ -103,8 +102,8 @@ rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
                                           image = "rocker/verse:3.5.2",
                                           maintainer = "o2r",
                                           filter_baseimage_pkgs = TRUE)
-#> Detected API version '1.40' is above max version '1.39'; downgrading
-#> Detected API version '1.40' is above max version '1.39'; downgrading
+#> Detected API version '1.41' is above max version '1.39'; downgrading
+#> Detected API version '1.41' is above max version '1.39'; downgrading
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
@@ -132,7 +131,7 @@ The `Dockerfile`s are available in the directory
 docker inspect o2rproject/containerit
 ```
 
-Base image: `rocker/verse:3.6.2`
+Base image: `rocker/verse:4.0.5`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
@@ -144,7 +143,7 @@ Base image: `rocker/verse:3.6.2`
 docker inspect o2rproject/containerit:geospatial
 ```
 
-Base image: `rocker/geospatial:3.6.2`
+Base image: `rocker/geospatial:4.0.5`
 
 [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")
@@ -156,10 +155,10 @@ Base image: `rocker/geospatial:3.6.2`
 create interactive user interfaces for the RStudio development
 environment. Courtesy of a great contribution by a [group of
 enthusiasts](https://github.com/o2r-project/containerit/issues/27#issuecomment-440869329)
-at the [ROpenSci OZ
-Unconference 2018](https://ozunconf18.ropensci.org/), there are several
-forms to quickly create `Dockefile`s from different use cases, e.g. the
-current session, a vector of expressions, or a script file.
+at the [ROpenSci OZ Unconference
+2018](https://ozunconf18.ropensci.org/), there are several forms to
+quickly create `Dockefile`s from different use cases, e.g. the current
+session, a vector of expressions, or a script file.
 
 ![screenshots containerit RStudio Addin
 forms](https://user-images.githubusercontent.com/1325054/61534429-e1345980-aa2f-11e9-8f5d-e6f67e5d7dde.png)
@@ -209,35 +208,34 @@ metadata about the package and its dependencies is generated
 automatically when this document is compiled.
 
 ``` r
-codemetar::write_codemeta("containerit")
+codemetar::write_codemeta(".")
+#> Added codemeta.json to .Rbuildignore
+#> codemetar has the highest opinion of this R package :-)
 ```
 
 ## Citation
 
-``` r
-citation("containerit")
-#> 
-#> To cite containerit in publications use:
-#> 
-#>   Nüst, D. and Hinz, M. (2019). containerit: Generating Dockerfiles for
-#>   reproducible research with R. Journal of Open Source Software, 4(40),
-#>   1603, https://doi.org/10.21105/joss.01603
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Article{,
-#>     title = {{containerit: Generating Dockerfiles for reproducible research with R}},
-#>     author = {Daniel Nüst and Matthias Hinz},
-#>     journal = {{Journal of Open Source Software}},
-#>     year = {2019},
-#>     month = {8},
-#>     volume = {4},
-#>     number = {40},
-#>     pages = {1603},
-#>     doi = {10.21105/joss.01603},
-#>     url = {https://doi.org/10.21105/joss.01603},
-#>   }
-```
+
+    To cite containerit in publications use:
+
+      Nüst, D. and Hinz, M. (2019). containerit: Generating Dockerfiles for
+      reproducible research with R. Journal of Open Source Software, 4(40),
+      1603, https://doi.org/10.21105/joss.01603
+
+    A BibTeX entry for LaTeX users is
+
+      @Article{,
+        title = {{containerit: Generating Dockerfiles for reproducible research with R}},
+        author = {Daniel Nüst and Matthias Hinz},
+        journal = {{Journal of Open Source Software}},
+        year = {2019},
+        month = {8},
+        volume = {4},
+        number = {40},
+        pages = {1603},
+        doi = {10.21105/joss.01603},
+        url = {https://doi.org/10.21105/joss.01603},
+      }
 
 ## License
 

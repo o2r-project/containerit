@@ -1,5 +1,8 @@
 {
-  "@context": ["https://doi.org/10.5063/schema/codemeta-2.0", "http://schema.org"],
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "http://schema.org"
+  ],
   "@type": "SoftwareSourceCode",
   "identifier": "containerit",
   "description": "Package R sessions, scripts, workspace directories, and R\n    Markdown documents together with all dependencies to execute them in\n    Docker containers.  This package is supported by the project Opening\n    Reproducible Research (<https://o2r.info>).",
@@ -8,14 +11,13 @@
   "relatedLink": "https://o2r.info/containerit/",
   "issueTracker": "https://github.com/o2r-project/containerit/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.6.0.9002",
+  "version": "0.6.0.9004",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
-    "version": "3.6.2",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 3.6.2 (2019-12-12)",
+  "runtimePlatform": "R version 4.1.0 (2021-05-18)",
   "author": [
     {
       "@type": "Person",
@@ -573,7 +575,13 @@
       "sameAs": "https://CRAN.R-project.org/package=versions"
     }
   ],
-  "keywords": ["docker", "reproducible-research", "reproducible-science", "r", "dockerfile"],
+  "keywords": [
+    "docker",
+    "reproducible-research",
+    "reproducible-science",
+    "r",
+    "dockerfile"
+  ],
   "citation": [
     {
       "@type": "ScholarlyArticle",
@@ -593,7 +601,7 @@
       "name": "{containerit: Generating Dockerfiles for reproducible research with R}",
       "identifier": "10.21105/joss.01603",
       "url": "https://doi.org/10.21105/joss.01603",
-      "paginiation": "1603",
+      "pagination": "1603",
       "@id": "https://doi.org/10.21105/joss.01603",
       "sameAs": "https://doi.org/10.21105/joss.01603",
       "isPartOf": {
@@ -607,5 +615,10 @@
         }
       }
     }
-  ]
+  ],
+  "releaseNotes": "https://github.com/o2r-project/containerit/blob/master/NEWS.md",
+  "readme": "https://github.com/o2r-project/containerit/blob/master/README.md",
+  "fileSize": "3364.864KB",
+  "contIntegration": ["https://travis-ci.org/o2r-project/containerit", "https://ci.appveyor.com/project/nuest/containerit-rrvpq"],
+  "developmentStatus": "https://www.repostatus.org/#wip"
 }

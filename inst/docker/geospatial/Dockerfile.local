@@ -1,5 +1,5 @@
 # Dockerfile part of https://github.com/o2r-project/containerit/
-FROM rocker/geospatial:3.6.2
+FROM rocker/geospatial:4.0.5
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
