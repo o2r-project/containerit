@@ -34,7 +34,12 @@ Authors@R:
              comment = c(ORCID = "0000-0002-6585-538X")),
       person(given = "Marc",
              family = "Greenaway",
-             role = "ctb"))
+             role = "ctb"),
+      person(given = "Josiah",
+             family = "Parry", 
+             email = "josiah.parry@gmail.com",
+             role = "ctb",
+             comment = c(ORCID = "0000-0001-9910-865X"))
 Author: Daniel Nuest [aut, cre], Matthias Hinz [aut]
 Maintainer: Daniel Nuest <daniel.nuest@uni-muenster.de>
 Description: Package R sessions, scripts, workspace directories, and R
@@ -67,7 +72,8 @@ Imports:
     stringr,
     sysreqs,
     utils,
-    versions
+    versions,
+    dockerfiler
 Suggests:
     BiocGenerics,
     codetools,

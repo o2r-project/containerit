@@ -84,10 +84,16 @@ dockerfile <- function(from = utils::sessionInfo(),
                        predetect = TRUE,
                        versioned_libs = FALSE,
                        versioned_packages = FALSE,
-                       filter_baseimage_pkgs = FALSE) {
+                       filter_baseimage_pkgs = FALSE,
+                       ...) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
+
+  if (grepl("renv.lock", from)) {
+    dock <- dockerfiler::dock_from_renv(from, ...)
+    return(dock)
+  }
 
     the_dockerfile <- NA
     originalFrom <- class(from)
