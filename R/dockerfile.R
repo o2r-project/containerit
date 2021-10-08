@@ -39,6 +39,7 @@
 #' @param soft (boolean) Whether to include soft dependencies when system dependencies are installed, default is no.
 #' @param offline (boolean) Whether to use an online database to detect system dependencies or use local package information (slower!), default is no.
 #' @param copy whether and how a workspace should be copied; allowed values: "script", "script_dir" (paths relative to file, so only works for file-base \code{from} inputs, which (can be nested) within current working directory), a list of file paths relative to the current working directory to be copied into the payload directory, or \code{NULL} to disable copying of files
+#' @param instructions an ordered list of instructions in the Dockerfile
 #' @param container_workdir the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.
 #' @param cmd The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.
 #' @param entrypoint the ENTRYPOINT statement for the Dockerfile
@@ -73,6 +74,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                        soft = FALSE,
                        offline = FALSE,
                        copy = NULL,
+                       instructions = list(),
                        # nolint start
                        container_workdir = "/payload/",
                        # nolint end
@@ -141,7 +143,7 @@ dockerfile <- function(from = utils::sessionInfo(),
 
     # base dockerfile
     the_dockerfile <- methods::new("Dockerfile",
-                                instructions = list(),
+                                instructions = instructions,
                                 maintainer = maintainer,
                                 image = image,
                                 entrypoint = entrypoint,

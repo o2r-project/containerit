@@ -5,7 +5,7 @@
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#cmd}.
 #'
-#' @slot exec exectuable, character
+#' @slot exec executable, character
 #' @slot params parameters, character (vector)
 #' @slot form the form to use for output (exec or shell)
 #'
