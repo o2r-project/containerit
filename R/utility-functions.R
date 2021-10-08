@@ -201,7 +201,7 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
       r_version <- paste(temp_from$R.version$major, temp_from$R.version$minor, sep = ".")
       futile.logger::flog.debug("Got R version from sessionInfo: %s", r_version)
     }
-  r} else if (!is.null(from)
+  } else if (!is.null(from)
              && !is.expression(from)
              && !is.na(from)
              && file.exists(from)) {
