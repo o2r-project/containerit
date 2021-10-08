@@ -17,6 +17,7 @@ S4 Class representing a COPY-instruction
 }
 \examples{
 #no example yet
+Copy("here", "/here")
 }
 \seealso{
 Other instruction classes: 

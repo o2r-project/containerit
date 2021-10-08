@@ -190,10 +190,17 @@ getRVersionTag <- function(from, default = paste(R.Version()$major, R.Version()$
   } else if (inherits(from, "description")) {
     # get R: stringr::str_extract(string = "methods, R (1.2.3,test), test (9.9)", pattern = "R( \\(.*?\\))?")
     # get version: stringr::str_extract(string = "R (1.2.3)", pattern = "(?<=\\().+?(?=\\))")
-    r_depends <- stringr::str_extract(string = from$get_field("Depends"), pattern = "R( \\(.*?\\))?")
+    r_depends <- stringr::str_extract(string = from$get_field("Depends", default = NULL), pattern = "R( \\(.*?\\))?")
     r_version <- stringr::str_extract(string = stringr::str_extract(string = r_depends,
                                                                     pattern = "(?<=\\().+?(?=\\))"),
                                       pattern = "(\\d).*") # everything after the first digit
+    if (length(r_version) == 0 || nchar(n_version) == 0) {
+      warning(paste0("No R version in DESCRIPTION file, using sessionInfo(). ",
+              "Set Depends: R (>= VERSION) to override"))
+      temp_from <- sessionInfo()
+      r_version <- paste(temp_from$R.version$major, temp_from$R.version$minor, sep = ".")
+      futile.logger::flog.debug("Got R version from sessionInfo: %s", r_version)
+    }
   } else if (!is.null(from)
              && !is.expression(from)
              && !is.na(from)
