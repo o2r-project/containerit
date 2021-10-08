@@ -13,6 +13,7 @@
 #' @family instruction classes
 #' @examples
 #' #no example yet
+#' Copy("here", "/here")
 setClass("Copy",
          slots = list(src = "character", dest = "character"),
          contains = "Instruction")
@@ -26,6 +27,7 @@ setClass("Copy",
 #' @param addTrailingSlashes (boolean) add trailing slashes to the given paths if the source is an existing directory
 #'
 #' @return the object
+#' @export
 #' @importFrom fs dir_exists
 #' @importFrom stringr str_detect
 Copy <- function(src, dest, addTrailingSlashes = TRUE) {
