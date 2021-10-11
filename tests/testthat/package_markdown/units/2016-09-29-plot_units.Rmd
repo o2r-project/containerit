@@ -46,14 +46,14 @@ Here is an example using `mtcars`. First, we specify the imperial units to those
 ```{r}
 library(units)
 gallon = as_units("gallon")
-consumption = mtcars$mpg * with(ud_units, mi/gallon)
-displacement = mtcars$disp * ud_units[["in"]]^3
+consumption = mtcars$mpg * make_units(mi/gallon)
+displacement = mtcars$disp * as_units("in^3")
 ```
 
 For `displacement`, we cannot use the normal lookup in the database
 
 ```{r eval=FALSE}
-displacement = mtcars$disp * with(ud_units, in)
+displacement = set_units(mtcars$disp, "in")
 ```
 
 because `in` (inch) is also a reserved word in R.
@@ -61,8 +61,9 @@ because `in` (inch) is also a reserved word in R.
 We convert these values to SI units by
 
 ```{r}
-units(displacement) = with(ud_units, cm^3)
-units(consumption) = with(ud_units, km/l)
+units(displacement) = make_units(cm^3)
+displacement[1:5]
+units(consumption) = make_units(km/l)
 consumption[1:5]
 ```
 

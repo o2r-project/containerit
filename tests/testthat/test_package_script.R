@@ -154,10 +154,18 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
   expect_equal(capture.output(print(the_dockerfile)), expected_file)
 })
 
+skip_if_installed = function(pkg) {
+  if (requireNamespace(pkg, quietly = TRUE)) {
+    skip(paste0(pkg, " can be loaded, but should be missing"))
+  }
+  return(invisible(TRUE))
+}
+
 test_that("packaging fails if library from script is missing without predetection", {
   skip_on_cran() # CRAN knows all the packages
   skip_on_ci()
 
+  skip_if_installed("coxrobust")
   # package should still not be in this session library
   expect_error(library("coxrobust"))
 
