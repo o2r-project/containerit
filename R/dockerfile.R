@@ -171,7 +171,7 @@ dockerfile <- function(from = utils::sessionInfo(),
                                               filter_baseimage_pkgs,
                                               workdir)
     } else if (is.data.frame(x = from)) {
-      futile.logger::flog.debug("Creating from data.frame with names (need: name, version, source), ", names(x))
+      futile.logger::flog.debug("Creating from data.frame with names (need: name, version, source), ", names(from))
       the_dockerfile <- dockerfileFromPackages(pkgs = from,
                                                base_dockerfile = the_dockerfile,
                                                soft,

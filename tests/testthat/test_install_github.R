@@ -30,6 +30,9 @@ test_that("remote packages are installed from a DESCRIPTION file", {
   expect_true(any(stringr::str_detect(toString(the_dockerfile),
                                       "^RUN \\[\"install2.r\", \"graphics\", \"remotes\"\\]$")))
   expect_true(any(stringr::str_detect(toString(the_dockerfile),
+                                      "^RUN \\[\"installGithub.r\", \"some-org/the_package@HEAD\"\\]$")))
+  # change in the ref
+  expect_false(any(stringr::str_detect(toString(the_dockerfile),
                                       "^RUN \\[\"installGithub.r\", \"some-org/the_package@master\"\\]$")))
 })
 

@@ -16,9 +16,10 @@ setClass("Workdir",
 #' @param path The path of the working directory
 #'
 #' @return the object
+#' @export
 #'
 #' @examples
-#' instruction <- containerit:::Workdir("~/myDir/subdir/")
+#' instruction <- containerit::Workdir("~/myDir/subdir/")
 #' toString(instruction)
 Workdir <- function(path) {
   methods::new("Workdir",

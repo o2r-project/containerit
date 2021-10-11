@@ -91,7 +91,8 @@ Suggests:
     sessioninfo,
     sf,
     sp,
-    testthat
+    testthat,
+    httr
 VignetteBuilder: 
     knitr
 Remotes: 
