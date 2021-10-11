@@ -45,7 +45,7 @@ Here is an example using `mtcars`. First, we specify the imperial units to those
 
 ```{r}
 library(units)
-gallon = make_unit("gallon")
+gallon = as_units("gallon")
 consumption = mtcars$mpg * with(ud_units, mi/gallon)
 displacement = mtcars$disp * ud_units[["in"]]^3
 ```

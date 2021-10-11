@@ -147,6 +147,8 @@ getImageForVersion <- function(r_version, nearest = TRUE) {
     if (nearest) {
       # get numeric versions with all parts (maj.min.minor), i.e. two dots
       numeric_tags <- tags[which(grepl("\\d.\\d.\\d", tags))]
+      # issue is cuda/ubuntu
+      numeric_tags <- numeric_tags[!grepl("[[:alpha:]]", numeric_tags)]
       closest <- as.character(closestMatch(r_version, numeric_tags))
       image <- From(.rocker_images[["versioned"]], tag = closest)
 
@@ -423,6 +425,12 @@ clean_session <- function(expr = c(),
 
   futile.logger::flog.debug("Creating an R session with the following expressions:\n%s", toString(expr))
 
+  if (is.call(expr)) {
+    # so functions such as
+    # containerit::clean_session(expr = quote(library("BiocGenerics")))
+    # still work
+    expr = c(expr)
+  }
   the_info <- callr::r_vanilla(function(expressions) {
     for (e in expressions) {
       eval(e)
