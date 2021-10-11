@@ -96,6 +96,19 @@
     },
     {
       "@type": "SoftwareApplication",
+      "identifier": "units",
+      "name": "units",
+      "version": ">= 0.7.0",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=units"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "codetools",
       "name": "codetools",
       "provider": {
@@ -345,6 +358,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=testthat"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "httr",
+      "name": "httr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=httr"
     }
   ],
   "softwareRequirements": [
@@ -618,7 +643,7 @@
   ],
   "releaseNotes": "https://github.com/o2r-project/containerit/blob/master/NEWS.md",
   "readme": "https://github.com/o2r-project/containerit/blob/master/README.md",
-  "fileSize": "3364.864KB",
-  "contIntegration": ["https://travis-ci.org/o2r-project/containerit", "https://ci.appveyor.com/project/nuest/containerit-rrvpq"],
+  "fileSize": "2625.234KB",
+  "contIntegration": ["https://travis-ci.org/o2r-project/containerit", "https://ci.appveyor.com/project/nuest/containerit-rrvpq", "https://github.com/o2r-project/containerit/actions"],
   "developmentStatus": "https://www.repostatus.org/#wip"
 }
