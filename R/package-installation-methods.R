@@ -300,7 +300,7 @@ versioned_install_instructions <- function(pkgs) {
   futile.logger::flog.info("Trying to determine system requirements for the package(s) '%s' from sysreqs online DB", package)
 
   .url <- paste0("https://sysreqs.r-hub.io/pkg/", package)
-  if (!is.null(platform)) .url <- paste0(url, "/", platform)
+  if (!is.null(platform)) .url <- paste0(.url, "/", platform)
   con <- url(.url)
   futile.logger::flog.debug("Accessing '%s'", .url)
   success <- TRUE
