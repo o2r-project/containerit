@@ -43,6 +43,11 @@ jobs:
         with:
           extra-packages: rcmdcheck
 
+      - uses: docker-practice/actions-setup-docker@master
+        run: |
+          set -x
+          docker version
+
       - uses: r-lib/actions/check-r-package@v1
 
       - name: Show testthat output
