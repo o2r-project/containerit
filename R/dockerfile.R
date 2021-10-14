@@ -180,7 +180,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                versioned_packages,
                                                filter_baseimage_pkgs,
                                                workdir)
-    } else if (inherits(x = from, "sessionInfo")) {
+    } else if (inherits(x = from, "sessionInfo") ||
+               inherits(x = from, "session_info") ) {
       futile.logger::flog.debug("Creating from sessionInfo object")
       the_dockerfile <- dockerfileFromSession(session = from,
                                               base_dockerfile = the_dockerfile,
