@@ -74,7 +74,7 @@ add_install_instructions <- function(base_dockerfile,
 
     # if platform is debian and system dependencies need to be installed, add the commands
     if (length(package_reqs) > 0) {
-      if (platform == .debian_platform) {
+      if (platform == .debian_platform || platform == .ubuntu_platform) {
         commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
         install_command <- paste("apt-get install -y",
                                  paste(package_reqs, collapse = " \\\n\t"))
