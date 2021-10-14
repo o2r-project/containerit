@@ -50,7 +50,7 @@
 #' @param versioned_libs [EXPERIMENTAL] Whether it shall be attempted to match versions of linked external libraries
 #' @param versioned_packages Whether it shall be attempted to match versions of R packages
 #' @param filter_baseimage_pkgs Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub, and does not check the package version.
-#'
+#' @param platform Platform string, defaults to the current platform, passed to \code{\link{sysreqs}} or the \code{sysreqs} API.
 #' @return An object of class Dockerfile
 #'
 #' @export
@@ -86,7 +86,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                        predetect = TRUE,
                        versioned_libs = FALSE,
                        versioned_packages = FALSE,
-                       filter_baseimage_pkgs = FALSE) {
+                       filter_baseimage_pkgs = FALSE,
+                       platform = NULL) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -169,7 +170,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                               versioned_libs,
                                               versioned_packages,
                                               filter_baseimage_pkgs,
-                                              workdir)
+                                              workdir,
+                                              platform = platform)
     } else if (is.data.frame(x = from)) {
       futile.logger::flog.debug("Creating from data.frame with names (need: name, version, source), ", names(from))
       the_dockerfile <- dockerfileFromPackages(pkgs = from,
@@ -179,7 +181,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                versioned_libs,
                                                versioned_packages,
                                                filter_baseimage_pkgs,
-                                               workdir)
+                                               workdir,
+                                               platform = platform)
     } else if (inherits(x = from, "sessionInfo") ||
                inherits(x = from, "session_info") ) {
       futile.logger::flog.debug("Creating from sessionInfo object")
@@ -192,7 +195,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                               versioned_libs,
                                               versioned_packages,
                                               filter_baseimage_pkgs,
-                                              workdir)
+                                              workdir,
+                                              platform = platform)
     } else if (inherits(x = from, "description")) {
       futile.logger::flog.debug("Creating from description object")
       the_dockerfile <- dockerfileFromDescription(description = from,
@@ -203,7 +207,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                   versioned_libs,
                                                   versioned_packages,
                                                   filter_baseimage_pkgs,
-                                                  workdir)
+                                                  workdir,
+                                                  platform = platform)
     } else if (inherits(x = from, "character")) {
       futile.logger::flog.debug("Creating from character string '%s'", from)
       originalFrom <- from
@@ -222,7 +227,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                   versioned_libs,
                                                   versioned_packages,
                                                   filter_baseimage_pkgs,
-                                                  workdir)
+                                                  workdir,
+                                                  platform = platform)
       } else if (file.exists(from)) {
         futile.logger::flog.debug("'%s' is a file", from)
 
@@ -236,7 +242,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                       versioned_libs,
                                                       versioned_packages,
                                                       filter_baseimage_pkgs,
-                                                      workdir)
+                                                      workdir,
+                                                      platform = platform)
         } else {
           the_dockerfile <- dockerfileFromFile(fromFile = from,
                                                base_dockerfile = the_dockerfile,
@@ -250,7 +257,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                                versioned_libs,
                                                versioned_packages,
                                                filter_baseimage_pkgs,
-                                               workdir)
+                                               workdir,
+                                               platform = platform)
         }
       } else {
         stop("Unsupported string for 'from' argument (not a file, not a directory): ", from)
@@ -288,14 +296,14 @@ dockerfileFromPackages <- function(pkgs,
                                    versioned_libs,
                                    versioned_packages,
                                    filter_baseimage_pkgs,
-                                   workdir) {
+                                   workdir,
+                                   platform = NULL) {
   futile.logger::flog.debug("Creating from packages data.frame")
 
   # The platform is determined only for known images.
   # Alternatively, we could let the user optionally specify one amongst different supported platforms
-  platform = NULL
   image_name = base_dockerfile@image@image
-  if (image_name %in% .debian_images) {
+  if (image_name %in% .debian_images && is.null(platform)) {
     platform = .debian_platform
     futile.logger::flog.debug("Found image %s in list of Debian images", image_name)
   }
@@ -330,7 +338,8 @@ dockerfileFromSession.sessionInfo <- function(session,
                                               versioned_libs,
                                               versioned_packages,
                                               filter_baseimage_pkgs,
-                                              workdir) {
+                                              workdir,
+                                              platform = NULL) {
   futile.logger::flog.debug("Creating from sessionInfo")
 
   pkgs <- session$otherPkgs
@@ -397,7 +406,8 @@ dockerfileFromSession.sessionInfo <- function(session,
                                            versioned_libs,
                                            versioned_packages,
                                            filter_baseimage_pkgs,
-                                           workdir)
+                                           workdir,
+                                           platform = platform)
   return(the_dockerfile)
 }
 
@@ -410,7 +420,8 @@ dockerfileFromSession.session_info <- function(session,
                                                versioned_libs,
                                                versioned_packages,
                                                filter_baseimage_pkgs,
-                                               workdir) {
+                                               workdir,
+                                               platform = platform) {
   futile.logger::flog.debug("Creating from session_info")
 
   if (is.null(session$packages) || !(inherits(session$packages, "packages_info")))
@@ -441,7 +452,8 @@ dockerfileFromSession.session_info <- function(session,
                                            versioned_libs,
                                            versioned_packages,
                                            filter_baseimage_pkgs,
-                                           workdir)
+                                           workdir,
+                                           platform = platform)
   return(the_dockerfile)
 }
 
@@ -458,7 +470,8 @@ dockerfileFromFile <- function(fromFile,
                                versioned_libs,
                                versioned_packages,
                                filter_baseimage_pkgs,
-                               workdir) {
+                               workdir,
+                               platform = NULL) {
     futile.logger::flog.debug("Creating from file ", fromFile)
 
     # prepare context ( = working directory) and normalize paths:
@@ -503,7 +516,8 @@ dockerfileFromFile <- function(fromFile,
                                             versioned_libs,
                                             versioned_packages,
                                             filter_baseimage_pkgs,
-                                            workdir)
+                                            workdir,
+                                            platform = platform)
 
     # WORKDIR must be set before, now add COPY instructions
     the_dockerfile <- .handleCopy(the_dockerfile, copy, context, fromFile)
@@ -523,7 +537,8 @@ dockerfileFromWorkspace <- function(path,
                                     versioned_libs,
                                     versioned_packages,
                                     filter_baseimage_pkgs,
-                                    workdir) {
+                                    workdir,
+                                    platform = NULL) {
     futile.logger::flog.debug("Creating from workspace directory")
     target_file <- NULL #file to be packaged
 
@@ -573,7 +588,8 @@ dockerfileFromWorkspace <- function(path,
                                          versioned_libs,
                                          versioned_packages,
                                          filter_baseimage_pkgs,
-                                         workdir)
+                                         workdir,
+                                         platform = platform)
     return(the_dockerfile)
   }
 
@@ -585,7 +601,8 @@ dockerfileFromDescription <- function(description,
                                       versioned_libs,
                                       versioned_packages,
                                       filter_baseimage_pkgs,
-                                      workdir) {
+                                      workdir,
+                                      platform = NULL) {
   futile.logger::flog.debug("Creating from description")
   stopifnot(inherits(x = description, "description"))
 
@@ -631,9 +648,8 @@ dockerfileFromDescription <- function(description,
   packages_df <- do.call("rbind", lapply(pkgs_list, as.data.frame))
   futile.logger::flog.debug("Found %s packages in sessionInfo", nrow(packages_df))
 
-  platform = NULL
   image_name = base_dockerfile@image@image
-  if (image_name %in% .debian_images) {
+  if (image_name %in% .debian_images && is.null(platform)) {
     platform = .debian_platform
     futile.logger::flog.debug("Found image %s in list of Debian images", image_name)
   }
@@ -646,7 +662,8 @@ dockerfileFromDescription <- function(description,
                                            versioned_libs,
                                            versioned_packages,
                                            filter_baseimage_pkgs,
-                                           workdir)
+                                           workdir,
+                                           platform = platform)
 
   # WORKDIR must be set before, now add COPY instructions
   the_dockerfile <- .handleCopy(the_dockerfile, copy, fs::path_norm(getwd()))

@@ -26,7 +26,8 @@ dockerfile(
   predetect = TRUE,
   versioned_libs = FALSE,
   versioned_packages = FALSE,
-  filter_baseimage_pkgs = FALSE
+  filter_baseimage_pkgs = FALSE,
+  platform = NULL
 )
 }
 \arguments{
@@ -72,6 +73,8 @@ By default, the image selection is based on the given session. Alternatively, us
 \item{versioned_packages}{Whether it shall be attempted to match versions of R packages}
 
 \item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub, and does not check the package version.}
+
+\item{platform}{Platform string, defaults to the current platform, passed to \code{\link{sysreqs}} or the \code{sysreqs} API.}
 }
 \value{
 An object of class Dockerfile
