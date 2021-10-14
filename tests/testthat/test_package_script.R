@@ -185,6 +185,7 @@ test_that("packaging works if library from script is missing but predetection is
   skip_on_cran() # CRAN knows all the packages
   skip_on_ci()
 
+  skip_if_installed("coxrobust")
   output <- capture_output({
     predetected_df <- dockerfile(from = "package_script/needs_predetect/",
                                maintainer = "o2r",
