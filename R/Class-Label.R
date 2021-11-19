@@ -73,6 +73,7 @@ Label <-
 Label_SessionInfo <-
   function(session = sessionInfo(),
            as_json = FALSE) {
+    session$hash$emoji = NULL
     if (as_json) {
       session_string <- rjson::toJSON(session)
     } else{
