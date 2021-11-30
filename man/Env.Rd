@@ -2,19 +2,18 @@
 % Please edit documentation in R/Class-Env.R
 \name{Env}
 \alias{Env}
-\title{Constructor for Env yet to be implemented}
+\title{create objects of class Env}
 \usage{
-Env(...)
+Env(argument, value = NULL)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{argument}{the argument name}
+
+\item{value}{the value to be set to the argument}
 }
 \value{
-the object
+Env-object
 }
 \description{
-Constructor for Env yet to be implemented
-}
-\examples{
-#no example yet
+create objects of class Env
 }

@@ -6,7 +6,7 @@
 #'
 #' @section Based on \code{sessionInfo}:
 #'
-#' Use the current \code{\link[utils]{sessionInfo})} to create a Dockerfile.
+#' Use the current \code{\link[utils]{sessionInfo}} to create a Dockerfile.
 #'
 #' @section Based on a workspace/directory:
 #'
