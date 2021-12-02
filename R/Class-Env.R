@@ -1,8 +1,5 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-setClassUnion("nullOrCharacter", c("NULL", "character"))
-
-
 #' Env-instruction class yet to be implemented
 #' @include Class-Instruction.R
 #'
@@ -18,7 +15,7 @@ setClassUnion("nullOrCharacter", c("NULL", "character"))
 setClass(
   "Env",
   slots = list(argument = "character",
-               value = "nullOrCharacter"),
+               value = "NullOrCharacter"),
   contains = "Instruction",
   validity = function(object) {
     if (length(object@argument) == 1 && length(object@value) <= 1) {

@@ -51,6 +51,7 @@
 #' @param versioned_packages Whether it shall be attempted to match versions of R packages
 #' @param filter_baseimage_pkgs Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub, and does not check the package version.
 #' @param platform Platform string, defaults to the current platform, passed to \code{\link{sysreqs}} or the \code{sysreqs} API.
+#' @param syntax the syntax header for the Dockefile
 #' @return An object of class Dockerfile
 #'
 #' @export
@@ -87,7 +88,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                        versioned_libs = FALSE,
                        versioned_packages = FALSE,
                        filter_baseimage_pkgs = FALSE,
-                       platform = NULL) {
+                       platform = NULL,
+                       syntax = NULL) {
     if (silent) {
       invisible(futile.logger::flog.threshold(futile.logger::WARN))
     }
@@ -148,7 +150,8 @@ dockerfile <- function(from = utils::sessionInfo(),
                                 maintainer = maintainer,
                                 image = image,
                                 entrypoint = entrypoint,
-                                cmd = command)
+                                cmd = command,
+                                syntax = syntax)
 
     # handle different "from" cases
     if (is.null(from)) {

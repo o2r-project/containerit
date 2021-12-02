@@ -15,6 +15,7 @@
 #' @slot instructions an ordered list of instructions in the Dockerfile (list of character)
 #' @slot entrypoint the entrypoint instruction applied to the container
 #' @slot cmd the default cmd instruction applied to the container
+#' @slot syntax the syntax given for the header of the container
 #'
 #' @details The entrypoint and cmd are provided outside of instructions, as only one of them takes effect.
 #' If Cmd or Entrypoint instructions are provided as part of the regular instructions, they appear in the Dockerfile but have no effect.
@@ -22,16 +23,28 @@
 #' @return an object of class \code{Dockerfile}
 #' @export
 Dockerfile <- setClass("Dockerfile",
-                    slots = list(image = "From",
-                                 maintainer = "NullOrLabelOrMaintainer",
-                                 instructions = "list",
-                                 entrypoint = "NullOrEntrypoint",
-                                 cmd = "Cmd")
+                       slots = list(
+                         image = "From",
+                         maintainer = "NullOrLabelOrMaintainer",
+                         instructions = "list",
+                         entrypoint = "NullOrEntrypoint",
+                         cmd = "Cmd",
+                         syntax = "NullOrCharacter")
 )
 
 toString.Dockerfile <- function(x, ...) {
   #initialize dockerfile with from
   output <- c()
+  syntax <- methods::slot(x, "syntax")
+  if (!is.null(syntax)) {
+    syntax = trimws(syntax)
+    syntax = sub("^#*", "", syntax)
+    syntax = trimws(syntax)
+    syntax = sub("syntax=", "", syntax)
+    syntax = trimws(syntax)
+    syntax = paste0("# syntax=", syntax)
+    output <- append(output, syntax)
+  }
   from <- toString(methods::slot(x, "image"))
   output <- append(output, from)
   maintainer <- methods::slot(x, "maintainer")
