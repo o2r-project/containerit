@@ -1,6 +1,6 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-#' Env-instruction class yet to be implemented
+#' Env-instruction class
 #' @include Class-Instruction.R
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#env}.
