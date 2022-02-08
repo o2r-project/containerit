@@ -143,6 +143,28 @@ CMD_Rscript <-
     Cmd("R", params = params)
   }
 
+#' Create CMD instruction for running an R expression
+#'
+#' Schema: R [--options] [file] [args]
+#'
+#' @export
+#' @rdname CMD_Rexpr
+#' @param expr character vector of expressions to run
+#' @inheritParams CMD_Rscript
+#' @return A CMD instruction
+CMD_Rexpr <-
+  function(expr,
+           options = character(0),
+           args = character(0),
+           vanilla = TRUE) {
+    if (vanilla)
+      options <- append(options, "--vanilla")
+    params <- rep("-e", length = length(expressions))
+    params <- c(t(cbind(params, expressions)))
+    params <- append(options, params)
+    params <- append(params, args)
+    Cmd("R", params = params)
+  }
 
 
 #' Create CMD instruction for rendering a markdown file
