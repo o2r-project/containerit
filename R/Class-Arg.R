@@ -8,23 +8,41 @@
 #' @return object
 #' @family instruction classes
 #' @examples
-#' #no example yet
-setClass("Arg", contains = "Instruction")
+#' x = Arg("myarg")
+#' print(x)
+setClass(
+  "Arg",
+  slots = list(argument = "character"),
+  contains = "Instruction",
+  validity = function(object) {
+    if (length(object@argument) == 1) TRUE else "argument must be length 1"
+  }
+  )
 
-#' Arg constructor yet to be implemented
+#' create objects of class Arg
 #'
-#' @param ... fields yet to be implemented
 #'
-#' @return the object
-#' @examples
-#' #no example yet
-Arg <- function(...) {
-  stop("Constructor not yet implemented for this class.")
+#' @param argument the argument name
+#' @export
+#' @return Arg-object
+Arg <- function(argument) {
+  return(new("Arg", argument = argument))
 }
+
+setMethod(
+  "docker_key",
+  signature = signature(obj = "Arg"),
+  definition =
+    function(obj) {
+      return("ARG")
+    }
+)
+
 
 setMethod("docker_arguments",
           signature(obj = "Arg"),
           function(obj) {
-            stop("The generic function docker_arguments is not implemented for class ",
-                 class(obj))
+            argument <- methods::slot(obj, "argument")
+            return(argument)
           })
+

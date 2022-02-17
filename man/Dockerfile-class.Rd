@@ -27,5 +27,7 @@ If Cmd or Entrypoint instructions are provided as part of the regular instructio
 \item{\code{entrypoint}}{the entrypoint instruction applied to the container}
 
 \item{\code{cmd}}{the default cmd instruction applied to the container}
+
+\item{\code{syntax}}{the syntax given for the header of the container}
 }}
 

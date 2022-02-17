@@ -34,7 +34,7 @@ add_install_instructions <- function(base_dockerfile,
 
     if (any(skipable))
       addInstruction(base_dockerfile) <- Comment(text = paste0("CRAN packages skipped because they are in the base image: ",
-                                                        skipped_str))
+                                                               skipped_str))
 
     # do not add skippable, add all non-CRAN packages
     pkgs <- rbind(cran_packages[!skipable,], pkgs[pkgs$source != "CRAN",])
@@ -55,11 +55,17 @@ add_install_instructions <- function(base_dockerfile,
 
   if (nrow(pkgs) > 0) {
     # 1. get system dependencies if packages must be installed (if applicable by given platform)
-    package_reqs <- sapply(X = stringr::str_sort(as.character(unlist(pkgs$name))),
-                           FUN = .find_system_dependencies,
-                           platform = platform,
-                           soft = soft,
-                           offline = offline)
+    all_packages <- stringr::str_sort(as.character(unlist(pkgs$name)))
+    # package_reqs <- sapply(X = all_packages,
+    #                        FUN = .find_system_dependencies,
+    #                        platform = platform,
+    #                        soft = soft,
+    #                        offline = offline)
+    package_reqs <- .find_sys_deps(
+      packages = all_packages,
+      platform = platform,
+      soft = soft,
+      offline = offline)
     package_reqs <- unlist(package_reqs)
 
     # selected known dependencies that can be left out because they are pre-installed for given image
@@ -74,7 +80,7 @@ add_install_instructions <- function(base_dockerfile,
 
     # if platform is debian and system dependencies need to be installed, add the commands
     if (length(package_reqs) > 0) {
-      if (platform == .debian_platform) {
+      if (platform == .debian_platform || platform == .ubuntu_platform) {
         commands <- "export DEBIAN_FRONTEND=noninteractive; apt-get -y update"
         install_command <- paste("apt-get install -y",
                                  paste(package_reqs, collapse = " \\\n\t"))
@@ -116,9 +122,9 @@ add_install_instructions <- function(base_dockerfile,
       futile.logger::flog.info("Adding Bioconductor packages: %s", toString(bioc_packages))
       repos = as.character(BiocManager::repositories())
       addInstruction(base_dockerfile) <- Run("install2.r", params = c(sprintf("-r %s -r %s -r %s -r %s",
-                                                                         repos[1], repos[2],
-                                                                         repos[3], repos[4]),
-                                                                 bioc_packages))
+                                                                              repos[1], repos[2],
+                                                                              repos[3], repos[4]),
+                                                                      bioc_packages))
     } else futile.logger::flog.debug("No Bioconductor packages to add.")
 
     # 4. add installation instruction for GitHub packages
@@ -150,7 +156,7 @@ versioned_install_instructions <- function(pkgs) {
                                  ifelse(!is.na(pkg["version"]),
                                         paste0('versions::install.versions(\'', pkg["name"], '\', \'' , pkg["version"], '\')'),
                                         NA)
-                                 },
+                               },
                                MARGIN = 1)
   installInstructions <- installInstructions[!is.na(installInstructions)]
 
@@ -164,6 +170,61 @@ versioned_install_instructions <- function(pkgs) {
     instructions <- c(Run("install2.r", unversioned), instructions)
   }
   return(instructions)
+}
+
+deps_table = function(packages) {
+  res = sessioninfo::package_info(pkgs = packages)
+  res = as.data.frame(res)[, c("package", "ondiskversion")]
+  colnames(res) = c("package", "version")
+  res$type = "Imports"
+  na_version = is.na(res$version)
+  res$version[!na_version] = paste0(">= ", res$version[!na_version])
+  res$version[na_version] = "*"
+  res = res[, c("type", "package", "version")]
+  res
+}
+
+
+fake_description_from_packages = function(packages) {
+  deps = deps_table(packages)
+  desc = desc::description$new("!new")
+  desc$set_deps(deps)
+  desc$set("Package", "base")
+  tfile = tempfile()
+  desc$write(tfile)
+  tfile
+}
+
+
+.find_sys_deps = function(packages,
+                          platform,
+                          soft = TRUE,
+                          offline = FALSE) {
+  stopifnot(is.logical(offline) && length(offline) == 1)
+  method = ifelse(offline, "sysreq-package", "sysreq-api")
+  futile.logger::flog.info("Going online? %s  ... to retrieve system dependencies (%s)", !offline, method)
+
+  if (offline) {
+    desc_file = fake_description_from_packages(packages)
+    .dependencies = sysreqs::sysreqs(
+      desc_file,
+      platform = platform,
+      soft = soft)
+  } else {
+    .dependencies <- .find_by_sysreqs_api(
+      package = packages,
+      platform = platform)
+
+    if (length(.dependencies) > 0) {
+      # remove duplicates and unlist dependency string from sysreqs
+      .dependencies <- unique(unlist(.dependencies, use.names = FALSE))
+      .dependencies <- unlist(lapply(.dependencies, function(x) {
+        unlist(strsplit(x, split = " "))
+      }))
+    }
+  }
+  futile.logger::flog.debug("Found %s system dependencies: %s", length(.dependencies), toString(.dependencies))
+  return(.dependencies)
 }
 
 .find_system_dependencies <- function(package,
@@ -220,7 +281,7 @@ versioned_install_instructions <- function(pkgs) {
     out <- mapply(function(pkg, version) {
       .find_by_sysreqs_pkg(pkg, platform, soft, version, localFirst)
     }, pkg = package, version = package_version)
-    return(out) # there might be dublicate dependencies, they must be removed by the invoking method
+    return(out) # there might be duplicate dependencies, they must be removed by the invoking method
   }
 
   sysreqs <- character(0)
@@ -299,7 +360,8 @@ versioned_install_instructions <- function(pkgs) {
 
   futile.logger::flog.info("Trying to determine system requirements for the package(s) '%s' from sysreqs online DB", package)
 
-  .url <- paste0("https://sysreqs.r-hub.io/pkg/", package, "/", platform)
+  .url <- paste0("https://sysreqs.r-hub.io/pkg/", package)
+  if (!is.null(platform)) .url <- paste0(.url, "/", platform)
   con <- url(.url)
   futile.logger::flog.debug("Accessing '%s'", .url)
   success <- TRUE

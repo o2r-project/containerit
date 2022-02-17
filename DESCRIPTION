@@ -70,6 +70,7 @@ Imports:
     versions
 Suggests:
     BiocGenerics,
+    units (>= 0.7.0),
     codetools,
     covr,
     coxrobust,
@@ -90,14 +91,15 @@ Suggests:
     sessioninfo,
     sf,
     sp,
-    testthat
+    testthat,
+    httr
 VignetteBuilder: 
     knitr
 Remotes: 
     github::r-hub/sysreqs
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'

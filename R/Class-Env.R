@@ -1,30 +1,62 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
-#' Env class yet to be implemented
+#' Env-instruction class
 #' @include Class-Instruction.R
 #'
 #' See official documentation at \url{https://docs.docker.com/engine/reference/builder/#env}.
 #'
-#' @return the object
+#' @return object
 #' @family instruction classes
 #' @examples
-#' #no example yet
-setClass("Env", contains = "Instruction")
+#' x = Env("myarg", "default value")
+#' print(x)
+#' x = Env("myarg")
+#' print(x)
+setClass(
+  "Env",
+  slots = list(argument = "character",
+               value = "NullOrCharacter"),
+  contains = "Instruction",
+  validity = function(object) {
+    if (length(object@argument) == 1 && length(object@value) <= 1) {
+      TRUE
+      } else {
+        "argument must be length 1 and value must be max length 1"
+      }
+  }
+)
 
-#' Constructor for Env yet to be implemented
+#' create objects of class Env
 #'
-#' @param ... fields yet to be implemented
 #'
-#' @return the object
-#' @examples
-#' #no example yet
-Env <- function(...) {
-  stop("Constructor not yet implemented for this class.")
+#' @param argument the argument name
+#' @param value the value to be set to the argument
+#' @export
+#' @return Env-object
+Env <- function(argument, value = NULL) {
+  return(new("Env", argument = argument, value = value))
 }
+
+
+setMethod(
+  "docker_key",
+  signature = signature(obj = "Env"),
+  definition =
+    function(obj) {
+      return("ENV")
+    }
+)
 
 setMethod("docker_arguments",
           signature(obj = "Env"),
           function(obj) {
-            stop("The generic function docker_arguments is not implemented for class ",
-                 class(obj))
+            argument <- methods::slot(obj, "argument")
+            value <- methods::slot(obj, "value")
+            if (is.null(value)) {
+              value = ""
+            } else {
+              value = paste0('"', value, '"')
+            }
+            return(paste0(argument, "=", value))
           })
+

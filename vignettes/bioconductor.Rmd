@@ -36,7 +36,7 @@ df <- dockerfile(from = info)
 A shortcut to this is provided with the function `containerit::clean_session(..)`:
 
 ```{r bioc_dockerfile_clean_session, results='hide'}
-containerit::clean_session(expr = quote(library("BiocGenerics")))
+containerit::clean_session(expr = c(quote(library("BiocGenerics"))))
 ```
 
 

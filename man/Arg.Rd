@@ -2,19 +2,16 @@
 % Please edit documentation in R/Class-Arg.R
 \name{Arg}
 \alias{Arg}
-\title{Arg constructor yet to be implemented}
+\title{create objects of class Arg}
 \usage{
-Arg(...)
+Arg(argument)
 }
 \arguments{
-\item{...}{fields yet to be implemented}
+\item{argument}{the argument name}
 }
 \value{
-the object
+Arg-object
 }
 \description{
-Arg constructor yet to be implemented
-}
-\examples{
-#no example yet
+create objects of class Arg
 }

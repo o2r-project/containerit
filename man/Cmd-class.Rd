@@ -13,7 +13,7 @@ An S4 class to represent a CMD instruction
 \section{Slots}{
 
 \describe{
-\item{\code{exec}}{exectuable, character}
+\item{\code{exec}}{executable, character}
 
 \item{\code{params}}{parameters, character (vector)}
 

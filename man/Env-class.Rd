@@ -3,15 +3,18 @@
 \docType{class}
 \name{Env-class}
 \alias{Env-class}
-\title{Env class yet to be implemented}
+\title{Env-instruction class}
 \value{
-the object
+object
 }
 \description{
-Env class yet to be implemented
+Env-instruction class
 }
 \examples{
-#no example yet
+x = Env("myarg", "default value")
+print(x)
+x = Env("myarg")
+print(x)
 }
 \seealso{
 Other instruction classes: 

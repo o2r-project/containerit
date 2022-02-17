@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
 [![](https://www.r-pkg.org/badges/version/containerit)](https://github.com/o2r-project/containerit/issues/68)
 [![Join the chat at https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
 <span data-badge-popover="bottom" data-badge-type="2" data-doi="10.21105/joss.01603" data-condensed="true" data-hide-no-mentions="true" class="altmetric-embed"></span>
+[![R-CMD-check](https://github.com/o2r-project/containerit/workflows/R-CMD-check/badge.svg)](https://github.com/o2r-project/containerit/actions)
 <!-- badges: end -->
 <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
 
@@ -118,7 +119,7 @@ docker inspect o2rproject/containerit
 
 Base image: `` `r base_image` ``
 
-[![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
+<!-- [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com") -->
 
 ### geospatial
 
@@ -128,7 +129,7 @@ docker inspect o2rproject/containerit:geospatial
 
 Base image: `` `r geospatial_base_image` ``
 
-[![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
+<!-- [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com") -->
 
 ## RStudio Add-in
 

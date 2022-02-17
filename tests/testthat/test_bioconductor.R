@@ -17,5 +17,15 @@ test_that("installation instruction for Bioconductor package is created", {
 
   expected_file <- readLines("./bioconductor/Dockerfile")
   generated_file <- unlist(stringr::str_split(toString(the_dockerfile),"\n"))
+  testthat::skip_if_not_installed("BiocVersion")
+  current_bioc_version =  as.character(packageVersion("BiocVersion")[,1:2])
+  #!!! Unsure as to whether the R image 3.3.2 is supposed to
+  # know to force the BiocVersion to that required for R 3.3.2,
+  # not the current version
+
+  # expected_file = stringr::str_replace_all(
+  #   expected_file,
+  #   "packages/3.9",
+  #   paste0("packages/", current_bioc_version))
   expect_equal(generated_file, expected_file)
 })

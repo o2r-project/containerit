@@ -11,7 +11,8 @@ object
 Arg-instruction class yet to be implemented
 }
 \examples{
-#no example yet
+x = Arg("myarg")
+print(x)
 }
 \seealso{
 Other instruction classes: 

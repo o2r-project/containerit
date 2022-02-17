@@ -16,6 +16,7 @@ dockerfile(
   soft = FALSE,
   offline = FALSE,
   copy = NULL,
+  instructions = list(),
   container_workdir = "/payload/",
   cmd = "R",
   entrypoint = NULL,
@@ -25,11 +26,13 @@ dockerfile(
   predetect = TRUE,
   versioned_libs = FALSE,
   versioned_packages = FALSE,
-  filter_baseimage_pkgs = FALSE
+  filter_baseimage_pkgs = FALSE,
+  platform = NULL,
+  syntax = NULL
 )
 }
 \arguments{
-\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working direcotry, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed; the package from the \code{DESCRIPTION} itself is only .}
+\item{from}{The source of the information to construct the Dockerfile. Can be a \code{sessionInfo} object, a path to a file within the working directory, a \code{DESCRIPTION} file, or the path to a workspace). If \code{NULL} then no automatic derivation of dependencies happens. If a \code{DESCRIPTION} file, then the minimum R version (e.g. "R (3.3.0)") is used for the image version and all "Imports" are explicitly installed; the package from the \code{DESCRIPTION} itself is only .}
 
 \item{image}{(\linkS4class{From}-object or character) Specifes the image that shall be used for the Docker container (\code{FROM} instruction).
 By default, the image selection is based on the given session. Alternatively, use \code{getImageForVersion(..)} to get an existing image for a manually defined version of R, matching the version with tags from the base image rocker/r-ver (see details about the rocker/r-ver at \url{https://hub.docker.com/r/rocker/r-ver/}). Or provide a correct image name yourself.}
@@ -50,6 +53,8 @@ By default, the image selection is based on the given session. Alternatively, us
 
 \item{copy}{whether and how a workspace should be copied; allowed values: "script", "script_dir" (paths relative to file, so only works for file-base \code{from} inputs, which (can be nested) within current working directory), a list of file paths relative to the current working directory to be copied into the payload directory, or \code{NULL} to disable copying of files}
 
+\item{instructions}{an ordered list of instructions in the Dockerfile}
+
 \item{container_workdir}{the working directory in the container, defaults to \code{/payload/} and must end with \code{/}. Can be skipped with value \code{NULL}.}
 
 \item{cmd}{The CMD statement that should be executed by default when running a parameter. Use \code{CMD_Rscript(path)} in order to reference an R script to be executed on startup, \code{CMD_Render(path)} to render an R Markdown document, or \code{Cmd(command)} for any command. If \code{character} is provided it is passed wrapped in a \code{Cmd(command)}.}
@@ -69,6 +74,10 @@ By default, the image selection is based on the given session. Alternatively, us
 \item{versioned_packages}{Whether it shall be attempted to match versions of R packages}
 
 \item{filter_baseimage_pkgs}{Do not add packages from CRAN that are already installed in the base image. This does not apply to non-CRAN dependencies, e.g. packages install from GitHub, and does not check the package version.}
+
+\item{platform}{Platform string, defaults to the current platform, passed to \code{\link{sysreqs}} or the \code{sysreqs} API.}
+
+\item{syntax}{the syntax header for the Dockefile}
 }
 \value{
 An object of class Dockerfile
@@ -81,7 +90,7 @@ Create a Dockerfile based on either a sessionInfo, a workspace or a file.
 \section{Based on \code{sessionInfo}}{
 
 
-Use the current \code{\link[utils]{sessionInfo})} to create a Dockerfile.
+Use the current \code{\link[utils]{sessionInfo}} to create a Dockerfile.
 }
 
 \section{Based on a workspace/directory}{

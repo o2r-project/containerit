@@ -74,7 +74,8 @@ Label_SessionInfo <-
   function(session = sessionInfo(),
            as_json = FALSE) {
     if (as_json) {
-      session_string <- rjson::toJSON(session)
+      # session_string <- rjson::toJSON(session)
+      session_string <- jsonlite::toJSON(session)
     } else{
       session_string <- utils::capture.output(session)
       session_string <- paste(session_string, collapse = "\n")

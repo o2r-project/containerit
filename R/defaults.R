@@ -16,7 +16,7 @@
 
 .debian_platform <- "linux-x86_64-debian-gcc"
 .ubuntu_platform <- "linux-x86_64-ubuntu-gcc"
-.supported_platforms <- .debian_platform
+.supported_platforms <- c(.debian_platform, .ubuntu_platform)
 
 .init_config_file <- function() {
   tryCatch(

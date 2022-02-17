@@ -2,6 +2,21 @@
 
 context("Packaging R-Scripts and workspace directories.")
 
+remove_sysdeps = function(the_dockerfile) {
+  cmds = lapply(the_dockerfile@instructions, function(x) {
+    if ("commands" %in% slotNames(x)) {
+      x@commands
+      } else {
+        ""
+      }
+    })
+  sysdep_cmds = sapply(cmds, function(x) {
+    any(grepl(x, pattern = "DEBIAN_FRONTEND"))
+  })
+  the_dockerfile@instructions = the_dockerfile@instructions[!sysdep_cmds]
+  the_dockerfile
+}
+
 test_that("the R script location is checked ", {
   output <- capture_output(expect_error(dockerfile("falseScriptLocation.R")))
 })
@@ -66,6 +81,10 @@ test_that("a workspace with one R script can be packaged if the script file has 
                                  image = getImageForVersion("3.3.2"),
                                  add_loadedOnly = TRUE)
   )
+  # need this because original didn't have sysdeps for one of the packages
+  # but now it does - so sysdeps may grow/shrink with
+  # different R packages, but this doesn't account for that
+  the_dockerfile = remove_sysdeps(the_dockerfile)
   expected_file <- readLines("package_script/simple_lowercase/Dockerfile")
   expect_equal(toString(the_dockerfile), expected_file)
 })
@@ -154,10 +173,18 @@ test_that("the installation order of packages is alphabetical (= reproducible)",
   expect_equal(capture.output(print(the_dockerfile)), expected_file)
 })
 
+skip_if_installed = function(pkg) {
+  if (requireNamespace(pkg, quietly = TRUE)) {
+    skip(paste0(pkg, " can be loaded, but should be missing"))
+  }
+  return(invisible(TRUE))
+}
+
 test_that("packaging fails if library from script is missing without predetection", {
   skip_on_cran() # CRAN knows all the packages
   skip_on_ci()
 
+  skip_if_installed("coxrobust")
   # package should still not be in this session library
   expect_error(library("coxrobust"))
 
@@ -177,6 +204,7 @@ test_that("packaging works if library from script is missing but predetection is
   skip_on_cran() # CRAN knows all the packages
   skip_on_ci()
 
+  skip_if_installed("coxrobust")
   output <- capture_output({
     predetected_df <- dockerfile(from = "package_script/needs_predetect/",
                                maintainer = "o2r",

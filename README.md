@@ -17,7 +17,9 @@ status](https://ci.appveyor.com/api/projects/status/2242hcwagoafxaxq?svg=true)](
 https://gitter.im/o2r-project/containerit](https://badges.gitter.im/o2r-project/containerit.svg)](https://gitter.im/o2r-project/containerit)
 <span class="altmetric-embed" data-badge-popover="bottom"
 data-badge-type="2" data-doi="10.21105/joss.01603" data-condensed="true"
-data-hide-no-mentions="true"></span> <!-- badges: end -->
+data-hide-no-mentions="true"></span>
+[![R-CMD-check](https://github.com/o2r-project/containerit/workflows/R-CMD-check/badge.svg)](https://github.com/o2r-project/containerit/actions)
+<!-- badges: end -->
 <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
 
 `containerit` packages R script/session/workspace and all dependencies
@@ -75,13 +77,13 @@ runnable R files (`.R`, `.Rmd`).
 ``` r
 suppressPackageStartupMessages(library("containerit"))
 my_dockerfile <- containerit::dockerfile(from = utils::sessionInfo())
-#> INFO [2021-06-25 11:10:38] Created Dockerfile-Object based on sessionInfo
+#> INFO [2021-10-11 18:45:46] Created Dockerfile-Object based on sessionInfo
 ```
 
 ``` r
 print(my_dockerfile)
 #> FROM rocker/r-ver:4.1.0
-#> LABEL maintainer="daniel"
+#> LABEL maintainer="jupyter"
 #> WORKDIR /payload/
 #> CMD ["R"]
 ```
@@ -102,8 +104,8 @@ rmd_dockerfile <- containerit::dockerfile(from = "inst/demo.Rmd",
                                           image = "rocker/verse:3.5.2",
                                           maintainer = "o2r",
                                           filter_baseimage_pkgs = TRUE)
-#> Detected API version '1.41' is above max version '1.39'; downgrading
-#> Detected API version '1.41' is above max version '1.39'; downgrading
+#> Detected API version '1.40' is above max version '1.39'; downgrading
+#> Detected API version '1.40' is above max version '1.39'; downgrading
 print(rmd_dockerfile)
 #> FROM rocker/verse:3.5.2
 #> LABEL maintainer="o2r"
@@ -133,9 +135,7 @@ docker inspect o2rproject/containerit
 
 Base image: `rocker/verse:4.0.5`
 
-[![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com")
+<!-- [![](https://images.microbadger.com/badges/version/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit.svg)](https://microbadger.com/images/o2rproject/containerit "Get your own commit badge on microbadger.com") -->
 
 ### geospatial
 
@@ -145,9 +145,7 @@ docker inspect o2rproject/containerit:geospatial
 
 Base image: `rocker/geospatial:4.0.5`
 
-[![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com")
+<!-- [![](https://images.microbadger.com/badges/version/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/o2rproject/containerit:geospatial.svg)](https://microbadger.com/images/o2rproject/containerit:geospatial "Get your own commit badge on microbadger.com") -->
 
 ## RStudio Add-in
 
