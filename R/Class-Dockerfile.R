@@ -1,5 +1,9 @@
 # Copyright 2018 Opening Reproducible Research (https://o2r.info)
 
+# The Entrypoint is optional in a Dockerfile
+setClassUnion("NullOrCmd",
+              members = c("Cmd", "NULL"))
+
 #' An S4 class to represent a Dockerfile
 #'
 #' @include Class-Maintainer.R
@@ -28,7 +32,7 @@ Dockerfile <- setClass("Dockerfile",
                          maintainer = "NullOrLabelOrMaintainer",
                          instructions = "list",
                          entrypoint = "NullOrEntrypoint",
-                         cmd = "Cmd",
+                         cmd = "NullOrCmd",
                          syntax = "NullOrCharacter")
 )
 

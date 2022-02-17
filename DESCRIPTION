@@ -99,7 +99,7 @@ Remotes:
     github::r-hub/sysreqs
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 7.1.2.9000
+RoxygenNote: 7.1.2
 Collate:
     'Class-Instruction.R'
     'Class-Add.R'

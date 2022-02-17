@@ -117,7 +117,7 @@ dockerfile <- function(from = utils::sessionInfo(),
     } else {
       command <- cmd
     }
-    if (!inherits(x = command, "Cmd")) {
+    if (!inherits(x = command, "Cmd") && !is.null(command)) {
       stop("Unsupported parameter for 'cmd', expected an object of class 'Cmd', given was :", class(command))
     }
 
